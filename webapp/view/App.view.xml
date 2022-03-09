@@ -1,0 +1,7 @@
+<mvc:View controllerName="com.evorait.evosuite.evoresource.controller.App" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
+	<Shell id="shell">
+		<App id="app">
+			<NavContainer id="appPanel" class="panelPage"/>
+		</App>
+	</Shell>
+</mvc:View>
