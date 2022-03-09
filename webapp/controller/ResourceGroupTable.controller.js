@@ -3,7 +3,7 @@ sap.ui.define([
 ], function (BaseController) {
 	"use strict";
 
-	return BaseController.extend("com.evorait.evosuite.evoresource.controller.App", {
+	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourceGroupTable", {
 		onInit: function () {
 
 		}

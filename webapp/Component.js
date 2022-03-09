@@ -5,6 +5,8 @@ sap.ui.define([
 ], function (UIComponent, Device, models) {
 	"use strict";
 
+	var oCoreMessageManager = sap.ui.getCore().getMessageManager();
+	
 	return UIComponent.extend("com.evorait.evosuite.evoresource.Component", {
 
 		metadata: {
@@ -25,6 +27,9 @@ sap.ui.define([
 
 			// set the device model
 			this.setModel(models.createDeviceModel(), "device");
+			
+			// set the message model with messages from core message manager
+			this.setModel(oCoreMessageManager.getMessageModel(), "coreMessageModel");
 		}
 	});
 });

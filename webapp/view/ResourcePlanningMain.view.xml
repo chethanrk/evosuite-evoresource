@@ -1,5 +1,8 @@
-<mvc:View controllerName="com.evorait.evosuite.evoresource.controller.App" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
-	<Page id="resourcePlanningMainPage" title="{i18n>title}">
-		<content></content>
-	</Page>
+<mvc:View controllerName="com.evorait.evosuite.evoresource.controller.ResourcePlanningMain" xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+	xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.f">
+	<f:DynamicPage id="resourcePlanningMainPage" headerExpanded="true" preserveHeaderStateOnScroll="true" class="sapUiNoContentPadding">
+		<f:title>
+			<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.PageTitleAndActions" type="XML"/>
+		</f:title>
+	</f:DynamicPage>
 </mvc:View>
