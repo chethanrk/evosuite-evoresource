@@ -90,7 +90,7 @@ sap.ui.define([
 		
 		/**
 		 * loads and opens the About info dialog
-		 * @param oEvent Button press event
+		 * @param {object} oEvent - Button press event
 		 */
 		onAboutIconPress: function (oEvent) {
 			// create popover
@@ -118,9 +118,23 @@ sap.ui.define([
 		
 		/**
 		 * Opens Message Manager popover on click
-		 * @param oEvent Message manager button press event
+		 * @param {object} oEvent - Message manager button press event
 		 */
 		onMessageManagerPress: function (oEvent) {
-		}
+			this._openMessageManager(this.getView(), oEvent);
+		},
+		
+		/* =========================================================== */
+		/* internal methods                                            */
+		/* =========================================================== */
+
+		/**
+		 * opens Message Popover 
+		 * @param {object} oView - view instance of the caller
+		 * @param {object} oEvent -  Message manager button press event
+		 */
+		_openMessageManager: function (oView, oEvent) {
+			this.getOwnerComponent().MessageManager.open(oView, oEvent);
+		},
 	});
 });
