@@ -31,7 +31,10 @@
 		}
 	},
 	"sap.ui5": {
-		"flexEnabled": false,
+		"flexEnabled": true,
+		"config": {
+			"fullWidth": true
+		},
 		"rootView": {
 			"viewName": "com.evorait.evosuite.evoresource.view.App",
 			"type": "XML",
@@ -80,7 +83,7 @@
 					"pattern": "",
 					"name": "resource",
 					"target": [
-						"resourcePlanningView",
+						"resourcePlanningGantt",
 						"resourceGroupTable"
 					]
 				}
@@ -89,21 +92,24 @@
 				"splitHorNavigation": {
 					"viewType": "XML",
 					"viewName": "layouts.Split2HorizontalViews",
-					"controlId": "appPanel"
+					"controlId": "appPanel",
+					"viewId": "EvoResourceSplitHorNavigation"
 				},
-				"resourcePlanningView": {
+				"resourcePlanningGantt": {
 					"viewType": "XML",
 					"viewName": "ResourcePlanningMain",
 					"viewPath": "com.evorait.evosuite.evoresource.view",
 					"controlId": "leftPanel",
-					"parent": "splitHorNavigation"
+					"parent": "splitHorNavigation",
+					"viewId": "EvoResourceResourcePlanning"
 				},
 				"resourceGroupTable": {
 					"viewType": "XML",
 					"viewName": "ResourceGroupTable",
 					"viewPath": "com.evorait.evosuite.evoresource.view",
 					"controlId": "rightPanel",
-					"parent": "splitHorNavigation"
+					"parent": "splitHorNavigation",
+					"viewId": "EvoResourceResourceGroupTable"
 				}
 			}
 		}
