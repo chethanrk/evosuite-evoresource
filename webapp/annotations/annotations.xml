@@ -1,0 +1,65 @@
+<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
+	<edmx:Reference Uri="/sap/bc/ui5_ui5/ui2/ushell/resources/sap/ushell/components/factsheet/vocabularies/UI.xml">
+		<edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="http://docs.oasis-open.org/odata/odata/v4.0/errata02/os/complete/vocabularies/Core.xml">
+		<edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="http://docs.oasis-open.org/odata/odata/v4.0/cs01/vocabularies/Org.OData.Timeline.V1.xml">
+		<edmx:Include Alias="Timeline" Namespace="com.sap.vocabularies.Timeline.v1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="/sap/opu/odata/EVORA/EOR_MAIN_SRV/$metadata">
+		<edmx:Include Alias="Metadata" Namespace="com.evorait.evoorderrelate"/>
+	</edmx:Reference>
+	<edmx:DataServices>
+		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.evorait.evoorderrelate">
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoorderrelate.GanttHierarchy/Mode">
+				<Annotation Term="com.sap.vocabularies.Common.v1.ValueList">
+					<Record Type="com.sap.vocabularies.Common.v1.ValueListType">
+						<PropertyValue Property="CollectionPath" String="GanttViewSet"/>
+						<PropertyValue Property="CollectionRoot" String=""/>
+						<PropertyValue Property="SearchSupported" Bool="false"/>
+						<PropertyValue Property="Parameters">
+							<Collection>
+								<Record Type="com.sap.vocabularies.Common.v1.ValueListParameterInOut">
+									<PropertyValue Property="LocalDataProperty" PropertyPath="Mode"/>
+									<PropertyValue Property="ValueListProperty" String="Key"/>
+								</Record>
+								<Record Type="com.sap.vocabularies.Common.v1.ValueListParameterDisplayOnly">
+									<PropertyValue Property="ValueListProperty" String="Description"/>
+								</Record>
+							</Collection>
+						</PropertyValue>
+					</Record>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoorderrelate.GanttHierarchy">
+				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
+					<Collection>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="Description"/>
+							<PropertyValue Property="Position" Int="1"/>
+						</Record>
+					</Collection>
+				</Annotation>
+				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
+					<Collection>
+						<PropertyPath>DateRange</PropertyPath>
+						<PropertyPath>Mode</PropertyPath>
+						<PropertyPath>Resource</PropertyPath>
+						<PropertyPath>ResourceGroup</PropertyPath>
+						<PropertyPath>ResourceGroupUnitId</PropertyPath>
+					</Collection>
+				</Annotation>
+				<Annotation Term="com.sap.vocabularies.Common.v1.FilterExpressionRestrictions">
+					<Collection>
+						<Record>
+							<PropertyValue Property="Property" PropertyPath="Mode"/>
+							<PropertyValue Property="AllowedExpressions" EnumMember="com.sap.vocabularies.Common.v1.FilterExpressionType/SingleValue"/>
+						</Record>
+					</Collection>
+				</Annotation>
+			</Annotations>
+		</Schema>
+	</edmx:DataServices>
+</edmx:Edmx>

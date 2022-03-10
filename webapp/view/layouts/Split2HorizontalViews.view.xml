@@ -17,13 +17,13 @@
 			</Bar>
 		</customHeader>
 		<content>
-			<layout:Splitter id="verticalSplit" resize="onResize">
-				<NavContainer id="leftPanel">
+			<layout:Splitter resize="onResize">
+				<NavContainer id="idPageSplitLeftPanel">
 					<layoutData>
 						<layout:SplitterLayoutData size="80%"/>
 					</layoutData>
 				</NavContainer>
-				<NavContainer id="rightPanel"/>
+				<NavContainer id="idPageSplitRightPanel"/>
 			</layout:Splitter>
 		</content>
 	</Page>
