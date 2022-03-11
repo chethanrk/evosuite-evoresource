@@ -4,8 +4,9 @@ sap.ui.define([
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanningMain", {
-		onInit: function () {
-
+		
+		metadata: {
+			methods: {}
 		}
 	});
 });
