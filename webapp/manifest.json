@@ -12,6 +12,26 @@
 		"sourceTemplate": {
 			"id": "ui5template.basicSAPUI5ApplicationProject",
 			"version": "1.40.12"
+		},
+		"dataSources": {
+			"mainService": {
+				"uri": "/sap/opu/odata/EVORA/EOR_MAIN_SRV/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"localUri": "localService/metadata.xml",
+					"annotations": [
+						"annotations"
+					]
+				}
+			},
+			"annotations": {
+				"uri": "annotations/annotations.xml",
+				"type": "ODataAnnotation",
+				"settings": {
+					"localUri": "annotations/annotations.xml"
+				}
+			}
 		}
 	},
 	"sap.ui": {
@@ -59,6 +79,13 @@
 				"settings": {
 					"bundleName": "com.evorait.evosuite.evoresource.i18n.i18n"
 				}
+			},
+			"": {
+				"type": "sap.ui.model.odata.v2.ODataModel",
+				"dataSource": "mainService",
+				"settings": {
+					"defaultBindingMode": "TwoWay"
+				}
 			}
 		},
 		"resources": {
@@ -81,9 +108,9 @@
 			"routes": [
 				{
 					"pattern": "",
-					"name": "resource",
+					"name": "ResourcePlanning",
 					"target": [
-						"resourcePlanningGantt",
+						"resourcePlanningMain",
 						"resourceGroupTable"
 					]
 				}
@@ -95,11 +122,11 @@
 					"controlId": "appPanel",
 					"viewId": "EvoResourceSplitHorNavigation"
 				},
-				"resourcePlanningGantt": {
+				"resourcePlanningMain": {
 					"viewType": "XML",
 					"viewName": "ResourcePlanningMain",
 					"viewPath": "com.evorait.evosuite.evoresource.view",
-					"controlId": "leftPanel",
+					"controlId": "idPageSplitLeftPanel",
 					"parent": "splitHorNavigation",
 					"viewId": "EvoResourceResourcePlanning"
 				},
@@ -107,7 +134,7 @@
 					"viewType": "XML",
 					"viewName": "ResourceGroupTable",
 					"viewPath": "com.evorait.evosuite.evoresource.view",
-					"controlId": "rightPanel",
+					"controlId": "idPageSplitRightPanel",
 					"parent": "splitHorNavigation",
 					"viewId": "EvoResourceResourceGroupTable"
 				}

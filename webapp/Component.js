@@ -2,8 +2,9 @@ sap.ui.define([
 	"sap/ui/core/UIComponent",
 	"sap/ui/Device",
 	"com/evorait/evosuite/evoresource/model/models",
-	"com/evorait/evosuite/evoresource/controller/MessageManager"
-], function (UIComponent, Device, models, MessageManager) {
+	"com/evorait/evosuite/evoresource/controller/MessageManager",
+    "sap/ui/model/json/JSONModel"
+], function (UIComponent, Device, models, MessageManager, JSONModel) {
 	"use strict";
 
 	var oCoreMessageManager = sap.ui.getCore().getMessageManager();
@@ -17,6 +18,8 @@ sap.ui.define([
 			}
 		},
 
+		oTemplatePropsProm: null,
+
 		/**
 		 * The component is initialized by UI5 automatically during the startup of the app and calls the init method once.
 		 * @public
@@ -25,9 +28,6 @@ sap.ui.define([
 		init: function () {
 			// call the base component's init function
 			UIComponent.prototype.init.apply(this, arguments);
-
-			// enable routing
-			this.getRouter().initialize();
 
 			// set the device model
 			this.setModel(models.createDeviceModel(), "device");
@@ -46,6 +46,11 @@ sap.ui.define([
 			this.setModel(oCoreMessageManager.getMessageModel(), "coreMessageModel");
 			
 			this.MessageManager = new MessageManager();
+            
+            this._getTemplateProps();
+
+			// enable routing
+			this.getRouter().initialize();
 		},
 
 		/**
@@ -147,6 +152,21 @@ sap.ui.define([
 				this.readData("/PropertyValueDeterminationSet", []).then(function (oData) {
 					this.getModel("DefaultInformationModel").setProperty("/defaultProperties", oData.results);
 					resolve(oData.results[0]);
+				}.bind(this));
+			}.bind(this));
+		},
+
+		/**
+		 * get Template properties as model inside a global Promise
+		 */
+		_getTemplateProps: function () {
+			this.oTemplatePropsProm = new Promise(function (resolve) {
+				var realPath = sap.ui.require.toUrl("com/evorait/evosuite/evoresource/model/TemplateProperties.json");
+				var oTempJsonModel = new JSONModel();
+				oTempJsonModel.loadData(realPath);
+				oTempJsonModel.attachRequestCompleted(function () {
+					this.setModel(oTempJsonModel, "templateProperties");
+					resolve(oTempJsonModel.getData());
 				}.bind(this));
 			}.bind(this));
 		}
