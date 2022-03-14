@@ -6,7 +6,11 @@ sap.ui.define([
 
 	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanningMain", {
 
-		/**
+		metadata: {
+			methods: {}
+		},
+        
+        /**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
 		 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
 		 * @memberOf com.evorait.evosuite.evoresource.controller.ResourcePlanningMain

@@ -2,8 +2,9 @@ sap.ui.define([
 	"sap/ui/core/UIComponent",
 	"sap/ui/Device",
 	"com/evorait/evosuite/evoresource/model/models",
-	"sap/ui/model/json/JSONModel"
-], function (UIComponent, Device, models, JSONModel) {
+	"com/evorait/evosuite/evoresource/controller/MessageManager",
+    "sap/ui/model/json/JSONModel"
+], function (UIComponent, Device, models, MessageManager, JSONModel) {
 	"use strict";
 
 	var oCoreMessageManager = sap.ui.getCore().getMessageManager();
@@ -43,8 +44,10 @@ sap.ui.define([
 
 			// set the message model with messages from core message manager
 			this.setModel(oCoreMessageManager.getMessageModel(), "coreMessageModel");
-
-			this._getTemplateProps();
+			
+			this.MessageManager = new MessageManager();
+            
+            this._getTemplateProps();
 
 			// enable routing
 			this.getRouter().initialize();
