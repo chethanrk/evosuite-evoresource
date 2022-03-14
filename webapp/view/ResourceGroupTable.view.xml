@@ -1,3 +1,21 @@
-<mvc:View controllerName="com.evorait.evosuite.evoresource.controller.ResourceGroupTable" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
-
+<mvc:View controllerName="com.evorait.evosuite.evoresource.controller.ResourceGroupTable" xmlns:mvc="sap.ui.core.mvc" xmlns:f="sap.f"
+	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar" xmlns:smartTable="sap.ui.comp.smarttable" displayBlock="true" xmlns="sap.m">
+	<Page id="idResourceGroupPage" showHeader="false">
+		<f:DynamicPage id="iResourceGroupDynamicPage" headerExpanded="true" fitContent="true" preserveHeaderStateOnScroll="true"
+			toggleHeaderOnTitleClick="false" class="filterNoPadding sapUiNoContentPadding">
+			<f:header>
+				<f:DynamicPageHeader id="idResourceGroupHeader" pinnable="true" class="sapUiNoContentPadding">
+					<f:content>
+						<smartFilterBar:SmartFilterBar id="idResourceGroupFilter" persistencyKey="UniqueAndStablePersistencyKey" considerSelectionVariants="false"
+							entitySet="ResourceGroupSet" enableBasicSearch="true" basicSearchFieldName="GroupName" showClearButton="true"
+							showFilterConfiguration="false" useToolbar="false" showGoOnFB="false"/>
+					</f:content>
+				</f:DynamicPageHeader>
+			</f:header>
+			<f:content>
+				<smartTable:SmartTable header="{i18n>xtit.group}" id="idResourceGroupTable" smartFilterId="idResourceGroupFilter"
+					entitySet="ResourceGroupSet" enableAutoBinding="true" tableType="ResponsiveTable" useTablePersonalisation="false" useExportToExcel="false"/>
+			</f:content>
+		</f:DynamicPage>
+	</Page>
 </mvc:View>
