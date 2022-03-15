@@ -1,5 +1,6 @@
-<mvc:View controllerName="com.evorait.evosuite.evoresource.controller.ResourceGroupTable" xmlns:mvc="sap.ui.core.mvc" xmlns:f="sap.f"
-	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar" xmlns:smartTable="sap.ui.comp.smarttable" displayBlock="true" xmlns="sap.m">
+<mvc:View controllerName="com.evorait.evosuite.evoresource.controller.ResourceGroupTable" xmlns:core="sap.ui.core"
+	xmlns:mvc="sap.ui.core.mvc" xmlns:f="sap.f" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar" xmlns:smartTable="sap.ui.comp.smarttable"
+	displayBlock="true" xmlns="sap.m">
 	<Page id="idResourceGroupPage" showHeader="false">
 		<f:DynamicPage id="iResourceGroupDynamicPage" headerExpanded="true" fitContent="true" preserveHeaderStateOnScroll="true"
 			toggleHeaderOnTitleClick="false" class="filterNoPadding sapUiNoContentPadding">
@@ -8,13 +9,36 @@
 					<f:content>
 						<smartFilterBar:SmartFilterBar id="idResourceGroupFilter" persistencyKey="UniqueAndStablePersistencyKey" considerSelectionVariants="false"
 							entitySet="ResourceGroupSet" enableBasicSearch="true" basicSearchFieldName="GroupName" showClearButton="true"
-							showFilterConfiguration="false" useToolbar="false" showGoOnFB="false"/>
+							showFilterConfiguration="false" useToolbar="false" showGoOnFB="false">
+							<smartFilterBar:controlConfiguration>
+								<core:ExtensionPoint name="FilterExtP|ResourceGroup|ResourceGroupSet|ControlConfiguration"/>
+							</smartFilterBar:controlConfiguration>
+						</smartFilterBar:SmartFilterBar>
 					</f:content>
 				</f:DynamicPageHeader>
 			</f:header>
 			<f:content>
 				<smartTable:SmartTable header="{i18n>xtit.group}" id="idResourceGroupTable" smartFilterId="idResourceGroupFilter"
-					entitySet="ResourceGroupSet" enableAutoBinding="true" tableType="ResponsiveTable" useTablePersonalisation="false" useExportToExcel="false"/>
+					entitySet="ResourceGroupSet" enableAutoBinding="true" tableType="ResponsiveTable" useTablePersonalisation="false" useExportToExcel="false">
+					<smartTable:customToolbar>
+						<Toolbar>
+							<ToolbarSpacer/>
+							<core:ExtensionPoint name="TableExtP|ResourceGroup|ResourceGroupSet|CustomToolbar"/>
+						</Toolbar>
+					</smartTable:customToolbar>
+					<Table id="idResourceGroupCustomTable">
+						<columns>
+							<core:ExtensionPoint name="TableExtP|ResourceGroup|ResourceGroupSet|CustomColumn"/>
+						</columns>
+						<items>
+							<ColumnListItem>
+								<cells>
+									<core:ExtensionPoint name="TableExtP|ResourceGroup|ResourceGroupSet|CustomCell"/>
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+				</smartTable:SmartTable>
 			</f:content>
 		</f:DynamicPage>
 	</Page>
