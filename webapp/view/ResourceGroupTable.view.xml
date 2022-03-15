@@ -3,14 +3,19 @@
 	displayBlock="true" xmlns="sap.m">
 	<Page id="idResourceGroupPage" showHeader="false">
 		<f:DynamicPage id="iResourceGroupDynamicPage" headerExpanded="true" fitContent="true" preserveHeaderStateOnScroll="true"
-			toggleHeaderOnTitleClick="false" class="filterNoPadding sapUiNoContentPadding">
+			toggleHeaderOnTitleClick="false" class="sapUiNoContentPadding">
 			<f:header>
 				<f:DynamicPageHeader id="idResourceGroupHeader" pinnable="true" class="sapUiNoContentPadding">
 					<f:content>
-						<smartFilterBar:SmartFilterBar id="idResourceGroupFilter" persistencyKey="UniqueAndStablePersistencyKey" considerSelectionVariants="false"
-							entitySet="ResourceGroupSet" enableBasicSearch="true" basicSearchFieldName="GroupName" showClearButton="true"
-							showFilterConfiguration="false" useToolbar="false" showGoOnFB="false">
+						<smartFilterBar:SmartFilterBar id="idResourceGroupFilter" persistencyKey="UniqueAndStablePersistencyKey" entitySet="ResourceGroupSet"
+							showClearButton="true" showGoOnFB="false">
 							<smartFilterBar:controlConfiguration>
+								<smartFilterBar:ControlConfiguration key="GroupName" label="{i18n>xtit.search}" visibleInAdvancedArea="true" width="100%" groupId="_BASIC"
+									index="0">
+									<smartFilterBar:customControl>
+										<SearchField showRefreshButton="false" search="onCustomSearchChange" width="100%"></SearchField>
+									</smartFilterBar:customControl>
+								</smartFilterBar:ControlConfiguration>
 								<core:ExtensionPoint name="FilterExtP|ResourceGroup|ResourceGroupSet|ControlConfiguration"/>
 							</smartFilterBar:controlConfiguration>
 						</smartFilterBar:SmartFilterBar>
