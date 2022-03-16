@@ -1,0 +1,17 @@
+{
+	"d": {
+		"results": [{
+			"ObjectKey":"001",
+			"UnitID": "Evora DE",
+			"GroupName": "Amber Cluster"
+		},{
+			"ObjectKey":"002",
+			"UnitID": "Evora IN",
+			"GroupName": "Product Cluster"
+		},{
+			"ObjectKey":"003",
+			"UnitID": "Evora AT",
+			"GroupName": "Royal Cluster"
+		}]
+	}
+}

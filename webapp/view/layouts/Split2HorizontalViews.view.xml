@@ -20,7 +20,7 @@
 			<layout:Splitter resize="onResize">
 				<NavContainer id="idPageSplitLeftPanel">
 					<layoutData>
-						<layout:SplitterLayoutData size="80%"/>
+						<layout:SplitterLayoutData size="70%"/>
 					</layoutData>
 				</NavContainer>
 				<NavContainer id="idPageSplitRightPanel"/>

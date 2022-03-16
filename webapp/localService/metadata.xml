@@ -199,6 +199,15 @@
 				<Property Name="ObjectKey" Type="Edm.String" Nullable="false" MaxLength="200" sap:label="Object Key"/>
 				<Property Name="HeaderObjectKey" Type="Edm.String" Nullable="false" MaxLength="200" sap:label="Object Key"/>
 			</EntityType>
+			<EntityType Name="ResourceGroup" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="ObjectKey"/>
+				</Key>
+				<Property Name="ObjectKey" Type="Edm.String" Nullable="false" MaxLength="200" sap:label="Object Key"/>
+				<Property Name="UnitID" Type="Edm.String" Nullable="false" MaxLength="200" sap:label="Resource Group Unit ID"/>
+				<Property Name="GroupName" Type="Edm.String" Nullable="false" MaxLength="200" sap:label="Resource Group"/>
+			</EntityType>
+			
 			<Association Name="NetworkToGanttRelation" sap:content-version="1">
 				<End Type="com.evorait.evoorderrelate.WONetwork" Multiplicity="1" Role="FromRole_NetworkToGanttRelation"/>
 				<End Type="com.evorait.evoorderrelate.GanttRelation" Multiplicity="*" Role="ToRole_NetworkToGanttRelation"/>
@@ -236,6 +245,7 @@
 				<EntitySet Name="GanttRelationSet" EntityType="com.evorait.evoorderrelate.GanttRelation" sap:content-version="1"/>
 				<EntitySet Name="GanttHierarchySet" EntityType="com.evorait.evoorderrelate.GanttHierarchy" sap:content-version="1"/>
 				<EntitySet Name="GanttViewSet" EntityType="com.evorait.evoorderrelate.GanttView" sap:content-version="1"/>
+				<EntitySet Name="ResourceGroupSet" EntityType="com.evorait.evoorderrelate.ResourceGroup" sap:content-version="1"/>
 				<AssociationSet Name="NetworkToGanttRelationSet" Association="com.evorait.evoorderrelate.NetworkToGanttRelation" sap:creatable="false"
 					sap:updatable="false" sap:deletable="false" sap:content-version="1">
 					<End EntitySet="WONetworkSet" Role="FromRole_NetworkToGanttRelation"/>
@@ -389,6 +399,21 @@
 			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoorderrelate.WONetwork/ObjectKey">
 				<Annotation Term="com.sap.vocabularies.Common.v1.FieldControl" EnumMember="com.sap.vocabularies.Common.v1.FieldControlType/Hidden"/>
 			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoorderrelate.ResourceGroup">
+				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
+					<Collection>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="UnitID"/>
+							<PropertyValue Property="Position" Int="1"/>
+						</Record>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="GroupName"/>
+							<PropertyValue Property="Position" Int="2"/>
+						</Record>
+					
+					</Collection>
+				</Annotation>
+			</Annotations>	
 			<atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="self"
 				href="https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/EOR_MAIN_SRV/$metadata"/>
 			<atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="latest-version"
