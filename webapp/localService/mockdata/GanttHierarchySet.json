@@ -1,0 +1,15 @@
+{
+	"d": {
+		"results": [{
+			"ObjectKey": "1234",
+			"HeaderObjectKey": "",
+			"Description": "",
+			"Resource": "",
+			"ResourceGroup": "",
+			"ResourceGroupUnitId": "",
+			"Mode": "DAY",
+			"DateFrom": "2022-01-01",
+			"DateTo": "2022-07-01"
+		}]
+	}
+}

@@ -13,6 +13,9 @@
 	</edmx:Reference>
 	<edmx:DataServices>
 		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.evorait.evoorderrelate">
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoorderrelate.GanttHierarchy/Description">
+				<Annotation Term="com.sap.vocabularies.Common.v1.Label" String="Description"/>
+			</Annotations>
 			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoorderrelate.GanttHierarchy/Mode">
 				<Annotation Term="com.sap.vocabularies.Common.v1.ValueList">
 					<Record Type="com.sap.vocabularies.Common.v1.ValueListType">
@@ -44,7 +47,8 @@
 				</Annotation>
 				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
 					<Collection>
-						<PropertyPath>DateRange</PropertyPath>
+						<PropertyPath>DateFrom</PropertyPath>
+						<PropertyPath>DateTo</PropertyPath>
 						<PropertyPath>Mode</PropertyPath>
 						<PropertyPath>Resource</PropertyPath>
 						<PropertyPath>ResourceGroup</PropertyPath>

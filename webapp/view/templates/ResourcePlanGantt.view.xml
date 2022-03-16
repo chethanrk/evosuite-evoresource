@@ -1,12 +1,12 @@
 <mvc:View height="100%" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.f"
-	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" xmlns:gantt="sap.gantt.simple"
-	xmlns:axistime="sap.gantt.axistime" xmlns:config="sap.gantt.config" xmlns:shapes="sap.gantt.simple.shapes" xmlns:table="sap.ui.table"
-	xmlns:dnd="sap.ui.core.dnd" controllerName="com.evorait.evosuite.evoresource.controller.ResourcePlanGantt"
-	xmlns:html="http://www.w3.org/1999/xhtml" xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1">
+	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" xmlns:dnd="sap.ui.core.dnd"
+	controllerName="com.evorait.evosuite.evoresource.controller.ResourcePlanGantt" xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1" xmlns:simple="sap.gantt.simple"
+	xmlns:axistime="sap.gantt.axistime" xmlns:config="sap.gantt.config" xmlns:table="sap.ui.table">
 	<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
 		<template:alias name=".evoAH" value="com.evorait.evosuite.evoresource.model.AnnotationHelper">
 			<template:with path="templateProperties>/" var="tempProps">
-				<f:DynamicPage id="idPageResourcePlanGantt">
+				<f:DynamicPage id="idPageResourcePlanGantt" class="sapUiNoContentPadding" headerExpanded="true" preserveHeaderStateOnScroll="false">
 					<!-- DynamicPage Header -->
 					<f:header>
 						<f:DynamicPageHeader pinnable="true">
@@ -17,7 +17,70 @@
 							</f:content>
 						</f:DynamicPageHeader>
 					</f:header>
-					<f:content></f:content>
+					<f:content>
+						<template:with path="tempProps>/ganttConfigs/" var="ganttConfigs">
+							<simple:GanttChartContainer id="idResourcePlanGanttChartContainer" enableCursorLine="false" enableTimeScrollSync="false">
+								<simple:toolbar>
+									<simple:ContainerToolbar alignCustomContentToRight="true" showTimeZoomControl="true" zoomControlType="None" showLegendButton="true">
+										<simple:content>
+											<Button id="idResourcePlanBtnSave" text="Save" icon="sap-icon://save" type="Emphasized" press="onPressSave"/>
+											<Button id="idResourcePlanBtnCancel" text="Reset" icon="sap-icon://cancel" press="onPressCancel"/>
+											<Text text="|"/>
+											<Button id="idResourcePlanBtnToday" text="Today" press="onPressToday"/>
+										</simple:content>
+									</simple:ContainerToolbar>
+								</simple:toolbar>
+								<simple:GanttChartWithTable id="idResourcePlanGanttChartTable" shapeSelectionMode="Single" shapePress="onShapePress"
+									shapeMouseEnter="onShapeMouseEnter">
+									<simple:axisTimeStrategy>
+										<axistime:StepwiseZoomStrategy id="idResourcePlanGanttZoom" zoomLevels="3">
+											<axistime:totalHorizon>
+												<config:TimeHorizon startTime="{viewModel>/gantt/defaultStartDate}" endTime="{viewModel>/gantt/defaultEndDate}"/>
+											</axistime:totalHorizon>
+										</axistime:StepwiseZoomStrategy>
+									</simple:axisTimeStrategy>
+									<simple:table>
+										<table:TreeTable id="idResourcePlanGanttTreeTable" selectionMode="Single" visibleRowCountMode="Auto" rowActionCount="2" threshold="10"
+											enableColumnReordering="false" enableBusyIndicator="true" busyStateChanged="onBusyStateChanged" enableCellFilter="false"
+											columnHeaderVisible="false" selectionBehavior="RowOnly"
+											rows="{path: 'Resources>/root', parameters: { arrayNames: ['children'], numberOfExpandedLevels: 1 } }">
+											<table:extension>
+												<OverflowToolbar id="idResourcePlanGanttToolbar">
+													<content>
+														<Button id="idResourcePlanGanttExpandAll" icon="sap-icon://expand-all" press="onClickExpandCollapse" type="Transparent" tooltip="Expand all">
+															<customData>
+																<core:CustomData key="Function" value="EXPAND"/>
+															</customData>
+														</Button>
+														<Button id="idResourcePlanGanttCollapseAll" icon="sap-icon://collapse-all" press="onClickExpandCollapse" type="Transparent"
+															tooltip="Collapse all">
+															<customData>
+																<core:CustomData key="Function" value="COLLAPSE"/>
+															</customData>
+														</Button>
+														<ToolbarSpacer/>
+													</content>
+												</OverflowToolbar>
+											</table:extension>
+											<table:columns>
+												<template:repeat list="{path:'tempProps>ganttConfigs/lineItems/'}" var="lineItem">
+													<table:Column
+														label="{= '{/' + ${ganttConfigs>entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+														template="Resources>text"/>
+												</template:repeat>
+											</table:columns>
+											<table:rowActionTemplate>
+												<table:RowAction>
+													<table:items></table:items>
+												</table:RowAction>
+											</table:rowActionTemplate>
+											<table:rowSettingsTemplate></table:rowSettingsTemplate>
+										</table:TreeTable>
+									</simple:table>
+								</simple:GanttChartWithTable>
+							</simple:GanttChartContainer>
+						</template:with>
+					</f:content>
 					<!-- DynamicPage Footer -->
 					<f:footer>
 						<OverflowToolbar id="idPageResourcePlanningFooter" visible="false">

@@ -182,8 +182,9 @@
 				<Property Name="ResourceGroup" Type="Edm.String" Nullable="false" MaxLength="40" sap:label="Resource Group"/>
 				<Property Name="ResourceGroupUnitId" Type="Edm.String" Nullable="false" MaxLength="40" sap:label="Resource Group Unit Id"/>
 				<Property Name="Mode" Type="Edm.String" Nullable="false" MaxLength="40" sap:label="Mode"/>
-				<Property Name="DateRange" Type="Edm.DateTime" Nullable="false" sap:display-format="Date" sap:filter-restriction="interval"
-					sap:label="Date from/to"/>
+				<Property Name="DateFrom" Type="Edm.DateTime" Nullable="false" sap:display-format="Date" sap:filter-restriction="interval"
+					sap:label="Date from"/>
+				<Property Name="DateTo" Type="Edm.DateTime" Nullable="false" sap:display-format="Date" sap:filter-restriction="interval" sap:label="Date to"/>
 			</EntityType>
 			<EntityType Name="GanttView" sap:content-version="1">
 				<Key>
