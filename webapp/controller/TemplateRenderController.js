@@ -257,7 +257,7 @@ sap.ui.define([
 				eventBus = sap.ui.getCore().getEventBus();
 
 			if (!sPath) {
-				eventBus.publish("TemplateRendererEvoOrderRelate", "changedBinding", {
+				eventBus.publish("TemplateRendererEvoResource", "changedBinding", {
 					viewNameId: sViewName
 				});
 				if (callbackFn) {
@@ -271,7 +271,7 @@ sap.ui.define([
 				path: sPath,
 				events: {
 					change: function () {
-						eventBus.publish("TemplateRendererEvoOrderRelate", "changedBinding", {
+						eventBus.publish("TemplateRendererEvoResource", "changedBinding", {
 							viewNameId: sViewName
 						});
 						if (callbackFn) {

@@ -3,7 +3,7 @@ sap.ui.define([
 	"sap/ui/Device",
 	"com/evorait/evosuite/evoresource/model/models",
 	"com/evorait/evosuite/evoresource/controller/MessageManager",
-    "sap/ui/model/json/JSONModel"
+	"sap/ui/model/json/JSONModel"
 ], function (UIComponent, Device, models, MessageManager, JSONModel) {
 	"use strict";
 
@@ -39,15 +39,19 @@ sap.ui.define([
 				busy: true,
 				delay: 100,
 				densityClass: this.getContentDensityClass(),
-				isSubPage: false
+				isSubPage: false,
+				gantt: {
+					defaultStartDate: new Date("2022-01-01"),
+					defaultEndDate: new Date("2022-02-28")
+				}
 			}), "viewModel");
 
 			// set the message model with messages from core message manager
 			this.setModel(oCoreMessageManager.getMessageModel(), "coreMessageModel");
-			
+
 			this.MessageManager = new MessageManager();
-            
-            this._getTemplateProps();
+
+			this._getTemplateProps();
 
 			// enable routing
 			this.getRouter().initialize();
