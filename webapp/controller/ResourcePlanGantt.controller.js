@@ -17,6 +17,16 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				onInitializedSmartVariant: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onSearch: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
 				}
 			}
 		},
@@ -35,7 +45,11 @@ sap.ui.define([
 			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions("DAY"));
 
 			//idPageResourcePlanningWrapper
-			this.oOriginData = {};
+			this.oOriginData = {
+				data: {
+					children: []
+				}
+			};
 			this.oPlanningModel = models.createHelperModel(deepClone(this.oOriginData));
 			this.getView().setModel(this.oPlanningModel, "ganttPlanningModel");
 		},
@@ -60,7 +74,7 @@ sap.ui.define([
 		 * @param {object} oEvent - change event of filterbar
 		 */
 		onInitializedSmartVariant: function (oEvent) {
-			this._getResourceData();
+			this._loadGanttData();
 		},
 
 		/**
@@ -68,7 +82,7 @@ sap.ui.define([
 		 * @param {object} oEvent - change event of filterbar
 		 */
 		onSearch: function () {
-			this._getResourceData();
+			this._loadGanttData();
 		},
 
 		/* =========================================================== */
@@ -76,17 +90,92 @@ sap.ui.define([
 		/* =========================================================== */
 
 		/**
+		 * Load the tree data and process the data to create assignments as child nodes
+		 * 
+		 */
+		_loadGanttData: function () {
+			this._getResourceData(0)
+				//.then(this._getResourceData.bind(this))
+				.then(function () {
+					this.oOriginData = deepClone(this.oPlanningModel.getProperty("/data"));
+				}.bind(this));
+		},
+
+		/**
 		 * get all filters from SmartFilterbar and read data with filters
 		 * set result with deepClone to Json Model
 		 */
-		_getResourceData: function () {
-			var oFilterBar = this.getView().byId("idPageResourcePlanningSmartFilterBar"),
-				sUri = "/" + this.getModel("templateProperties").getProperty("/ganttConfigs/entitySet");
+		_getResourceData: function (iLevel) {
+			return new Promise(function (resolve) {
+				var oFilterBar = this.getView().byId("idPageResourcePlanningSmartFilterBar"),
+					sUri = "/" + this.getModel("templateProperties").getProperty("/ganttConfigs/entitySet");
 
-			//sUri, aFilters, mUrlParams
-			this.getOwnerComponent().readData(sUri, oFilterBar.getFilters(), null).then(function (aResult) {
-				console.log(aResult);
-			});
+				//sUri, aFilters, mUrlParams
+				this.getOwnerComponent().readData(sUri, oFilterBar.getFilters(), null).then(function (oResult) {
+					if (iLevel > 0) {
+						this._addChildrenToParent(iLevel, oResult.results);
+					} else {
+						this.oPlanningModel.setProperty("/data/children", oResult.results);
+					}
+					resolve(iLevel + 1);
+				}.bind(this));
+			}.bind(this));
+		},
+
+		/**
+		 * when data was loaded then children needs added to right parent node
+		 * @param iLevel
+		 * @param oResData
+		 */
+		_addChildrenToParent: function (iLevel, oResData) {
+			var aChildren = this.oPlanningModel.getProperty("/data/children");
+			var callbackFn = function (oItem) {
+				oItem.children = [];
+				console.log(oItem);
+				oResData.forEach(function (oResItem) {
+					console.log(oResItem);
+					if (oItem.NodeId === oResItem.ParentNodeId) {
+						//add assignments as children in tree for expanding
+						/*if (oResItem.AssignmentSet && oResItem.AssignmentSet.results.length > 0) {
+							oResItem.children = oResItem.AssignmentSet.results;
+							oResItem.children.forEach(function (oAssignItem, idx) {
+								oResItem.AssignmentSet.results[idx].NodeType = "ASSIGNMENT";
+								var clonedObj = deepClone(oResItem.AssignmentSet.results[idx]);
+								oResItem.children[idx].AssignmentSet = {
+									results: [clonedObj]
+								};
+							});
+						}*/
+						oItem.children.push(oResItem);
+					}
+				});
+			};
+			aChildren = this._recurseChildren2Level(aChildren, iLevel, callbackFn);
+			this.oPlanningModel.setProperty("/data/children", aChildren);
+		},
+
+		/**
+		 * loop trough all nested array of children
+		 * When max level for search was reached execute callbackFn
+		 * @param aChildren
+		 * @param iMaxLevel
+		 * @param callbackFn
+		 */
+		_recurseChildren2Level: function (aChildren, iMaxLevel, callbackFn) {
+			function recurse(aItems, level) {
+				for (var i = 0; i < aItems.length; i++) {
+					var aChilds = aItems[i].children;
+					if (level === (iMaxLevel - 1)) {
+						if (callbackFn) {
+							callbackFn(aItems[i]);
+						}
+					} else if (aChilds && aChilds.length > 0) {
+						recurse(aChilds, level + 1);
+					}
+				}
+			}
+			recurse(aChildren, 0);
+			return aChildren;
 		}
 	});
 });

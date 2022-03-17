@@ -23,10 +23,12 @@
 								<simple:toolbar>
 									<simple:ContainerToolbar alignCustomContentToRight="true" showTimeZoomControl="true" zoomControlType="None" showLegendButton="true">
 										<simple:content>
+											<core:ExtensionPoint name="GanttExtP|ResourcePlanGantt|GanttHierarchySet|ContainerToolbar|Before"/>
 											<Button id="idResourcePlanBtnSave" text="Save" icon="sap-icon://save" type="Emphasized" press="onPressSave"/>
 											<Button id="idResourcePlanBtnCancel" text="Reset" icon="sap-icon://cancel" press="onPressCancel"/>
 											<Text text="|"/>
 											<Button id="idResourcePlanBtnToday" text="Today" press="onPressToday"/>
+											<core:ExtensionPoint name="GanttExtP|ResourcePlanGantt|GanttHierarchySet|ContainerToolbar|After"/>
 										</simple:content>
 									</simple:ContainerToolbar>
 								</simple:toolbar>
@@ -43,7 +45,7 @@
 										<table:TreeTable id="idResourcePlanGanttTreeTable" selectionMode="Single" visibleRowCountMode="Auto" rowActionCount="2" threshold="10"
 											enableColumnReordering="false" enableBusyIndicator="true" busyStateChanged="onBusyStateChanged" enableCellFilter="false"
 											columnHeaderVisible="false" selectionBehavior="RowOnly"
-											rows="{path: 'Resources>/root', parameters: { arrayNames: ['children'], numberOfExpandedLevels: 1 } }">
+											rows="{path: 'ganttPlanningModel>/data', parameters: { arrayNames: ['children'], numberOfExpandedLevels: 1, groupId: 'GanttTree'} }">
 											<table:extension>
 												<OverflowToolbar id="idResourcePlanGanttToolbar">
 													<content>
@@ -64,16 +66,15 @@
 											</table:extension>
 											<table:columns>
 												<template:repeat list="{path:'tempProps>ganttConfigs/lineItems/'}" var="lineItem">
-													<table:Column
-														label="{= '{/' + ${ganttConfigs>entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
-														template="Resources>text"/>
+													<table:Column sortProperty="{:= ${lineItem>Value/Path}}" filterProperty="{:= ${lineItem>Value/Path}}">
+														<Text text="{:= '{/' + ${ganttConfigs>entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"/>
+														<table:template>
+															<Label text="{ganttPlanningModel>Description}"/>
+														</table:template>
+													</table:Column>
 												</template:repeat>
 											</table:columns>
-											<table:rowActionTemplate>
-												<table:RowAction>
-													<table:items></table:items>
-												</table:RowAction>
-											</table:rowActionTemplate>
+											<table:rowActionTemplate></table:rowActionTemplate>
 											<table:rowSettingsTemplate></table:rowSettingsTemplate>
 										</table:TreeTable>
 									</simple:table>

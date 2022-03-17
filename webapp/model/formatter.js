@@ -5,7 +5,7 @@ sap.ui.define([
 
 	var TimeUnit = GanttLibrary.config.TimeUnit;
 	var oTimeLineOptions = {
-		DAY: {
+		"OneDay": {
 			innerInterval: {
 				unit: TimeUnit.day,
 				span: 1,
@@ -22,7 +22,7 @@ sap.ui.define([
 				pattern: "EEE dd"
 			}
 		},
-		WEEK: {
+		"OneWeek": {
 			innerInterval: {
 				unit: TimeUnit.week,
 				span: 1,
@@ -39,7 +39,7 @@ sap.ui.define([
 				pattern: "ww"
 			}
 		},
-		MONTH: {
+		"OneMonth": {
 			innerInterval: {
 				unit: TimeUnit.month,
 				span: 1,
@@ -66,7 +66,14 @@ sap.ui.define([
 		 * @returns {object} Zoom time interval for Gantt
 		 */
 		getTimeLineOptions: function (sKey) {
-			return oTimeLineOptions[sKey] || oTimeLineOptions;
+			if (sKey === "DAY") {
+				return oTimeLineOptions["OneDay"];
+			} else if (sKey === "WEEK") {
+				return oTimeLineOptions["OneWeek"];
+			} else if (sKey === "MONTH") {
+				return oTimeLineOptions["OneMonth"];
+			}
+			return oTimeLineOptions;
 		}
 	};
 
