@@ -1,6 +1,6 @@
 {
 	"GanttConfigs": {
 		"tab": "Gantt",
-		"entitySet": "GanttSet"
+		"entitySet": "GanttResourceHierarchySetarchySet"
 	}
 }

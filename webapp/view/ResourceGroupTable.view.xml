@@ -5,7 +5,7 @@
 		<f:DynamicPage id="iResourceGroupDynamicPage" headerExpanded="true" fitContent="true" preserveHeaderStateOnScroll="true"
 			toggleHeaderOnTitleClick="false" class="sapUiNoContentPadding">
 			<f:header>
-				<f:DynamicPageHeader id="idResourceGroupHeader" pinnable="true" class="sapUiNoContentPadding" fitContent="true">
+				<f:DynamicPageHeader id="idResourceGroupHeader" pinnable="true" class="sapUiNoContentPadding">
 					<f:content>
 						<smartFilterBar:SmartFilterBar id="idResourceGroupFilter" persistencyKey="com.evorait.evosuite.evoresource.ResourceGroupFilterbar"
 							entitySet="ResourceGroupSet" showClearButton="true" showGoOnFB="false" enableBasicSearch="true" useToolbar="true"

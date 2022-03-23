@@ -1,17 +1,17 @@
 {
 	"d": {
 		"results": [{
-			"ObjectKey":"001",
+			"Guid": "0AA10FE57E901ED9B7D4E42EF916BB5F",
 			"UnitID": "Evora DE",
-			"GroupName": "Amber Cluster"
-		},{
-			"ObjectKey":"002",
+			"Description": "Amber Cluster"
+		}, {
+			"Guid": "0AA10FE57E901EEC87A3C340ABA18D53",
 			"UnitID": "Evora IN",
-			"GroupName": "Product Cluster"
-		},{
-			"ObjectKey":"003",
+			"Description": "Product Cluster"
+		}, {
+			"Guid": "0AA10FE57E901EEC87A3B896245A4D47",
 			"UnitID": "Evora AT",
-			"GroupName": "Royal Cluster"
+			"Description": "Royal Cluster"
 		}]
 	}
 }

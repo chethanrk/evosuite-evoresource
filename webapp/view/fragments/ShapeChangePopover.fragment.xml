@@ -1,0 +1,32 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<Popover class="sapUiContentPadding" showHeader="false" placement="Right">
+		<content>
+			<VBox width="100%">
+				<Label text="Type:"/>
+				<Select class="sapUiSmallMarginBottom" forceSelection="true" selectedKey="{ganttPlanningModel>/tempData/popover/AssignmentType}"
+					editable="false">
+					<core:Item key="GROUP" text="Group"/>
+				</Select>
+			</VBox>
+			<VBox width="100%">
+				<Label text="Select:"/>
+				<ComboBox showSecondaryValues="true" items="{ path: '/ResourceGroupSet', sorter: { path: 'Description' } }"
+					selectedKey="{ganttPlanningModel>/tempData/popover/ResourceGroupGuid}" class="sapUiSmallMarginBottom">
+					<core:ListItem key="{Guid}" text="{Description}" additionalText="{UnitID}"/>
+				</ComboBox>
+			</VBox>
+			<VBox width="100%">
+				<Label text="Date from/to:"/>
+				<DateRangeSelection class="sapUiSmallMarginBottom" dateValue="{path:'ganttPlanningModel>/tempData/popover/DateFrom'}"
+					secondDateValue="{path:'ganttPlanningModel>/tempData/popover/DateTo'}" minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}"/>
+			</VBox>
+		</content>
+		<footer>
+			<OverflowToolbar>
+				<Button text="Delete" press="onPressDeleteAssignment" visible="true"/>
+				<ToolbarSpacer/>
+				<Button text="OK" press="onPressSaveAssignment"/>
+			</OverflowToolbar>
+		</footer>
+	</Popover>
+</core:FragmentDefinition>

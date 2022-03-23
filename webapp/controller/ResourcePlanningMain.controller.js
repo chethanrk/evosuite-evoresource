@@ -27,7 +27,7 @@ sap.ui.define([
 				this.getOwnerComponent().oTemplatePropsProm.then(function () {
 					if (sRouteName === "ResourcePlanning") {
 						sViewName = "com.evorait.evosuite.evoresource.view.templates.ResourcePlanGantt#ResourceGantt";
-						sEntitySet = "GanttHierarchySet";
+						sEntitySet = "GanttResourceHierarchySet";
 						//get annotation line items
 						this._getLineItems(sEntitySet);
 						this._onRouteMatched(oEvent, sViewName, sEntitySet);
