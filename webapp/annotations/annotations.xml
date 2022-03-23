@@ -8,15 +8,15 @@
 	<edmx:Reference Uri="http://docs.oasis-open.org/odata/odata/v4.0/cs01/vocabularies/Org.OData.Timeline.V1.xml">
 		<edmx:Include Alias="Timeline" Namespace="com.sap.vocabularies.Timeline.v1"/>
 	</edmx:Reference>
-	<edmx:Reference Uri="/sap/opu/odata/EVORA/EOR_MAIN_SRV/$metadata">
-		<edmx:Include Alias="Metadata" Namespace="com.evorait.evoorderrelate"/>
+	<edmx:Reference Uri="/sap/opu/odata/EVORA/ER_MAIN_SRV/$metadata">
+		<edmx:Include Alias="Metadata" Namespace="com.evorait.evoresourc"/>
 	</edmx:Reference>
 	<edmx:DataServices>
-		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.evorait.evoorderrelate">
-			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoorderrelate.GanttHierarchy/Description">
+		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.evorait.evoresourc">
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.GanttResourceHierarchy/Description">
 				<Annotation Term="com.sap.vocabularies.Common.v1.Label" String="Description"/>
 			</Annotations>
-			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoorderrelate.GanttHierarchy/Mode">
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.GanttResourceHierarchy/Mode">
 				<Annotation Term="com.sap.vocabularies.Common.v1.ValueList">
 					<Record Type="com.sap.vocabularies.Common.v1.ValueListType">
 						<PropertyValue Property="CollectionPath" String="GanttViewSet"/>
@@ -36,7 +36,7 @@
 					</Record>
 				</Annotation>
 			</Annotations>
-			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoorderrelate.GanttHierarchy">
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.GanttResourceHierarchy">
 				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
 					<Collection>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
@@ -47,20 +47,11 @@
 				</Annotation>
 				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
 					<Collection>
-						<PropertyPath>DateFrom</PropertyPath>
-						<PropertyPath>DateTo</PropertyPath>
+						<PropertyPath>StartDate</PropertyPath>
 						<PropertyPath>Mode</PropertyPath>
-						<PropertyPath>Resource</PropertyPath>
-						<PropertyPath>ResourceGroup</PropertyPath>
+						<PropertyPath>ResourceGuid</PropertyPath>
+						<PropertyPath>ResourceGroupGuid</PropertyPath>
 						<PropertyPath>ResourceGroupUnitId</PropertyPath>
-					</Collection>
-				</Annotation>
-				<Annotation Term="com.sap.vocabularies.Common.v1.FilterExpressionRestrictions">
-					<Collection>
-						<Record>
-							<PropertyValue Property="Property" PropertyPath="Mode"/>
-							<PropertyValue Property="AllowedExpressions" EnumMember="com.sap.vocabularies.Common.v1.FilterExpressionType/SingleValue"/>
-						</Record>
 					</Collection>
 				</Annotation>
 			</Annotations>

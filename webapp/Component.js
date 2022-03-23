@@ -41,8 +41,8 @@ sap.ui.define([
 				densityClass: this.getContentDensityClass(),
 				isSubPage: false,
 				gantt: {
-					defaultStartDate: new Date("2022-01-01"),
-					defaultEndDate: new Date("2022-02-28")
+					defaultStartDate: moment().startOf("week").toDate(),
+					defaultEndDate: moment().endOf("month").add(1, "months").toDate()
 				}
 			}), "viewModel");
 

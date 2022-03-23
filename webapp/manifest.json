@@ -15,7 +15,7 @@
 		},
 		"dataSources": {
 			"mainService": {
-				"uri": "/sap/opu/odata/EVORA/EOR_MAIN_SRV/",
+				"uri": "/sap/opu/odata/EVORA/ER_MAIN_SRV/",
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0",
@@ -92,6 +92,11 @@
 			"css": [
 				{
 					"uri": "assets/css/style.css"
+				}
+			],
+			"js": [
+				{
+					"uri": "assets/js/moment-with-locales.min.js"
 				}
 			]
 		},
