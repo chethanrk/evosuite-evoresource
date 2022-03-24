@@ -1,7 +1,7 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar">
-	<smartFilterBar:SmartFilterBar id="idPageResourcePlanningSmartFilterBar" entitySet="GanttResourceHierarchySetarchySet"
-		useDateRangeType="true" persistencyKey="com.evorait.evosuite.evoresource.GanttFilterbar" initialized="onInitializedSmartVariant"
-		search="onSearch">
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<smartFilterBar:SmartFilterBar id="idPageResourcePlanningSmartFilterBar" entitySet="GanttResourceHierarchySet" useDateRangeType="true"
+		persistencyKey="com.evorait.evosuite.evoresource.GanttFilterbar" initialized="onInitializedSmartVariant" search="onSearch">
 		<!-- layout data used to make the table growing but the filter bar fixed -->
 		<smartFilterBar:layoutData>
 			<FlexItemData shrinkFactor="0"/>
@@ -13,11 +13,16 @@
 						secondDateValue="{viewModel>/gantt/defaultEndDate}" enabled="true"/>
 				</smartFilterBar:customControl>
 			</smartFilterBar:ControlConfiguration>
-			<smartFilterBar:ControlConfiguration mandatory="mandatory" key="Mode" groupId="_BASIC">
+			<smartFilterBar:ControlConfiguration mandatory="mandatory" key="Mode" label="Mode" groupId="_BASIC" visibleInAdvancedArea="true">
 				<smartFilterBar:customControl>
-					<Select id="idFilterGanttPlanningMode" forceSelection="true" change="onChangeTimeMode"
-						items="{ path: '/GanttViewSet', sorter: { path: 'Key' } }">
-						<core:Item key="{Key}" text="{Description}"/>
+					<!--<Select id="idFilterGanttPlanningMode" customData:hasValue="true" forceSelection="true" change="onChangeTimeMode"
+						items="{path: 'templateProperties>/GanttViewSet'}">
+						<core:Item key="{templateProperties>Key}" text="{templateProperties>Description}"/>
+					</Select>-->
+					<Select id="idFilterGanttPlanningMode" customData:hasValue="true" forceSelection="true" change="onChangeTimeMode">
+						<core:Item key="DAY" text="Daily"/>
+						<core:Item key="WEEK" text="Weekly"/>
+						<core:Item key="MONTH" text="Monthly"/>
 					</Select>
 				</smartFilterBar:customControl>
 			</smartFilterBar:ControlConfiguration>

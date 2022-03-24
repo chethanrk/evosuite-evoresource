@@ -32,6 +32,31 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
+				},
+				onShapePress: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onPressSave: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onPressCancel: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onPressChangeAssignment: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onPressDeleteAssignment: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
 				}
 			}
 		},
@@ -56,7 +81,8 @@ sap.ui.define([
 				data: {
 					children: []
 				},
-				tempData: {}
+				tempData: {},
+				changedData: {}
 			};
 			this.oPlanningModel = models.createHelperModel(deepClone(this.oOriginData));
 			this.getView().setModel(this.oPlanningModel, "ganttPlanningModel");
@@ -101,7 +127,6 @@ sap.ui.define([
 				startTime: oStartDate,
 				endTime: oEndDate
 			}));
-
 			this._loadGanttData();
 		},
 
@@ -131,7 +156,6 @@ sap.ui.define([
 							this._removeNewAssignmentShape(oData);
 							this.oPlanningModel.setProperty("/tempData/popover", {});
 						}.bind(this));
-
 					}.bind(this));
 				} else {
 					this._oPlanningPopover.openBy(mParams.shape);
@@ -145,15 +169,26 @@ sap.ui.define([
 		/**
 		 * @param {object} oEvent -
 		 */
-		onPressSaveAssignment: function (oEvent) {
+		onPressSave: function () {},
 
+		/**
+		 * @param {object} oEvent -
+		 */
+		onPressCancel: function () {},
+
+		/**
+		 * @param {object} oEvent -
+		 */
+		onPressChangeAssignment: function (oEvent) {
+			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", false);
+			this._oPlanningPopover.close();
 		},
 
 		/**
 		 * @param {object} oEvent -
 		 */
 		onPressDeleteAssignment: function (oEvent) {
-
+			this._oPlanningPopover.close();
 		},
 
 		/* =========================================================== */
@@ -185,14 +220,14 @@ sap.ui.define([
 				var oFilterBar = this.getView().byId("idPageResourcePlanningSmartFilterBar"),
 					oDateRangePicker = this.getView().byId("idFilterGanttPlanningDateRange"),
 					aFilters = oFilterBar.getFilters(),
-					sUri = "/" + this.getModel("templateProperties").getProperty("/ganttConfigs/entitySet"),
+					sUri = "/GanttResourceHierarchySet",
 					mParams = {
 						//"$expand": "AssignmentSet"
 					};
 
 				aFilters.push(new Filter("HierarchyLevel", FilterOperator.EQ, iLevel));
-				aFilters.push(new Filter("StartDate", FilterOperator.LE, formatter.date(oDateRangePicker.getDateValue())));
-				aFilters.push(new Filter("EndDate", FilterOperator.GE, formatter.date(oDateRangePicker.getSecondDateValue())));
+				aFilters.push(new Filter("StartDate", FilterOperator.GE, formatter.date(oDateRangePicker.getDateValue())));
+				aFilters.push(new Filter("EndDate", FilterOperator.LE, formatter.date(oDateRangePicker.getSecondDateValue())));
 
 				//sUri, aFilters, mUrlParams
 				this.getOwnerComponent().readData(sUri, aFilters, mParams).then(function (oResult) {
@@ -288,6 +323,7 @@ sap.ui.define([
 			if (oShape.sParentAggregationName === "shapes1") {
 				//its background shape
 				this.createNewTempAssignment(sStartTime, sEndTime, oRowData).then(function (oData) {
+					console.log(oData);
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					this._addNewAssignmentShape(oData);
 				}.bind(this));
@@ -301,7 +337,7 @@ sap.ui.define([
 		 * add a freshly created assignment to json model into Gantt Chart
 		 * @param {object} oAssignData - object of assignment based on entityType of assignment 
 		 */
-		_addRemoveNewAssignmentShape: function (oAssignData) {
+		_addNewAssignmentShape: function (oAssignData) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			var callbackFn = function (oItem, oData, idx) {
 				if (!oItem.AssignmentSet) {
@@ -326,8 +362,12 @@ sap.ui.define([
 		 * @param {object} oAssignData - object of assignment based on entityType of assignment 
 		 * //todo
 		 */
-		_removeNewAssignmentShape: function (oAssignData) {
+		_removeNewAssignmentShape: function (oAssignData, removeNew) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
+			if (!oAssignData.isTemporary && !removeNew) {
+				return;
+			}
+			console.log(oAssignData);
 			var callbackFn = function (oItem, oData, idx) {
 				if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid && !oItem.ResourceGroupGuid) {
 					//remove to resource itself

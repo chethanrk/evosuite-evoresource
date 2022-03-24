@@ -210,14 +210,15 @@ sap.ui.define([
 				var obj = {
 					minDate: new Date(),
 					isTemporary: true,
+					isNew: true,
 					Guid: new Date().getTime()
 				};
 				//collect all assignment properties who allowed for create
 				this.getModel().getMetaModel().loaded().then(function () {
 					var oMetaModel = this.getModel().getMetaModel(),
 						oEntitySet = oMetaModel.getODataEntitySet("AssignmentSet"),
-						oEntityType = oMetaModel.getODataEntityType(oEntitySet.entityType),
-						aProperty = oEntityType.property;
+						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+						aProperty = oEntityType ? oEntityType.property : [];
 
 					aProperty.forEach(function (property) {
 						var isCreatable = property["sap:creatable"];
@@ -234,6 +235,7 @@ sap.ui.define([
 					obj.AssignmentType = "GROUP";
 					obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
 					obj.ResourceGuid = oRowData.ResourceGuid;
+					obj.Description = "blub";
 					resolve(obj);
 				}.bind(this));
 			}.bind(this));

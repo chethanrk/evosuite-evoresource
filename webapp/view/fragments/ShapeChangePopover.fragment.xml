@@ -1,32 +1,32 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
-	<Popover class="sapUiContentPadding" showHeader="false" placement="Right">
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
+	<ResponsivePopover id="isPopoverChangeSHape" class="sapUiContentPadding" showHeader="false" placement="Right">
 		<content>
-			<VBox width="100%">
-				<Label text="Type:"/>
-				<Select class="sapUiSmallMarginBottom" forceSelection="true" selectedKey="{ganttPlanningModel>/tempData/popover/AssignmentType}"
-					editable="false">
-					<core:Item key="GROUP" text="Group"/>
-				</Select>
-			</VBox>
-			<VBox width="100%">
-				<Label text="Select:"/>
-				<ComboBox showSecondaryValues="true" items="{ path: '/ResourceGroupSet', sorter: { path: 'Description' } }"
-					selectedKey="{ganttPlanningModel>/tempData/popover/ResourceGroupGuid}" class="sapUiSmallMarginBottom">
-					<core:ListItem key="{Guid}" text="{Description}" additionalText="{UnitID}"/>
-				</ComboBox>
-			</VBox>
-			<VBox width="100%">
-				<Label text="Date from/to:"/>
-				<DateRangeSelection class="sapUiSmallMarginBottom" dateValue="{path:'ganttPlanningModel>/tempData/popover/DateFrom'}"
-					secondDateValue="{path:'ganttPlanningModel>/tempData/popover/DateTo'}" minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}"/>
-			</VBox>
+			<f:SimpleForm id="idFormChangeShape" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3"
+				labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
+				singleContainerFullSize="true">
+				<f:content>
+					<Label text="Type:"/>
+					<Select forceSelection="true" selectedKey="{ganttPlanningModel>/tempData/popover/AssignmentType}" editable="false">
+						<core:Item key="GROUP" text="Group"/>
+					</Select>
+					<Label text="Select:" required="true"/>
+					<ComboBox required="true" showSecondaryValues="true" name="ResourceGroupGuid" fieldGroupIds="changeShapeInput"
+						items="{ path: '/ResourceGroupSet', sorter: { path: 'Description' } }"
+						selectedKey="{ganttPlanningModel>/tempData/popover/ResourceGroupGuid}">
+						<core:ListItem key="{Guid}" text="{Description}" additionalText="{UnitID}"/>
+					</ComboBox>
+					<Label text="Date from/to:" required="true"/>
+					<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput"
+						dateValue="{path:'ganttPlanningModel>/tempData/popover/DateFrom'}" secondDateValue="{path:'ganttPlanningModel>/tempData/popover/DateTo'}"
+						minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}"/>
+				</f:content>
+			</f:SimpleForm>
 		</content>
-		<footer>
-			<OverflowToolbar>
-				<Button text="Delete" press="onPressDeleteAssignment" visible="true"/>
-				<ToolbarSpacer/>
-				<Button text="OK" press="onPressSaveAssignment"/>
-			</OverflowToolbar>
-		</footer>
-	</Popover>
+		<beginButton>
+			<Button text="Delete" press="onPressDeleteAssignment" visible="true"/>
+		</beginButton>
+		<endButton>
+			<Button type="Emphasized" text="OK" press="onPressChangeAssignment"/>
+		</endButton>
+	</ResponsivePopover>
 </core:FragmentDefinition>
