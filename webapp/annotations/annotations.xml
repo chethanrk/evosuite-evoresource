@@ -16,26 +16,6 @@
 			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.GanttResourceHierarchy/Description">
 				<Annotation Term="com.sap.vocabularies.Common.v1.Label" String="Description"/>
 			</Annotations>
-			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.GanttResourceHierarchy/Mode">
-				<Annotation Term="com.sap.vocabularies.Common.v1.ValueList">
-					<Record Type="com.sap.vocabularies.Common.v1.ValueListType">
-						<PropertyValue Property="CollectionPath" String="GanttViewSet"/>
-						<PropertyValue Property="CollectionRoot" String=""/>
-						<PropertyValue Property="SearchSupported" Bool="false"/>
-						<PropertyValue Property="Parameters">
-							<Collection>
-								<Record Type="com.sap.vocabularies.Common.v1.ValueListParameterInOut">
-									<PropertyValue Property="LocalDataProperty" PropertyPath="Mode"/>
-									<PropertyValue Property="ValueListProperty" String="Key"/>
-								</Record>
-								<Record Type="com.sap.vocabularies.Common.v1.ValueListParameterDisplayOnly">
-									<PropertyValue Property="ValueListProperty" String="Description"/>
-								</Record>
-							</Collection>
-						</PropertyValue>
-					</Record>
-				</Annotation>
-			</Annotations>
 			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.GanttResourceHierarchy">
 				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
 					<Collection>
@@ -46,7 +26,7 @@
 					</Collection>
 				</Annotation>
 			</Annotations>
-			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.ResourceGroup">
+			<!--<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.ResourceGroup">
 				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
 					<Collection>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
@@ -61,11 +41,11 @@
 				</Annotation>
 				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
 					<Collection>
-						<PropertyPath>ResourceGroupGuid</PropertyPath>
-						<PropertyPath>ResourceGroupUnitId</PropertyPath>
+						<PropertyPath>ResourceGroupDesc</PropertyPath>
+						<PropertyPath>ResourceGroupUnitDesc</PropertyPath>
 					</Collection>
 				</Annotation>
-			</Annotations>
+			</Annotations>-->
 		</Schema>
 	</edmx:DataServices>
 </edmx:Edmx>

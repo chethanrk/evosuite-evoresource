@@ -33,7 +33,7 @@ sap.ui.define([
 			this.setModel(models.createDeviceModel(), "device");
 
 			this.setModel(models.createInformationModel(this), "InformationModel");
-			
+
 			// set the user model for System Information
 			this.setModel(models.createUserModel(), "user");
 
@@ -57,9 +57,13 @@ sap.ui.define([
 			this.MessageManager = new MessageManager();
 
 			this._getTemplateProps();
-			
+
 			// get System Information
 			this._getSystemInformation();
+			this.oSystemInfoProm.then(function (oResult) {
+				//this.getModel("viewModel").setProperty("/gantt/defaultStartDate", oResult.DEFAULT_GANTT_START_DATE);
+				//this.getModel("viewModel").setProperty("/gantt/defaultEndDate", oResult.DEFAULT_GANTT_END_DATE);
+			}.bind(this));
 
 			// enable routing
 			this.getRouter().initialize();
@@ -151,6 +155,7 @@ sap.ui.define([
 			this.oSystemInfoProm = new Promise(function (resolve) {
 				this.readData("/SystemInformationSet", []).then(function (oData) {
 					this.getModel("user").setData(oData.results[0]);
+					console.log(oData.results[0])
 					resolve(oData.results[0]);
 				}.bind(this));
 			}.bind(this));
