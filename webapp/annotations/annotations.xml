@@ -45,15 +45,6 @@
 						</Record>
 					</Collection>
 				</Annotation>
-				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
-					<Collection>
-						<PropertyPath>StartDate</PropertyPath>
-						<PropertyPath>Mode</PropertyPath>
-						<PropertyPath>ResourceGuid</PropertyPath>
-						<PropertyPath>ResourceGroupGuid</PropertyPath>
-						<PropertyPath>ResourceGroupUnitId</PropertyPath>
-					</Collection>
-				</Annotation>
 			</Annotations>
 			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.ResourceGroup">
 				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">

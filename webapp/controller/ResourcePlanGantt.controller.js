@@ -114,6 +114,14 @@ sap.ui.define([
 			this._loadGanttData();
 		},
 
+		onVisibleHorizonUpdate: function (oEvent) {
+			var mParams = oEvent.getParameters(),
+				sStartTime = mParams.currentVisibleHorizon.getStartTime(),
+				sEndTime = mParams.currentVisibleHorizon.getEndTime();
+
+			console.log(sStartTime, sEndTime);
+		},
+
 		/**
 		 * When Go button in filterbar was pressed then get all filters and send backend request
 		 * @param {object} oEvent - change event of filterbar
@@ -139,6 +147,8 @@ sap.ui.define([
 		 */
 		onShapePress: function (oEvent) {
 			var mParams = oEvent.getParameters();
+			console.log(oEvent);
+			console.log(mParams);
 			//validate if shape is in future or current date
 			if (mParams.shape && this._sGanttViewMode.isFuture(mParams.shape.getTime())) {
 				// create popover

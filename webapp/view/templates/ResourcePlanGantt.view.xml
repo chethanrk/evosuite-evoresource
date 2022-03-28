@@ -38,7 +38,7 @@
 								</gnt2:toolbar>
 								<gnt2:GanttChartWithTable id="idResourcePlanGanttChartTable" shapeSelectionMode="Single" shapePress="onShapePress" ghostAlignment="Start"
 									adhocLineLayer="Bottom" nowLineInUTC="false" shapeMouseEnter="onShapeMouseEnter"
-									shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}">
+									shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}" visibleHorizonUpdate="onVisibleHorizonUpdate">
 									<gnt2:axisTimeStrategy>
 										<axistime:StepwiseZoomStrategy id="idResourcePlanGanttZoom" zoomLevels="3">
 											<axistime:totalHorizon>
