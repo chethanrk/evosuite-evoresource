@@ -198,6 +198,42 @@ sap.ui.define([
 		},
 
 		/**
+		 * loops all children inside ganttPlanningModelfor a special property key and its value
+		 * return objct data and path of found object or null when nothign was found
+		 * 
+		 * @param {string} sProperty - property key of search in object
+		 * @param {string} sValue - property value of search in object
+		 * @param {string} sPath - given path withing ganttPlanningModel default is '/data/children'
+		 * @returns Object - {sPath, oData}
+		 */
+		_getChildDataByKey: function (sProperty, sValue, sPath) {
+			sPath = sPath || "/data/children";
+			var aChildren = this.getModel("ganttPlanningModel").getProperty(sPath),
+				sNewObj = null;
+
+			for (var i = 0; i < aChildren.length; i++) {
+				if (aChildren[i][sProperty] === sValue) {
+					sPath += "/" + i;
+					return {
+						sPath: sPath,
+						oData: aChildren[i]
+					};
+				} else if (aChildren[i].AssignmentSet && aChildren[i].AssignmentSet.results.length > 0) {
+					//search in assignments
+					sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/AssignmentSet/results");
+					if (sNewObj) {
+						return sNewObj;
+					} else if (aChildren[i].children && aChildren[i].children.length > 0) {
+						//search in other children
+						sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/children");
+						return sNewObj;
+					}
+				}
+			}
+			return sNewObj;
+		},
+
+		/**
 		 * when background shape was pressed create temporary assignment
 		 * for shape popover input fields and visibility inside Gantt chart
 		 * 
@@ -210,14 +246,15 @@ sap.ui.define([
 				var obj = {
 					minDate: new Date(),
 					isTemporary: true,
+					isNew: true,
 					Guid: new Date().getTime()
 				};
 				//collect all assignment properties who allowed for create
 				this.getModel().getMetaModel().loaded().then(function () {
 					var oMetaModel = this.getModel().getMetaModel(),
 						oEntitySet = oMetaModel.getODataEntitySet("AssignmentSet"),
-						oEntityType = oMetaModel.getODataEntityType(oEntitySet.entityType),
-						aProperty = oEntityType.property;
+						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+						aProperty = oEntityType ? oEntityType.property : [];
 
 					aProperty.forEach(function (property) {
 						var isCreatable = property["sap:creatable"];
@@ -234,6 +271,7 @@ sap.ui.define([
 					obj.AssignmentType = "GROUP";
 					obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
 					obj.ResourceGuid = oRowData.ResourceGuid;
+					obj.Description = oRowData.Description;
 					resolve(obj);
 				}.bind(this));
 			}.bind(this));

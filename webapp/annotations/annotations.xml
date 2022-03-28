@@ -55,6 +55,26 @@
 					</Collection>
 				</Annotation>
 			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.ResourceGroup">
+				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
+					<Collection>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="ResourceGroupGuid"/>
+							<PropertyValue Property="Position" Int="1"/>
+						</Record>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="ResourceGroupUnitId"/>
+							<PropertyValue Property="Position" Int="2"/>
+						</Record>
+					</Collection>
+				</Annotation>
+				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
+					<Collection>
+						<PropertyPath>ResourceGroupGuid</PropertyPath>
+						<PropertyPath>ResourceGroupUnitId</PropertyPath>
+					</Collection>
+				</Annotation>
+			</Annotations>
 		</Schema>
 	</edmx:DataServices>
 </edmx:Edmx>
