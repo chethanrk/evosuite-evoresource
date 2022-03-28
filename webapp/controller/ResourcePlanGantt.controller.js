@@ -88,6 +88,10 @@ sap.ui.define([
 			};
 			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
 			this.oPlanningModel.setData(deepClone(this.oOriginData));
+
+			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
+				this._setNewHorizon(oResult.DEFAULT_GANTT_START_DATE, oResult.DEFAULT_GANTT_END_DATE);
+			}.bind(this));
 		},
 
 		/* =========================================================== */
@@ -119,7 +123,7 @@ sap.ui.define([
 				sStartTime = mParams.currentVisibleHorizon.getStartTime(),
 				sEndTime = mParams.currentVisibleHorizon.getEndTime();
 
-			console.log(sStartTime, sEndTime);
+			//console.log(sStartTime, sEndTime);
 		},
 
 		/**
@@ -131,12 +135,7 @@ sap.ui.define([
 				oStartDate = oDateRangePicker.getDateValue(),
 				oEndDate = oDateRangePicker.getSecondDateValue();
 
-			this.getModel("viewModel").setProperty("/gantt/defaultStartDate", oStartDate);
-			this.getModel("viewModel").setProperty("/gantt/defaultEndDate", oEndDate);
-			this.oZoomStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
-				startTime: oStartDate,
-				endTime: oEndDate
-			}));
+			this._setNewHorizon(oStartDate, oEndDate);
 			this._loadGanttData();
 		},
 
@@ -147,8 +146,6 @@ sap.ui.define([
 		 */
 		onShapePress: function (oEvent) {
 			var mParams = oEvent.getParameters();
-			console.log(oEvent);
-			console.log(mParams);
 			//validate if shape is in future or current date
 			if (mParams.shape && this._sGanttViewMode.isFuture(mParams.shape.getTime())) {
 				// create popover
