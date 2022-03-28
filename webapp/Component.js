@@ -46,7 +46,8 @@ sap.ui.define([
 				gantt: {
 					defaultStartDate: moment().startOf("week").toDate(),
 					defaultEndDate: moment().endOf("month").add(1, "months").toDate()
-				}
+				},
+				draggedData:null
 			}), "viewModel");
 
 			// set the message model with messages from core message manager

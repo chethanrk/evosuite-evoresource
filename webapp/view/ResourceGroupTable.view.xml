@@ -1,6 +1,6 @@
 <mvc:View controllerName="com.evorait.evosuite.evoresource.controller.ResourceGroupTable" xmlns:core="sap.ui.core"
 	xmlns:mvc="sap.ui.core.mvc" xmlns:f="sap.f" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar" xmlns:smartTable="sap.ui.comp.smarttable"
-	displayBlock="true" xmlns="sap.m" xmlns:smartvariants="sap.ui.comp.smartvariants">
+	displayBlock="true" xmlns="sap.m" xmlns:smartvariants="sap.ui.comp.smartvariants" xmlns:dnd="sap.ui.core.dnd">
 	<Page id="idResourceGroupPage" showHeader="false">
 		<f:DynamicPage id="iResourceGroupDynamicPage" headerExpanded="true" fitContent="true" preserveHeaderStateOnScroll="true"
 			toggleHeaderOnTitleClick="false" class="sapUiNoContentPadding">
@@ -39,6 +39,9 @@
 								</cells>
 							</ColumnListItem>
 						</items>
+						<dragDropConfig>
+							<dnd:DragInfo groupName="resourceGroup" sourceAggregation="items" dragStart="onResourceGroupDragStart" dragEnd="onResourceGroupDragEnd"/>
+						</dragDropConfig>
 					</Table>
 				</smartTable:SmartTable>
 			</f:content>

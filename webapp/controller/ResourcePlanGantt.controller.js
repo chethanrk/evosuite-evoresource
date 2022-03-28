@@ -143,6 +143,18 @@ sap.ui.define([
 		},
 
 		/**
+		 * Called when Resource drop is dropped in Gantt
+		 * @param {object} oEvent
+		 */
+		onResourceGroupDrop: function (oEvent) {
+			//ondrop of the the resourcegroup
+			var oDraggedControl = oEvent.getParameter("droppedControl"),
+				oContext = oDraggedControl.getBindingContext(),
+				oObject = oContext.getObject(),
+				draggedData = this.getView().getModel("viewModel").getProperty("/draggedData");
+		},
+
+		/**
 		 * @param {object} oEvent -
 		 */
 		onPressSaveAssignment: function (oEvent) {

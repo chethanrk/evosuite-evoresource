@@ -94,6 +94,9 @@
 													</gnt2:shapes2>
 												</gnt2:GanttRowSettings>
 											</table:rowSettingsTemplate>
+											<table:dragDropConfig>
+												<dnd:DropInfo targetAggregation="rows" dropPosition="On" drop="onResourceGroupDrop"/>
+											</table:dragDropConfig>
 										</table:TreeTable>
 									</gnt2:table>
 								</gnt2:GanttChartWithTable>
