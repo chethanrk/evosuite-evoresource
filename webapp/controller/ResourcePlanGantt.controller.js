@@ -4,12 +4,13 @@ sap.ui.define([
 	"sap/ui/core/mvc/OverrideExecution",
 	"com/evorait/evosuite/evoresource/model/formatter",
 	"sap/base/util/deepClone",
+	"sap/base/util/deepEqual",
 	"com/evorait/evosuite/evoresource/model/models",
 	"sap/gantt/misc/Format",
 	"sap/ui/core/Fragment",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator"
-], function (BaseController, OverrideExecution, formatter, deepClone, models, Format, Fragment, Filter, FilterOperator) {
+], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Format, Fragment, Filter, FilterOperator) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanGantt", {
@@ -82,10 +83,11 @@ sap.ui.define([
 					children: []
 				},
 				tempData: {},
-				changedData: {}
+				changedData: [],
+				hasChanges: false
 			};
-			this.oPlanningModel = models.createHelperModel(deepClone(this.oOriginData));
-			this.getView().setModel(this.oPlanningModel, "ganttPlanningModel");
+			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
+			this.oPlanningModel.setData(deepClone(this.oOriginData));
 		},
 
 		/* =========================================================== */
@@ -153,7 +155,7 @@ sap.ui.define([
 						//after popover gets closed remove popover data
 						this._oPlanningPopover.attachAfterClose(function () {
 							var oData = this.oPlanningModel.getProperty("/tempData/popover");
-							this._removeNewAssignmentShape(oData);
+							this._removeAssignmentShape(oData);
 							this.oPlanningModel.setProperty("/tempData/popover", {});
 						}.bind(this));
 					}.bind(this));
@@ -177,17 +179,30 @@ sap.ui.define([
 		onPressCancel: function () {},
 
 		/**
-		 * @param {object} oEvent -
+		 * Change of shape assignment
+		 * Todo 
+		 * check if group or date range was changed
+		 * when it was changed send validation request
+		 * 
+		 * @param {object} oEvent - event of OK button press
 		 */
 		onPressChangeAssignment: function (oEvent) {
-			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", false);
+			var oData = this.oPlanningModel.getProperty("/tempData/popover");
+			oData.isTemporary = false;
+			this._markAsPlanningChange(oData, true);
 			this._oPlanningPopover.close();
 		},
 
 		/**
-		 * @param {object} oEvent -
+		 * delete a shape inside Gantt
+		 * user needs confirm deletion and when its not freshly created assignment 
+		 * a validation request is send to backend
+		 * 
+		 * @param {object} oEvent - event of delete button press
 		 */
 		onPressDeleteAssignment: function (oEvent) {
+			//todo show confirm dialog and send validation request
+			this._removeAssignmentShape(this.oPlanningModel.getProperty("/tempData/popover"), true);
 			this._oPlanningPopover.close();
 		},
 
@@ -203,7 +218,7 @@ sap.ui.define([
 			this._getResourceData(0)
 				.then(this._getResourceData.bind(this))
 				.then(function () {
-					this.oOriginData = deepClone(this.oPlanningModel.getProperty("/data"));
+					this.oOriginData = deepClone(this.oPlanningModel.getProperty("/"));
 					this._setBackgroudShapes(this._sGanttViewMode);
 					console.log(this.oOriginData);
 				}.bind(this));
@@ -308,6 +323,31 @@ sap.ui.define([
 		},
 
 		/**
+		 * find path to object data inside gantt planning model
+		 * add or remove this path to array of changedData
+		 * 
+		 * @param {object} oData - object what has changed
+		 * @param {boolean} isNewChange - flag if it needs marked as change or remove from changes
+		 */
+		_markAsPlanningChange: function (oData, isNewChange) {
+			var oFoundData = this._getChildDataByKey("Guid", oData.Guid, null),
+				aChanges = this.oPlanningModel.getProperty("/changedData");
+
+			//object change needs added to "/changedData" array by path
+			if (isNewChange) {
+				if (oFoundData && aChanges.indexOf(oFoundData.sPath) < 0) {
+					aChanges.push(oFoundData.sPath);
+				}
+			} else if (isNewChange === false) {
+				//object change needs removed from "/changedData" array by path
+				if (oFoundData && aChanges.indexOf(oFoundData.sPath) >= 0) {
+					aChanges.splice(aChanges.indexOf(oFoundData.sPath), 1);
+				}
+			}
+			this.oPlanningModel.setProperty("/hasChanges", aChanges.length > 0);
+		},
+
+		/**
 		 * create new temporary assignment when background shape was pressed
 		 * when assignment shape was pressed get assignment data from row
 		 * 
@@ -316,6 +356,7 @@ sap.ui.define([
 		_setPopoverData: function (mParams) {
 			var oShape = mParams.shape,
 				oRowContext = mParams.rowSettings.getParent().getBindingContext("ganttPlanningModel"),
+				oContext = oShape.getBindingContext("ganttPlanningModel"),
 				sStartTime = oShape.getTime(),
 				sEndTime = oShape.getEndTime(),
 				oRowData = oRowContext.getObject();
@@ -323,13 +364,12 @@ sap.ui.define([
 			if (oShape.sParentAggregationName === "shapes1") {
 				//its background shape
 				this.createNewTempAssignment(sStartTime, sEndTime, oRowData).then(function (oData) {
-					console.log(oData);
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					this._addNewAssignmentShape(oData);
 				}.bind(this));
-			} else if (oShape.sParentAggregationName === "shapes2") {
+			} else if (oShape.sParentAggregationName === "shapes2" && oContext) {
 				//its a assignment
-				//oPopoverData = this.getShapeAssignment(sStartTime, sEndTime, oRowData);
+				this.oPlanningModel.setProperty("/tempData/popover", oContext.getObject());
 			}
 		},
 
@@ -362,23 +402,44 @@ sap.ui.define([
 		 * @param {object} oAssignData - object of assignment based on entityType of assignment 
 		 * //todo
 		 */
-		_removeNewAssignmentShape: function (oAssignData, removeNew) {
+		_removeAssignmentShape: function (oAssignData, removeNew) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			if (!oAssignData.isTemporary && !removeNew) {
 				return;
 			}
-			console.log(oAssignData);
+
 			var callbackFn = function (oItem, oData, idx) {
-				if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid && !oItem.ResourceGroupGuid) {
-					//remove to resource itself
-					oItem.AssignmentSet.results.splice(idx, 1);
-				} else if (oItem.ResourceGroupGuid && oItem.ResourceGroupGuid === oData.ResourceGroupGuid && oItem.ResourceGuid === oData.ResourceGuid) {
-					//remove to resource group
-					oItem.AssignmentSet.results.splice(idx, 1);
-				}
+				var aAssignments = oItem.AssignmentSet ? oItem.AssignmentSet.results : [];
+				aAssignments.forEach(function (oAssignItem, index) {
+					if (oAssignItem.Guid === oData.Guid) {
+						if (oData.isNew) {
+							//remove from resource and group when its a shape who was not yet saved by user
+							this._markAsPlanningChange(oAssignItem, false);
+							aAssignments.splice(index, 1);
+						} else {
+							//validate if assignment is allowed for delete
+							var isValid = this._validateForDelete(oAssignItem);
+							if (isValid) {
+								//set delete flag to assignment
+								this._markAsPlanningChange(oAssignItem, true);
+								oAssignItem.isDelete = true;
+							}
+						}
+					}
+				}.bind(this));
 			};
-			aChildren = this._recurseAllChildren(aChildren, callbackFn, oAssignData);
+			aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
 			this.oPlanningModel.setProperty("/data/children", aChildren);
+		},
+
+		/**
+		 * todo validate against backend
+		 * todo get path inside json model
+		 * todo when not valida show dialog with h
+		 * list if demands who are assigned to this time frame
+		 */
+		_validateForDelete: function (oData) {
+			return true;
 		},
 
 		/**

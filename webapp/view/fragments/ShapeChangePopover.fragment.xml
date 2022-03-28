@@ -11,9 +11,9 @@
 					</Select>
 					<Label text="Select:" required="true"/>
 					<ComboBox required="true" showSecondaryValues="true" name="ResourceGroupGuid" fieldGroupIds="changeShapeInput"
-						items="{ path: '/ResourceGroupSet', sorter: { path: 'Description' } }"
+						items="{ path: '/ResourceGroupSet', sorter: { path: 'ResourceGroupDesc' } }"
 						selectedKey="{ganttPlanningModel>/tempData/popover/ResourceGroupGuid}">
-						<core:ListItem key="{Guid}" text="{Description}" additionalText="{UnitID}"/>
+						<core:ListItem key="{ResourceGroupGuid}" text="{ResourceGroupDesc}" additionalText="{ResourceGroupUnitId}"/>
 					</ComboBox>
 					<Label text="Date from/to:" required="true"/>
 					<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput"
