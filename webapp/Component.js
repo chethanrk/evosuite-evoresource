@@ -33,6 +33,9 @@ sap.ui.define([
 			this.setModel(models.createDeviceModel(), "device");
 
 			this.setModel(models.createInformationModel(this), "InformationModel");
+			
+			// set the user model for System Information
+			this.setModel(models.createUserModel(), "user");
 
 			//helper model viewModel
 			this.setModel(models.createHelperModel({
@@ -54,6 +57,9 @@ sap.ui.define([
 			this.MessageManager = new MessageManager();
 
 			this._getTemplateProps();
+			
+			// get System Information
+			this._getSystemInformation();
 
 			// enable routing
 			this.getRouter().initialize();

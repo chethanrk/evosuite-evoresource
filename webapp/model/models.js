@@ -31,6 +31,12 @@ sap.ui.define([
 			oModel.setData(oInformation);
 			return oModel;
 		},
+		
+		createUserModel:function(){
+			var oModel = new JSONModel();
+			oModel.setDefaultBindingMode("OneWay");
+			return oModel;
+		}
 
 	};
 });
