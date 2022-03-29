@@ -9,8 +9,10 @@ sap.ui.define([
 	"sap/gantt/misc/Format",
 	"sap/ui/core/Fragment",
 	"sap/ui/model/Filter",
-	"sap/ui/model/FilterOperator"
-], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Format, Fragment, Filter, FilterOperator) {
+	"sap/ui/model/FilterOperator",
+	"sap/gantt/simple/CoordinateUtils",
+], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Format, Fragment, Filter, FilterOperator,
+	CoordinateUtils) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanGantt", {
@@ -174,10 +176,76 @@ sap.ui.define([
 		 */
 		onResourceGroupDrop: function (oEvent) {
 			//ondrop of the the resourcegroup
-			var oDraggedControl = oEvent.getParameter("droppedControl"),
-				oContext = oDraggedControl.getBindingContext(),
+			var oDroppedControl = oEvent.getParameter("droppedControl"),
+				oContext = oDroppedControl.getBindingContext("ganttPlanningModel"),
 				oObject = oContext.getObject(),
-				draggedData = this.getView().getModel("viewModel").getProperty("/draggedData");
+				oDraggedObject = this.getView().getModel("viewModel").getProperty("/draggedData"),
+				oBrowserEvent = oEvent.getParameter("browserEvent"),
+				oAxisTime = this.byId("idResourcePlanGanttChartContainer").getAggregation("ganttCharts")[0].getAxisTime();
+
+			// 1st way
+			// var oSvgPoint = CoordinateUtils.getEventSVGPoint(oBrowserEvent.target.ownerSVGElement, oBrowserEvent);
+			// var selectedDate = oAxisTime.viewToTime(oSvgPoint.x);
+			// var dateFrom = new Date(selectedDate.setHours(0, 0, 0, 0));
+			// var dateTo = new Date(selectedDate.setHours(23, 59, 59, 59));
+			// if (this._sGanttViewMode.isFuture(selectedDate.getTime())) {
+			// 	this.createNewTempAssignment(dateFrom, dateTo, oObject).then(function (oData) {
+			// 		oData.isTemporary = false;
+			// 		oData.ResourceGroupGuid = oDraggedObject.data["ResourceGroupGuid"];
+			// 		this._addNewAssignmentShape(oData);
+			// 		this._markAsPlanningChange(oData, true);
+			// 	}.bind(this));
+			// } else {
+			// 	this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
+			// }
+
+			// 2nd way
+			var oSvgPoint = CoordinateUtils.getEventSVGPoint(oBrowserEvent.target.ownerSVGElement, oBrowserEvent);
+			var selectedDate = oAxisTime.viewToTime(oSvgPoint.x);
+			var sStartTime = new Date(selectedDate.setHours(0, 0, 0, 0));
+			var sEndTime = new Date(selectedDate.setHours(23, 59, 59, 59));
+			var oPopoverData = {
+				sStartTime,
+				sEndTime,
+				oDroppedObject:oObject,
+				oDraggedObject
+			};
+			if (this._sGanttViewMode.isFuture(selectedDate.getTime())) {
+				// create popover
+				if (!this._oPlanningPopover) {
+					Fragment.load({
+						name: "com.evorait.evosuite.evoresource.view.fragments.ShapeChangePopover",
+						controller: this
+					}).then(function (pPopover) {
+						this._oPlanningPopover = pPopover;
+						this.getView().addDependent(this._oPlanningPopover);
+						this._oPlanningPopover.openBy(oDroppedControl);
+						this._setPopoverDataOnDrop(oPopoverData);
+
+						//after popover gets closed remove popover data
+						this._oPlanningPopover.attachAfterClose(function () {
+							var oData = this.oPlanningModel.getProperty("/tempData/popover");
+							this._removeAssignmentShape(oData);
+							this.oPlanningModel.setProperty("/tempData/popover", {});
+						}.bind(this));
+					}.bind(this));
+				} else {
+					this._oPlanningPopover.openBy(oDroppedControl);
+					this._setPopoverDataOnDrop(oPopoverData);
+				}
+			} else {
+				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
+			}
+
+		},
+		_setPopoverDataOnDrop: function (oPopoverData) {
+			var {sStartTime,sEndTime,oDroppedObject,oDraggedObject}=oPopoverData;
+
+			this.createNewTempAssignment(sStartTime, sEndTime, oDroppedObject).then(function (oData) {
+				oData.ResourceGroupGuid = oDraggedObject.data["ResourceGroupGuid"];
+				this.oPlanningModel.setProperty("/tempData/popover", oData);
+				this._addNewAssignmentShape(oData);
+			}.bind(this));
 		},
 
 		/**
