@@ -181,7 +181,8 @@ sap.ui.define([
 				oObject = oContext.getObject(),
 				oDraggedObject = this.getView().getModel("viewModel").getProperty("/draggedData"),
 				oBrowserEvent = oEvent.getParameter("browserEvent"),
-				oAxisTime = this.byId("idResourcePlanGanttChartContainer").getAggregation("ganttCharts")[0].getAxisTime();
+				oAxisTime = this.byId("idResourcePlanGanttChartContainer").getAggregation("ganttCharts")[0].getAxisTime(),
+				oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id);
 
 			// 1st way
 			// var oSvgPoint = CoordinateUtils.getEventSVGPoint(oBrowserEvent.target.ownerSVGElement, oBrowserEvent);
@@ -200,17 +201,19 @@ sap.ui.define([
 			// }
 
 			// 2nd way
-			var oSvgPoint = CoordinateUtils.getEventSVGPoint(oBrowserEvent.target.ownerSVGElement, oBrowserEvent);
-			var selectedDate = oAxisTime.viewToTime(oSvgPoint.x);
-			var sStartTime = new Date(selectedDate.setHours(0, 0, 0, 0));
-			var sEndTime = new Date(selectedDate.setHours(23, 59, 59, 59));
+			// var oSvgPoint = CoordinateUtils.getEventSVGPoint(oBrowserEvent.target.ownerSVGElement, oBrowserEvent);
+			// var selectedDate = oAxisTime.viewToTime(oSvgPoint.x);
+			// var sStartTime = new Date(selectedDate.setHours(0, 0, 0, 0));
+			// var sEndTime = new Date(selectedDate.setHours(23, 59, 59, 59));
+			var sStartTime = oDroppedTarget.getTime();
+			var sEndTime = oDroppedTarget.getEndTime();
 			var oPopoverData = {
 				sStartTime,
 				sEndTime,
 				oDroppedObject:oObject,
 				oDraggedObject
 			};
-			if (this._sGanttViewMode.isFuture(selectedDate.getTime())) {
+			if (this._sGanttViewMode.isFuture(sStartTime.getTime())) {
 				// create popover
 				if (!this._oPlanningPopover) {
 					Fragment.load({
@@ -219,7 +222,7 @@ sap.ui.define([
 					}).then(function (pPopover) {
 						this._oPlanningPopover = pPopover;
 						this.getView().addDependent(this._oPlanningPopover);
-						this._oPlanningPopover.openBy(oDroppedControl);
+						this._oPlanningPopover.openBy(oDroppedTarget);
 						this._setPopoverDataOnDrop(oPopoverData);
 
 						//after popover gets closed remove popover data
@@ -230,7 +233,7 @@ sap.ui.define([
 						}.bind(this));
 					}.bind(this));
 				} else {
-					this._oPlanningPopover.openBy(oDroppedControl);
+					this._oPlanningPopover.openBy(oDroppedTarget);
 					this._setPopoverDataOnDrop(oPopoverData);
 				}
 			} else {
