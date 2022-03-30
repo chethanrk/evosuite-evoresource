@@ -155,6 +155,7 @@ sap.ui.define([
 				sEndTime = oShape.getEndTime(),
 				oRowData = oRowContext.getObject(),
 				oPopoverData = {
+					Guid: new Date().getTime(),
 					sStartTime,
 					sEndTime,
 					oResourceObject: oRowData
@@ -207,7 +208,7 @@ sap.ui.define([
 			//ondrop of the the resourcegroup
 			var oDroppedControl = oEvent.getParameter("droppedControl"),
 				oContext = oDroppedControl.getBindingContext("ganttPlanningModel"),
-				oObject = oContext.getObject(),
+				oObject = deepClone(oContext.getObject()),
 				oDraggedObject = this.getView().getModel("viewModel").getProperty("/draggedData"),
 				oBrowserEvent = oEvent.getParameter("browserEvent"),
 				oAxisTime = this.byId("idResourcePlanGanttChartContainer").getAggregation("ganttCharts")[0].getAxisTime(),
@@ -215,6 +216,7 @@ sap.ui.define([
 				sStartTime = oDroppedTarget.getTime(),
 				sEndTime = oDroppedTarget.getEndTime(),
 				oPopoverData = {
+					Guid: new Date().getTime(),
 					sStartTime,
 					sEndTime,
 					oResourceObject: oObject
@@ -410,6 +412,7 @@ sap.ui.define([
 		 */
 		_setPopoverData: function (oTargetControl, oPopoverData) {
 			var {
+				Guid,
 				sStartTime,
 				sEndTime,
 				oResourceObject
