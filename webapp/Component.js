@@ -1,3 +1,4 @@
+/* globals moment */
 sap.ui.define([
 	"sap/ui/core/UIComponent",
 	"sap/ui/Device",
@@ -33,7 +34,7 @@ sap.ui.define([
 			this.setModel(models.createDeviceModel(), "device");
 
 			this.setModel(models.createInformationModel(this), "InformationModel");
-			
+
 			// set the user model for System Information
 			this.setModel(models.createUserModel(), "user");
 
@@ -45,10 +46,10 @@ sap.ui.define([
 				isSubPage: false,
 				gantt: {
 					defaultStartDate: moment().startOf("week").toDate(),
-					defaultEndDate: moment().endOf("month").add(1, "months").toDate()
+					defaultEndDate: moment().endOf("month").add(1, "months").toDate(),
+					popoverPlacement: sap.m.PlacementType.HorizontalPreferredRight
 				}
 			}), "viewModel");
-
 
 			this.setModel(models.createHelperModel(), "ganttPlanningModel");
 
@@ -58,7 +59,7 @@ sap.ui.define([
 			this.MessageManager = new MessageManager();
 
 			this._getTemplateProps();
-			
+
 			// get System Information
 			this._getSystemInformation();
 

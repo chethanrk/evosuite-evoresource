@@ -153,6 +153,54 @@ sap.ui.define([
 		},
 
 		/**
+		 * when background shape was pressed create temporary assignment
+		 * for shape popover input fields and visibility inside Gantt chart
+		 * 
+		 * @param {object} oStartTime - start date of shape
+		 * @param {object} oEndTime - end date of shape 
+		 * @param {object} oRowData - row context data from Gantt row
+		 */
+		createNewTempAssignment: function (oStartTime, oEndTime, oRowData) {
+			return new Promise(function (resolve) {
+				var obj = {
+					minDate: new Date(),
+					isTemporary: true,
+					isNew: true,
+					Guid: new Date().getTime()
+				};
+				//collect all assignment properties who allowed for create
+				this.getModel().getMetaModel().loaded().then(function () {
+					var oMetaModel = this.getModel().getMetaModel(),
+						oEntitySet = oMetaModel.getODataEntitySet("AssignmentSet"),
+						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+						aProperty = oEntityType ? oEntityType.property : [];
+
+					aProperty.forEach(function (property) {
+						var isCreatable = property["sap:creatable"];
+						if (typeof isCreatable === "undefined" || isCreatable === true) {
+							obj[property.name] = "";
+							if (oRowData[property.name]) {
+								obj[property.name] = oRowData[property.name];
+							}
+						}
+					});
+
+					obj.DateFrom = oStartTime;
+					obj.DateTo = oEndTime;
+					obj.AssignmentType = "GROUP";
+					obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
+					obj.ResourceGuid = oRowData.ResourceGuid;
+					obj.Description = oRowData.Description;
+					resolve(obj);
+				}.bind(this));
+			}.bind(this));
+		},
+
+		/* =========================================================== */
+		/* internal methods                                            */
+		/* =========================================================== */
+
+		/**
 		 * loop trough all nested array of children
 		 * When max level for search was reached execute callbackFn
 		 * @param aChildren
@@ -234,60 +282,37 @@ sap.ui.define([
 		},
 
 		/**
-		 * when background shape was pressed create temporary assignment
-		 * for shape popover input fields and visibility inside Gantt chart
-		 * 
-		 * @param {object} oStartTime - start date of shape
-		 * @param {object} oEndTime - end date of shape 
-		 * @param {object} oRowData - row context data from Gantt row
-		 */
-		createNewTempAssignment: function (oStartTime, oEndTime, oRowData) {
-			return new Promise(function (resolve) {
-				var obj = {
-					minDate: new Date(),
-					isTemporary: true,
-					isNew: true,
-					Guid: new Date().getTime()
-				};
-				//collect all assignment properties who allowed for create
-				this.getModel().getMetaModel().loaded().then(function () {
-					var oMetaModel = this.getModel().getMetaModel(),
-						oEntitySet = oMetaModel.getODataEntitySet("AssignmentSet"),
-						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-						aProperty = oEntityType ? oEntityType.property : [];
-
-					aProperty.forEach(function (property) {
-						var isCreatable = property["sap:creatable"];
-						if (typeof isCreatable === "undefined" || isCreatable === true) {
-							obj[property.name] = "";
-							if (oRowData[property.name]) {
-								obj[property.name] = oRowData[property.name];
-							}
-						}
-					});
-
-					obj.DateFrom = oStartTime;
-					obj.DateTo = oEndTime;
-					obj.AssignmentType = "GROUP";
-					obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
-					obj.ResourceGuid = oRowData.ResourceGuid;
-					obj.Description = oRowData.Description;
-					resolve(obj);
-				}.bind(this));
-			}.bind(this));
-		},
-
-		/* =========================================================== */
-		/* internal methods                                            */
-		/* =========================================================== */
-
-		/**
 		 * opens Message Popover 
 		 * @param {object} oView - view instance of the caller
 		 * @param {object} oEvent -  Message manager button press event
 		 */
 		_openMessageManager: function (oView, oEvent) {
 			this.getOwnerComponent().MessageManager.open(oView, oEvent);
-		}
+		},
+
+		/**
+		 * when start and end date is given then this values will be set as new default dates
+		 * inside viewModel and a new total horizon is rendered for Gantt
+		 * 
+		 * @param {object} oStartDate - start date of gantt total horizon
+		 * @param {object} oEndDate - end date of gantt total horizon
+		 */
+		_setNewHorizon: function (oStartDate, oEndDate) {
+			if (oStartDate) {
+				this.getModel("viewModel").setProperty("/gantt/defaultStartDate", oStartDate);
+			} else {
+				oStartDate = this.getModel("viewModel").getProperty("/gantt/defaultStartDate");
+			}
+			if (oEndDate) {
+				this.getModel("viewModel").setProperty("/gantt/defaultEndDate", oEndDate);
+			} else {
+				oEndDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
+			}
+
+			this.oZoomStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
+				startTime: oStartDate,
+				endTime: oEndDate
+			}));
+		},
 	});
 });
