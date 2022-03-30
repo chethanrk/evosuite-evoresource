@@ -24,14 +24,13 @@
 									<gnt2:ContainerToolbar class="gantt-containerToolbar" alignCustomContentToRight="true" showTimeZoomControl="true" zoomControlType="None"
 										showLegendButton="true">
 										<gnt2:content>
-											<tnt:InfoLabel text="There are unsaved changes. Please save before you leave." colorScheme="1" displayOnly="true"
-												visible="{ganttPlanningModel>/hasChanges}"/>
+											<tnt:InfoLabel text="{i18n>xtxt.unsavedChanges}" colorScheme="1" displayOnly="true" visible="{ganttPlanningModel>/hasChanges}"/>
 											<ToolbarSpacer/>
 											<core:ExtensionPoint name="GanttExtP|ResourcePlanGantt|GanttResourceHierarchySet|ContainerToolbar|Before"/>
-											<Button id="idResourcePlanBtnSave" text="Save" icon="sap-icon://save" type="Emphasized" press="onPressSave"/>
-											<Button id="idResourcePlanBtnCancel" text="Reset" icon="sap-icon://cancel" press="onPressCancel"/>
+											<Button id="idResourcePlanBtnSave" text="{i18n>xbtn.save}" icon="sap-icon://save" type="Emphasized" press="onPressSave"/>
+											<Button id="idResourcePlanBtnCancel" text="{i18n>xbtn.reset}" icon="sap-icon://cancel" press="onPressCancel"/>
 											<Text text="|"/>
-											<Button id="idResourcePlanBtnToday" text="Today" press="onPressToday"/>
+											<Button id="idResourcePlanBtnToday" text="{i18n>xbtn.today}" press="onPressToday"/>
 											<core:ExtensionPoint name="GanttExtP|ResourcePlanGantt|GanttResourceHierarchySet|ContainerToolbar|After"/>
 										</gnt2:content>
 									</gnt2:ContainerToolbar>

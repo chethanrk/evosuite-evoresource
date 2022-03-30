@@ -118,12 +118,18 @@ sap.ui.define([
 			this._loadGanttData();
 		},
 
+		/**
+		 * when user srolls horizontal inside cgantt chart 
+		 * save visible start and end date
+		 * @param {object} oEvent - event when gantt chart visible view changes
+		 */
 		onVisibleHorizonUpdate: function (oEvent) {
 			var mParams = oEvent.getParameters(),
 				sStartTime = mParams.currentVisibleHorizon.getStartTime(),
 				sEndTime = mParams.currentVisibleHorizon.getEndTime();
 
-			//console.log(sStartTime, sEndTime);
+			this._visibileStartDate = moment(sStartTime, "YYYYMMDDHHmmss");
+			this._visibileEndDate = moment(sEndTime, "YYYYMMDDHHmmss");
 		},
 
 		/**
@@ -156,8 +162,8 @@ sap.ui.define([
 					}).then(function (pPopover) {
 						this._oPlanningPopover = pPopover;
 						this.getView().addDependent(this._oPlanningPopover);
-						this._oPlanningPopover.openBy(mParams.shape);
 						this._setPopoverData(mParams);
+						this._oPlanningPopover.openBy(mParams.shape);
 
 						//after popover gets closed remove popover data
 						this._oPlanningPopover.attachAfterClose(function () {
@@ -167,8 +173,8 @@ sap.ui.define([
 						}.bind(this));
 					}.bind(this));
 				} else {
-					this._oPlanningPopover.openBy(mParams.shape);
 					this._setPopoverData(mParams);
+					this._oPlanningPopover.openBy(mParams.shape);
 				}
 			} else {
 				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
@@ -376,7 +382,26 @@ sap.ui.define([
 				}.bind(this));
 			} else if (oShape.sParentAggregationName === "shapes2" && oContext) {
 				//its a assignment
-				this.oPlanningModel.setProperty("/tempData/popover", oContext.getObject());
+				var oAssignData = oContext.getObject();
+				this._setShapePopoverPosition(oAssignData);
+				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
+			}
+		},
+
+		/**
+		 * When shape is rumming out of visible gantt horizon show popup
+		 * on top or bottom else when left or right
+		 * @param {object} oAssignData - shape assignment data
+		 */
+		_setShapePopoverPosition: function (oAssignData) {
+			//this._visibileStartDate; this._visibileEndDate
+			var oStartDate = moment(oAssignData.DateFrom),
+				oEndDate = moment(oAssignData.DateTo);
+
+			if (oStartDate.isSameOrBefore(this._visibileStartDate) && oEndDate.isSameOrAfter(this._visibileEndDate)) {
+				this.getModel("viewModel").setProperty("/gantt/popoverPlacement", sap.m.PlacementType.VerticalPreferredBottom);
+			} else {
+				this.getModel("viewModel").setProperty("/gantt/popoverPlacement", sap.m.PlacementType.HorizontalPreferredRight);
 			}
 		},
 

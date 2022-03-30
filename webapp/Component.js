@@ -45,7 +45,8 @@ sap.ui.define([
 				isSubPage: false,
 				gantt: {
 					defaultStartDate: moment().startOf("week").toDate(),
-					defaultEndDate: moment().endOf("month").add(1, "months").toDate()
+					defaultEndDate: moment().endOf("month").add(1, "months").toDate(),
+					popoverPlacement: sap.m.PlacementType.HorizontalPreferredRight
 				}
 			}), "viewModel");
 
