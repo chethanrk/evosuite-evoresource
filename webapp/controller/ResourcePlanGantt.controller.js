@@ -168,6 +168,9 @@ sap.ui.define([
 		 * @param {object} oPopoverData - Data to be displayed in Popover
 		 */
 		openShapeChangePopover: function (oTargetControl, oPopoverData) {
+			if(!this._validateForOpenPopover()){
+				return;
+			}
 			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getTime())) {
 				// create popover
 				if (!this._oPlanningPopover) {
@@ -493,6 +496,14 @@ sap.ui.define([
 		 */
 		_validateForDelete: function (oData) {
 			return true;
+		},
+		
+		_validateForOpenPopover:function(){
+			var bPopover = this.getView().getModel("user").getProperty("/ENABLE_PLANNING_POPOVER");
+			if(!bPopover){
+				this.showMessageToast(this.getResourceBundle().getText("xtxt.noAuthorization"));
+			}
+			return bPopover;
 		},
 
 		/**
