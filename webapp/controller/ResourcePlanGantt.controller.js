@@ -140,9 +140,23 @@ sap.ui.define([
 		 * @param {object} oEvent - when shape in Gantt was selected
 		 */
 		onShapePress: function (oEvent) {
-			var mParams = oEvent.getParameters();
-			//validate if shape is in future or current date
-			if (mParams.shape && this._sGanttViewMode.isFuture(mParams.shape.getTime())) {
+			var mParams = oEvent.getParameters(),
+				oShape = mParams.shape,
+				oRowContext = mParams.rowSettings.getParent().getBindingContext("ganttPlanningModel"),
+				sStartTime = oShape.getTime(),
+				sEndTime = oShape.getEndTime(),
+				oRowData = oRowContext.getObject(),
+				oPopoverData = {
+					sStartTime,
+					sEndTime,
+					oDroppedObject: oRowData
+				};
+
+			this.openShapeChangePopover(mParams.shape, oPopoverData);
+		},
+
+		openShapeChangePopover: function (oTargetControl, oPopoverData) {
+			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getTime())) {
 				// create popover
 				if (!this._oPlanningPopover) {
 					Fragment.load({
@@ -151,8 +165,8 @@ sap.ui.define([
 					}).then(function (pPopover) {
 						this._oPlanningPopover = pPopover;
 						this.getView().addDependent(this._oPlanningPopover);
-						this._oPlanningPopover.openBy(mParams.shape);
-						this._setPopoverData(mParams);
+						this._oPlanningPopover.openBy(oTargetControl);
+						this._setPopoverData(oTargetControl, oPopoverData);
 
 						//after popover gets closed remove popover data
 						this._oPlanningPopover.attachAfterClose(function () {
@@ -162,8 +176,8 @@ sap.ui.define([
 						}.bind(this));
 					}.bind(this));
 				} else {
-					this._oPlanningPopover.openBy(mParams.shape);
-					this._setPopoverData(mParams);
+					this._oPlanningPopover.openBy(oTargetControl);
+					this._setPopoverData(oTargetControl, oPopoverData);
 				}
 			} else {
 				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
@@ -178,79 +192,26 @@ sap.ui.define([
 			//ondrop of the the resourcegroup
 			var oDroppedControl = oEvent.getParameter("droppedControl"),
 				oContext = oDroppedControl.getBindingContext("ganttPlanningModel"),
-				oObject = oContext.getObject(),
+				oObject = {...oContext.getObject()
+				},
 				oDraggedObject = this.getView().getModel("viewModel").getProperty("/draggedData"),
 				oBrowserEvent = oEvent.getParameter("browserEvent"),
 				oAxisTime = this.byId("idResourcePlanGanttChartContainer").getAggregation("ganttCharts")[0].getAxisTime(),
 				oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id);
 
-			// 1st way
-			// var oSvgPoint = CoordinateUtils.getEventSVGPoint(oBrowserEvent.target.ownerSVGElement, oBrowserEvent);
-			// var selectedDate = oAxisTime.viewToTime(oSvgPoint.x);
-			// var dateFrom = new Date(selectedDate.setHours(0, 0, 0, 0));
-			// var dateTo = new Date(selectedDate.setHours(23, 59, 59, 59));
-			// if (this._sGanttViewMode.isFuture(selectedDate.getTime())) {
-			// 	this.createNewTempAssignment(dateFrom, dateTo, oObject).then(function (oData) {
-			// 		oData.isTemporary = false;
-			// 		oData.ResourceGroupGuid = oDraggedObject.data["ResourceGroupGuid"];
-			// 		this._addNewAssignmentShape(oData);
-			// 		this._markAsPlanningChange(oData, true);
-			// 	}.bind(this));
-			// } else {
-			// 	this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
-			// }
+			oObject["ResourceGroupGuid"] = oDraggedObject.data["ResourceGroupGuid"]; //assigned dragged Resource group id
 
-			// 2nd way
-			// var oSvgPoint = CoordinateUtils.getEventSVGPoint(oBrowserEvent.target.ownerSVGElement, oBrowserEvent);
-			// var selectedDate = oAxisTime.viewToTime(oSvgPoint.x);
-			// var sStartTime = new Date(selectedDate.setHours(0, 0, 0, 0));
-			// var sEndTime = new Date(selectedDate.setHours(23, 59, 59, 59));
 			var sStartTime = oDroppedTarget.getTime();
 			var sEndTime = oDroppedTarget.getEndTime();
 			var oPopoverData = {
 				sStartTime,
 				sEndTime,
-				oDroppedObject:oObject,
-				oDraggedObject
+				oDroppedObject: oObject
 			};
-			if (this._sGanttViewMode.isFuture(sStartTime.getTime())) {
-				// create popover
-				if (!this._oPlanningPopover) {
-					Fragment.load({
-						name: "com.evorait.evosuite.evoresource.view.fragments.ShapeChangePopover",
-						controller: this
-					}).then(function (pPopover) {
-						this._oPlanningPopover = pPopover;
-						this.getView().addDependent(this._oPlanningPopover);
-						this._oPlanningPopover.openBy(oDroppedTarget);
-						this._setPopoverDataOnDrop(oPopoverData);
 
-						//after popover gets closed remove popover data
-						this._oPlanningPopover.attachAfterClose(function () {
-							var oData = this.oPlanningModel.getProperty("/tempData/popover");
-							this._removeAssignmentShape(oData);
-							this.oPlanningModel.setProperty("/tempData/popover", {});
-						}.bind(this));
-					}.bind(this));
-				} else {
-					this._oPlanningPopover.openBy(oDroppedTarget);
-					this._setPopoverDataOnDrop(oPopoverData);
-				}
-			} else {
-				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
-			}
+			this.openShapeChangePopover(oDroppedTarget, oPopoverData);
 
 		},
-		_setPopoverDataOnDrop: function (oPopoverData) {
-			var {sStartTime,sEndTime,oDroppedObject,oDraggedObject}=oPopoverData;
-
-			this.createNewTempAssignment(sStartTime, sEndTime, oDroppedObject).then(function (oData) {
-				oData.ResourceGroupGuid = oDraggedObject.data["ResourceGroupGuid"];
-				this.oPlanningModel.setProperty("/tempData/popover", oData);
-				this._addNewAssignmentShape(oData);
-			}.bind(this));
-		},
-
 		/**
 		 * @param {object} oEvent -
 		 */
@@ -260,7 +221,6 @@ sap.ui.define([
 		 * @param {object} oEvent -
 		 */
 		onPressCancel: function () {},
-
 		/**
 		 * Change of shape assignment
 		 * Todo 
@@ -436,24 +396,25 @@ sap.ui.define([
 		 * 
 		 * @param {object} mParams - event parameters from shape press
 		 */
-		_setPopoverData: function (mParams) {
-			var oShape = mParams.shape,
-				oRowContext = mParams.rowSettings.getParent().getBindingContext("ganttPlanningModel"),
-				oContext = oShape.getBindingContext("ganttPlanningModel"),
-				sStartTime = oShape.getTime(),
-				sEndTime = oShape.getEndTime(),
-				oRowData = oRowContext.getObject();
+		_setPopoverData: function (oTargetControl, oPopoverData) {
+			var {
+				sStartTime,
+				sEndTime,
+				oDroppedObject
+			} = oPopoverData,
+			oContext = oTargetControl.getBindingContext("ganttPlanningModel");
 
-			if (oShape.sParentAggregationName === "shapes1") {
+			if (oTargetControl.sParentAggregationName === "shapes1") {
 				//its background shape
-				this.createNewTempAssignment(sStartTime, sEndTime, oRowData).then(function (oData) {
+				this.createNewTempAssignment(sStartTime, sEndTime, oDroppedObject).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					this._addNewAssignmentShape(oData);
 				}.bind(this));
-			} else if (oShape.sParentAggregationName === "shapes2" && oContext) {
+			} else if (oTargetControl.sParentAggregationName === "shapes2" && oContext) {
 				//its a assignment
 				this.oPlanningModel.setProperty("/tempData/popover", oContext.getObject());
 			}
+
 		},
 
 		/**
