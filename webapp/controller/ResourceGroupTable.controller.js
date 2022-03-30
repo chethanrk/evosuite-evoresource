@@ -1,14 +1,26 @@
 sap.ui.define([
-	"com/evorait/evosuite/evoresource/controller/BaseController"
-], function (BaseController) {
+	"com/evorait/evosuite/evoresource/controller/BaseController",
+	"sap/ui/core/mvc/OverrideExecution"
+], function (BaseController, OverrideExecution) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourceGroupTable", {
 
 		metadata: {
-			methods: {}
+			methods: {
+				onResourceGroupDragStart: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onResourceGroupDragEnd: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				}
+			}
 		},
-		
+
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
 		 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
@@ -17,7 +29,7 @@ sap.ui.define([
 		onInit: function () {
 			this._oResourceGroupTable = this.getView().byId("idResourceGroupTable");
 		},
-		
+
 		/**
 		 * Called when Resource Group drag start
 		 * @param {object} oEvent
@@ -30,14 +42,12 @@ sap.ui.define([
 				sPath = oDraggedControl.getBindingContext().getPath(),
 				oObject = oContext.getObject(),
 				draggedData = {
-					sPath:sPath,
-					data:oObject
+					sPath: sPath,
+					data: oObject
 				};
-			
-			
-			this.getView().getModel("viewModel").setProperty("/draggedData",draggedData);
+			this.getView().getModel("viewModel").setProperty("/draggedData", draggedData);
 		},
-		
+
 		/**
 		 * Called when Resource Group drag end
 		 * @param {object} oEvent
