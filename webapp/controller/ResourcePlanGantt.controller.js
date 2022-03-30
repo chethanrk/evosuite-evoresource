@@ -9,10 +9,8 @@ sap.ui.define([
 	"sap/gantt/misc/Format",
 	"sap/ui/core/Fragment",
 	"sap/ui/model/Filter",
-	"sap/ui/model/FilterOperator",
-	"sap/gantt/simple/CoordinateUtils",
-], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Format, Fragment, Filter, FilterOperator,
-	CoordinateUtils) {
+	"sap/ui/model/FilterOperator"
+], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Format, Fragment, Filter, FilterOperator) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanGantt", {
@@ -61,12 +59,12 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Before
 				},
-				onResourceGroupDrop:{
+				onResourceGroupDrop: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
 				},
-				openShapeChangePopover:{
+				openShapeChangePopover: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
@@ -210,18 +208,16 @@ sap.ui.define([
 				oDraggedObject = this.getView().getModel("viewModel").getProperty("/draggedData"),
 				oBrowserEvent = oEvent.getParameter("browserEvent"),
 				oAxisTime = this.byId("idResourcePlanGanttChartContainer").getAggregation("ganttCharts")[0].getAxisTime(),
-				oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id);
+				oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id),
+				sStartTime = oDroppedTarget.getTime(),
+				sEndTime = oDroppedTarget.getEndTime(),
+				oPopoverData = {
+					sStartTime,
+					sEndTime,
+					oResourceObject: oObject
+				};
 
 			oObject["ResourceGroupGuid"] = oDraggedObject.data["ResourceGroupGuid"]; //assigned dragged Resource group id
-
-			var sStartTime = oDroppedTarget.getTime();
-			var sEndTime = oDroppedTarget.getEndTime();
-			var oPopoverData = {
-				sStartTime,
-				sEndTime,
-				oResourceObject: oObject
-			};
-
 			this.openShapeChangePopover(oDroppedTarget, oPopoverData);
 
 		},
