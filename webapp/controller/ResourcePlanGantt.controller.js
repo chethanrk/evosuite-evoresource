@@ -233,7 +233,6 @@ sap.ui.define([
 				.then(function () {
 					this.oOriginData = deepClone(this.oPlanningModel.getProperty("/"));
 					this._setBackgroudShapes(this._sGanttViewMode);
-					console.log(this.oOriginData);
 				}.bind(this));
 		},
 
@@ -472,28 +471,6 @@ sap.ui.define([
 		 */
 		_validateForDelete: function (oData) {
 			return true;
-		},
-
-		/**
-		 * creates and returns a hidden div at the same position
-		 * as the Spot on the Canvas rightclicked by user
-		 * the div is added as a child to the GeoMapContainer with absolute positioning,
-		 * then style top and left values are provided which we get -
-		 * from the click position returned by the spot contextmenu event
-		 * @param {object} oSpotPosition - x and y values of clicked position on the geo map
-		 * @ returns the div element
-		 * todo
-		 */
-		hiddenDivPoistion: function (oPosition) {
-			var div = document.createElement("div");
-			div.style.position = "absolute";
-			div.style.top = oPosition[1] + "px";
-			div.style.left = oPosition[0] + "px";
-			// add as a child to the GeoMap
-			// this get by id
-			var oContainer = this.getView().byId("").$[0];
-			oContainer.appendChild(div);
-			return div;
 		}
 	});
 });
