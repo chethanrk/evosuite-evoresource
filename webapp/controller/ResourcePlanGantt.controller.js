@@ -60,6 +60,16 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
+				},
+				onResourceGroupDrop:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				openShapeChangePopover:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
 				}
 			}
 		},
@@ -149,12 +159,16 @@ sap.ui.define([
 				oPopoverData = {
 					sStartTime,
 					sEndTime,
-					oDroppedObject: oRowData
+					oResourceObject: oRowData
 				};
 
 			this.openShapeChangePopover(mParams.shape, oPopoverData);
 		},
-
+		/**
+		 * Called to open ShapeChangePopover
+		 * @param {object} oTargetControl - Control where popover should open
+		 * @param {object} oPopoverData - Data to be displayed in Popover
+		 */
 		openShapeChangePopover: function (oTargetControl, oPopoverData) {
 			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getTime())) {
 				// create popover
@@ -192,8 +206,7 @@ sap.ui.define([
 			//ondrop of the the resourcegroup
 			var oDroppedControl = oEvent.getParameter("droppedControl"),
 				oContext = oDroppedControl.getBindingContext("ganttPlanningModel"),
-				oObject = {...oContext.getObject()
-				},
+				oObject = oContext.getObject(),
 				oDraggedObject = this.getView().getModel("viewModel").getProperty("/draggedData"),
 				oBrowserEvent = oEvent.getParameter("browserEvent"),
 				oAxisTime = this.byId("idResourcePlanGanttChartContainer").getAggregation("ganttCharts")[0].getAxisTime(),
@@ -206,7 +219,7 @@ sap.ui.define([
 			var oPopoverData = {
 				sStartTime,
 				sEndTime,
-				oDroppedObject: oObject
+				oResourceObject: oObject
 			};
 
 			this.openShapeChangePopover(oDroppedTarget, oPopoverData);
@@ -400,13 +413,13 @@ sap.ui.define([
 			var {
 				sStartTime,
 				sEndTime,
-				oDroppedObject
+				oResourceObject
 			} = oPopoverData,
 			oContext = oTargetControl.getBindingContext("ganttPlanningModel");
 
 			if (oTargetControl.sParentAggregationName === "shapes1") {
 				//its background shape
-				this.createNewTempAssignment(sStartTime, sEndTime, oDroppedObject).then(function (oData) {
+				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					this._addNewAssignmentShape(oData);
 				}.bind(this));
