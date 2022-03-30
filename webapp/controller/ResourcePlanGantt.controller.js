@@ -98,6 +98,10 @@ sap.ui.define([
 			};
 			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
 			this.oPlanningModel.setData(deepClone(this.oOriginData));
+
+			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
+				this._setNewHorizon(oResult.DEFAULT_GANTT_START_DATE, oResult.DEFAULT_GANTT_END_DATE);
+			}.bind(this));
 		},
 
 		/* =========================================================== */
@@ -125,6 +129,20 @@ sap.ui.define([
 		},
 
 		/**
+		 * when user srolls horizontal inside cgantt chart 
+		 * save visible start and end date
+		 * @param {object} oEvent - event when gantt chart visible view changes
+		 */
+		onVisibleHorizonUpdate: function (oEvent) {
+			var mParams = oEvent.getParameters(),
+				sStartTime = mParams.currentVisibleHorizon.getStartTime(),
+				sEndTime = mParams.currentVisibleHorizon.getEndTime();
+
+			this._visibileStartDate = moment(sStartTime, "YYYYMMDDHHmmss");
+			this._visibileEndDate = moment(sEndTime, "YYYYMMDDHHmmss");
+		},
+
+		/**
 		 * When Go button in filterbar was pressed then get all filters and send backend request
 		 * @param {object} oEvent - change event of filterbar
 		 */
@@ -133,12 +151,7 @@ sap.ui.define([
 				oStartDate = oDateRangePicker.getDateValue(),
 				oEndDate = oDateRangePicker.getSecondDateValue();
 
-			this.getModel("viewModel").setProperty("/gantt/defaultStartDate", oStartDate);
-			this.getModel("viewModel").setProperty("/gantt/defaultEndDate", oEndDate);
-			this.oZoomStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
-				startTime: oStartDate,
-				endTime: oEndDate
-			}));
+			this._setNewHorizon(oStartDate, oEndDate);
 			this._loadGanttData();
 		},
 
@@ -169,7 +182,7 @@ sap.ui.define([
 		 * @param {object} oPopoverData - Data to be displayed in Popover
 		 */
 		openShapeChangePopover: function (oTargetControl, oPopoverData) {
-			if(!this._validateForOpenPopover()){
+			if (!this._validateForOpenPopover()) {
 				return;
 			}
 			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getTime())) {
@@ -277,7 +290,6 @@ sap.ui.define([
 				.then(function () {
 					this.oOriginData = deepClone(this.oPlanningModel.getProperty("/"));
 					this._setBackgroudShapes(this._sGanttViewMode);
-					console.log(this.oOriginData);
 				}.bind(this));
 		},
 
@@ -427,7 +439,26 @@ sap.ui.define([
 				}.bind(this));
 			} else if (oTargetControl.sParentAggregationName === "shapes2" && oContext) {
 				//its a assignment
-				this.oPlanningModel.setProperty("/tempData/popover", oContext.getObject());
+				var oAssignData = oContext.getObject();
+				this._setShapePopoverPosition(oAssignData);
+				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
+			}
+		},
+
+		/**
+		 * When shape is rumming out of visible gantt horizon show popup
+		 * on top or bottom else when left or right
+		 * @param {object} oAssignData - shape assignment data
+		 */
+		_setShapePopoverPosition: function (oAssignData) {
+			//this._visibileStartDate; this._visibileEndDate
+			var oStartDate = moment(oAssignData.DateFrom),
+				oEndDate = moment(oAssignData.DateTo);
+
+			if (oStartDate.isSameOrBefore(this._visibileStartDate) && oEndDate.isSameOrAfter(this._visibileEndDate)) {
+				this.getModel("viewModel").setProperty("/gantt/popoverPlacement", sap.m.PlacementType.VerticalPreferredBottom);
+			} else {
+				this.getModel("viewModel").setProperty("/gantt/popoverPlacement", sap.m.PlacementType.HorizontalPreferredRight);
 			}
 
 		},
@@ -499,36 +530,14 @@ sap.ui.define([
 		 */
 		_validateForDelete: function (oData) {
 			return true;
+
 		},
-		
-		_validateForOpenPopover:function(){
+		_validateForOpenPopover: function () {
 			var bPopover = this.getView().getModel("user").getProperty("/ENABLE_PLANNING_POPOVER");
-			if(!bPopover){
+			if (!bPopover) {
 				this.showMessageToast(this.getResourceBundle().getText("xtxt.noAuthorization"));
 			}
 			return bPopover;
 		},
-
-		/**
-		 * creates and returns a hidden div at the same position
-		 * as the Spot on the Canvas rightclicked by user
-		 * the div is added as a child to the GeoMapContainer with absolute positioning,
-		 * then style top and left values are provided which we get -
-		 * from the click position returned by the spot contextmenu event
-		 * @param {object} oSpotPosition - x and y values of clicked position on the geo map
-		 * @ returns the div element
-		 * todo
-		 */
-		hiddenDivPoistion: function (oPosition) {
-			var div = document.createElement("div");
-			div.style.position = "absolute";
-			div.style.top = oPosition[1] + "px";
-			div.style.left = oPosition[0] + "px";
-			// add as a child to the GeoMap
-			// this get by id
-			var oContainer = this.getView().byId("").$[0];
-			oContainer.appendChild(div);
-			return div;
-		}
 	});
 });

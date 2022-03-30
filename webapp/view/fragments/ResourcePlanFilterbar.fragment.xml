@@ -7,13 +7,13 @@
 			<FlexItemData shrinkFactor="0"/>
 		</smartFilterBar:layoutData>
 		<smartFilterBar:controlConfiguration>
-			<smartFilterBar:ControlConfiguration mandatory="mandatory" key="StartDate" groupId="_BASIC">
+			<smartFilterBar:ControlConfiguration index="0" mandatory="mandatory" key="StartDate" groupId="_BASIC">
 				<smartFilterBar:customControl>
 					<DateRangeSelection id="idFilterGanttPlanningDateRange" dateValue="{viewModel>/gantt/defaultStartDate}"
 						secondDateValue="{viewModel>/gantt/defaultEndDate}" enabled="true"/>
 				</smartFilterBar:customControl>
 			</smartFilterBar:ControlConfiguration>
-			<smartFilterBar:ControlConfiguration mandatory="mandatory" key="Mode" label="Mode" groupId="_BASIC" visibleInAdvancedArea="true">
+			<smartFilterBar:ControlConfiguration index="0" mandatory="mandatory" key="Mode" label="Mode" groupId="_BASIC" visibleInAdvancedArea="true">
 				<smartFilterBar:customControl>
 					<!--<Select id="idFilterGanttPlanningMode" customData:hasValue="true" forceSelection="true" change="onChangeTimeMode"
 						items="{path: 'templateProperties>/GanttViewSet'}">
