@@ -453,12 +453,17 @@ sap.ui.define([
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 			}
 		},
+		/**
+		 * Add new Resource Group under Resource in Gantt
+		 * 
+		 * @param {object} oData - Resource Group data to be added under Resource if not exist
+		 */
 		_addSingleChildToParent: function (oData) {
 			var oGanntObject = this.getView().getModel().createEntry("GanttResourceHierarchySet").getObject(),
 				aChildren = this.oPlanningModel.getProperty("/data/children");
 			oGanntObject["ChildCount"] = 0;
 			oGanntObject["Description"] = oData["Description"];
-			oGanntObject["NodeId"] = oData["ParentNodeId"];
+			oGanntObject["NodeId"] = `${oData["ParentNodeId"]}//${new Date().getTime()}`;
 			oGanntObject["ParentNodeId"] = oData["ParentNodeId"];
 			oGanntObject["ResourceGroupGuid"] = oData["ResourceGroupGuid"];
 			oGanntObject["ResourceGuid"] = oData["ResourceGuid"];
@@ -466,17 +471,26 @@ sap.ui.define([
 			oGanntObject["ResourceGuid"] = oData["ResourceGuid"];
 			oGanntObject["NodeType"] = oData["NodeType"];
 			oGanntObject["HierarchyLevel"] = 1;
-			
-			aChildren.forEach(function(child){
-				if(!this._checkIfGroupExist(child,oGanntObject["ResourceGroupGuid"]) && child.NodeId === oGanntObject.ParentNodeId){
-					child.children.push(oGanntObject);
+
+			var callbackFn = function (oItem, oData) {
+				if (!this._checkIfGroupExist(oItem, oData["ResourceGroupGuid"]) && oItem.NodeId === oData.ParentNodeId && oItem.children) {
+					oItem.children.push(oData);
 				}
-			}.bind(this));
+			}.bind(this);
+			aChildren = this._recurseAllChildren(aChildren, callbackFn, oGanntObject);
+			this.oPlanningModel.setProperty("/data/children", aChildren);
 
 		},
 		
-		_checkIfGroupExist:function(aResourceData,sResourceGroupGuid){
-			return aResourceData.children.some(oChild => oChild.ResourceGroupGuid === sResourceGroupGuid);
+		/**
+		 * Checks if Resource Group is already exist under Resource
+		 * 
+		 * @param {object} aResourceData - Resource Group data to be added under Resource if not exist
+		 */
+
+		_checkIfGroupExist: function (aResourceData, sResourceGroupGuid) {
+			if (aResourceData && aResourceData.children)
+				return aResourceData.children.some(oChild => oChild.ResourceGroupGuid === sResourceGroupGuid);
 		},
 
 		/**
