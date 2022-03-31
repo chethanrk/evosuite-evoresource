@@ -190,7 +190,8 @@ sap.ui.define([
 					obj.AssignmentType = "GROUP";
 					obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
 					obj.ResourceGuid = oRowData.ResourceGuid;
-					obj.Description = oRowData.Description;
+					obj.Description = oRowData.ResourceGroupDesc || oRowData.Description;
+					obj.ParentNodeId = oRowData.NodeId;
 					resolve(obj);
 				}.bind(this));
 			}.bind(this));

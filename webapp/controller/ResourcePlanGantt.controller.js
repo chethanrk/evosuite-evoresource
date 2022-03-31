@@ -228,14 +228,20 @@ sap.ui.define([
 				oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id),
 				sStartTime = oDroppedTarget.getTime(),
 				sEndTime = oDroppedTarget.getEndTime(),
-				oPopoverData = {
-					Guid: new Date().getTime(),
-					sStartTime,
-					sEndTime,
-					oResourceObject: oObject
-				};
+				oPopoverData;
+			oObject["ResourceGroupGuid"] = oDraggedObject.data["ResourceGroupGuid"]; //assigned dragged Resource group Guid
+			oObject["ResourceGroupColor"] = oDraggedObject.data["ResourceGroupColor"]; //assigned dragged Resource group color
+			oObject["ResourceGroupDesc"] = oDraggedObject.data["ResourceGroupDesc"]; //assigned dragged Resource group desc
+			oObject["ResourceGroupId"] = oDraggedObject.data["ResourceGroupId"]; //assigned dragged Resource group id
+			oObject["ResourceGroupUnitDesc"] = oDraggedObject.data["ResourceGroupUnitDesc"]; //assigned dragged Resource group unit desc
+			oObject["ResourceGroupUnitId"] = oDraggedObject.data["ResourceGroupUnitId"]; //assigned dragged Resource group unit id
+			oPopoverData = {
+				Guid: new Date().getTime(),
+				sStartTime,
+				sEndTime,
+				oResourceObject: oObject
+			};
 
-			oObject["ResourceGroupGuid"] = oDraggedObject.data["ResourceGroupGuid"]; //assigned dragged Resource group id
 			this.openShapeChangePopover(oDroppedTarget, oPopoverData);
 
 		},
@@ -435,6 +441,9 @@ sap.ui.define([
 				//its background shape
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
+					if (oData?.ResourceGroupGuid) {
+						this._addSingleChildToParent(oData);
+					}
 					this._addNewAssignmentShape(oData);
 				}.bind(this));
 			} else if (oTargetControl.sParentAggregationName === "shapes2" && oContext) {
@@ -443,6 +452,31 @@ sap.ui.define([
 				this._setShapePopoverPosition(oAssignData);
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 			}
+		},
+		_addSingleChildToParent: function (oData) {
+			var oGanntObject = this.getView().getModel().createEntry("GanttResourceHierarchySet").getObject(),
+				aChildren = this.oPlanningModel.getProperty("/data/children");
+			oGanntObject["ChildCount"] = 0;
+			oGanntObject["Description"] = oData["Description"];
+			oGanntObject["NodeId"] = oData["ParentNodeId"];
+			oGanntObject["ParentNodeId"] = oData["ParentNodeId"];
+			oGanntObject["ResourceGroupGuid"] = oData["ResourceGroupGuid"];
+			oGanntObject["ResourceGuid"] = oData["ResourceGuid"];
+			oGanntObject["ResourceGroupUnitId"] = oData["ResourceGroupUnitId"];
+			oGanntObject["ResourceGuid"] = oData["ResourceGuid"];
+			oGanntObject["NodeType"] = oData["NodeType"];
+			oGanntObject["HierarchyLevel"] = 1;
+			
+			aChildren.forEach(function(child){
+				if(!this._checkIfGroupExist(child,oGanntObject["ResourceGroupGuid"]) && child.NodeId === oGanntObject.ParentNodeId){
+					child.children.push(oGanntObject);
+				}
+			}.bind(this));
+
+		},
+		
+		_checkIfGroupExist:function(aResourceData,sResourceGroupGuid){
+			return aResourceData.children.some(oChild => oChild.ResourceGroupGuid === sResourceGroupGuid);
 		},
 
 		/**
