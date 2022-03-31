@@ -22,7 +22,7 @@
 			<f:content>
 				<smartTable:SmartTable header="{i18n>xtit.group}" id="idResourceGroupTable" smartFilterId="idResourceGroupFilter"
 					entitySet="ResourceGroupSet" enableAutoBinding="true" tableType="ResponsiveTable" demandPopin="true" useTablePersonalisation="false"
-					useExportToExcel="false">
+					useExportToExcel="false" requestAtLeastFields="ResourceGroupGuid,ResourceGroupId,ResourceGroupColor,ResourceGroupUnitDesc">
 					<smartTable:customToolbar>
 						<Toolbar>
 							<ToolbarSpacer/>
