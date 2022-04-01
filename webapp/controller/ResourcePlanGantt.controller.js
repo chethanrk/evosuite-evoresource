@@ -435,14 +435,16 @@ sap.ui.define([
 				sEndTime,
 				oResourceObject
 			} = oPopoverData,
-			oContext = oTargetControl.getBindingContext("ganttPlanningModel");
+			oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
+			oChildData;
 
 			if (oTargetControl.sParentAggregationName === "shapes1") {
 				//its background shape
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					if (oData && oData.ResourceGroupGuid) {
-						this._addSingleChildToParent(oData);
+						oChildData = Object.assign(oData,{bgTasks:oPopoverData.oResourceObject.bgTasks});                         
+						this._addSingleChildToParent(oChildData);
 					} else {
 						this._addNewAssignmentShape(oData);
 					}
@@ -462,10 +464,12 @@ sap.ui.define([
 		_addSingleChildToParent: function (oData) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			this.getObjectFromEntity("GanttResourceHierarchySet", oData).then(function (oGanntObject) {
+				oGanntObject["bgTasks"] = oData["bgTasks"];
 				oGanntObject["ChildCount"] = 0;
 				oGanntObject["HierarchyLevel"] = 1;
+				oGanntObject["NodeType"] = "RES_GROUP";
 				oGanntObject["ParentNodeId"] = oGanntObject["ParentNodeId"].split("//")[0];
-				oGanntObject["NodeId"] = `${oData["ParentNodeId"]}//${new Date().getTime()}`;
+				oGanntObject["NodeId"] = oData["ParentNodeId"] + "//"+ new Date().getTime();
 				var callbackFn = function (oItem, oData) {
 					if (!this._checkIfGroupExist(oItem, oData["ResourceGroupGuid"]) && oItem.NodeId === oData.ParentNodeId && oItem.children) {
 						oItem.children.push(oData);

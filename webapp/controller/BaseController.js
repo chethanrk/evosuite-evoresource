@@ -304,7 +304,6 @@ sap.ui.define([
 				}.bind(this));
 			}.bind(this));
 		},
-
 		/**
 		 * opens Message Popover 
 		 * @param {object} oView - view instance of the caller
