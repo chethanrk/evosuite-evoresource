@@ -1,3 +1,4 @@
+/* global moment:true */
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"com/evorait/evosuite/evoresource/model/formatter",
@@ -45,9 +46,13 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
-				getObjectFromEntity:{
-					public:true,
-					final:true
+				getObjectFromEntity: {
+					public: true,
+					final: true
+				},
+				changeGanttHorizonViewAt: {
+					public: true,
+					final: true
 				}
 			}
 		},
@@ -196,6 +201,7 @@ sap.ui.define([
 					obj.ResourceGuid = oRowData.ResourceGuid;
 					obj.Description = oRowData.ResourceGroupDesc || oRowData.Description;
 					obj.ParentNodeId = oRowData.NodeId;
+					obj.ResourceGroupColor = oRowData.ResourceGroupColor;
 					resolve(obj);
 				}.bind(this));
 			}.bind(this));
@@ -341,5 +347,31 @@ sap.ui.define([
 				endTime: oEndDate
 			}));
 		},
+
+		/**
+		 * Change view horizon time at specified timestamp
+		 * @param oModel {object} viewModel
+		 * @param start {object} timestamp
+		 * @param end {object} timestamp
+		 */
+		changeGanttHorizonViewAt: function (oModel, iZoomLevel, oAxisTimeStrategy) {
+			var sStartDate, sEndDate;
+
+			if (iZoomLevel >= 8) {
+				sStartDate = moment().startOf("hour").toDate();
+				sEndDate = moment().endOf("hour").add(1, "hour").toDate();
+			} else {
+				sStartDate = moment().startOf("day").subtract(1, "day").toDate();
+				sEndDate = moment().endOf("day").add(1, "day").toDate();
+			}
+
+			this.getModel("viewModel").setProperty("/gantt/defaultStartDate", sStartDate);
+			this.getModel("viewModel").setProperty("/gantt/defaultEndDate", sEndDate);
+			oAxisTimeStrategy.setVisibleHorizon(new sap.gantt.config.TimeHorizon({
+				startTime: sStartDate,
+				endTime: sEndDate
+			}));
+
+		}
 	});
 });
