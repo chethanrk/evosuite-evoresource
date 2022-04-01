@@ -44,6 +44,10 @@ sap.ui.define([
 				createNewTempAssignment: {
 					public: true,
 					final: true
+				},
+				getObjectFromEntity:{
+					public:true,
+					final:true
 				}
 			}
 		},
