@@ -44,6 +44,10 @@ sap.ui.define([
 				createNewTempAssignment: {
 					public: true,
 					final: true
+				},
+				getObjectFromEntity:{
+					public:true,
+					final:true
 				}
 			}
 		},
@@ -190,7 +194,8 @@ sap.ui.define([
 					obj.AssignmentType = "GROUP";
 					obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
 					obj.ResourceGuid = oRowData.ResourceGuid;
-					obj.Description = oRowData.Description;
+					obj.Description = oRowData.ResourceGroupDesc || oRowData.Description;
+					obj.ParentNodeId = oRowData.NodeId;
 					resolve(obj);
 				}.bind(this));
 			}.bind(this));
@@ -280,7 +285,29 @@ sap.ui.define([
 			}
 			return sNewObj;
 		},
-
+		/**
+		 * Promise return Structture of a given EntitySet with data if passed
+		 * @param {string} sEntitySet - EntitySet name
+		 * @param {object} oRowData -  Data to be copied to new object
+		 */
+		getObjectFromEntity: function (sEntitySet, oRowData) {
+			var obj = {};
+			return new Promise(function (resolve) {
+				this.getModel().getMetaModel().loaded().then(function () {
+					var oMetaModel = this.getModel().getMetaModel(),
+						oEntitySet = oMetaModel.getODataEntitySet(sEntitySet),
+						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+						aProperty = oEntityType ? oEntityType.property : [];
+					aProperty.forEach(function (property) {
+						obj[property.name] = "";
+						if (oRowData[property.name]) {
+							obj[property.name] = oRowData[property.name];
+						}
+					});
+					resolve(obj);
+				}.bind(this));
+			}.bind(this));
+		},
 		/**
 		 * opens Message Popover 
 		 * @param {object} oView - view instance of the caller

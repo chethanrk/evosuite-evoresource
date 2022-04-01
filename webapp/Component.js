@@ -48,7 +48,8 @@ sap.ui.define([
 					defaultStartDate: moment().startOf("week").toDate(),
 					defaultEndDate: moment().endOf("month").add(1, "months").toDate(),
 					popoverPlacement: sap.m.PlacementType.HorizontalPreferredRight
-				}
+				},
+				draggedData:null
 			}), "viewModel");
 
 			this.setModel(models.createHelperModel(), "ganttPlanningModel");

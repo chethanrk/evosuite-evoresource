@@ -58,6 +58,16 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
+				},
+				onResourceGroupDrop: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				openShapeChangePopover: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
 				}
 			}
 		},
@@ -151,9 +161,31 @@ sap.ui.define([
 		 * @param {object} oEvent - when shape in Gantt was selected
 		 */
 		onShapePress: function (oEvent) {
-			var mParams = oEvent.getParameters();
-			//validate if shape is in future or current date
-			if (mParams.shape && this._sGanttViewMode.isFuture(mParams.shape.getTime())) {
+			var mParams = oEvent.getParameters(),
+				oShape = mParams.shape,
+				oRowContext = mParams.rowSettings.getParent().getBindingContext("ganttPlanningModel"),
+				sStartTime = oShape.getTime(),
+				sEndTime = oShape.getEndTime(),
+				oRowData = oRowContext.getObject(),
+				oPopoverData = {
+					Guid: new Date().getTime(),
+					sStartTime,
+					sEndTime,
+					oResourceObject: oRowData
+				};
+
+			this.openShapeChangePopover(mParams.shape, oPopoverData);
+		},
+		/**
+		 * Called to open ShapeChangePopover
+		 * @param {object} oTargetControl - Control where popover should open
+		 * @param {object} oPopoverData - Data to be displayed in Popover
+		 */
+		openShapeChangePopover: function (oTargetControl, oPopoverData) {
+			if (!this._validateForOpenPopover()) {
+				return;
+			}
+			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getTime())) {
 				// create popover
 				if (!this._oPlanningPopover) {
 					Fragment.load({
@@ -162,8 +194,8 @@ sap.ui.define([
 					}).then(function (pPopover) {
 						this._oPlanningPopover = pPopover;
 						this.getView().addDependent(this._oPlanningPopover);
-						this._setPopoverData(mParams);
-						this._oPlanningPopover.openBy(mParams.shape);
+						this._oPlanningPopover.openBy(oTargetControl);
+						this._setPopoverData(oTargetControl, oPopoverData);
 
 						//after popover gets closed remove popover data
 						this._oPlanningPopover.attachAfterClose(function () {
@@ -173,14 +205,45 @@ sap.ui.define([
 						}.bind(this));
 					}.bind(this));
 				} else {
-					this._setPopoverData(mParams);
-					this._oPlanningPopover.openBy(mParams.shape);
+					this._oPlanningPopover.openBy(oTargetControl);
+					this._setPopoverData(oTargetControl, oPopoverData);
 				}
 			} else {
 				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
 			}
 		},
 
+		/**
+		 * Called when Resource drop is dropped in Gantt
+		 * @param {object} oEvent
+		 */
+		onResourceGroupDrop: function (oEvent) {
+			//ondrop of the the resourcegroup
+			var oDroppedControl = oEvent.getParameter("droppedControl"),
+				oContext = oDroppedControl.getBindingContext("ganttPlanningModel"),
+				oObject = deepClone(oContext.getObject()),
+				oDraggedObject = this.getView().getModel("viewModel").getProperty("/draggedData"),
+				oBrowserEvent = oEvent.getParameter("browserEvent"),
+				oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id),
+				sStartTime = oDroppedTarget.getTime(),
+				sEndTime = oDroppedTarget.getEndTime(),
+				oPopoverData;
+			oObject["ResourceGroupGuid"] = oDraggedObject.data["ResourceGroupGuid"]; //assigned dragged Resource group Guid
+			oObject["ResourceGroupColor"] = oDraggedObject.data["ResourceGroupColor"]; //assigned dragged Resource group color
+			oObject["ResourceGroupDesc"] = oDraggedObject.data["ResourceGroupDesc"]; //assigned dragged Resource group desc
+			oObject["ResourceGroupId"] = oDraggedObject.data["ResourceGroupId"]; //assigned dragged Resource group id
+			oObject["ResourceGroupUnitDesc"] = oDraggedObject.data["ResourceGroupUnitDesc"]; //assigned dragged Resource group unit desc
+			oObject["ResourceGroupUnitId"] = oDraggedObject.data["ResourceGroupUnitId"]; //assigned dragged Resource group unit id
+			oPopoverData = {
+				Guid: new Date().getTime(),
+				sStartTime,
+				sEndTime,
+				oResourceObject: oObject
+			};
+
+			this.openShapeChangePopover(oDroppedTarget, oPopoverData);
+
+		},
 		/**
 		 * @param {object} oEvent -
 		 */
@@ -190,7 +253,6 @@ sap.ui.define([
 		 * @param {object} oEvent -
 		 */
 		onPressCancel: function () {},
-
 		/**
 		 * Change of shape assignment
 		 * Todo 
@@ -365,26 +427,66 @@ sap.ui.define([
 		 * 
 		 * @param {object} mParams - event parameters from shape press
 		 */
-		_setPopoverData: function (mParams) {
-			var oShape = mParams.shape,
-				oRowContext = mParams.rowSettings.getParent().getBindingContext("ganttPlanningModel"),
-				oContext = oShape.getBindingContext("ganttPlanningModel"),
-				sStartTime = oShape.getTime(),
-				sEndTime = oShape.getEndTime(),
-				oRowData = oRowContext.getObject();
+		_setPopoverData: function (oTargetControl, oPopoverData) {
+			var {
+				Guid,
+				sStartTime,
+				sEndTime,
+				oResourceObject
+			} = oPopoverData,
+			oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
+			oChildData;
 
-			if (oShape.sParentAggregationName === "shapes1") {
+			if (oTargetControl.sParentAggregationName === "shapes1") {
 				//its background shape
-				this.createNewTempAssignment(sStartTime, sEndTime, oRowData).then(function (oData) {
+				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
-					this._addNewAssignmentShape(oData);
+					if (oData && oData.ResourceGroupGuid) {
+						oChildData = Object.assign(oData,{bgTasks:oPopoverData.oResourceObject.bgTasks});                         
+						this._addSingleChildToParent(oChildData);
+					} else {
+						this._addNewAssignmentShape(oData);
+					}
+
 				}.bind(this));
-			} else if (oShape.sParentAggregationName === "shapes2" && oContext) {
+			} else if (oTargetControl.sParentAggregationName === "shapes2" && oContext) {
 				//its a assignment
 				var oAssignData = oContext.getObject();
 				this._setShapePopoverPosition(oAssignData);
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 			}
+		},
+		/**
+		 * Add new Resource Group under Resource in Gantt
+		 * @param {object} oData - Resource Group data to be added under Resource if not exist
+		 */
+		_addSingleChildToParent: function (oData) {
+			var aChildren = this.oPlanningModel.getProperty("/data/children");
+			this.getObjectFromEntity("GanttResourceHierarchySet", oData).then(function (oGanntObject) {
+				oGanntObject["bgTasks"] = oData["bgTasks"];
+				oGanntObject["ChildCount"] = 0;
+				oGanntObject["HierarchyLevel"] = 1;
+				oGanntObject["NodeType"] = "RES_GROUP";
+				oGanntObject["ParentNodeId"] = oGanntObject["ParentNodeId"].split("//")[0];
+				oGanntObject["NodeId"] = oData["ParentNodeId"] + "//"+ new Date().getTime();
+				var callbackFn = function (oItem, oData) {
+					if (!this._checkIfGroupExist(oItem, oData["ResourceGroupGuid"]) && oItem.NodeId === oData.ParentNodeId && oItem.children) {
+						oItem.children.push(oData);
+					}
+				}.bind(this);
+				aChildren = this._recurseAllChildren(aChildren, callbackFn, oGanntObject);
+				this.oPlanningModel.setProperty("/data/children", aChildren);
+				this._addNewAssignmentShape(oData);
+			}.bind(this));
+		},
+		/**
+		 * Checks if Resource Group is already exist under Resource
+		 * @param {object} aResourceData - Resource Group data to be added under Resource if not exist
+		 * @param {object} sResourceGroupGuid - Resource guid to be checked inside aResourceData
+		 */
+		_checkIfGroupExist: function (aResourceData, sResourceGroupGuid) {
+			if (aResourceData && aResourceData.children)
+				return aResourceData.children.some(oChild => oChild.ResourceGroupGuid === sResourceGroupGuid);
 		},
 
 		/**
@@ -402,6 +504,7 @@ sap.ui.define([
 			} else {
 				this.getModel("viewModel").setProperty("/gantt/popoverPlacement", sap.m.PlacementType.HorizontalPreferredRight);
 			}
+
 		},
 
 		/**
@@ -471,6 +574,17 @@ sap.ui.define([
 		 */
 		_validateForDelete: function (oData) {
 			return true;
-		}
+
+		},
+		/**
+		 * validated if popover can be visible or not
+		 */
+		_validateForOpenPopover: function () {
+			var bPopover = this.getView().getModel("user").getProperty("/ENABLE_PLANNING_POPOVER");
+			if (!bPopover) {
+				this.showMessageToast(this.getResourceBundle().getText("xtxt.noAuthorization"));
+			}
+			return bPopover;
+		},
 	});
 });
