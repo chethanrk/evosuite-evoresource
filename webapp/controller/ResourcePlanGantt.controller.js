@@ -464,6 +464,7 @@ sap.ui.define([
 			this.getObjectFromEntity("GanttResourceHierarchySet", oData).then(function (oGanntObject) {
 				oGanntObject["ChildCount"] = 0;
 				oGanntObject["HierarchyLevel"] = 1;
+				oGanntObject["ParentNodeId"] = oGanntObject["ParentNodeId"].split("//")[0];
 				oGanntObject["NodeId"] = `${oData["ParentNodeId"]}//${new Date().getTime()}`;
 				var callbackFn = function (oItem, oData) {
 					if (!this._checkIfGroupExist(oItem, oData["ResourceGroupGuid"]) && oItem.NodeId === oData.ParentNodeId && oItem.children) {
