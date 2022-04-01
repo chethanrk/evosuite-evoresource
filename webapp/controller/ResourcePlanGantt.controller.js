@@ -235,17 +235,6 @@ sap.ui.define([
 			}
 		},
 
-		_addColorToShape: function (sColor) {
-			var aShapes = this.oPlanningModel.getProperty("/data/children");
-			for (var i = 0; i < aShapes.length; i++) {
-				for (var j = 0; j < aShapes[i].AssignmentSet.results.length; j++) {
-					if (aShapes[i].AssignmentSet.results[j].isTemporary) {
-						aShapes[i].AssignmentSet.results[j].ResourceGroupColor = sColor;
-					}
-				}
-			}
-		},
-
 		/**
 		 * Called when Resource drop is dropped in Gantt
 		 * @param {object} oEvent
