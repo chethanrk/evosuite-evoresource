@@ -441,10 +441,12 @@ sap.ui.define([
 				//its background shape
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
-					if (oData?.ResourceGroupGuid) {
+					if (oData && oData.ResourceGroupGuid) {
 						this._addSingleChildToParent(oData);
+					} else {
+						this._addNewAssignmentShape(oData);
 					}
-					this._addNewAssignmentShape(oData);
+
 				}.bind(this));
 			} else if (oTargetControl.sParentAggregationName === "shapes2" && oContext) {
 				//its a assignment
@@ -455,39 +457,28 @@ sap.ui.define([
 		},
 		/**
 		 * Add new Resource Group under Resource in Gantt
-		 * 
 		 * @param {object} oData - Resource Group data to be added under Resource if not exist
 		 */
 		_addSingleChildToParent: function (oData) {
-			var oGanntObject = this.getView().getModel().createEntry("GanttResourceHierarchySet").getObject(),
-				aChildren = this.oPlanningModel.getProperty("/data/children");
-			oGanntObject["ChildCount"] = 0;
-			oGanntObject["Description"] = oData["Description"];
-			oGanntObject["NodeId"] = `${oData["ParentNodeId"]}//${new Date().getTime()}`;
-			oGanntObject["ParentNodeId"] = oData["ParentNodeId"];
-			oGanntObject["ResourceGroupGuid"] = oData["ResourceGroupGuid"];
-			oGanntObject["ResourceGuid"] = oData["ResourceGuid"];
-			oGanntObject["ResourceGroupUnitId"] = oData["ResourceGroupUnitId"];
-			oGanntObject["ResourceGuid"] = oData["ResourceGuid"];
-			oGanntObject["NodeType"] = oData["NodeType"];
-			oGanntObject["HierarchyLevel"] = 1;
-
-			var callbackFn = function (oItem, oData) {
-				if (!this._checkIfGroupExist(oItem, oData["ResourceGroupGuid"]) && oItem.NodeId === oData.ParentNodeId && oItem.children) {
-					oItem.children.push(oData);
-				}
-			}.bind(this);
-			aChildren = this._recurseAllChildren(aChildren, callbackFn, oGanntObject);
-			this.oPlanningModel.setProperty("/data/children", aChildren);
-
+			var aChildren = this.oPlanningModel.getProperty("/data/children");
+			this.getObjectFromEntity("GanttResourceHierarchySet", oData).then(function (oGanntObject) {
+				oGanntObject["ChildCount"] = 0;
+				oGanntObject["HierarchyLevel"] = 1;
+				oGanntObject["NodeId"] = `${oData["ParentNodeId"]}//${new Date().getTime()}`;
+				var callbackFn = function (oItem, oData) {
+					if (!this._checkIfGroupExist(oItem, oData["ResourceGroupGuid"]) && oItem.NodeId === oData.ParentNodeId && oItem.children) {
+						oItem.children.push(oData);
+					}
+				}.bind(this);
+				aChildren = this._recurseAllChildren(aChildren, callbackFn, oGanntObject);
+				this.oPlanningModel.setProperty("/data/children", aChildren);
+				this._addNewAssignmentShape(oData);
+			}.bind(this));
 		},
-		
 		/**
 		 * Checks if Resource Group is already exist under Resource
-		 * 
 		 * @param {object} aResourceData - Resource Group data to be added under Resource if not exist
 		 */
-
 		_checkIfGroupExist: function (aResourceData, sResourceGroupGuid) {
 			if (aResourceData && aResourceData.children)
 				return aResourceData.children.some(oChild => oChild.ResourceGroupGuid === sResourceGroupGuid);
