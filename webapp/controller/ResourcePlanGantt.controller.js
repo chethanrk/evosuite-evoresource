@@ -224,7 +224,6 @@ sap.ui.define([
 				oObject = deepClone(oContext.getObject()),
 				oDraggedObject = this.getView().getModel("viewModel").getProperty("/draggedData"),
 				oBrowserEvent = oEvent.getParameter("browserEvent"),
-				oAxisTime = this.byId("idResourcePlanGanttChartContainer").getAggregation("ganttCharts")[0].getAxisTime(),
 				oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id),
 				sStartTime = oDroppedTarget.getTime(),
 				sEndTime = oDroppedTarget.getEndTime(),
@@ -483,6 +482,7 @@ sap.ui.define([
 		/**
 		 * Checks if Resource Group is already exist under Resource
 		 * @param {object} aResourceData - Resource Group data to be added under Resource if not exist
+		 * @param {object} sResourceGroupGuid - Resource guid to be checked inside aResourceData
 		 */
 		_checkIfGroupExist: function (aResourceData, sResourceGroupGuid) {
 			if (aResourceData && aResourceData.children)
@@ -576,6 +576,9 @@ sap.ui.define([
 			return true;
 
 		},
+		/**
+		 * validated if popover can be visible or not
+		 */
 		_validateForOpenPopover: function () {
 			var bPopover = this.getView().getModel("user").getProperty("/ENABLE_PLANNING_POPOVER");
 			if (!bPopover) {
