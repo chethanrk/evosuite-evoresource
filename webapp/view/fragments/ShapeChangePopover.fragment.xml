@@ -10,9 +10,9 @@
 						<core:Item key="GROUP" text="{i18n>xtxt.group}"/>
 					</Select>
 					<Label text="{i18n>xfld.popoverSelect}" required="true"/>
-					<ComboBox required="true" showSecondaryValues="true" name="ResourceGroupGuid" fieldGroupIds="changeShapeInput"
-						items="{ path: '/ResourceGroupSet', sorter: { path: 'ResourceGroupDesc' } }"
-						selectedKey="{ganttPlanningModel>/tempData/popover/ResourceGroupGuid}">
+					<ComboBox id="idResourceGroupGroup" required="true" showSecondaryValues="true" name="ResourceGroupGuid" fieldGroupIds="changeShapeInput"
+						items="{ path: '/ResourceGroupSet', sorter: { path: 'ResourceGroupDesc' }}"
+						selectedKey="{ganttPlanningModel>/tempData/popover/ResourceGroupGuid}" change="onChangeResourceGroup">
 						<core:ListItem key="{ResourceGroupGuid}" text="{ResourceGroupDesc}" additionalText="{ResourceGroupUnitId}"/>
 					</ComboBox>
 					<Label text="{i18n>xfld.popoverDateRange}" required="true"/>

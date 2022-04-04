@@ -68,6 +68,21 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
+				},
+				onChangeResourceGroup: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onPressToday: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onClickExpandCollapse: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
 				}
 			}
 		},
@@ -75,6 +90,7 @@ sap.ui.define([
 		oOriginData: null,
 		oPlanningModel: null,
 		_defaultView: "DAY",
+		_treeTable: null,
 
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
@@ -82,6 +98,7 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoresource.controller.ResourcePlanningMain
 		 */
 		onInit: function () {
+			this._treeTable = this.getView().byId("idResourcePlanGanttTreeTable");
 			this.oZoomStrategy = this.getView().byId("idResourcePlanGanttZoom");
 			this.oZoomStrategy.setTimeLineOptions(formatter.getTimeLineOptions());
 			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(this._defaultView));
@@ -197,6 +214,11 @@ sap.ui.define([
 						this._oPlanningPopover.openBy(oTargetControl);
 						this._setPopoverData(oTargetControl, oPopoverData);
 
+						//after popover gets opened check popover data for resource group color
+						this._oPlanningPopover.attachAfterOpen(function () {
+							this._addResourceGroupColor();
+						}.bind(this));
+
 						//after popover gets closed remove popover data
 						this._oPlanningPopover.attachAfterClose(function () {
 							var oData = this.oPlanningModel.getProperty("/tempData/popover");
@@ -279,6 +301,52 @@ sap.ui.define([
 			//todo show confirm dialog and send validation request
 			this._removeAssignmentShape(this.oPlanningModel.getProperty("/tempData/popover"), true);
 			this._oPlanningPopover.close();
+		},
+
+		/**
+		 * On change resource group
+		 * set the color code to shape
+		 * @param {oEvent}
+		 */
+		onChangeResourceGroup: function (oEvent) {
+			var oSelectedItem = oEvent.getSource().getSelectedItem(),
+				oSelContext = oSelectedItem.getBindingContext(),
+				oData = this.oPlanningModel.getProperty("/tempData/popover");
+
+			oData.ResourceGroupColor = oSelContext.getProperty("ResourceGroupColor");
+
+			//delete created assigmnemet 
+			this._removeAssignmentShape(oData);
+
+			var newPopoverdata = deepClone(oData);
+			newPopoverdata.Description = oSelContext.getProperty("ResourceGroupDesc");
+
+			//add different resource group if it is not exist
+			this._addSingleChildToParent(newPopoverdata);
+		},
+
+		/**
+		 * on click on today adjust the view of Gantt horizon.
+		 * @param oEvent
+		 */
+		onPressToday: function (oEvent) {
+			this.changeGanttHorizonViewAt(this.getModel("viewModel"), this.oZoomStrategy.getZoomLevel(), this.oZoomStrategy);
+		},
+
+		/**
+		 * On click on expand the tree nodes gets expand to level 1
+		 * On click on collapse all the tree nodes will be collapsed to root.
+		 * @param oEvent
+		 */
+		onClickExpandCollapse: function (oEvent) {
+			var oButton = oEvent.getSource(),
+				oCustomData = oButton.getCustomData();
+
+			if (oCustomData[0].getValue() === "EXPAND" && this._treeTable) {
+				this._treeTable.expandToLevel(1);
+			} else {
+				this._treeTable.collapseAll();
+			}
 		},
 
 		/* =========================================================== */
@@ -435,14 +503,16 @@ sap.ui.define([
 				oResourceObject
 			} = oPopoverData,
 			oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
-			oChildData;
+				oChildData;
 
 			if (oTargetControl.sParentAggregationName === "shapes1") {
 				//its background shape
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					if (oData && oData.ResourceGroupGuid) {
-						oChildData = Object.assign(oData,{bgTasks:oPopoverData.oResourceObject.bgTasks});                         
+						oChildData = Object.assign(oData, {
+							bgTasks: oPopoverData.oResourceObject.bgTasks
+						});
 						this._addSingleChildToParent(oChildData);
 					} else {
 						this._addNewAssignmentShape(oData);
@@ -468,7 +538,7 @@ sap.ui.define([
 				oGanntObject["HierarchyLevel"] = 1;
 				oGanntObject["NodeType"] = "RES_GROUP";
 				oGanntObject["ParentNodeId"] = oGanntObject["ParentNodeId"].split("//")[0];
-				oGanntObject["NodeId"] = oData["ParentNodeId"] + "//"+ new Date().getTime();
+				oGanntObject["NodeId"] = oData["ParentNodeId"] + "//" + new Date().getTime();
 				var callbackFn = function (oItem, oData) {
 					if (!this._checkIfGroupExist(oItem, oData["ResourceGroupGuid"]) && oItem.NodeId === oData.ParentNodeId && oItem.children) {
 						oItem.children.push(oData);
@@ -586,5 +656,23 @@ sap.ui.define([
 			}
 			return bPopover;
 		},
+
+		/**
+		 * To update resource group color based on selected resource group
+		 * time out is to wait to load ResourceGroupSet data
+		 */
+		_addResourceGroupColor: function () {
+			var oData = this.oPlanningModel.getProperty("/tempData/popover");
+			if (oData.ResourceGroupGuid) {
+				setTimeout(function () {
+					var oGroupSelection = sap.ui.getCore().byId("idResourceGroupGroup");
+					if (oGroupSelection && oGroupSelection.getSelectedItem()) {
+						var sColor = oGroupSelection.getSelectedItem().getBindingContext().getProperty("ResourceGroupColor")
+						oData.ResourceGroupColor = sColor;
+						this.oPlanningModel.refresh();
+					}
+				}.bind(this), 1000);
+			}
+		}
 	});
 });
