@@ -313,13 +313,13 @@ sap.ui.define([
 				oSelContext = oSelectedItem.getBindingContext(),
 				oData = this.oPlanningModel.getProperty("/tempData/popover");
 
-			oData.ResourceGroupColor = oSelContext.getProperty("ResourceGroupColor");
+			oData.RESOURCE_GROUP_COLOR = oSelContext.getProperty("ResourceGroupColor");
 
 			//delete created assigmnemet 
 			this._removeAssignmentShape(oData);
 
 			var newPopoverdata = deepClone(oData);
-			newPopoverdata.Description = oSelContext.getProperty("ResourceGroupDesc");
+			newPopoverdata.DESCRIPTION = oSelContext.getProperty("ResourceGroupDesc");
 
 			//add different resource group if it is not exist
 			this._addSingleChildToParent(newPopoverdata);
@@ -379,7 +379,7 @@ sap.ui.define([
 					aFilters = oFilterBar.getFilters(),
 					sUri = "/GanttResourceHierarchySet",
 					mParams = {
-						//"$expand": "AssignmentSet"
+						"$expand": "GanttHierarchyToResourceAssign"
 					};
 
 				aFilters.push(new Filter("HierarchyLevel", FilterOperator.EQ, iLevel));
@@ -534,10 +534,11 @@ sap.ui.define([
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			this.getObjectFromEntity("GanttResourceHierarchySet", oData).then(function (oGanntObject) {
 				oGanntObject["bgTasks"] = oData["bgTasks"];
+				oGanntObject["Description"] = oData["DESCRIPTION"];
 				oGanntObject["ChildCount"] = 0;
 				oGanntObject["HierarchyLevel"] = 1;
 				oGanntObject["NodeType"] = "RES_GROUP";
-				oGanntObject["ParentNodeId"] = oGanntObject["ParentNodeId"].split("//")[0];
+				oGanntObject["ParentNodeId"] = oData["PARENT_NODE_ID"].split("//")[0];
 				oGanntObject["NodeId"] = oData["ParentNodeId"] + "//" + new Date().getTime();
 				var callbackFn = function (oItem, oData) {
 					if (!this._checkIfGroupExist(oItem, oData["ResourceGroupGuid"]) && oItem.NodeId === oData.ParentNodeId && oItem.children) {
@@ -584,17 +585,17 @@ sap.ui.define([
 		_addNewAssignmentShape: function (oAssignData) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			var callbackFn = function (oItem, oData, idx) {
-				if (!oItem.AssignmentSet) {
-					oItem.AssignmentSet = {
+				if (!oItem.GanttHierarchyToResourceAssign) {
+					oItem.GanttHierarchyToResourceAssign = {
 						results: []
 					};
 				}
 				if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid && !oItem.ResourceGroupGuid) {
 					//add to resource itself
-					oItem.AssignmentSet.results.push(oData);
+					oItem.GanttHierarchyToResourceAssign.results.push(oData);
 				} else if (oItem.ResourceGroupGuid && oItem.ResourceGroupGuid === oData.ResourceGroupGuid && oItem.ResourceGuid === oData.ResourceGuid) {
 					//add to resource group
-					oItem.AssignmentSet.results.push(oData);
+					oItem.GanttHierarchyToResourceAssign.results.push(oData);
 				}
 			};
 			aChildren = this._recurseAllChildren(aChildren, callbackFn, oAssignData);
@@ -613,7 +614,7 @@ sap.ui.define([
 			}
 
 			var callbackFn = function (oItem, oData, idx) {
-				var aAssignments = oItem.AssignmentSet ? oItem.AssignmentSet.results : [];
+				var aAssignments = oItem.GanttHierarchyToResourceAssign ? oItem.GanttHierarchyToResourceAssign.results : [];
 				aAssignments.forEach(function (oAssignItem, index) {
 					if (oAssignItem.Guid === oData.Guid) {
 						if (oData.isNew) {
