@@ -669,7 +669,7 @@ sap.ui.define([
 					var oGroupSelection = sap.ui.getCore().byId("idResourceGroupGroup");
 					if (oGroupSelection && oGroupSelection.getSelectedItem()) {
 						var sColor = oGroupSelection.getSelectedItem().getBindingContext().getProperty("ResourceGroupColor")
-						oData.ResourceGroupColor = sColor;
+						oData.RESOURCE_GROUP_COLOR = sColor;
 						this.oPlanningModel.refresh();
 					}
 				}.bind(this), 1000);
