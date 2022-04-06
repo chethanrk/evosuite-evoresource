@@ -381,9 +381,9 @@ sap.ui.define([
 					mParams = {
 						"$expand": "GanttHierarchyToResourceAssign"
 					};
-				
-				if(iLevel > 0){
-					mParams={};
+
+				if (iLevel > 0) {
+					mParams = {};
 				}
 
 				aFilters.push(new Filter("HierarchyLevel", FilterOperator.EQ, iLevel));
@@ -412,6 +412,7 @@ sap.ui.define([
 				aAssignments = []
 			var callbackFn = function (oItem) {
 				oItem.children = [];
+				aAssignments = [];
 				oResData.forEach(function (oResItem) {
 					if (oItem.NodeId === oResItem.ParentNodeId) {
 						//add assignments as children in tree for expanding
@@ -425,13 +426,14 @@ sap.ui.define([
 								};
 							});
 						}*/
-						oItem.GanttHierarchyToResourceAssign.results.forEach(function(oAssignment,idx){
-							if(oAssignment.ResourceGroupGuid === oResItem.ResourceGroupGuid){
-								aAssignments.push(oAssignment);
-							}
-						});
-						oResItem.GanttHierarchyToResourceAssign.results = deepClone(aAssignments);
-						aAssignments = [];
+						if (oItem.GanttHierarchyToResourceAssign && oItem.GanttHierarchyToResourceAssign.results.length > 0) {
+							oItem.GanttHierarchyToResourceAssign.results.forEach(function (oAssignment, idx) {
+								if (oAssignment.ResourceGroupGuid === oResItem.ResourceGroupGuid) {
+									aAssignments.push(oAssignment);
+								}
+							});
+						}
+						oResItem.GanttHierarchyToResourceAssign.results = aAssignments.length > 0 ? deepClone(aAssignments) : [];
 						oItem.children.push(oResItem);
 					}
 				});
