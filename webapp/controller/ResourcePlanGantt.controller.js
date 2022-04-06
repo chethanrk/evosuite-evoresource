@@ -381,6 +381,10 @@ sap.ui.define([
 					mParams = {
 						"$expand": "GanttHierarchyToResourceAssign"
 					};
+				
+				if(iLevel > 0){
+					mParams={};
+				}
 
 				aFilters.push(new Filter("HierarchyLevel", FilterOperator.EQ, iLevel));
 				aFilters.push(new Filter("StartDate", FilterOperator.GE, formatter.date(oDateRangePicker.getDateValue())));
@@ -404,7 +408,8 @@ sap.ui.define([
 		 * @param oResData
 		 */
 		_addChildrenToParent: function (iLevel, oResData) {
-			var aChildren = this.oPlanningModel.getProperty("/data/children");
+			var aChildren = this.oPlanningModel.getProperty("/data/children"),
+				aAssignments = []
 			var callbackFn = function (oItem) {
 				oItem.children = [];
 				oResData.forEach(function (oResItem) {
@@ -420,6 +425,13 @@ sap.ui.define([
 								};
 							});
 						}*/
+						oItem.GanttHierarchyToResourceAssign.results.forEach(function(oAssignment,idx){
+							if(oAssignment.ResourceGroupGuid === oResItem.ResourceGroupGuid){
+								aAssignments.push(oAssignment);
+							}
+						});
+						oResItem.GanttHierarchyToResourceAssign.results = deepClone(aAssignments);
+						aAssignments = [];
 						oItem.children.push(oResItem);
 					}
 				});
