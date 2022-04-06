@@ -416,17 +416,7 @@ sap.ui.define([
 				oResData.forEach(function (oResItem) {
 					aAssignments = [];
 					if (oItem.NodeId === oResItem.ParentNodeId) {
-						//add assignments as children in tree for expanding
-						/*if (oResItem.AssignmentSet && oResItem.AssignmentSet.results.length > 0) {
-							oResItem.children = oResItem.AssignmentSet.results;
-							oResItem.children.forEach(function (oAssignItem, idx) {
-								oResItem.AssignmentSet.results[idx].NodeType = "ASSIGNMENT";
-								var clonedObj = deepClone(oResItem.AssignmentSet.results[idx]);
-								oResItem.children[idx].AssignmentSet = {
-									results: [clonedObj]
-								};
-							});
-						}*/
+						//add assignments to child resource group
 						if (oItem.GanttHierarchyToResourceAssign && oItem.GanttHierarchyToResourceAssign.results.length > 0) {
 							oItem.GanttHierarchyToResourceAssign.results.forEach(function (oAssignment, idx) {
 								if (oAssignment.ResourceGroupGuid === oResItem.ResourceGroupGuid) {
