@@ -414,6 +414,7 @@ sap.ui.define([
 				oItem.children = [];
 				aAssignments = [];
 				oResData.forEach(function (oResItem) {
+					aAssignments = [];
 					if (oItem.NodeId === oResItem.ParentNodeId) {
 						//add assignments as children in tree for expanding
 						/*if (oResItem.AssignmentSet && oResItem.AssignmentSet.results.length > 0) {
