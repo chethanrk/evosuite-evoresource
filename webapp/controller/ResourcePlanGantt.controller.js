@@ -262,9 +262,7 @@ sap.ui.define([
 				sEndTime,
 				oResourceObject: oObject
 			};
-
 			this.openShapeChangePopover(oDroppedTarget, oPopoverData);
-
 		},
 		/**
 		 * @param {object} oEvent -
