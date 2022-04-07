@@ -186,8 +186,8 @@ sap.ui.define([
 				oRowData = oRowContext.getObject(),
 				oPopoverData = {
 					Guid: new Date().getTime(),
-					sStartTime,
-					sEndTime,
+					sStartTime:sStartTime,
+					sEndTime:sEndTime,
 					oResourceObject: oRowData
 				};
 
@@ -250,16 +250,18 @@ sap.ui.define([
 				sStartTime = oDroppedTarget.getTime(),
 				sEndTime = oDroppedTarget.getEndTime(),
 				oPopoverData;
-			oObject["ResourceGroupGuid"] = oDraggedObject.data["ResourceGroupGuid"]; //assigned dragged Resource group Guid
-			oObject["ResourceGroupColor"] = oDraggedObject.data["ResourceGroupColor"]; //assigned dragged Resource group color
-			oObject["ResourceGroupDesc"] = oDraggedObject.data["ResourceGroupDesc"]; //assigned dragged Resource group desc
-			oObject["ResourceGroupId"] = oDraggedObject.data["ResourceGroupId"]; //assigned dragged Resource group id
-			oObject["ResourceGroupUnitDesc"] = oDraggedObject.data["ResourceGroupUnitDesc"]; //assigned dragged Resource group unit desc
-			oObject["ResourceGroupUnitId"] = oDraggedObject.data["ResourceGroupUnitId"]; //assigned dragged Resource group unit id
+			
+			oObject = this.copyObjectData(oObject,oDraggedObject.data,["__metadata"]);
+			// oObject["ResourceGroupGuid"] = oDraggedObject.data["ResourceGroupGuid"]; //assigned dragged Resource group Guid
+			// oObject["ResourceGroupColor"] = oDraggedObject.data["ResourceGroupColor"]; //assigned dragged Resource group color
+			// oObject["ResourceGroupDesc"] = oDraggedObject.data["ResourceGroupDesc"]; //assigned dragged Resource group desc
+			// oObject["ResourceGroupId"] = oDraggedObject.data["ResourceGroupId"]; //assigned dragged Resource group id
+			// oObject["ResourceGroupUnitDesc"] = oDraggedObject.data["ResourceGroupUnitDesc"]; //assigned dragged Resource group unit desc
+			// oObject["ResourceGroupUnitId"] = oDraggedObject.data["ResourceGroupUnitId"]; //assigned dragged Resource group unit id
 			oPopoverData = {
 				Guid: new Date().getTime(),
-				sStartTime,
-				sEndTime,
+				sStartTime:sStartTime,
+				sEndTime:sEndTime,
 				oResourceObject: oObject
 			};
 			this.openShapeChangePopover(oDroppedTarget, oPopoverData);
@@ -499,12 +501,10 @@ sap.ui.define([
 		 * @param {object} mParams - event parameters from shape press
 		 */
 		_setPopoverData: function (oTargetControl, oPopoverData) {
-			var {
-				Guid,
-				sStartTime,
-				sEndTime,
-				oResourceObject
-			} = oPopoverData,
+			var Guid = oPopoverData["Guid"],
+			sStartTime = oPopoverData["sStartTime"],
+			sEndTime = oPopoverData["sEndTime"],
+			oResourceObject = oPopoverData["oResourceObject"],
 			oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
 				oChildData;
 
