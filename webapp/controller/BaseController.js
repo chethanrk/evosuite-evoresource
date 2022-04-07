@@ -180,7 +180,7 @@ sap.ui.define([
 				//collect all assignment properties who allowed for create
 				this.getModel().getMetaModel().loaded().then(function () {
 					var oMetaModel = this.getModel().getMetaModel(),
-						oEntitySet = oMetaModel.getODataEntitySet("AssignmentSet"),
+						oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
 						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
 						aProperty = oEntityType ? oEntityType.property : [];
 
@@ -194,14 +194,14 @@ sap.ui.define([
 						}
 					});
 
-					obj.DateFrom = oStartTime;
-					obj.DateTo = oEndTime;
-					obj.AssignmentType = "GROUP";
+					obj.StartDate = oStartTime;
+					obj.EndDate = oEndTime;
+					obj.NODE_TYPE = "GROUP";
 					obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
 					obj.ResourceGuid = oRowData.ResourceGuid;
-					obj.Description = oRowData.ResourceGroupDesc || oRowData.Description;
-					obj.ParentNodeId = oRowData.NodeId;
-					obj.ResourceGroupColor = oRowData.ResourceGroupColor;
+					obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
+					obj.PARENT_NODE_ID = oRowData.NodeId;
+					obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
 					resolve(obj);
 				}.bind(this));
 			}.bind(this));

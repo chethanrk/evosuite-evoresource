@@ -17,7 +17,7 @@
 					</ComboBox>
 					<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
 					<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput"
-						dateValue="{path:'ganttPlanningModel>/tempData/popover/DateFrom'}" secondDateValue="{path:'ganttPlanningModel>/tempData/popover/DateTo'}"
+						dateValue="{path:'ganttPlanningModel>/tempData/popover/StartDate'}" secondDateValue="{path:'ganttPlanningModel>/tempData/popover/EndDate'}"
 						minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}"/>
 				</f:content>
 			</f:SimpleForm>

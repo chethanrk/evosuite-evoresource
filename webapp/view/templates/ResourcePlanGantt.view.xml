@@ -82,7 +82,7 @@
 											<table:rowActionTemplate></table:rowActionTemplate>
 											<table:rowSettingsTemplate>
 												<gnt2:GanttRowSettings rowId="{ganttPlanningModel>Guid}" shapes1="{path: 'ganttPlanningModel>bgTasks', templateShareable:false}"
-													shapes2="{ path:'ganttPlanningModel>AssignmentSet/results', templateShareable:true }">
+													shapes2="{ path:'ganttPlanningModel>GanttHierarchyToResourceAssign/results', templateShareable:true }">
 													<gnt2:shapes1>
 														<gnt2:BaseRectangle scheme="hiddenBackground" countInBirdEye="false"
 															time="{path: 'ganttPlanningModel>startTime', formatter: '.fnTimeConverter'}"
@@ -91,9 +91,9 @@
 															height="32" yBias="0"></gnt2:BaseRectangle>
 													</gnt2:shapes1>
 													<gnt2:shapes2>
-														<gnt2:BaseRectangle shapeId="{ganttPlanningModel>Guid}" countInBirdEye="true" time="{ganttPlanningModel>DateFrom}" height="20"
-															endTime="{ganttPlanningModel>DateTo}" title="{ganttPlanningModel>Description}" showTitle="true" tooltip="{ganttPlanningModel>Description}"
-															fill="{ganttPlanningModel>ResourceGroupColor}" stroke="#7088ac" strokeWidth="1" opacity="{= ${ganttPlanningModel>isTemporary} === true ? 0.5 : 1}" resizable="false"
+														<gnt2:BaseRectangle shapeId="{ganttPlanningModel>Guid}" countInBirdEye="true" time="{ganttPlanningModel>StartDate}" height="20"
+															endTime="{ganttPlanningModel>EndDate}" title="{ganttPlanningModel>DESCRIPTION}" showTitle="true" tooltip="{ganttPlanningModel>DESCRIPTION}"
+															fill="{ganttPlanningModel>RESOURCE_GROUP_COLOR}" stroke="#7088ac" strokeWidth="1" opacity="{= ${ganttPlanningModel>isTemporary} === true ? 0.5 : 1}" resizable="false"
 															selectable="true" draggable="false"></gnt2:BaseRectangle>
 													</gnt2:shapes2>
 												</gnt2:GanttRowSettings>

@@ -313,13 +313,13 @@ sap.ui.define([
 				oSelContext = oSelectedItem.getBindingContext(),
 				oData = this.oPlanningModel.getProperty("/tempData/popover");
 
-			oData.ResourceGroupColor = oSelContext.getProperty("ResourceGroupColor");
+			oData.RESOURCE_GROUP_COLOR = oSelContext.getProperty("ResourceGroupColor");
 
 			//delete created assigmnemet 
 			this._removeAssignmentShape(oData);
 
 			var newPopoverdata = deepClone(oData);
-			newPopoverdata.Description = oSelContext.getProperty("ResourceGroupDesc");
+			newPopoverdata.DESCRIPTION = oSelContext.getProperty("ResourceGroupDesc");
 
 			//add different resource group if it is not exist
 			this._addSingleChildToParent(newPopoverdata);
@@ -379,8 +379,12 @@ sap.ui.define([
 					aFilters = oFilterBar.getFilters(),
 					sUri = "/GanttResourceHierarchySet",
 					mParams = {
-						//"$expand": "AssignmentSet"
+						"$expand": "GanttHierarchyToResourceAssign"
 					};
+
+				if (iLevel > 0) {
+					mParams = {};
+				}
 
 				aFilters.push(new Filter("HierarchyLevel", FilterOperator.EQ, iLevel));
 				aFilters.push(new Filter("StartDate", FilterOperator.GE, formatter.date(oDateRangePicker.getDateValue())));
@@ -404,22 +408,23 @@ sap.ui.define([
 		 * @param oResData
 		 */
 		_addChildrenToParent: function (iLevel, oResData) {
-			var aChildren = this.oPlanningModel.getProperty("/data/children");
+			var aChildren = this.oPlanningModel.getProperty("/data/children"),
+				aAssignments = []
 			var callbackFn = function (oItem) {
 				oItem.children = [];
+				aAssignments = [];
 				oResData.forEach(function (oResItem) {
+					aAssignments = [];
 					if (oItem.NodeId === oResItem.ParentNodeId) {
-						//add assignments as children in tree for expanding
-						/*if (oResItem.AssignmentSet && oResItem.AssignmentSet.results.length > 0) {
-							oResItem.children = oResItem.AssignmentSet.results;
-							oResItem.children.forEach(function (oAssignItem, idx) {
-								oResItem.AssignmentSet.results[idx].NodeType = "ASSIGNMENT";
-								var clonedObj = deepClone(oResItem.AssignmentSet.results[idx]);
-								oResItem.children[idx].AssignmentSet = {
-									results: [clonedObj]
-								};
+						//add assignments to child resource group
+						if (oItem.GanttHierarchyToResourceAssign && oItem.GanttHierarchyToResourceAssign.results.length > 0) {
+							oItem.GanttHierarchyToResourceAssign.results.forEach(function (oAssignment, idx) {
+								if (oAssignment.ResourceGroupGuid === oResItem.ResourceGroupGuid) {
+									aAssignments.push(oAssignment);
+								}
 							});
-						}*/
+						}
+						oResItem.GanttHierarchyToResourceAssign.results = aAssignments.length > 0 ? deepClone(aAssignments) : [];
 						oItem.children.push(oResItem);
 					}
 				});
@@ -534,10 +539,11 @@ sap.ui.define([
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			this.getObjectFromEntity("GanttResourceHierarchySet", oData).then(function (oGanntObject) {
 				oGanntObject["bgTasks"] = oData["bgTasks"];
+				oGanntObject["Description"] = oData["DESCRIPTION"];
 				oGanntObject["ChildCount"] = 0;
 				oGanntObject["HierarchyLevel"] = 1;
 				oGanntObject["NodeType"] = "RES_GROUP";
-				oGanntObject["ParentNodeId"] = oGanntObject["ParentNodeId"].split("//")[0];
+				oGanntObject["ParentNodeId"] = oData["PARENT_NODE_ID"].split("//")[0];
 				oGanntObject["NodeId"] = oData["ParentNodeId"] + "//" + new Date().getTime();
 				var callbackFn = function (oItem, oData) {
 					if (!this._checkIfGroupExist(oItem, oData["ResourceGroupGuid"]) && oItem.NodeId === oData.ParentNodeId && oItem.children) {
@@ -584,17 +590,17 @@ sap.ui.define([
 		_addNewAssignmentShape: function (oAssignData) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			var callbackFn = function (oItem, oData, idx) {
-				if (!oItem.AssignmentSet) {
-					oItem.AssignmentSet = {
+				if (!oItem.GanttHierarchyToResourceAssign) {
+					oItem.GanttHierarchyToResourceAssign = {
 						results: []
 					};
 				}
 				if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid && !oItem.ResourceGroupGuid) {
 					//add to resource itself
-					oItem.AssignmentSet.results.push(oData);
+					oItem.GanttHierarchyToResourceAssign.results.push(oData);
 				} else if (oItem.ResourceGroupGuid && oItem.ResourceGroupGuid === oData.ResourceGroupGuid && oItem.ResourceGuid === oData.ResourceGuid) {
 					//add to resource group
-					oItem.AssignmentSet.results.push(oData);
+					oItem.GanttHierarchyToResourceAssign.results.push(oData);
 				}
 			};
 			aChildren = this._recurseAllChildren(aChildren, callbackFn, oAssignData);
@@ -613,7 +619,7 @@ sap.ui.define([
 			}
 
 			var callbackFn = function (oItem, oData, idx) {
-				var aAssignments = oItem.AssignmentSet ? oItem.AssignmentSet.results : [];
+				var aAssignments = oItem.GanttHierarchyToResourceAssign ? oItem.GanttHierarchyToResourceAssign.results : [];
 				aAssignments.forEach(function (oAssignItem, index) {
 					if (oAssignItem.Guid === oData.Guid) {
 						if (oData.isNew) {
@@ -668,7 +674,7 @@ sap.ui.define([
 					var oGroupSelection = sap.ui.getCore().byId("idResourceGroupGroup");
 					if (oGroupSelection && oGroupSelection.getSelectedItem()) {
 						var sColor = oGroupSelection.getSelectedItem().getBindingContext().getProperty("ResourceGroupColor")
-						oData.ResourceGroupColor = sColor;
+						oData.RESOURCE_GROUP_COLOR = sColor;
 						this.oPlanningModel.refresh();
 					}
 				}.bind(this), 1000);
