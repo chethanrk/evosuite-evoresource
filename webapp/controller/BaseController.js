@@ -386,12 +386,38 @@ sap.ui.define([
 		copyObjectData: function (source, destination, ignore) {
 			if (destination) {
 				for (let prop in destination) {
-					if(!ignore.includes(prop)){
+					if (!ignore.includes(prop)) {
 						source[prop] = destination[prop];
 					}
 				}
 			}
 			return source
+		},
+		/**
+		 * Validation of assignment on change and delete
+		 */
+		validateAssignment: function () {
+
+		},
+		callFunctionImport: function (oParams, sFuncName, sMethod) {
+			var oModel = this.getModel(),
+				oViewModel = this.getModel("viewModel"),
+				oResourceBundle = this.getResourceBundle();
+			oModel.callFunction("/" + sFuncName, {
+				method: sMethod || "POST",
+				urlParameters: oParams,
+				refreshAfterChange: false,
+				success: function (oData, oResponse) {
+					//Handle Success
+					oViewModel.setProperty("/busy", false);
+				}.bind(this),
+				error: function (oError) {
+					//Handle Error
+					MessageToast.show(oResourceBundle.getText("errorMessage"), {
+						duration: 5000
+					});
+				}
+			});
 		}
 	});
 });
