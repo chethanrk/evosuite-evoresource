@@ -53,6 +53,10 @@ sap.ui.define([
 				changeGanttHorizonViewAt: {
 					public: true,
 					final: true
+				},
+				copyObjectData: {
+					public: true,
+					final: true
 				}
 			}
 		},
@@ -372,6 +376,22 @@ sap.ui.define([
 				endTime: sEndDate
 			}));
 
+		},
+		/**
+		 * Method copy one object data to another having same property
+		 * @param source {object} source object
+		 * @param start {destination} target object
+		 * @param end {array} ingnored property while copy
+		 */
+		copyObjectData: function (source, destination, ignore) {
+			if (destination) {
+				for (let prop in destination) {
+					if(!ignore.includes(prop)){
+						source[prop] = destination[prop];
+					}
+				}
+			}
+			return source
 		}
 	});
 });
