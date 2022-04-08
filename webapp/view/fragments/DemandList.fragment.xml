@@ -1,0 +1,9 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:form="sap.ui.layout.form">
+	<Dialog title="{i18n>xtit.demands}" resizable="true">
+		<List headerText="Products" items="{ path: 'demandModel>/data' }">
+			<ObjectListItem title="{demandModel>Name}" type="Active" press="onListItemPress">
+				<ObjectAttribute text="{demandModel>Attr}"/>
+			</ObjectListItem>
+		</List>
+	</Dialog>
+</core:FragmentDefinition>

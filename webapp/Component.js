@@ -53,6 +53,9 @@ sap.ui.define([
 			}), "viewModel");
 
 			this.setModel(models.createHelperModel(), "ganttPlanningModel");
+			
+			// Demand List Model
+			this.setModel(models.createHelperModel(), "demandModel");
 
 			// set the message model with messages from core message manager
 			this.setModel(oCoreMessageManager.getMessageModel(), "coreMessageModel");
