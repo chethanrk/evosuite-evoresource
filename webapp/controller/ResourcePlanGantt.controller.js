@@ -252,12 +252,6 @@ sap.ui.define([
 				oPopoverData;
 			
 			oObject = this.copyObjectData(oObject,oDraggedObject.data,["__metadata"]);
-			// oObject["ResourceGroupGuid"] = oDraggedObject.data["ResourceGroupGuid"]; //assigned dragged Resource group Guid
-			// oObject["ResourceGroupColor"] = oDraggedObject.data["ResourceGroupColor"]; //assigned dragged Resource group color
-			// oObject["ResourceGroupDesc"] = oDraggedObject.data["ResourceGroupDesc"]; //assigned dragged Resource group desc
-			// oObject["ResourceGroupId"] = oDraggedObject.data["ResourceGroupId"]; //assigned dragged Resource group id
-			// oObject["ResourceGroupUnitDesc"] = oDraggedObject.data["ResourceGroupUnitDesc"]; //assigned dragged Resource group unit desc
-			// oObject["ResourceGroupUnitId"] = oDraggedObject.data["ResourceGroupUnitId"]; //assigned dragged Resource group unit id
 			oPopoverData = {
 				Guid: new Date().getTime(),
 				sStartTime:sStartTime,
