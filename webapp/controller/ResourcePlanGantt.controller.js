@@ -179,15 +179,19 @@ sap.ui.define([
 		 */
 		onShapePress: function (oEvent) {
 			var mParams = oEvent.getParameters(),
-				oShape = mParams.shape,
-				oRowContext = mParams.rowSettings.getParent().getBindingContext("ganttPlanningModel"),
+				oShape = mParams.shape;
+			if (!mParams || !oShape) {
+				return;
+			}
+
+			var oRowContext = mParams.rowSettings.getParent().getBindingContext("ganttPlanningModel"),
 				sStartTime = oShape.getTime(),
 				sEndTime = oShape.getEndTime(),
 				oRowData = oRowContext.getObject(),
 				oPopoverData = {
 					Guid: new Date().getTime(),
-					sStartTime:sStartTime,
-					sEndTime:sEndTime,
+					sStartTime: sStartTime,
+					sEndTime: sEndTime,
 					oResourceObject: oRowData
 				};
 
@@ -224,6 +228,7 @@ sap.ui.define([
 							var oData = this.oPlanningModel.getProperty("/tempData/popover");
 							this._removeAssignmentShape(oData);
 							this.oPlanningModel.setProperty("/tempData/popover", {});
+							this.reValidateForm(this.getView().getControlsByFieldGroupId("changeShapeInput"));
 						}.bind(this));
 					}.bind(this));
 				} else {
@@ -250,12 +255,12 @@ sap.ui.define([
 				sStartTime = oDroppedTarget.getTime(),
 				sEndTime = oDroppedTarget.getEndTime(),
 				oPopoverData;
-			
-			oObject = this.copyObjectData(oObject,oDraggedObject.data,["__metadata"]);
+
+			oObject = this.copyObjectData(oObject, oDraggedObject.data, ["__metadata"]);
 			oPopoverData = {
 				Guid: new Date().getTime(),
-				sStartTime:sStartTime,
-				sEndTime:sEndTime,
+				sStartTime: sStartTime,
+				sEndTime: sEndTime,
 				oResourceObject: oObject
 			};
 			this.openShapeChangePopover(oDroppedTarget, oPopoverData);
@@ -268,7 +273,17 @@ sap.ui.define([
 		/**
 		 * @param {object} oEvent -
 		 */
-		onPressCancel: function () {},
+		onPressCancel: function () {
+			var sTitle = this.getResourceBundle().getText("tit.confirmCancel"),
+				sMsg = this.getResourceBundle().getText("msg.confirmCancel");
+
+			var successFn = function () {
+				this.oPlanningModel.setData(deepClone(this.oOriginData));
+				this._setBackgroudShapes(this._sGanttViewMode);
+			};
+			this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
+		},
+
 		/**
 		 * Change of shape assignment
 		 * Todo 
@@ -278,10 +293,14 @@ sap.ui.define([
 		 * @param {object} oEvent - event of OK button press
 		 */
 		onPressChangeAssignment: function (oEvent) {
-			var oData = this.oPlanningModel.getProperty("/tempData/popover");
-			oData.isTemporary = false;
-			this._markAsPlanningChange(oData, true);
-			this._oPlanningPopover.close();
+			var oSimpleformFileds = this.getView().getControlsByFieldGroupId("changeShapeInput");
+			var oValidation = this.validateForm(oSimpleformFileds);
+			if (oValidation && oValidation.state === "success") {
+				var oData = this.oPlanningModel.getProperty("/tempData/popover");
+				oData.isTemporary = false;
+				this._markAsPlanningChange(oData, true);
+				this._oPlanningPopover.close();
+			}
 		},
 
 		/**
@@ -303,10 +322,12 @@ sap.ui.define([
 		 * @param {oEvent}
 		 */
 		onChangeResourceGroup: function (oEvent) {
-			var oSelectedItem = oEvent.getSource().getSelectedItem(),
+			var oSource = oEvent.getSource(),
+				oSelectedItem = oSource.getSelectedItem(),
 				oSelContext = oSelectedItem.getBindingContext(),
 				oData = this.oPlanningModel.getProperty("/tempData/popover");
 
+			oSource.setValueState(sap.ui.core.ValueState.None);
 			oData.RESOURCE_GROUP_COLOR = oSelContext.getProperty("ResourceGroupColor");
 
 			//delete created assigmnemet 
@@ -496,10 +517,10 @@ sap.ui.define([
 		 */
 		_setPopoverData: function (oTargetControl, oPopoverData) {
 			var Guid = oPopoverData["Guid"],
-			sStartTime = oPopoverData["sStartTime"],
-			sEndTime = oPopoverData["sEndTime"],
-			oResourceObject = oPopoverData["oResourceObject"],
-			oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
+				sStartTime = oPopoverData["sStartTime"],
+				sEndTime = oPopoverData["sEndTime"],
+				oResourceObject = oPopoverData["oResourceObject"],
+				oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
 				oChildData;
 
 			if (oTargetControl.sParentAggregationName === "shapes1") {
@@ -545,6 +566,8 @@ sap.ui.define([
 				aChildren = this._recurseAllChildren(aChildren, callbackFn, oGanntObject);
 				this.oPlanningModel.setProperty("/data/children", aChildren);
 				this._addNewAssignmentShape(oData);
+				//Reset bgTasks when new resource added to the gantt
+				this._setBackgroudShapes(this._sGanttViewMode);
 			}.bind(this));
 		},
 		/**

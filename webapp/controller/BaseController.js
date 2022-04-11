@@ -38,6 +38,10 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
+				showConfirmDialog: {
+					public: true,
+					final: true
+				},
 				showMessageToast: {
 					public: true,
 					final: true
@@ -55,6 +59,14 @@ sap.ui.define([
 					final: true
 				},
 				copyObjectData: {
+					public: true,
+					final: true
+				},
+				validateForm: {
+					public: true,
+					final: true
+				},
+				reValidateForm: {
 					public: true,
 					final: true
 				}
@@ -145,6 +157,47 @@ sap.ui.define([
 		},
 
 		/**
+		 * show confirm dialog where user needs confirm some action
+		 * @param sTitle
+		 * @param sMsg
+		 * @param successCallback
+		 * @param cancelCallback
+		 */
+		showConfirmDialog: function (sTitle, sMsg, successCallback, cancelCallback, sState) {
+			var dialog = new sap.m.Dialog({
+				title: sTitle,
+				type: "Message",
+				state: sState || "None",
+				content: new sap.m.Text({
+					text: sMsg
+				}),
+				beginButton: new sap.m.Button({
+					text: this.getResourceBundle().getText("btn.confirm"),
+					press: function () {
+						dialog.close();
+						if (successCallback) {
+							successCallback();
+						}
+					}.bind(this)
+				}),
+				endButton: new sap.m.Button({
+					text: this.getResourceBundle().getText("btn.no"),
+					press: function () {
+						if (cancelCallback) {
+							cancelCallback();
+						}
+						dialog.close();
+					}.bind(this)
+				}),
+				afterClose: function () {
+					dialog.destroy();
+				}
+			});
+			dialog.addStyleClass(this.getModel("viewModel").getProperty("/densityClass"));
+			dialog.open();
+		},
+
+		/**
 		 * show message toast with a text inside with default parameters
 		 * @param {string} sMsg - test for message toast
 		 */
@@ -209,6 +262,71 @@ sap.ui.define([
 					resolve(obj);
 				}.bind(this));
 			}.bind(this));
+		},
+
+		/**
+		 * Validate simiple form
+		 * @public
+		 */
+		validateForm: function (aCustomFields) {
+			if (!aCustomFields) {
+				return {
+					state: "error"
+				};
+			}
+
+			var isValid = true;
+
+			//validate mandatory fields
+			for (var i = 0; i < aCustomFields.length; i++) {
+				if (aCustomFields[i].getValue) {
+					var sValue = aCustomFields[i].getValue();
+					try {
+						if (aCustomFields[i].getRequired() && aCustomFields[i].getEditable() && (!sValue || sValue.trim() === "")) {
+							aCustomFields[i].setValueState(sap.ui.core.ValueState.Error);
+							isValid = false;
+							invalidFields.push(aCustomFields[i]);
+						} else {
+							aCustomFields[i].setValueState(sap.ui.core.ValueState.None);
+						}
+					} catch (e) {
+						//do nothing
+					}
+				}
+			}
+
+			if (isValid) {
+				return {
+					state: "success"
+				};
+			} else {
+				return {
+					state: "error"
+				};
+			}
+		},
+
+		/**
+		 * Re-Validate simiple form
+		 * @public
+		 */
+		reValidateForm: function (aCustomFields) {
+			if (!aCustomFields) {
+				return;
+			}
+			//validate mandatory  fields
+			for (var i = 0; i < aCustomFields.length; i++) {
+				if (aCustomFields[i].getValue) {
+					var sValue = aCustomFields[i].getValue();
+					try {
+						if (aCustomFields[i].getRequired() && aCustomFields[i].getEditable()) {
+							aCustomFields[i].setValueState(sap.ui.core.ValueState.None);
+						}
+					} catch (e) {
+						//do nothing
+					}
+				}
+			}
 		},
 
 		/* =========================================================== */
@@ -281,9 +399,9 @@ sap.ui.define([
 						sPath: sPath,
 						oData: aChildren[i]
 					};
-				} else if (aChildren[i].AssignmentSet && aChildren[i].AssignmentSet.results.length > 0) {
+				} else if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results.length > 0) {
 					//search in assignments
-					sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/AssignmentSet/results");
+					sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/GanttHierarchyToResourceAssign/results");
 					if (sNewObj) {
 						return sNewObj;
 					} else if (aChildren[i].children && aChildren[i].children.length > 0) {
@@ -386,7 +504,7 @@ sap.ui.define([
 		copyObjectData: function (source, destination, ignore) {
 			if (destination) {
 				for (let prop in destination) {
-					if(!ignore.includes(prop)){
+					if (!ignore.includes(prop)) {
 						source[prop] = destination[prop];
 					}
 				}
