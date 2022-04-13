@@ -396,19 +396,27 @@ sap.ui.define([
 		/**
 		 * Validation of assignment on change and delete
 		 */
-		validateAssignment: function () {
-			var oParms = {},
+		validateAssignment: function (oData) {
+			var oParams = {
+					ObjectId:oData.NODE_ID,
+					// EndTimestamp:oData.EndDate,
+					// StartTimestamp:oData.StartDate
+				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel");
+
 			this.callFunctionImport(oParams, sFunctionName, "POST").then(function (oData) {
-				oDemandModel.setProperty("/data", oData);
-				this.openDemandDialog();
+				if(oData.results.length > 0){
+					oDemandModel.setProperty("/data", oData.results);
+					this.openDemandDialog();
+				}
+				
 			}.bind(this));
 		},
 		openDemandDialog: function () {
 			if (!this._oDemandDialog) {
 				Fragment.load({
-					name: "com.evorait.evosuite.evoresource.view.fragments.ShapeChangePopover",
+					name: "com.evorait.evosuite.evoresource.view.fragments.DemandList",
 					controller: this
 				}).then(function (oDialog) {
 					this._oDemandDialog = oDialog;

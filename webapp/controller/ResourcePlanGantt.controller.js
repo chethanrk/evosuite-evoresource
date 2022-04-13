@@ -202,7 +202,8 @@ sap.ui.define([
 			if (!this._validateForOpenPopover()) {
 				return;
 			}
-			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getTime())) {
+			// if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getTime())) {
+			if (oTargetControl) {
 				// create popover
 				if (!this._oPlanningPopover) {
 					Fragment.load({
@@ -281,7 +282,12 @@ sap.ui.define([
 			var oData = this.oPlanningModel.getProperty("/tempData/popover");
 			oData.isTemporary = false;
 			this._markAsPlanningChange(oData, true);
-			this._oPlanningPopover.close();
+			if(!oData.isNew){
+				this.validateAssignment(oData)
+				// this._oPlanningPopover.close();
+			}else{
+				this._oPlanningPopover.close();
+			}
 		},
 
 		/**
