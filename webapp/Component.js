@@ -4,8 +4,11 @@ sap.ui.define([
 	"sap/ui/Device",
 	"com/evorait/evosuite/evoresource/model/models",
 	"com/evorait/evosuite/evoresource/controller/MessageManager",
-	"sap/ui/model/json/JSONModel"
-], function (UIComponent, Device, models, MessageManager, JSONModel) {
+	"sap/ui/model/json/JSONModel",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator",
+	"com/evorait/evosuite/evoresource/model/Constants",
+], function (UIComponent, Device, models, MessageManager, JSONModel, Filter, FilterOperator, Constants) {
 	"use strict";
 
 	var oCoreMessageManager = sap.ui.getCore().getMessageManager();
@@ -49,7 +52,8 @@ sap.ui.define([
 					defaultEndDate: moment().endOf("month").add(1, "months").toDate(),
 					popoverPlacement: sap.m.PlacementType.HorizontalPreferredRight
 				},
-				draggedData:null
+				draggedData:null,
+				launchMode: Constants.LAUNCH_MODE.BSP,
 			}), "viewModel");
 
 			this.setModel(models.createHelperModel(), "ganttPlanningModel");
@@ -63,6 +67,8 @@ sap.ui.define([
 			this.MessageManager = new MessageManager();
 
 			this._getTemplateProps();
+			
+			this._setApp2AppLinks();
 
 			// get System Information
 			this._getSystemInformation();
@@ -187,6 +193,27 @@ sap.ui.define([
 					resolve(oTempJsonModel.getData());
 				}.bind(this));
 			}.bind(this));
-		}
+		},
+		/**
+		 * read app2app navigation links from backend
+		 */
+		_setApp2AppLinks: function () {
+			if (sap.ushell && sap.ushell.Container) {
+				this.getModel("viewModel").setProperty("/launchMode", Constants.LAUNCH_MODE.FIORI);
+			}
+			var oFilter = new Filter("LaunchMode", FilterOperator.EQ, this.getModel("viewModel").getProperty("/launchMode")),
+				mProps = {};
+
+			this.readData("/NavigationLinksSet", [oFilter])
+				.then(function (data) {
+					data.results.forEach(function (oItem) {
+						if (oItem.Value1 && Constants.APPLICATION[oItem.ApplicationId]) {
+							oItem.Property = oItem.Value2 || Constants.PROPERTY[oItem.ApplicationId];
+							mProps[oItem.Property] = oItem;
+						}
+					});
+					this.getModel("templateProperties").setProperty("/navLinks/", mProps);
+				}.bind(this));
+		},
 	});
 });

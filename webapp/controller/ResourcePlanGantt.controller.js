@@ -677,6 +677,11 @@ sap.ui.define([
 					}
 				}.bind(this), 1000);
 			}
+		},
+		onShowDemandPress:function(oEvent){
+			var oSource = oEvent.getSource();
+			this.openApp2AppPopover(oSource, "demandModel","DemandGuid");
+			// this.openEvoAPP();
 		}
 	});
 });
