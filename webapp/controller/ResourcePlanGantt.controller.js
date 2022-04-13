@@ -9,8 +9,10 @@ sap.ui.define([
 	"sap/gantt/misc/Format",
 	"sap/ui/core/Fragment",
 	"sap/ui/model/Filter",
-	"sap/ui/model/FilterOperator"
-], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Format, Fragment, Filter, FilterOperator) {
+	"sap/ui/model/FilterOperator",
+	"sap/m/MessageBox"
+], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Format, Fragment, Filter, FilterOperator,
+	MessageBox) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanGantt", {
@@ -186,8 +188,8 @@ sap.ui.define([
 				oRowData = oRowContext.getObject(),
 				oPopoverData = {
 					Guid: new Date().getTime(),
-					sStartTime:sStartTime,
-					sEndTime:sEndTime,
+					sStartTime: sStartTime,
+					sEndTime: sEndTime,
 					oResourceObject: oRowData
 				};
 
@@ -251,12 +253,12 @@ sap.ui.define([
 				sStartTime = oDroppedTarget.getTime(),
 				sEndTime = oDroppedTarget.getEndTime(),
 				oPopoverData;
-			
-			oObject = this.copyObjectData(oObject,oDraggedObject.data,["__metadata"]);
+
+			oObject = this.copyObjectData(oObject, oDraggedObject.data, ["__metadata"]);
 			oPopoverData = {
 				Guid: new Date().getTime(),
-				sStartTime:sStartTime,
-				sEndTime:sEndTime,
+				sStartTime: sStartTime,
+				sEndTime: sEndTime,
 				oResourceObject: oObject
 			};
 			this.openShapeChangePopover(oDroppedTarget, oPopoverData);
@@ -282,10 +284,10 @@ sap.ui.define([
 			var oData = this.oPlanningModel.getProperty("/tempData/popover");
 			oData.isTemporary = false;
 			this._markAsPlanningChange(oData, true);
-			if(!oData.isNew){
+			if (!oData.isNew) {
 				this.validateAssignment(oData)
-				// this._oPlanningPopover.close();
-			}else{
+					// this._oPlanningPopover.close();
+			} else {
 				this._oPlanningPopover.close();
 			}
 		},
@@ -299,8 +301,34 @@ sap.ui.define([
 		 */
 		onPressDeleteAssignment: function (oEvent) {
 			//todo show confirm dialog and send validation request
-			this._removeAssignmentShape(this.oPlanningModel.getProperty("/tempData/popover"), true);
-			this._oPlanningPopover.close();
+			var oData = this.oPlanningModel.getProperty("/tempData/popover");
+			var successcallback = function () {
+				if (!oData.isNew) {
+					this.validateAssignment(oData)
+				} else {
+					this._removeAssignmentShape(oData, true);
+					this._oPlanningPopover.close();
+				}
+
+			};
+			var cancelcallback = function () {};
+			this._confirmDelete(successcallback.bind(this), cancelcallback.bind(this));
+		},
+
+		_confirmDelete: function (successcallback, cancelcallback) {
+			MessageBox.confirm("Are you sure?", {
+				onClose: function (sAction) {
+					if (sAction === "OK") {
+						if (successcallback) {
+							successcallback();
+						}
+					} else {
+						if (cancelcallback) {
+							cancelcallback();
+						}
+					}
+				}.bind(this)
+			});
 		},
 
 		/**
@@ -502,10 +530,10 @@ sap.ui.define([
 		 */
 		_setPopoverData: function (oTargetControl, oPopoverData) {
 			var Guid = oPopoverData["Guid"],
-			sStartTime = oPopoverData["sStartTime"],
-			sEndTime = oPopoverData["sEndTime"],
-			oResourceObject = oPopoverData["oResourceObject"],
-			oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
+				sStartTime = oPopoverData["sStartTime"],
+				sEndTime = oPopoverData["sEndTime"],
+				oResourceObject = oPopoverData["oResourceObject"],
+				oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
 				oChildData;
 
 			if (oTargetControl.sParentAggregationName === "shapes1") {
@@ -678,9 +706,9 @@ sap.ui.define([
 				}.bind(this), 1000);
 			}
 		},
-		onShowDemandPress:function(oEvent){
+		onShowDemandPress: function (oEvent) {
 			var oSource = oEvent.getSource();
-			this.openApp2AppPopover(oSource, "demandModel","DemandGuid");
+			this.openApp2AppPopover(oSource, "demandModel", "DemandGuid");
 			// this.openEvoAPP();
 		}
 	});
