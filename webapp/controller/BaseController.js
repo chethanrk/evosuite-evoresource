@@ -394,26 +394,7 @@ sap.ui.define([
 			}
 			return source
 		},
-		/**
-		 * Validation of assignment on change and delete
-		 */
-		validateAssignment: function (oData) {
-			var oParams = {
-					ObjectId:oData.NODE_ID,
-					// EndTimestamp:oData.EndDate,
-					// StartTimestamp:oData.StartDate
-				},
-				sFunctionName = "ValidateResourceAssignment",
-				oDemandModel = this.getModel("demandModel");
-
-			this.callFunctionImport(oParams, sFunctionName, "POST").then(function (oData) {
-				if(oData.results.length > 0){
-					oDemandModel.setProperty("/data", oData.results);
-					this.openDemandDialog();
-				}
-				
-			}.bind(this));
-		},
+		
 		openDemandDialog: function () {
 			if (!this._oDemandDialog) {
 				Fragment.load({
@@ -436,37 +417,34 @@ sap.ui.define([
 				this._oDemandDialog.open();
 			}
 		},
-		onDemandDialogClose:function(oEvent){
+		onDemandDialogClose: function (oEvent) {
 			this._oDemandDialog.close();
 		},
 		/**
 		 * Method to call Function Import
 		 */
-		callFunctionImport: function (oParams, sFuncName, sMethod) {
+		callFunctionImport: function (oParams, sFuncName, sMethod,fCallback) {
 			var oModel = this.getModel(),
 				oViewModel = this.getModel("viewModel"),
 				oResourceBundle = this.getResourceBundle();
-			return new Promise(function (resolve, reject) {
-				oViewModel.setProperty("/busy", true);
-				oModel.callFunction("/" + sFuncName, {
-					method: sMethod || "POST",
-					urlParameters: oParams,
-					refreshAfterChange: false,
-					success: function (oData, oResponse) {
-						//Handle Success
-						oViewModel.setProperty("/busy", false);
-						resolve(oData)
-					}.bind(this),
-					error: function (oError) {
-						//Handle Error
-						oViewModel.setProperty("/busy", false);
-						MessageToast.show(oResourceBundle.getText("errorMessage"), {
-							duration: 5000
-						});
-						reject(oError);
-					}
-				});
-			}.bind(this));
+			oViewModel.setProperty("/busy", true);
+			oModel.callFunction("/" + sFuncName, {
+				method: sMethod || "POST",
+				urlParameters: oParams,
+				refreshAfterChange: false,
+				success: function (oData, oResponse) {
+					//Handle Success
+					oViewModel.setProperty("/busy", false);
+					fCallback(oData);
+				}.bind(this),
+				error: function (oError) {
+					//Handle Error
+					oViewModel.setProperty("/busy", false);
+					MessageToast.show(oResourceBundle.getText("errorMessage"), {
+						duration: 5000
+					});
+				}
+			});
 
 		},
 		/**

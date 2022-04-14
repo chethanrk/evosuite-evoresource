@@ -285,7 +285,7 @@ sap.ui.define([
 			oData.isTemporary = false;
 			this._markAsPlanningChange(oData, true);
 			if (!oData.isNew) {
-				this.validateAssignment(oData)
+				this._validateForChange(oData)
 					// this._oPlanningPopover.close();
 			} else {
 				this._oPlanningPopover.close();
@@ -303,12 +303,9 @@ sap.ui.define([
 			//todo show confirm dialog and send validation request
 			var oData = this.oPlanningModel.getProperty("/tempData/popover");
 			var successcallback = function () {
-				if (!oData.isNew) {
-					this.validateAssignment(oData)
-				} else {
-					this._removeAssignmentShape(oData, true);
-					this._oPlanningPopover.close();
-				}
+
+				this._removeAssignmentShape(oData, true);
+				this._oPlanningPopover.close();
 
 			};
 			var cancelcallback = function () {};
@@ -654,18 +651,45 @@ sap.ui.define([
 							aAssignments.splice(index, 1);
 						} else {
 							//validate if assignment is allowed for delete
-							var isValid = this._validateForDelete(oAssignItem);
-							if (isValid) {
-								//set delete flag to assignment
-								this._markAsPlanningChange(oAssignItem, true);
-								oAssignItem.isDelete = true;
-							}
+							// var isValid = this._validateForDelete(oAssignItem);
+							// if (isValid) {
+							// 	//set delete flag to assignment
+							// 	this._markAsPlanningChange(oAssignItem, true);
+							// 	oAssignItem.isDelete = true;
+							// }
+							this._validateForDelete(oAssignItem,aAssignments,index);
 						}
 					}
 				}.bind(this));
 			};
 			aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
 			this.oPlanningModel.setProperty("/data/children", aChildren);
+		},
+		/**
+		 * Validation of assignment on change and delete
+		 */
+		_validateForChange: function (oAssignItem) {
+			var oParams = {
+					ObjectId: oAssignItem.NODE_ID,
+					// EndTimestamp:oData.EndDate,
+					// StartTimestamp:oData.StartDate
+				},
+				sFunctionName = "ValidateResourceAssignment",
+				oDemandModel = this.getModel("demandModel");
+
+			var callbackfunction = function (oData) {
+				if (oData.results.length > 0) {
+					oDemandModel.setProperty("/data", oData.results);
+					this.openDemandDialog();
+					// return false;
+				} else {
+					// return true;
+				}
+				this.oPlanningModel.refresh();
+				
+			}.bind(this);
+
+			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 		},
 
 		/**
@@ -674,8 +698,31 @@ sap.ui.define([
 		 * todo when not valida show dialog with h
 		 * list if demands who are assigned to this time frame
 		 */
-		_validateForDelete: function (oData) {
-			return true;
+		_validateForDelete: function (oAssignItem,aAssignments,index) {
+			var oParams = {
+					ObjectId: oAssignItem.NODE_ID,
+					// EndTimestamp:oData.EndDate,
+					// StartTimestamp:oData.StartDate
+				},
+				sFunctionName = "ValidateResourceAssignment",
+				oDemandModel = this.getModel("demandModel");
+
+			var callbackfunction = function (oData) {
+				if (oData.results.length > 0) {
+					oDemandModel.setProperty("/data", oData.results);
+					this.openDemandDialog();
+					// return false;
+				} else {
+					this._markAsPlanningChange(oAssignItem, true);
+					oAssignItem.isDelete = true;
+					aAssignments.splice(index, 1);
+					// return true;
+				}
+				this.oPlanningModel.refresh();
+			}.bind(this);
+
+			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
+			// return true;
 
 		},
 		/**
