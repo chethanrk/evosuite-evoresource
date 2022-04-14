@@ -282,9 +282,9 @@ sap.ui.define([
 						sPath: sPath,
 						oData: aChildren[i]
 					};
-				} else if (aChildren[i].AssignmentSet && aChildren[i].AssignmentSet.results.length > 0) {
+				} else if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results.length > 0) {
 					//search in assignments
-					sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/AssignmentSet/results");
+					sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/GanttHierarchyToResourceAssign/results");
 					if (sNewObj) {
 						return sNewObj;
 					} else if (aChildren[i].children && aChildren[i].children.length > 0) {

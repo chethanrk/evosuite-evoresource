@@ -113,7 +113,8 @@ sap.ui.define([
 				},
 				tempData: {},
 				changedData: [],
-				hasChanges: false
+				hasChanges: false,
+				deletedData: []
 			};
 			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
 			this.oPlanningModel.setData(deepClone(this.oOriginData));
@@ -519,6 +520,19 @@ sap.ui.define([
 			this.oPlanningModel.setProperty("/hasChanges", aChanges.length > 0);
 		},
 
+		_markAsPlanningDelete: function (oData) {
+			var oFoundData = this._getChildDataByKey("Guid", oData.Guid, null),
+				aChanges = this.oPlanningModel.getProperty("/deletedData");
+
+			//object change needs added to "/changedData" array by path
+
+			if (oFoundData && aChanges.indexOf(oFoundData.sPath) < 0) {
+				aChanges.push(oFoundData.sPath);
+			}
+
+			this.oPlanningModel.setProperty("/hasChanges", aChanges.length > 0);
+		},
+
 		/**
 		 * create new temporary assignment when background shape was pressed
 		 * when assignment shape was pressed get assignment data from row
@@ -657,7 +671,7 @@ sap.ui.define([
 							// 	this._markAsPlanningChange(oAssignItem, true);
 							// 	oAssignItem.isDelete = true;
 							// }
-							this._validateForDelete(oAssignItem,aAssignments,index);
+							this._validateForDelete(oAssignItem, aAssignments, index);
 						}
 					}
 				}.bind(this));
@@ -670,7 +684,7 @@ sap.ui.define([
 		 */
 		_validateForChange: function (oAssignItem) {
 			var oParams = {
-					ObjectId: oAssignItem.NODE_ID,
+					ObjectId: oAssignItem.Guid,
 					// EndTimestamp:oData.EndDate,
 					// StartTimestamp:oData.StartDate
 				},
@@ -686,7 +700,7 @@ sap.ui.define([
 					// return true;
 				}
 				this.oPlanningModel.refresh();
-				
+
 			}.bind(this);
 
 			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
@@ -698,9 +712,9 @@ sap.ui.define([
 		 * todo when not valida show dialog with h
 		 * list if demands who are assigned to this time frame
 		 */
-		_validateForDelete: function (oAssignItem,aAssignments,index) {
+		_validateForDelete: function (oAssignItem, aAssignments, index) {
 			var oParams = {
-					ObjectId: oAssignItem.NODE_ID,
+					ObjectId: oAssignItem.Guid,
 					// EndTimestamp:oData.EndDate,
 					// StartTimestamp:oData.StartDate
 				},
@@ -713,7 +727,7 @@ sap.ui.define([
 					this.openDemandDialog();
 					// return false;
 				} else {
-					this._markAsPlanningChange(oAssignItem, true);
+					this._markAsPlanningDelete(oAssignItem);
 					oAssignItem.isDelete = true;
 					aAssignments.splice(index, 1);
 					// return true;
