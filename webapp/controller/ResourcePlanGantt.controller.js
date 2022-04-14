@@ -193,6 +193,7 @@ sap.ui.define([
 					sEndTime: sEndTime,
 					oResourceObject: oRowData
 				};
+				
 
 			this.openShapeChangePopover(mParams.shape, oPopoverData);
 		},
@@ -205,8 +206,8 @@ sap.ui.define([
 			if (!this._validateForOpenPopover()) {
 				return;
 			}
-			// if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getTime())) {
-			if (oTargetControl) {
+			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getTime())) {
+				// if (oTargetControl) {
 				// create popover
 				if (!this._oPlanningPopover) {
 					Fragment.load({
@@ -228,6 +229,7 @@ sap.ui.define([
 							var oData = this.oPlanningModel.getProperty("/tempData/popover");
 							this._removeAssignmentShape(oData);
 							this.oPlanningModel.setProperty("/tempData/popover", {});
+							this.oPlanningModel.setProperty("/tempData/oldPopoverData",{});
 						}.bind(this));
 					}.bind(this));
 				} else {
@@ -282,13 +284,28 @@ sap.ui.define([
 		 * @param {object} oEvent - event of OK button press
 		 */
 		onPressChangeAssignment: function (oEvent) {
-			var oData = this.oPlanningModel.getProperty("/tempData/popover");
-			oData.isTemporary = false;
-			this._markAsPlanningChange(oData, true);
+			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
+				oldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
 			if (!oData.isNew) {
-				this._validateForChange(oData)
-					// this._oPlanningPopover.close();
+				if(!moment(oData.StartDate).isSame(oldPopoverData.StartDate)){
+					oData.IS_STARTCHANGE = true;
+				}else{
+					oData.IS_STARTCHANGE = false;
+				}
+				if(!moment(oData.EndDate).isSame(oldPopoverData.EndDate)){
+					oData.IS_ENDCHANGE = true;
+				}else{
+					oData.IS_ENDCHANGE = false;
+				}
+				if(oData.ResourceGroupGuid !== oldPopoverData.ResourceGroupGuid){
+					oData.IS_GROUPCHANGE = true;
+				}else{
+					oData.IS_GROUPCHANGE = false;
+				}
+				this._validateForChange(oData);
 			} else {
+				oData.isTemporary = false;
+				this._markAsPlanningChange(oData, true);
 				this._oPlanningPopover.close();
 			}
 		},
@@ -450,7 +467,7 @@ sap.ui.define([
 								}
 							});
 						}
-						oResItem.GanttHierarchyToResourceAssign.results = aAssignments.length > 0 ? deepClone(aAssignments) : [];
+						oResItem.GanttHierarchyToResourceAssign.results = aAssignments.length > 0 ? aAssignments : [];
 						oItem.children.push(oResItem);
 					}
 				});
@@ -551,6 +568,7 @@ sap.ui.define([
 				//its background shape
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
+					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({},oData));
 					if (oData && oData.ResourceGroupGuid) {
 						oChildData = Object.assign(oData, {
 							bgTasks: oPopoverData.oResourceObject.bgTasks
@@ -566,6 +584,7 @@ sap.ui.define([
 				var oAssignData = oContext.getObject();
 				this._setShapePopoverPosition(oAssignData);
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
+				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({},oAssignData));
 			}
 		},
 		/**
@@ -689,16 +708,21 @@ sap.ui.define([
 					// StartTimestamp:oData.StartDate
 				},
 				sFunctionName = "ValidateResourceAssignment",
-				oDemandModel = this.getModel("demandModel");
+				oDemandModel = this.getModel("demandModel"),
+				oFoundData = this._getChildDataByKey("Guid", oAssignItem.Guid, null),
+				oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
 
 			var callbackfunction = function (oData) {
 				if (oData.results.length > 0) {
 					oDemandModel.setProperty("/data", oData.results);
+					oFoundData.oData = oOldAssignmentData;
 					this.openDemandDialog();
-					// return false;
 				} else {
-					// return true;
+					oAssignItem.isTemporary = false;
+					this._markAsPlanningChange(oAssignItem, true);
+					this._oPlanningPopover.close();
 				}
+
 				this.oPlanningModel.refresh();
 
 			}.bind(this);
@@ -727,8 +751,8 @@ sap.ui.define([
 					this.openDemandDialog();
 					// return false;
 				} else {
-					this._markAsPlanningDelete(oAssignItem);
 					oAssignItem.isDelete = true;
+					this._markAsPlanningDelete(oAssignItem);
 					aAssignments.splice(index, 1);
 					// return true;
 				}
