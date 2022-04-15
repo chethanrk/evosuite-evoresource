@@ -709,13 +709,16 @@ sap.ui.define([
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel"),
-				oFoundData = this._getChildDataByKey("Guid", oAssignItem.Guid, null),
+				oFoundData = this._getChildrenDataByKey("Guid", oAssignItem.Guid, null),
 				oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
 
 			var callbackfunction = function (oData) {
 				if (oData.results.length > 0) {
 					oDemandModel.setProperty("/data", oData.results);
-					oFoundData.oData = oOldAssignmentData;
+					for(var i=0;i<oFoundData.length;i++){
+						this.oPlanningModel.setProperty(oFoundData[i],oOldAssignmentData);
+					}
+					
 					this.openDemandDialog();
 				} else {
 					oAssignItem.isTemporary = false;

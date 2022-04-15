@@ -296,6 +296,44 @@ sap.ui.define([
 			}
 			return sNewObj;
 		},
+
+		_getChildrenDataByKey: function (sProperty, sValue, sPath) {
+			sPath = sPath || "/data/children";
+			var aChildren = this.getModel("ganttPlanningModel").getProperty(sPath),
+				sNewObj = null,
+				aAllMatchedData = [],
+				aAssignments = [],
+				aInnerChildren = [],
+				aInnerAssignments = [],
+				newSpath=sPath;
+			for (var i = 0; i < aChildren.length; i++) {
+				if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results.length > 0) {
+					aAssignments = aChildren[i].GanttHierarchyToResourceAssign.results;
+					for (var j = 0; j < aAssignments.length; j++) {
+
+						if (aAssignments[j][sProperty] === sValue) {
+							newSpath = sPath + "/" + i + "/GanttHierarchyToResourceAssign/results/" + j;
+							aAllMatchedData.push(newSpath)
+						}
+					}
+
+					aInnerChildren = aChildren[i].children;
+					for (var k = 0; k < aInnerChildren.length; k++) {
+						if (aInnerChildren[k].GanttHierarchyToResourceAssign && aInnerChildren[k].GanttHierarchyToResourceAssign.results.length > 0) {
+							aInnerAssignments = aInnerChildren[k].GanttHierarchyToResourceAssign.results;
+							for (var l = 0; l < aInnerAssignments.length; l++) {
+
+								if (aInnerAssignments[l][sProperty] === sValue) {
+									newSpath = sPath + "/" + i + "/children/" + k + "/GanttHierarchyToResourceAssign/results/" + l;
+									aAllMatchedData.push(newSpath)
+								}
+							}
+						}
+					}
+				}
+			}
+			return aAllMatchedData;
+		},
 		/**
 		 * Promise return Structture of a given EntitySet with data if passed
 		 * @param {string} sEntitySet - EntitySet name
@@ -394,7 +432,7 @@ sap.ui.define([
 			}
 			return source
 		},
-		
+
 		openDemandDialog: function () {
 			if (!this._oDemandDialog) {
 				Fragment.load({
@@ -423,7 +461,7 @@ sap.ui.define([
 		/**
 		 * Method to call Function Import
 		 */
-		callFunctionImport: function (oParams, sFuncName, sMethod,fCallback) {
+		callFunctionImport: function (oParams, sFuncName, sMethod, fCallback) {
 			var oModel = this.getModel(),
 				oViewModel = this.getModel("viewModel"),
 				oResourceBundle = this.getResourceBundle();
