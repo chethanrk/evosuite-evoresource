@@ -718,8 +718,8 @@ sap.ui.define([
 					for(var i=0;i<oFoundData.length;i++){
 						this.oPlanningModel.setProperty(oFoundData[i],oOldAssignmentData);
 					}
-					
 					this.openDemandDialog();
+					this.showMessageToast(this.getResourceBundle().getText("xtxt.validationFailed"));
 				} else {
 					oAssignItem.isTemporary = false;
 					this._markAsPlanningChange(oAssignItem, true);
@@ -752,6 +752,7 @@ sap.ui.define([
 				if (oData.results.length > 0) {
 					oDemandModel.setProperty("/data", oData.results);
 					this.openDemandDialog();
+					this.showMessageToast(this.getResourceBundle().getText("xtxt.validationFailed"));
 					// return false;
 				} else {
 					oAssignItem.isDelete = true;
