@@ -85,6 +85,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
+				},
+				onShowDemandPress:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
 				}
 			}
 		},
@@ -302,7 +307,13 @@ sap.ui.define([
 				}else{
 					oData.IS_GROUPCHANGE = false;
 				}
-				this._validateForChange(oData);
+				
+				if(oData.IS_STARTCHANGE || oData.IS_ENDCHANGE || oData.IS_GROUPCHANGE){
+					this._validateForChange(oData);
+				}else{
+					this._oPlanningPopover.close();
+				}
+				
 			} else {
 				oData.isTemporary = false;
 				this._markAsPlanningChange(oData, true);
@@ -666,7 +677,7 @@ sap.ui.define([
 		/**
 		 * remove freshly created shape from gantt chart
 		 * @param {object} oAssignData - object of assignment based on entityType of assignment 
-		 * //todo
+		 * 
 		 */
 		_removeAssignmentShape: function (oAssignData, removeNew) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
@@ -683,13 +694,6 @@ sap.ui.define([
 							this._markAsPlanningChange(oAssignItem, false);
 							aAssignments.splice(index, 1);
 						} else {
-							//validate if assignment is allowed for delete
-							// var isValid = this._validateForDelete(oAssignItem);
-							// if (isValid) {
-							// 	//set delete flag to assignment
-							// 	this._markAsPlanningChange(oAssignItem, true);
-							// 	oAssignItem.isDelete = true;
-							// }
 							this._validateForDelete(oAssignItem, aAssignments, index);
 						}
 					}
@@ -699,13 +703,13 @@ sap.ui.define([
 			this.oPlanningModel.setProperty("/data/children", aChildren);
 		},
 		/**
-		 * Validation of assignment on change and delete
+		 * Validation of assignment on change
 		 */
 		_validateForChange: function (oAssignItem) {
 			var oParams = {
 					ObjectId: oAssignItem.Guid,
-					// EndTimestamp:oData.EndDate,
-					// StartTimestamp:oData.StartDate
+					EndTimestamp:oAssignItem.EndDate,
+					StartTimestamp:oAssignItem.StartDate
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel"),
@@ -719,7 +723,6 @@ sap.ui.define([
 						this.oPlanningModel.setProperty(oFoundData[i],oOldAssignmentData);
 					}
 					this.openDemandDialog();
-					this.showMessageToast(this.getResourceBundle().getText("xtxt.validationFailed"));
 				} else {
 					oAssignItem.isTemporary = false;
 					this._markAsPlanningChange(oAssignItem, true);
@@ -734,16 +737,13 @@ sap.ui.define([
 		},
 
 		/**
-		 * todo validate against backend
-		 * todo get path inside json model
-		 * todo when not valida show dialog with h
 		 * list if demands who are assigned to this time frame
 		 */
 		_validateForDelete: function (oAssignItem, aAssignments, index) {
 			var oParams = {
 					ObjectId: oAssignItem.Guid,
-					// EndTimestamp:oData.EndDate,
-					// StartTimestamp:oData.StartDate
+					EndTimestamp:oAssignItem.EndDate,
+					StartTimestamp:oAssignItem.StartDate
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel");
@@ -752,19 +752,15 @@ sap.ui.define([
 				if (oData.results.length > 0) {
 					oDemandModel.setProperty("/data", oData.results);
 					this.openDemandDialog();
-					this.showMessageToast(this.getResourceBundle().getText("xtxt.validationFailed"));
-					// return false;
 				} else {
 					oAssignItem.isDelete = true;
 					this._markAsPlanningDelete(oAssignItem);
 					aAssignments.splice(index, 1);
-					// return true;
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
 
 			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
-			// return true;
 
 		},
 		/**
@@ -795,10 +791,13 @@ sap.ui.define([
 				}.bind(this), 1000);
 			}
 		},
+		
+		/**
+		 * Trigger when Demand link press
+		 */
 		onShowDemandPress: function (oEvent) {
 			var oSource = oEvent.getSource();
-			this.openApp2AppPopover(oSource, "demandModel", "DemandGuid");
-			// this.openEvoAPP();
+			this.openApp2AppPopover(oSource, "demandModel", "Orderid");
 		}
 	});
 });

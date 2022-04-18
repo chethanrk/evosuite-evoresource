@@ -58,7 +58,20 @@ sap.ui.define([
 				copyObjectData: {
 					public: true,
 					final: true
+				},
+				callFunctionImport:{
+					public: true,
+					final: true	
+				},
+				openEvoAPP:{
+					public: true,
+					final: true	
+				},
+				openApp2AppPopover:{
+					public: true,
+					final: true	
 				}
+				
 			}
 		},
 
@@ -432,7 +445,9 @@ sap.ui.define([
 			}
 			return source
 		},
-
+		/**
+		 * Method to call open Demand Dialog
+		 */
 		openDemandDialog: function () {
 			if (!this._oDemandDialog) {
 				Fragment.load({
@@ -455,6 +470,9 @@ sap.ui.define([
 				this._oDemandDialog.open();
 			}
 		},
+		/**
+		 * To Demand Dialog close
+		 */
 		onDemandDialogClose: function (oEvent) {
 			this._oDemandDialog.close();
 		},
