@@ -5,8 +5,8 @@
 				<firstStatus>
 					<ObjectStatus text="{i18n>lbl.showDemand}" active="true" state="Information" press="onShowDemandPress"/>
 				</firstStatus>
-				<ObjectAttribute title="Date From" text="{path:'demandModel>DateFrom',type: 'sap.ui.model.type.Date', formatOptions: { style: 'short' }}"/>
-				<ObjectAttribute title="Date To" text="{path:'demandModel>DateTo',type: 'sap.ui.model.type.Date', formatOptions: { style: 'short' }}"/>
+				<ObjectAttribute title="From Date" text="{path:'demandModel>DateFrom',type: 'sap.ui.model.type.Date', formatOptions: { style: 'short' }}"/>
+				<ObjectAttribute title="To Date" text="{path:'demandModel>DateTo',type: 'sap.ui.model.type.Date', formatOptions: { style: 'short' }}"/>
 			</ObjectListItem>
 		</List>
 		<endButton>
