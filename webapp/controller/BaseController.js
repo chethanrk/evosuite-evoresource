@@ -387,9 +387,10 @@ sap.ui.define([
 		 * @param {string} sPath - given path withing ganttPlanningModel default is '/data/children'
 		 * @returns Object - {sPath, oData}
 		 */
-		_getChildDataByKey: function (sProperty, sValue, sPath) {
+		_getChildDataByKey: function (sProperty, sValue, sPath, oOriModel) {
 			sPath = sPath || "/data/children";
-			var aChildren = this.getModel("ganttPlanningModel").getProperty(sPath),
+			var oModel = oOriModel ? oOriModel : this.getModel("ganttPlanningModel"),
+				aChildren = oModel.getProperty(sPath),
 				sNewObj = null;
 
 			for (var i = 0; i < aChildren.length; i++) {
@@ -413,6 +414,43 @@ sap.ui.define([
 			}
 			return sNewObj;
 		},
+
+		_getResourceassigmentByKey: function (sProperty, sValue, sResourceGroupId, oPopoverData) {
+			var sPath = "/data/children",
+				oModel = this.getModel("ganttPlanningModel"),
+				aChildren = oModel.getProperty(sPath),
+				aResourceAssignment = [];
+
+			for (var i = 0; i < aChildren.length; i++) {
+				var aResourceAssign = aChildren[i].GanttHierarchyToResourceAssign;
+				if (aChildren[i][sProperty] === sValue && aResourceAssign) {
+					for (var j = 0; j < aResourceAssign.results.length - 1; j++) {
+						if (aResourceAssign.results[j].ResourceGroupGuid === sResourceGroupId) {
+							aResourceAssignment.push(aResourceAssign.results[j]);
+						}
+					}
+					return aResourceAssignment;
+				}
+			}
+			return aResourceAssignment;
+		},
+
+		/**
+		 * validate duplicate resouce group in same time
+		 */
+		_validateDuplicateAsigment: function (oData, aResourceChild) {
+			var sStartTime = oData.StartDate,
+				sEndTime = oData.EndDate,
+				bValidate = true;
+
+			aResourceChild.forEach(function (oAssignment) {
+				if (moment(sStartTime).isSameOrAfter(oAssignment.StartDate) && moment(sEndTime).isSameOrBefore(oAssignment.EndDate)) {
+					bValidate = false;
+				}
+			}.bind(this));
+			return bValidate;
+		},
+
 		/**
 		 * Promise return Structture of a given EntitySet with data if passed
 		 * @param {string} sEntitySet - EntitySet name
@@ -503,13 +541,41 @@ sap.ui.define([
 		 */
 		copyObjectData: function (source, destination, ignore) {
 			if (destination) {
-				for (let prop in destination) {
+				for (var prop in destination) {
 					if (!ignore.includes(prop)) {
 						source[prop] = destination[prop];
 					}
 				}
 			}
-			return source
+			return source;
+		},
+		/**
+		 * Method to validate the assignments which already existed for particular time
+		 */
+		_validateAssigmnetCreate: function (oChangedData, oOriginalData) {
+			return new Promise(function (resolve, reject) {
+				//collect all assignment properties who allowed for create
+				this.getModel().getMetaModel().loaded().then(function () {
+					var oMetaModel = this.getModel().getMetaModel(),
+						oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
+						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+						aProperty = oEntityType ? oEntityType.property : [];
+
+					aProperty.forEach(function (property) {
+						if (oChangedData[property.name] && oOriginalData[property.name]) {
+							if (typeof (oChangedData[property.name]) !== "object" && oChangedData[property.name] !== oOriginalData[property.name]) {
+								resolve();
+								return;
+							} else if (typeof (oChangedData[property.name]) === "object" && oChangedData[property.name].getTime() !== oOriginalData[
+									property.name].getTime()) {
+								resolve();
+								return;
+							}
+						}
+					});
+					reject();
+				}.bind(this));
+			}.bind(this));
 		}
 	});
 });

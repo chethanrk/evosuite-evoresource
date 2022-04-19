@@ -286,20 +286,15 @@ sap.ui.define([
 
 		/**
 		 * Change of shape assignment
-		 * Todo 
 		 * check if group or date range was changed
 		 * when it was changed send validation request
-		 * 
 		 * @param {object} oEvent - event of OK button press
 		 */
 		onPressChangeAssignment: function (oEvent) {
 			var oSimpleformFileds = this.getView().getControlsByFieldGroupId("changeShapeInput");
 			var oValidation = this.validateForm(oSimpleformFileds);
 			if (oValidation && oValidation.state === "success") {
-				var oData = this.oPlanningModel.getProperty("/tempData/popover");
-				oData.isTemporary = false;
-				this._markAsPlanningChange(oData, true);
-				this._oPlanningPopover.close();
+				this._validateAssignment();
 			}
 		},
 
@@ -376,7 +371,10 @@ sap.ui.define([
 			this._getResourceData(0)
 				.then(this._getResourceData.bind(this))
 				.then(function () {
+					//backup original data
 					this.oOriginData = deepClone(this.oPlanningModel.getProperty("/"));
+					this.getModel("ganttOriginalModel").setData(deepClone(this.oOriginData));
+
 					this._setBackgroudShapes(this._sGanttViewMode);
 				}.bind(this));
 		},
@@ -694,6 +692,51 @@ sap.ui.define([
 					}
 				}.bind(this), 1000);
 			}
+		},
+
+		/**
+		 * Validate assigment while create/update 
+		 * Change of shape assignment
+		 * check if group or date range was changed
+		 * when it was changed send validation request
+		 */
+		_validateAssignment: function () {
+			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
+				oModel = this.getModel("ganttOriginalModel"),
+				oFoundData = this._getChildDataByKey("Guid", oData.Guid, null, oModel);
+
+			//get groups assigned to the selected resource
+			var aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
+
+			//validation for the existing assigments
+			if (!this._validateDuplicateAsigment(oData, aAssigments)) {
+				this.showMessageToast("Resource is already assigned to selected group");
+				//remove if assigmnt exist
+				this.onPressDeleteAssignment();
+				return;
+			}
+
+			if (oData.isNew) {
+				this._markAndClosePlanningPopover(oData);
+			} else if (oFoundData && oFoundData.oData) {
+				//validate whether changes are happend or not
+				this._validateAssigmnetCreate(oData, oFoundData.oData).then(function (oResult) {
+					this._markAndClosePlanningPopover(oData);
+				}.bind(this), function (error) {
+					this._oPlanningPopover.close();
+				}.bind(this));
+			}
+		},
+
+		/**
+		 * To call change planning popover data to done
+		 * close planning popover
+		 * @param {oData} popover data
+		 */
+		_markAndClosePlanningPopover: function (oData) {
+			oData.isTemporary = false;
+			this._markAsPlanningChange(oData, true);
+			this._oPlanningPopover.close();
 		}
 	});
 });
