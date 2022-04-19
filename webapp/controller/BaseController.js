@@ -71,19 +71,19 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
-				callFunctionImport:{
+				callFunctionImport: {
 					public: true,
-					final: true	
+					final: true
 				},
-				openEvoAPP:{
+				openEvoAPP: {
 					public: true,
-					final: true	
+					final: true
 				},
-				openApp2AppPopover:{
+				openApp2AppPopover: {
 					public: true,
-					final: true	
+					final: true
 				}
-				
+
 			}
 		},
 
@@ -436,7 +436,7 @@ sap.ui.define([
 				aAssignments = [],
 				aInnerChildren = [],
 				aInnerAssignments = [],
-				newSpath=sPath;
+				newSpath = sPath;
 			for (var i = 0; i < aChildren.length; i++) {
 				if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results.length > 0) {
 					aAssignments = aChildren[i].GanttHierarchyToResourceAssign.results;
@@ -572,20 +572,25 @@ sap.ui.define([
 					name: "com.evorait.evosuite.evoresource.view.fragments.DemandList",
 					controller: this
 				}).then(function (oDialog) {
-					this._oDemandDialog = oDialog;
-					this.getView().addDependent(this._oDemandDialog);
-					this._oDemandDialog.open();
+					if (!this._oDemandDialogIsOpen) {
+						this._oDemandDialog = oDialog;
+						this.getView().addDependent(this._oDemandDialog);
 
-					//after popover gets opened check popover data for resource group color
-					this._oDemandDialog.attachAfterOpen(function () {}.bind(this));
+						this._oDemandDialog.open();
+						this._oDemandDialogIsOpen = true;
+						this._oDemandDialog.attachAfterOpen(function () {}.bind(this));
 
-					//after popover gets closed remove popover data
-					this._oDemandDialog.attachAfterClose(function () {
+						this._oDemandDialog.attachAfterClose(function () {
+							this._oDemandDialogIsOpen = false;
+						}.bind(this));
+					}
 
-					}.bind(this));
 				}.bind(this));
 			} else {
-				this._oDemandDialog.open();
+				if (!this._oDemandDialogIsOpen) {
+					this._oDemandDialog.open();
+					this._oDemandDialogIsOpen = true;
+				}
 			}
 		},
 		/**
