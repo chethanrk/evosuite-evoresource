@@ -296,10 +296,7 @@ sap.ui.define([
 
 		/**
 		 * Change of shape assignment
-		 * Todo 
-		 * check if group or date range was changed
-		 * when it was changed send validation request
-		 * 
+		 *  
 		 * @param {object} oEvent - event of OK button press
 		 */
 		onPressChangeAssignment: function (oEvent) {
@@ -349,7 +346,6 @@ sap.ui.define([
 		 * @param {object} oEvent - event of delete button press
 		 */
 		onPressDeleteAssignment: function (oEvent) {
-			//todo show confirm dialog and send validation request
 			var oData = this.oPlanningModel.getProperty("/tempData/popover");
 			var successcallback = function () {
 
@@ -750,13 +746,12 @@ sap.ui.define([
 				} else {
 					oAssignItem.isTemporary = false;
 					this._markAsPlanningChange(oAssignItem, true);
-					this._oPlanningPopover.close();
 				}
 
 				this.oPlanningModel.refresh();
 
 			}.bind(this);
-
+			this._oPlanningPopover.close();
 			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 		},
 
