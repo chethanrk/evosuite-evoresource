@@ -1,0 +1,27 @@
+sap.ui.define([], function () {
+	"use strict";
+
+	var constants = {
+		APPLICATION: {
+			EVOPLAN: "EVOPLAN",
+			EVOORDER: "EVOORDER",
+			EVOEQUIP: "EVOEQUIP",
+			EVONOTIFY: "EVONOTIFY",
+			EVOFLOC: "EVOFLOC"
+		},
+		PROPERTY: {
+			EVOEQUIP: "EQUIPMENT_NUMBER",
+			EVONOTIFY: "NOTIFICATION_NO",
+			EVOORDER: ["ORDER_NUMBER", "OPERATION_NUMBER"],
+			EVOFLOC: "FUNCTIONAL_LOCATION",
+			EVOOPERATION: "OPERATION_NUMBER"
+		},
+		LAUNCH_MODE: {
+			FIORI: "LAUNCHPAD",
+			BSP: "BSP"
+		}
+	};
+
+	return constants;
+
+});
