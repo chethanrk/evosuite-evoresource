@@ -346,7 +346,9 @@ sap.ui.define([
 		 * @param {object} oEvent - event of delete button press
 		 */
 		onPressDeleteAssignment: function (oEvent) {
-			var oData = this.oPlanningModel.getProperty("/tempData/popover");
+			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
+				sTitle=this.getResourceBundle().getText("tit.confirmDelete"),
+				sMsg=this.getResourceBundle().getText("msg.comfirmDeleteMessage");
 			var successcallback = function () {
 
 				this._removeAssignmentShape(oData, true);
@@ -354,23 +356,7 @@ sap.ui.define([
 
 			};
 			var cancelcallback = function () {};
-			this._confirmDelete(successcallback.bind(this), cancelcallback.bind(this));
-		},
-
-		_confirmDelete: function (successcallback, cancelcallback) {
-			MessageBox.confirm("Are you sure?", {
-				onClose: function (sAction) {
-					if (sAction === "OK") {
-						if (successcallback) {
-							successcallback();
-						}
-					} else {
-						if (cancelcallback) {
-							cancelcallback();
-						}
-					}
-				}.bind(this)
-			});
+			this.showConfirmDialog(sTitle,sMsg,successcallback.bind(this), cancelcallback.bind(this));
 		},
 
 		/**

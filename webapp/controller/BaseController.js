@@ -427,6 +427,12 @@ sap.ui.define([
 			}
 			return sNewObj;
 		},
+		/**
+		 * Return all the path matching property value
+		 * @param {string} sProperty - Property of the object
+		 * @param {string} sValue -  Value of sProperty need to compared
+		 * @param {string} sPath -  path of the array where need to be searched.
+		 */
 
 		_getChildrenDataByKey: function (sProperty, sValue, sPath) {
 			sPath = sPath || "/data/children";
@@ -601,6 +607,10 @@ sap.ui.define([
 		},
 		/**
 		 * Method to call Function Import
+		 * @param oParams {object} parameter to be passed to function import
+		 * @param sFuncName {string} function import name
+		 * @param sMethod {string} method of the function import, default is "POST"
+		 * @param fCallback {function} callback function when function import return value
 		 */
 		callFunctionImport: function (oParams, sFuncName, sMethod, fCallback) {
 			var oModel = this.getModel(),
@@ -661,7 +671,7 @@ sap.ui.define([
 			}
 		},
 		/**
-		 *	Navigates to evoOrder detail page with static url.
+		 * Navigates to evoOrder detail page with static url.
 		 * @param sParamValue
 		 * @param sAppID
 		 */
