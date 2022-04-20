@@ -376,7 +376,7 @@ sap.ui.define([
 			//delete created assigmnemet 
 			this._removeAssignmentShape(oData);
 
-			var newPopoverdata = deepClone(oData);
+			var newPopoverdata = oData;
 			newPopoverdata.DESCRIPTION = oSelContext.getProperty("ResourceGroupDesc");
 
 			//add different resource group if it is not exist
