@@ -2,8 +2,9 @@
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"com/evorait/evosuite/evoresource/model/formatter",
-	"sap/ui/core/Fragment"
-], function (Controller, Formatter, Fragment) {
+	"sap/ui/core/Fragment",
+	"com/evorait/evosuite/evoresource/model/Constants",
+], function (Controller, Formatter, Fragment, Constants) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoresource.controller.BaseController", {
@@ -69,7 +70,20 @@ sap.ui.define([
 				reValidateForm: {
 					public: true,
 					final: true
+				},
+				callFunctionImport: {
+					public: true,
+					final: true
+				},
+				openEvoAPP: {
+					public: true,
+					final: true
+				},
+				openApp2AppPopover: {
+					public: true,
+					final: true
 				}
+
 			}
 		},
 
@@ -415,6 +429,43 @@ sap.ui.define([
 			return sNewObj;
 		},
 
+		_getChildrenDataByKey: function (sProperty, sValue, sPath) {
+			sPath = sPath || "/data/children";
+			var aChildren = this.getModel("ganttPlanningModel").getProperty(sPath),
+				sNewObj = null,
+				aAllMatchedData = [],
+				aAssignments = [],
+				aInnerChildren = [],
+				aInnerAssignments = [],
+				newSpath = sPath;
+			for (var i = 0; i < aChildren.length; i++) {
+				if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results.length > 0) {
+					aAssignments = aChildren[i].GanttHierarchyToResourceAssign.results;
+					for (var j = 0; j < aAssignments.length; j++) {
+
+						if (aAssignments[j][sProperty] === sValue) {
+							newSpath = sPath + "/" + i + "/GanttHierarchyToResourceAssign/results/" + j;
+							aAllMatchedData.push(newSpath)
+						}
+					}
+
+					aInnerChildren = aChildren[i].children;
+					for (var k = 0; k < aInnerChildren.length; k++) {
+						if (aInnerChildren[k].GanttHierarchyToResourceAssign && aInnerChildren[k].GanttHierarchyToResourceAssign.results.length > 0) {
+							aInnerAssignments = aInnerChildren[k].GanttHierarchyToResourceAssign.results;
+							for (var l = 0; l < aInnerAssignments.length; l++) {
+
+								if (aInnerAssignments[l][sProperty] === sValue) {
+									newSpath = sPath + "/" + i + "/children/" + k + "/GanttHierarchyToResourceAssign/results/" + l;
+									aAllMatchedData.push(newSpath)
+								}
+							}
+						}
+					}
+				}
+			}
+			return aAllMatchedData;
+		},
 		_getResourceassigmentByKey: function (sProperty, sValue, sResourceGroupId, oPopoverData) {
 			var sPath = "/data/children",
 				oModel = this.getModel("ganttPlanningModel"),
@@ -424,7 +475,8 @@ sap.ui.define([
 			for (var i = 0; i < aChildren.length; i++) {
 				var aResourceAssign = aChildren[i].GanttHierarchyToResourceAssign;
 				if (aChildren[i][sProperty] === sValue && aResourceAssign) {
-					for (var j = 0; j < aResourceAssign.results.length - 1; j++) {
+					var iResourceCount = oPopoverData.isNew ? aResourceAssign.results.length - 1 : aResourceAssign.results.length;
+					for (var j = 0; j < iResourceCount; j++) {
 						if (aResourceAssign.results[j].ResourceGroupGuid === sResourceGroupId) {
 							aResourceAssignment.push(aResourceAssign.results[j]);
 						}
@@ -445,6 +497,12 @@ sap.ui.define([
 
 			aResourceChild.forEach(function (oAssignment) {
 				if (moment(sStartTime).isSameOrAfter(oAssignment.StartDate) && moment(sEndTime).isSameOrBefore(oAssignment.EndDate)) {
+					bValidate = false;
+				} else if (moment(sStartTime).isBetween(moment(oAssignment.StartDate), moment(oAssignment.EndDate)) || moment(sEndTime).isBetween(
+						moment(oAssignment.StartDate), moment(oAssignment.EndDate))) {
+					bValidate = false;
+				} else if (moment(oAssignment.StartDate).isBetween(moment(sStartTime), moment(sEndTime)) || moment(oAssignment.EndDate).isBetween(
+						moment(sStartTime), moment(sEndTime))) {
 					bValidate = false;
 				}
 			}.bind(this));
@@ -548,6 +606,170 @@ sap.ui.define([
 				}
 			}
 			return source;
+		},
+		/**
+		 * Method to call open Demand Dialog
+		 */
+		openDemandDialog: function () {
+			if (!this._oDemandDialog) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoresource.view.fragments.DemandList",
+					controller: this
+				}).then(function (oDialog) {
+					if (!this._oDemandDialogIsOpen) {
+						this._oDemandDialog = oDialog;
+						this.getView().addDependent(this._oDemandDialog);
+
+						this._oDemandDialog.open();
+						this._oDemandDialogIsOpen = true;
+						this._oDemandDialog.attachAfterOpen(function () {}.bind(this));
+
+						this._oDemandDialog.attachAfterClose(function () {
+							this._oDemandDialogIsOpen = false;
+						}.bind(this));
+					}
+
+				}.bind(this));
+			} else {
+				if (!this._oDemandDialogIsOpen) {
+					this._oDemandDialog.open();
+					this._oDemandDialogIsOpen = true;
+				}
+			}
+		},
+		/**
+		 * To Demand Dialog close
+		 */
+		onDemandDialogClose: function (oEvent) {
+			this._oDemandDialog.close();
+		},
+		/**
+		 * Method to call Function Import
+		 */
+		callFunctionImport: function (oParams, sFuncName, sMethod, fCallback) {
+			var oModel = this.getModel(),
+				oViewModel = this.getModel("viewModel"),
+				oResourceBundle = this.getResourceBundle();
+			oViewModel.setProperty("/busy", true);
+			oModel.callFunction("/" + sFuncName, {
+				method: sMethod || "POST",
+				urlParameters: oParams,
+				refreshAfterChange: false,
+				success: function (oData, oResponse) {
+					//Handle Success
+					oViewModel.setProperty("/busy", false);
+					fCallback(oData);
+				}.bind(this),
+				error: function (oError) {
+					//Handle Error
+					oViewModel.setProperty("/busy", false);
+					MessageToast.show(oResourceBundle.getText("errorMessage"), {
+						duration: 5000
+					});
+				}
+			});
+
+		},
+		/**
+		 * render a popover with button inside
+		 * next to Notification ID or Equipment ID
+		 * @param oSource
+		 * @param sProp
+		 */
+		openApp2AppPopover: function (oSource, oModelName, sProp) {
+			var oNavLinks = this.getModel("templateProperties").getProperty("/navLinks"),
+				oContext = oSource.getBindingContext(oModelName) || oSource.getBindingContext(),
+				oModel = this.getModel(oModelName) || this.getModel();
+
+			if (oContext && oNavLinks[sProp]) {
+				var sPath = oContext.getPath() + "/" + oNavLinks[sProp].Property;
+				var oPopover = new sap.m.ResponsivePopover({
+					placement: sap.m.PlacementType.Right,
+					showHeader: false,
+					showCloseButton: true,
+					afterClose: function () {
+						oPopover.destroy(true);
+					}
+				});
+				var oButton = new sap.m.Button({
+					text: this.getResourceBundle().getText("btn.App2App", oNavLinks[sProp].ApplicationName),
+					icon: "sap-icon://action",
+					press: function () {
+						oPopover.close();
+						oPopover.destroy(true);
+						this.openEvoAPP(oModel.getProperty(sPath), oNavLinks[sProp].ApplicationId);
+					}.bind(this)
+				});
+				oPopover.insertContent(oButton);
+				oPopover.openBy(oSource);
+			}
+		},
+		/**
+		 *	Navigates to evoOrder detail page with static url.
+		 * @param sParamValue
+		 * @param sAppID
+		 */
+		openEvoAPP: function (sParamValue, sAppID) {
+			var sUri, sSemanticObject, sParameter,
+				sAction,
+				sAdditionInfo,
+				sLaunchMode = this.getModel("viewModel").getProperty("/launchMode"),
+				oAppInfo = this._getAppInfoById(sAppID);
+
+			// if there is no configuration maintained in the backend
+			if (oAppInfo === null) {
+				return;
+			}
+
+			if (sLaunchMode === Constants.LAUNCH_MODE.FIORI) {
+				sAdditionInfo = oAppInfo.Value1 || "";
+				sSemanticObject = sAdditionInfo.split("\\\\_\\\\")[0];
+				sAction = sAdditionInfo.split("\\\\_\\\\")[1] || "Display";
+				sParameter = sAdditionInfo.split("\\\\_\\\\")[2];
+				if (sSemanticObject && sAction) {
+					this._navToApp(sSemanticObject, sAction, sParameter, sParamValue);
+				}
+			} else {
+				sAdditionInfo = oAppInfo.Value1;
+				sUri = sAdditionInfo.replace("\\\\place_h1\\\\", sParamValue);
+				window.open(sUri, "_blank");
+			}
+		},
+		/**
+		 * get respective navigation details
+		 * @param sAppID
+		 */
+		_getAppInfoById: function (sAppID) {
+			var aNavLinks = this.getModel("templateProperties").getProperty("/navLinks");
+			for (var i in aNavLinks) {
+				if (aNavLinks.hasOwnProperty(i)) {
+					if (aNavLinks[i].ApplicationId === sAppID) {
+						return aNavLinks[i];
+					}
+				}
+			}
+			return null;
+		},
+		/**
+		 * In Fiori Launchpad navigate to another app
+		 * @param sSemanticObject
+		 * @param sAction
+		 * @param sParameter
+		 * @param sParamValue
+		 * @private
+		 */
+		_navToApp: function (sSemanticObject, sAction, sParameter, sParamValue) {
+			var oCrossAppNavigator = sap.ushell.Container.getService("CrossApplicationNavigation"),
+				mParams = {};
+
+			mParams[sParameter] = [sParamValue];
+			oCrossAppNavigator.toExternal({
+				target: {
+					semanticObject: sSemanticObject,
+					action: sAction
+				},
+				params: mParams
+			});
 		},
 		/**
 		 * Method to validate the assignments which already existed for particular time
