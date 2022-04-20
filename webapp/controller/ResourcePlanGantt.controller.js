@@ -374,7 +374,7 @@ sap.ui.define([
 			oData.RESOURCE_GROUP_COLOR = oSelContext.getProperty("ResourceGroupColor");
 
 			//delete created assigmnemet 
-			this._removeAssignmentShape(oData);
+			this._removeAssignmentShape(oData,true);
 
 			var newPopoverdata = oData;
 			newPopoverdata.DESCRIPTION = oSelContext.getProperty("ResourceGroupDesc");
