@@ -780,34 +780,6 @@ sap.ui.define([
 				},
 				params: mParams
 			});
-		},
-		/**
-		 * Method to validate the assignments which already existed for particular time
-		 */
-		_validateAssigmnetCreate: function (oChangedData, oOriginalData) {
-			return new Promise(function (resolve, reject) {
-				//collect all assignment properties who allowed for create
-				this.getModel().getMetaModel().loaded().then(function () {
-					var oMetaModel = this.getModel().getMetaModel(),
-						oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
-						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-						aProperty = oEntityType ? oEntityType.property : [];
-
-					aProperty.forEach(function (property) {
-						if (oChangedData[property.name] && oOriginalData[property.name]) {
-							if (typeof (oChangedData[property.name]) !== "object" && oChangedData[property.name] !== oOriginalData[property.name]) {
-								resolve();
-								return;
-							} else if (typeof (oChangedData[property.name]) === "object" && oChangedData[property.name].getTime() !== oOriginalData[
-									property.name].getTime()) {
-								resolve();
-								return;
-							}
-						}
-					});
-					reject();
-				}.bind(this));
-			}.bind(this));
 		}
 	});
 });

@@ -296,7 +296,7 @@ sap.ui.define([
 
 		/**
 		 * Change of shape assignment
-		 *   * check if group or date range was changed
+		 * check if group or date range was changed
 		 * when it was changed send validation request
 		 * @param {object} oEvent - event of OK button press
 		 */
@@ -318,14 +318,14 @@ sap.ui.define([
 		 */
 		onPressDeleteAssignment: function (oEvent) {
 			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
-				sTitle=this.getResourceBundle().getText("tit.confirmDelete"),
-				sMsg=this.getResourceBundle().getText("msg.comfirmDeleteMessage");
+				sTitle = this.getResourceBundle().getText("tit.confirmDelete"),
+				sMsg = this.getResourceBundle().getText("msg.comfirmDeleteMessage");
 			var successcallback = function () {
 				this._removeAssignmentShape(oData, true);
 				this._oPlanningPopover.close();
 			};
 			var cancelcallback = function () {};
-			this.showConfirmDialog(sTitle,sMsg,successcallback.bind(this), cancelcallback.bind(this));
+			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
 		},
 
 		/**
@@ -390,8 +390,6 @@ sap.ui.define([
 				.then(function () {
 					//backup original data
 					this.oOriginData = deepClone(this.oPlanningModel.getProperty("/"));
-					this.getModel("ganttOriginalModel").setData(deepClone(this.oOriginData));
-
 					this._setBackgroudShapes(this._sGanttViewMode);
 				}.bind(this));
 		},
@@ -784,9 +782,7 @@ sap.ui.define([
 		 * when it was changed send validation request
 		 */
 		_validateAssignment: function () {
-			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
-				oModel = this.getModel("ganttOriginalModel"),
-				oFoundData = this._getChildDataByKey("Guid", oData.Guid, null, oModel);
+			var oData = this.oPlanningModel.getProperty("/tempData/popover");
 
 			//get groups assigned to the selected resource
 			var aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
@@ -801,22 +797,16 @@ sap.ui.define([
 
 			if (oData.isNew) {
 				this._markAndClosePlanningPopover(oData);
-			} else if (oFoundData && oFoundData.oData) {
+			} else {
 				//validate whether changes are happend or not
-				this._validateAssigmnetCreate(oData, oFoundData.oData).then(function (oResult) {
+				this._setChangeIndicator(oData);
 
-					this._setChangeIndicator(oData);
-
-					if (oData.IS_STARTCHANGE || oData.IS_ENDCHANGE || oData.IS_GROUPCHANGE) {
-						this._validateForChange(oData);
-						this._markAndClosePlanningPopover(oData);
-					} else {
-						this._oPlanningPopover.close();
-					}
-
-				}.bind(this), function (error) {
+				if (oData.IS_STARTCHANGE || oData.IS_ENDCHANGE || oData.IS_GROUPCHANGE) {
+					this._validateForChange(oData);
+					this._markAndClosePlanningPopover(oData);
+				} else {
 					this._oPlanningPopover.close();
-				}.bind(this));
+				}
 			}
 		},
 
@@ -856,16 +846,19 @@ sap.ui.define([
 
 		/**
 		 * reset the changes when overlapped with other assigmnment
-		 * ToDO reset the original shape details if validation gets failed
+		 * reset the original shape details if validation gets failed
 		 */
 		_resetChanges: function () {
 			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
-				oldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
-			this._removeAssignmentShape(oData);
+				oldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
+				oFoundData = this._getChildrenDataByKey("Guid", oData.Guid, null);
 
-			//ToDO reset the original shape details if validation gets failed
-
-			this._oPlanningPopover.close();
+			// reset the original shape details if validation gets failed
+			if (oData.Guid === oldPopoverData.Guid) {
+				for (var i = 0; i < oFoundData.length; i++) {
+					this.oPlanningModel.setProperty(oFoundData[i], oldPopoverData);
+				}
+			}
 		}
 	});
 });

@@ -57,7 +57,6 @@ sap.ui.define([
 			}), "viewModel");
 
 			this.setModel(models.createHelperModel(), "ganttPlanningModel");
-			this.setModel(models.createHelperModel(), "ganttOriginalModel");
 			// Demand List Model
 			this.setModel(models.createHelperModel(), "demandModel");
 
