@@ -401,10 +401,9 @@ sap.ui.define([
 		 * @param {string} sPath - given path withing ganttPlanningModel default is '/data/children'
 		 * @returns Object - {sPath, oData}
 		 */
-		_getChildDataByKey: function (sProperty, sValue, sPath, oOriModel) {
+		_getChildDataByKey: function (sProperty, sValue, sPath) {
 			sPath = sPath || "/data/children";
-			var oModel = oOriModel ? oOriModel : this.getModel("ganttPlanningModel"),
-				aChildren = oModel.getProperty(sPath),
+			var aChildren = this.getModel("ganttPlanningModel").getProperty(sPath),
 				sNewObj = null;
 
 			for (var i = 0; i < aChildren.length; i++) {
