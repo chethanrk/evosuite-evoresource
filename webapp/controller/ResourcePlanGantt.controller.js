@@ -278,7 +278,42 @@ sap.ui.define([
 		/**
 		 * @param {object} oEvent -
 		 */
-		onPressSave: function () {},
+		onPressSave: function () {
+			if (!this.oPlanningModel.getProperty("/hasChanges")) {
+				sap.m.MessageToast.show("No changes");
+				return;
+			}
+			//this._collectDeleteAssigments();
+			this.getModel().setDeferredGroups(["batchDelete"]);
+			var mParam = {
+				urlParameters: null,
+				groupId: "batchDelete",
+				success: this._deleteSuccess.bind(this),
+				error: this._deleteFailed.bind(this)
+			};
+			this._prepareDeleteData(mParam).then(function (oData) {
+				if (oData.length > 0) {
+					this.getModel().submitChanges(mParam);
+				} else {
+					this.saveChanges(this._saveSuccess.bind(this), this._saveFailed.bind(this));
+				}
+			}.bind(this));
+
+		},
+		_saveSuccess: function (oResponse) {
+			this.showMessageToast("Successfully updated");
+			this.oPlanningModel.setProperty("/hasChanges", false);
+			this._loadGanttData();
+		},
+		_saveFailed: function (oError) {
+			this.showMessageToast("save failed");
+		},
+		_deleteSuccess: function (oResponse) {
+			this.saveChanges(this._saveSuccess.bind(this), this._saveFailed.bind(this));
+		},
+		_deleteFailed: function (oError) {
+			this.showMessageToast("delete failed");
+		},
 
 		/**
 		 * @param {object} oEvent -
@@ -526,10 +561,13 @@ sap.ui.define([
 			var oFoundData = this._getChildDataByKey("Guid", oData.Guid, null),
 				aChanges = this.oPlanningModel.getProperty("/deletedData");
 
-			//object change needs added to "/changedData" array by path
+			//object change needs added to "/changedData" array by GUID
 
-			if (oFoundData && aChanges.indexOf(oFoundData.sPath) < 0) {
+			/*if (oFoundData && aChanges.indexOf(oFoundData.sPath) < 0) {
 				aChanges.push(oFoundData.sPath);
+			}*/
+			if (oFoundData && oFoundData.oData && aChanges.indexOf(oFoundData.oData.Guid) < 0) {
+				aChanges.push(oFoundData.oData.Guid);
 			}
 
 			this.oPlanningModel.setProperty("/hasChanges", aChanges.length > 0);

@@ -27,8 +27,10 @@
 											<tnt:InfoLabel text="{i18n>xtxt.unsavedChanges}" colorScheme="1" displayOnly="true" visible="{ganttPlanningModel>/hasChanges}"/>
 											<ToolbarSpacer/>
 											<core:ExtensionPoint name="GanttExtP|ResourcePlanGantt|GanttResourceHierarchySet|ContainerToolbar|Before"/>
-											<Button id="idResourcePlanBtnSave" text="{i18n>xbtn.save}" icon="sap-icon://save" type="Emphasized" press="onPressSave"/>
-											<Button id="idResourcePlanBtnCancel" text="{i18n>xbtn.reset}" icon="sap-icon://cancel" press="onPressCancel"/>
+											<Button id="idResourcePlanBtnSave" text="{i18n>xbtn.save}" icon="sap-icon://save" type="Emphasized" press="onPressSave"
+												enabled="{ganttPlanningModel>/hasChanges}"/>
+											<Button id="idResourcePlanBtnCancel" text="{i18n>xbtn.reset}" icon="sap-icon://cancel" press="onPressCancel"
+												enabled="{ganttPlanningModel>/hasChanges}"/>
 											<Text text="|"/>
 											<Button id="idResourcePlanBtnToday" text="{i18n>xbtn.today}" press="onPressToday"/>
 											<core:ExtensionPoint name="GanttExtP|ResourcePlanGantt|GanttResourceHierarchySet|ContainerToolbar|After"/>

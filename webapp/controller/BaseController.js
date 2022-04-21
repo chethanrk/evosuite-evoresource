@@ -343,9 +343,98 @@ sap.ui.define([
 			}
 		},
 
+		/***
+		 * Save changes generic method
+		 */
+		saveChanges: function (oSuccessCallback, oErrorCallback) {
+			var mParameters = {
+				groupId: "batchSave",
+				success: oSuccessCallback,
+				error: oErrorCallback
+			};
+			this._preparePayload(mParameters).then(function (oData) {
+				if (oData.length > 0) {
+					this.getModel().submitChanges(mParameters);
+				} else {
+					if (oSuccessCallback) {
+						oSuccessCallback();
+					}
+				}
+			}.bind(this));
+		},
+
 		/* =========================================================== */
 		/* internal methods                                            */
 		/* =========================================================== */
+		/**
+		 * Preapre payload for the create new assigmentes 
+		 * Create changeset
+		 * used deferredgroups
+		 * @Param {mParameters} - details to odata model
+		 */
+		_preparePayload: function (mParameters) {
+			return new Promise(function (resolve) {
+				var aChangedData = this.oPlanningModel.getProperty("/changedData");
+				this.getModel().setDeferredGroups(["batchSave"]);
+				aChangedData.forEach(function (sPath) {
+					var oRowData = this.oPlanningModel.getProperty(sPath);
+					var singleentry = {
+						groupId: "batchSave",
+						urlParameters: null
+					};
+					var obj = {};
+					if (oRowData.isNew) {
+						//collect all assignment properties who allowed for create
+						this.getModel().getMetaModel().loaded().then(function () {
+							var oMetaModel = this.getModel().getMetaModel(),
+								oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
+								oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+								aProperty = oEntityType ? oEntityType.property : [];
+
+							aProperty.forEach(function (property) {
+								obj[property.name] = "";
+								if (oRowData[property.name]) {
+									obj[property.name] = oRowData[property.name];
+								}
+							});
+							singleentry.properties = obj;
+							this.getModel().createEntry("/ResourceAssignmentSet", singleentry);
+						}.bind(this));
+					}
+				}.bind(this));
+				resolve(aChangedData);
+			}.bind(this));
+		},
+
+		/**
+		 * Preapre payload for the delete assigmentes 
+		 * Create changeset
+		 * used deferredgroups
+		 */
+		_prepareDeleteData: function () {
+			return new Promise(function (resolve) {
+				var aDeleteData = this.oPlanningModel.getProperty("/deletedData");
+				var param = {
+					groupId: "batchDelete"
+				};
+				aDeleteData.forEach(function (sPath) {
+					this.getModel().remove("/ResourceAssignmentSet('" + sPath + "')", param);
+				}.bind(this));
+				resolve(aDeleteData);
+			}.bind(this));
+		},
+
+		/**
+		 * collect delete request for the changed data for the edited assignments
+		 */
+		_collectDeleteAssigments: function () {
+			var aChangedData = this.oPlanningModel.getProperty("/changedData");
+
+			aChangedData.forEach(function (sPath) {
+				var oRowData = this.oPlanningModel.getProperty(sPath);
+			//	debugger;
+			}.bind(this));
+		},
 
 		/**
 		 * loop trough all nested array of children
