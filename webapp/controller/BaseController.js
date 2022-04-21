@@ -471,6 +471,49 @@ sap.ui.define([
 			}
 			return aAllMatchedData;
 		},
+		_getResourceassigmentByKey: function (sProperty, sValue, sResourceGroupId, oPopoverData) {
+			var sPath = "/data/children",
+				oModel = this.getModel("ganttPlanningModel"),
+				aChildren = oModel.getProperty(sPath),
+				aResourceAssignment = [];
+
+			for (var i = 0; i < aChildren.length; i++) {
+				var aResourceAssign = aChildren[i].GanttHierarchyToResourceAssign;
+				if (aChildren[i][sProperty] === sValue && aResourceAssign) {
+					var iResourceCount = oPopoverData.isNew ? aResourceAssign.results.length - 1 : aResourceAssign.results.length;
+					for (var j = 0; j < iResourceCount; j++) {
+						if (aResourceAssign.results[j].ResourceGroupGuid === sResourceGroupId) {
+							aResourceAssignment.push(aResourceAssign.results[j]);
+						}
+					}
+					return aResourceAssignment;
+				}
+			}
+			return aResourceAssignment;
+		},
+
+		/**
+		 * validate duplicate resouce group in same time
+		 */
+		_validateDuplicateAsigment: function (oData, aResourceChild) {
+			var sStartTime = oData.StartDate,
+				sEndTime = oData.EndDate,
+				bValidate = true;
+
+			aResourceChild.forEach(function (oAssignment) {
+				if (moment(sStartTime).isSameOrAfter(oAssignment.StartDate) && moment(sEndTime).isSameOrBefore(oAssignment.EndDate)) {
+					bValidate = false;
+				} else if (moment(sStartTime).isBetween(moment(oAssignment.StartDate), moment(oAssignment.EndDate)) || moment(sEndTime).isBetween(
+						moment(oAssignment.StartDate), moment(oAssignment.EndDate))) {
+					bValidate = false;
+				} else if (moment(oAssignment.StartDate).isBetween(moment(sStartTime), moment(sEndTime)) || moment(oAssignment.EndDate).isBetween(
+						moment(sStartTime), moment(sEndTime))) {
+					bValidate = false;
+				}
+			}.bind(this));
+			return bValidate;
+		},
+
 		/**
 		 * Promise return Structture of a given EntitySet with data if passed
 		 * @param {string} sEntitySet - EntitySet name
@@ -561,13 +604,13 @@ sap.ui.define([
 		 */
 		copyObjectData: function (source, destination, ignore) {
 			if (destination) {
-				for (let prop in destination) {
+				for (var prop in destination) {
 					if (!ignore.includes(prop)) {
 						source[prop] = destination[prop];
 					}
 				}
 			}
-			return source
+			return source;
 		},
 		/**
 		 * Method to call open Demand Dialog
@@ -736,6 +779,6 @@ sap.ui.define([
 				},
 				params: mParams
 			});
-		},
+		}
 	});
 });
