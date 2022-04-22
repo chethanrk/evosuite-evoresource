@@ -302,7 +302,6 @@ sap.ui.define([
 		},
 		_saveSuccess: function (oResponse) {
 			this.showMessageToast("Successfully updated");
-			this.oPlanningModel.setProperty("/hasChanges", false);
 			this._loadGanttData();
 		},
 		_saveFailed: function (oError) {
@@ -420,6 +419,7 @@ sap.ui.define([
 		 * 
 		 */
 		_loadGanttData: function () {
+			this.oPlanningModel.setProperty("/hasChanges", false);
 			this._getResourceData(0)
 				.then(this._getResourceData.bind(this))
 				.then(function () {
