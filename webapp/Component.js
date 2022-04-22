@@ -48,12 +48,12 @@ sap.ui.define([
 				densityClass: this.getContentDensityClass(),
 				isSubPage: false,
 				gantt: {
-					defaultStartDate: moment().startOf("week").toDate(),
-					defaultEndDate: moment().endOf("month").add(1, "months").toDate(),
+					defaultStartDate: this._getUTCDate(moment().startOf("week").toDate()),
+					defaultEndDate: this._getUTCDate(moment().endOf("month").add(1, "months").toDate()),
 					popoverPlacement: sap.m.PlacementType.HorizontalPreferredRight
 				},
-				draggedData:null,
-				launchMode: Constants.LAUNCH_MODE.BSP,
+				draggedData: null,
+				launchMode: Constants.LAUNCH_MODE.BSP
 			}), "viewModel");
 
 			this.setModel(models.createHelperModel(), "ganttPlanningModel");
@@ -66,7 +66,7 @@ sap.ui.define([
 			this.MessageManager = new MessageManager();
 
 			this._getTemplateProps();
-			
+
 			this._setApp2AppLinks();
 
 			// get System Information
@@ -214,5 +214,13 @@ sap.ui.define([
 					this.getModel("templateProperties").setProperty("/navLinks/", mProps);
 				}.bind(this));
 		},
+
+		/**
+		 * Remove local time zone details from the date object
+		 */
+		_getUTCDate: function (oDate) {
+			var offsetMs = new Date(0).getTimezoneOffset() * 60 * 1000;
+			return new Date(oDate.getTime() - offsetMs);
+		}
 	});
 });

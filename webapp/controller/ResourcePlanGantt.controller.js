@@ -6,12 +6,11 @@ sap.ui.define([
 	"sap/base/util/deepClone",
 	"sap/base/util/deepEqual",
 	"com/evorait/evosuite/evoresource/model/models",
-	"sap/gantt/misc/Format",
 	"sap/ui/core/Fragment",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/m/MessageBox"
-], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Format, Fragment, Filter, FilterOperator,
+], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Fragment, Filter, FilterOperator,
 	MessageBox) {
 	"use strict";
 
@@ -112,7 +111,7 @@ sap.ui.define([
 			this._sGanttViewMode = formatter.getViewMapping(this._defaultView);
 
 			//idPageResourcePlanningWrapper
-			this.oOriginData = {
+			/*this.oOriginData = {
 				data: {
 					children: []
 				},
@@ -122,7 +121,8 @@ sap.ui.define([
 				deletedData: []
 			};
 			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
-			this.oPlanningModel.setData(deepClone(this.oOriginData));
+			this.oPlanningModel.setData(deepClone(this.oOriginData));*/
+			this._initialisePlanningModel();
 
 			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
 				this._setNewHorizon(oResult.DEFAULT_GANTT_START_DATE, oResult.DEFAULT_GANTT_END_DATE);
@@ -283,7 +283,7 @@ sap.ui.define([
 				sap.m.MessageToast.show("No changes");
 				return;
 			}
-			//this._collectDeleteAssigments();
+
 			this.getModel().setDeferredGroups(["batchDelete"]);
 			var mParam = {
 				urlParameters: null,
@@ -376,14 +376,18 @@ sap.ui.define([
 			oSource.setValueState(sap.ui.core.ValueState.None);
 			oData.RESOURCE_GROUP_COLOR = oSelContext.getProperty("ResourceGroupColor");
 
-			//delete created assigmnemet 
-			this._removeAssignmentShape(oData,true);
+			if (oData && oData.isNew) { //new assignments to remove created dummy assigment and add new assignments
+				//delete created assigmnemet 
+				this._removeAssignmentShape(oData, true);
 
-			var newPopoverdata = oData;
-			newPopoverdata.DESCRIPTION = oSelContext.getProperty("ResourceGroupDesc");
+				var newPopoverdata = oData;
+				newPopoverdata.DESCRIPTION = oSelContext.getProperty("ResourceGroupDesc");
 
-			//add different resource group if it is not exist
-			this._addSingleChildToParent(newPopoverdata);
+				//add different resource group if it is not exist
+				this._addSingleChildToParent(newPopoverdata);
+			} else { // for already created assignments remove original one and create dummy assignments
+				this._removeAssignmentShape(oData, true, true, oSelContext.getProperty("ResourceGroupDesc"));
+			}
 		},
 
 		/**
@@ -419,7 +423,8 @@ sap.ui.define([
 		 * 
 		 */
 		_loadGanttData: function () {
-			this.oPlanningModel.setProperty("/hasChanges", false);
+			//this.oPlanningModel.setProperty("/hasChanges", false);
+			this._initialisePlanningModel();
 			this._getResourceData(0)
 				.then(this._getResourceData.bind(this))
 				.then(function () {
@@ -494,10 +499,6 @@ sap.ui.define([
 			};
 			aChildren = this._recurseChildren2Level(aChildren, iLevel, callbackFn);
 			this.oPlanningModel.setProperty("/data/children", aChildren);
-		},
-
-		fnTimeConverter: function (sTimestamp) {
-			return Format.abapTimestampToDate(sTimestamp);
 		},
 
 		/**
@@ -614,7 +615,7 @@ sap.ui.define([
 		 * Add new Resource Group under Resource in Gantt
 		 * @param {object} oData - Resource Group data to be added under Resource if not exist
 		 */
-		_addSingleChildToParent: function (oData) {
+		_addSingleChildToParent: function (oData, bAllowMarkChange) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			this.getObjectFromEntity("GanttResourceHierarchySet", oData).then(function (oGanntObject) {
 				oGanntObject["bgTasks"] = oData["bgTasks"];
@@ -631,9 +632,25 @@ sap.ui.define([
 				}.bind(this);
 				aChildren = this._recurseAllChildren(aChildren, callbackFn, oGanntObject);
 				this.oPlanningModel.setProperty("/data/children", aChildren);
-				this._addNewAssignmentShape(oData);
+				//this._addNewAssignmentShape(oData);  // ---- deleted by now 22-04-2022 need to be test scenarios
 				//Reset bgTasks when new resource added to the gantt
 				this._setBackgroudShapes(this._sGanttViewMode);
+
+				var aMatchedAssignmets = this._getChildrenDataByKey("Guid", oData.Guid, null);
+
+				if (bAllowMarkChange && aMatchedAssignmets.length === 0) {
+					this._addNewAssignmentShape(oData);
+					var oFoundData = this._getChildDataByKey("Guid", oData.Guid, null),
+						sPath = oFoundData.sPath;
+					this.oPlanningModel.setProperty(sPath + "/isNew", true);
+					this.oPlanningModel.setProperty(sPath + "/isTemporary", false);
+					this.oPlanningModel.setProperty(sPath + "/PARENT_NODE_ID", "");
+					this.oPlanningModel.setProperty(sPath + "/NODE_ID", "");
+
+					this._markAsPlanningChange(oData, true);
+				} else {
+					this._addNewAssignmentShape(oData);
+				}
 			}.bind(this));
 		},
 		/**
@@ -693,7 +710,7 @@ sap.ui.define([
 		 * @param {object} oAssignData - object of assignment based on entityType of assignment 
 		 * 
 		 */
-		_removeAssignmentShape: function (oAssignData, removeNew) {
+		_removeAssignmentShape: function (oAssignData, removeNew, bAddNew, sDescription) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			if (!oAssignData.isTemporary && !removeNew) {
 				return;
@@ -708,7 +725,7 @@ sap.ui.define([
 							this._markAsPlanningChange(oAssignItem, false);
 							aAssignments.splice(index, 1);
 						} else {
-							this._validateForDelete(oAssignItem, aAssignments, index);
+							this._validateForDelete(oAssignItem, aAssignments, index, bAddNew, sDescription);
 						}
 					}
 				}.bind(this));
@@ -752,7 +769,7 @@ sap.ui.define([
 		/**
 		 * list if demands who are assigned to this time frame
 		 */
-		_validateForDelete: function (oAssignItem, aAssignments, index) {
+		_validateForDelete: function (oAssignItem, aAssignments, index, bAddNew, sDescription) {
 			var oParams = {
 					ObjectId: oAssignItem.Guid,
 					EndTimestamp: oAssignItem.EndDate,
@@ -769,6 +786,10 @@ sap.ui.define([
 					oAssignItem.isDelete = true;
 					this._markAsPlanningDelete(oAssignItem);
 					aAssignments.splice(index, 1);
+					if (bAddNew) {
+						oAssignItem.DESCRIPTION = sDescription;
+						this._addSingleChildToParent(oAssignItem, true);
+					}
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
@@ -897,6 +918,24 @@ sap.ui.define([
 					this.oPlanningModel.setProperty(oFoundData[i], oldPopoverData);
 				}
 			}
+		},
+
+		/**
+		 * Set initial data to the planning model
+		 */
+		_initialisePlanningModel: function () {
+			//idPageResourcePlanningWrapper
+			this.oOriginData = {
+				data: {
+					children: []
+				},
+				tempData: {},
+				changedData: [],
+				hasChanges: false,
+				deletedData: []
+			};
+			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
+			this.oPlanningModel.setData(deepClone(this.oOriginData));
 		}
 	});
 });

@@ -1,8 +1,9 @@
 /* globals moment */
 sap.ui.define([
 	"sap/gantt/library",
-	"sap/ui/core/format/DateFormat"
-], function (GanttLibrary, DateFormat) {
+	"sap/ui/core/format/DateFormat",
+	"sap/gantt/misc/Format"
+], function (GanttLibrary, DateFormat, Format) {
 	"use strict";
 
 	var TimeUnit = GanttLibrary.config.TimeUnit;
@@ -165,6 +166,25 @@ sap.ui.define([
 		 */
 		convertString2Date: function (sDate) {
 			return moment(sDate.substr(0, 4) + "-" + sDate.substring(4, 6) + "-" + sDate.substring(6, 8));
+		},
+
+		/**
+		 * to get utc date object
+		 */
+		getUTCDateObject: function (oDate) {
+			var offsetMs = new Date(0).getTimezoneOffset() * 60 * 1000;
+
+			return new Date(oDate.getTime() + offsetMs);
+		},
+
+		/**
+		 * Get UTC date format from the timestapm
+		 */
+		fnTimeConverter: function (sTimestamp) {
+			var oDate = Format.abapTimestampToDate(sTimestamp);
+			var offsetMs = new Date(0).getTimezoneOffset() * 60 * 1000;
+
+			return new Date(oDate.getTime() - offsetMs);
 		},
 
 		/**

@@ -425,18 +425,6 @@ sap.ui.define([
 		},
 
 		/**
-		 * collect delete request for the changed data for the edited assignments
-		 */
-		_collectDeleteAssigments: function () {
-			var aChangedData = this.oPlanningModel.getProperty("/changedData");
-
-			aChangedData.forEach(function (sPath) {
-				var oRowData = this.oPlanningModel.getProperty(sPath);
-				//	debugger;
-			}.bind(this));
-		},
-
-		/**
 		 * loop trough all nested array of children
 		 * When max level for search was reached execute callbackFn
 		 * @param aChildren
