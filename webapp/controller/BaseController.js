@@ -432,7 +432,7 @@ sap.ui.define([
 
 			aChangedData.forEach(function (sPath) {
 				var oRowData = this.oPlanningModel.getProperty(sPath);
-			//	debugger;
+				//	debugger;
 			}.bind(this));
 		},
 
@@ -761,9 +761,7 @@ sap.ui.define([
 				error: function (oError) {
 					//Handle Error
 					oViewModel.setProperty("/busy", false);
-					MessageToast.show(oResourceBundle.getText("errorMessage"), {
-						duration: 5000
-					});
+					this.showMessageToast(oResourceBundle.getText("errorMessage"));
 				}
 			});
 
