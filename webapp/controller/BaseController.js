@@ -379,28 +379,33 @@ sap.ui.define([
 				aChangedData.forEach(function (sPath) {
 					var oRowData = this.oPlanningModel.getProperty(sPath);
 					var singleentry = {
-						groupId: "batchSave",
-						urlParameters: null
+						groupId: "batchSave"
 					};
 					var obj = {};
-					if (oRowData.isNew) {
-						//collect all assignment properties who allowed for create
-						this.getModel().getMetaModel().loaded().then(function () {
-							var oMetaModel = this.getModel().getMetaModel(),
-								oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
-								oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-								aProperty = oEntityType ? oEntityType.property : [];
-
+					//collect all assignment properties who allowed for create
+					this.getModel().getMetaModel().loaded().then(function () {
+						var oMetaModel = this.getModel().getMetaModel(),
+							oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
+							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+							aProperty = oEntityType ? oEntityType.property : [];
+						if (oRowData.IS_STARTCHANGE) {
+							obj.StartDate = oRowData.StartDate;
+							this.getModel().update("/ResourceAssignmentSet('" + oRowData.Guid + "')", obj, singleentry);
+						} else if (oRowData.isNew || oRowData.IS_ENDCHANGE) {
 							aProperty.forEach(function (property) {
 								obj[property.name] = "";
 								if (oRowData[property.name]) {
 									obj[property.name] = oRowData[property.name];
 								}
+								//End date is not woring with actual UTC date
+								if (property.name === "EndDate" && oRowData[property.name]) {
+									obj[property.name] = new Date(oRowData[property.name].getTime() - 1000);
+								}
 							});
 							singleentry.properties = obj;
 							this.getModel().createEntry("/ResourceAssignmentSet", singleentry);
-						}.bind(this));
-					}
+						}
+					}.bind(this));
 				}.bind(this));
 				resolve(aChangedData);
 			}.bind(this));
@@ -498,7 +503,9 @@ sap.ui.define([
 					} else if (aChildren[i].children && aChildren[i].children.length > 0) {
 						//search in other children
 						sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/children");
-						return sNewObj;
+						if (sNewObj) {
+							return sNewObj;
+						}
 					}
 				}
 			}
@@ -527,7 +534,7 @@ sap.ui.define([
 
 						if (aAssignments[j][sProperty] === sValue) {
 							newSpath = sPath + "/" + i + "/GanttHierarchyToResourceAssign/results/" + j;
-							aAllMatchedData.push(newSpath)
+							aAllMatchedData.push(newSpath);
 						}
 					}
 
@@ -539,7 +546,7 @@ sap.ui.define([
 
 								if (aInnerAssignments[l][sProperty] === sValue) {
 									newSpath = sPath + "/" + i + "/children/" + k + "/GanttHierarchyToResourceAssign/results/" + l;
-									aAllMatchedData.push(newSpath)
+									aAllMatchedData.push(newSpath);
 								}
 							}
 						}
@@ -559,7 +566,7 @@ sap.ui.define([
 				if (aChildren[i][sProperty] === sValue && aResourceAssign) {
 					var iResourceCount = oPopoverData.isNew ? aResourceAssign.results.length - 1 : aResourceAssign.results.length;
 					for (var j = 0; j < iResourceCount; j++) {
-						if (aResourceAssign.results[j].ResourceGroupGuid === sResourceGroupId) {
+						if (aResourceAssign.results[j].ResourceGroupGuid === sResourceGroupId && oPopoverData.Guid !== aResourceAssign.results[j].Guid) {
 							aResourceAssignment.push(aResourceAssign.results[j]);
 						}
 					}
@@ -572,7 +579,7 @@ sap.ui.define([
 		/**
 		 * validate duplicate resouce group in same time
 		 */
-		_validateDuplicateAsigment: function (oData, aResourceChild) {
+		_checkDuplicateAsigment: function (oData, aResourceChild) {
 			var sStartTime = oData.StartDate,
 				sEndTime = oData.EndDate,
 				bValidate = true;
@@ -589,6 +596,42 @@ sap.ui.define([
 				}
 			}.bind(this));
 			return bValidate;
+		},
+
+		/**
+		 * Validate the duplicate assigmnents to compare with other assignments
+		 */
+		_validateDuplicateAsigment: function () {
+			var oData = this.oPlanningModel.getProperty("/tempData/popover");
+
+			//get groups assigned to the selected resource
+			var aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
+
+			//validation for the existing assigments
+			if (!this._checkDuplicateAsigment(oData, aAssigments)) {
+				this.showMessageToast("Resource is already assigned to selected group at the selected time");
+				//reset if other assigmnt exist
+				this._resetChanges();
+				return true;
+			}
+			return false;
+		},
+
+		/**
+		 * reset the changes when overlapped with other assigmnment
+		 * reset the original shape details if validation gets failed
+		 */
+		_resetChanges: function () {
+			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
+				oldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
+				oFoundData = this._getChildrenDataByKey("Guid", oData.Guid, null);
+
+			// reset the original shape details if validation gets failed
+			if (oData.Guid === oldPopoverData.Guid) {
+				for (var i = 0; i < oFoundData.length; i++) {
+					this.oPlanningModel.setProperty(oFoundData[i], oldPopoverData);
+				}
+			}
 		},
 
 		/**

@@ -171,10 +171,22 @@ sap.ui.define([
 		/**
 		 * to get utc date object
 		 */
-		getUTCDateObject: function (oDate) {
+
+		convertFromUTCDate: function (oDate) {
+			if (!oDate) {
+				return null;
+			}
 			var offsetMs = new Date(0).getTimezoneOffset() * 60 * 1000;
 
 			return new Date(oDate.getTime() + offsetMs);
+		},
+
+		convertToUTCDate: function (oDate) {
+			if (!oDate) {
+				return null;
+			}
+			var offsetMs = new Date(0).getTimezoneOffset() * 60 * 1000;
+			return new Date(oDate.getTime() - offsetMs);
 		},
 
 		/**

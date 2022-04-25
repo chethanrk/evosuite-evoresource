@@ -16,8 +16,9 @@
 						<core:ListItem key="{ResourceGroupGuid}" text="{ResourceGroupDesc}" additionalText="{ResourceGroupUnitId}"/>
 					</ComboBox>
 					<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
-					<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput"
-						dateValue="{path:'ganttPlanningModel>/tempData/popover/StartDate'}" secondDateValue="{path:'ganttPlanningModel>/tempData/popover/EndDate'}"
+					<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"
+						dateValue="{path:'ganttPlanningModel>/tempData/popover/StartDate',formatter:'.formatter.convertFromUTCDate'}"
+						secondDateValue="{path:'ganttPlanningModel>/tempData/popover/EndDate',formatter:'.formatter.convertFromUTCDate'}"
 						minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}"/>
 				</f:content>
 			</f:SimpleForm>

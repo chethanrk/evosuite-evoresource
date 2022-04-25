@@ -7,7 +7,7 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	"com/evorait/evosuite/evoresource/model/Constants",
+	"com/evorait/evosuite/evoresource/model/Constants"
 ], function (UIComponent, Device, models, MessageManager, JSONModel, Filter, FilterOperator, Constants) {
 	"use strict";
 
@@ -48,8 +48,8 @@ sap.ui.define([
 				densityClass: this.getContentDensityClass(),
 				isSubPage: false,
 				gantt: {
-					defaultStartDate: this._getUTCDate(moment().startOf("week").toDate()),
-					defaultEndDate: this._getUTCDate(moment().endOf("month").add(1, "months").toDate()),
+					defaultStartDate: moment().startOf("week").toDate(),
+					defaultEndDate: moment().endOf("month").add(1, "months").toDate(),
 					popoverPlacement: sap.m.PlacementType.HorizontalPreferredRight
 				},
 				draggedData: null,
@@ -213,14 +213,6 @@ sap.ui.define([
 					});
 					this.getModel("templateProperties").setProperty("/navLinks/", mProps);
 				}.bind(this));
-		},
-
-		/**
-		 * Remove local time zone details from the date object
-		 */
-		_getUTCDate: function (oDate) {
-			var offsetMs = new Date(0).getTimezoneOffset() * 60 * 1000;
-			return new Date(oDate.getTime() - offsetMs);
 		}
 	});
 });
