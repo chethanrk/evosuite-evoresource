@@ -724,7 +724,7 @@ sap.ui.define([
 		 */
 		_validateForChange: function (oAssignItem, bAllowDelete) {
 			var oParams = {
-					ObjectId: oAssignItem.Guid,
+					ObjectId: oAssignItem.NODE_ID,
 					EndTimestamp: oAssignItem.EndDate,
 					StartTimestamp: oAssignItem.StartDate
 				},
@@ -759,7 +759,7 @@ sap.ui.define([
 		 */
 		_validateForDelete: function (oAssignItem, aAssignments, index, bMarkChange) {
 			var oParams = {
-					ObjectId: oAssignItem.Guid,
+					ObjectId: oAssignItem.NODE_ID,
 					EndTimestamp: oAssignItem.EndDate,
 					StartTimestamp: oAssignItem.StartDate
 				},
