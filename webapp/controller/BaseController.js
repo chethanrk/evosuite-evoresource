@@ -3,7 +3,7 @@ sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"com/evorait/evosuite/evoresource/model/formatter",
 	"sap/ui/core/Fragment",
-	"com/evorait/evosuite/evoresource/model/Constants",
+	"com/evorait/evosuite/evoresource/model/Constants"
 ], function (Controller, Formatter, Fragment, Constants) {
 	"use strict";
 
@@ -377,34 +377,35 @@ sap.ui.define([
 				var aChangedData = this.oPlanningModel.getProperty("/changedData");
 				this.getModel().setDeferredGroups(["batchSave"]);
 				aChangedData.forEach(function (sPath) {
-					var oRowData = this.oPlanningModel.getProperty(sPath);
-					var singleentry = {
-						groupId: "batchSave"
-					};
-					var obj = {};
+					var oFoundData = this._getChildDataByKey("Guid", sPath, null),
+						oRowData = oFoundData.oData,
+						singleentry = {
+							groupId: "batchSave"
+						},
+						obj = {};
 					//collect all assignment properties who allowed for create
 					this.getModel().getMetaModel().loaded().then(function () {
 						var oMetaModel = this.getModel().getMetaModel(),
 							oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
 							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
 							aProperty = oEntityType ? oEntityType.property : [];
-						if (oRowData.IS_STARTCHANGE) {
-							obj.StartDate = oRowData.StartDate;
-							this.getModel().update("/ResourceAssignmentSet('" + oRowData.Guid + "')", obj, singleentry);
-						} else if (oRowData.isNew || oRowData.IS_ENDCHANGE) {
-							aProperty.forEach(function (property) {
-								obj[property.name] = "";
-								if (oRowData[property.name]) {
-									obj[property.name] = oRowData[property.name];
-								}
-								//End date is not woring with actual UTC date
-								if (property.name === "EndDate" && oRowData[property.name]) {
-									obj[property.name] = new Date(oRowData[property.name].getTime() - 1000);
-								}
-							});
-							singleentry.properties = obj;
-							this.getModel().createEntry("/ResourceAssignmentSet", singleentry);
-						}
+
+						aProperty.forEach(function (property) {
+							obj[property.name] = "";
+							if (oRowData[property.name]) {
+								obj[property.name] = oRowData[property.name];
+							}
+							/**
+							 * Bellow piece of code is written because of enddate with UTC for the multiple days are not wotking properly
+							 * Removed 1 more second from the enddate before send it to backend
+							 * Remove bellow code once we get valid loigc to send UTC date for multiple days selection
+							 */
+							if (property.name === "EndDate" && oRowData[property.name]) {
+								obj[property.name] = new Date(oRowData[property.name].getTime() - 1000);
+							}
+						});
+						singleentry.properties = obj;
+						this.getModel().createEntry("/ResourceAssignmentSet", singleentry);
 					}.bind(this));
 				}.bind(this));
 				resolve(aChangedData);

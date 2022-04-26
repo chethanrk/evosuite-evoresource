@@ -271,6 +271,8 @@ sap.ui.define([
 				sap.m.MessageToast.show("No changes");
 				return;
 			}
+
+			console.log(this.oPlanningModel.getData());
 			this.getModel().setDeferredGroups(["batchDelete"]);
 			var mParam = {
 				urlParameters: null,
@@ -361,15 +363,14 @@ sap.ui.define([
 
 			//var newPopoverdata = oData;
 			oData.DESCRIPTION = oSelContext.getProperty("ResourceGroupDesc");
-
-			//add different resource group if it is not exist
-			this._addSingleChildToParent(oData, true);
-
-			if (oData && !oData.isNew) {
+			if (oData.isNew) {
+				//add different resource group if it is not exist
+				this._addSingleChildToParent(oData);
+				this._removeAssignmentShape(oData, true);
+			} else {
+				this._removeAssignmentShape(oData, true, true);
 				this._oPlanningPopover.close();
 			}
-			//Remove unused assignments
-			this._removeAssignmentShape(oData, true, true);
 		},
 
 		/**
@@ -541,18 +542,23 @@ sap.ui.define([
 
 			//object change needs added to "/changedData" array by path
 			if (isNewChange) {
-				if (oFoundData && aChanges.indexOf(oFoundData.sPath) < 0) {
-					aChanges.push(oFoundData.sPath);
+				if (oFoundData && oFoundData.oData && aChanges.indexOf(oFoundData.oData.Guid) < 0) {
+					aChanges.push(oFoundData.oData.Guid);
 				}
 			} else if (isNewChange === false) {
 				//object change needs removed from "/changedData" array by path
-				if (oFoundData && aChanges.indexOf(oFoundData.sPath) >= 0) {
-					aChanges.splice(aChanges.indexOf(oFoundData.sPath), 1);
+				if (oFoundData && oFoundData.oData && aChanges.indexOf(oFoundData.oData.Guid) >= 0) {
+					aChanges.splice(aChanges.indexOf(oFoundData.oData.Guid), 1);
 				}
 			}
 			this.oPlanningModel.setProperty("/hasChanges", (aChanges.length > 0 || aDeleteData.length > 0));
 		},
 
+		/**
+		 * find path to object data inside gantt planning model
+		 * add or remove this path to array of deletedData
+		 * @param {object} oData - object what has changed
+		 **/
 		_markAsPlanningDelete: function (oData) {
 			var oFoundData = this._getChildDataByKey("Guid", oData.Guid, null),
 				aChanges = this.oPlanningModel.getProperty("/changedData"),
@@ -636,6 +642,7 @@ sap.ui.define([
 					this.oPlanningModel.setProperty(sPath + "/isTemporary", false);
 					this.oPlanningModel.setProperty(sPath + "/PARENT_NODE_ID", "");
 					this.oPlanningModel.setProperty(sPath + "/NODE_ID", "");
+					this._markAsPlanningChange(oData, true);
 				}
 			}.bind(this));
 		},
@@ -679,15 +686,20 @@ sap.ui.define([
 						results: []
 					};
 				}
+
 				if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid && !oItem.ResourceGroupGuid) {
 					//add to resource itself
-					oItem.GanttHierarchyToResourceAssign.results.push(oData);
+					if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
+						oItem.GanttHierarchyToResourceAssign.results.push(oData);
+					}
 				} else if (oItem.ResourceGroupGuid && oItem.ResourceGroupGuid === oData.ResourceGroupGuid && oItem.ResourceGuid === oData.ResourceGuid) {
 					//add to resource group
-					oItem.GanttHierarchyToResourceAssign.results.push(oData);
+					if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
+						oItem.GanttHierarchyToResourceAssign.results.push(oData);
+					}
 				}
 			};
-			aChildren = this._recurseAllChildren(aChildren, callbackFn, oAssignData);
+			aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
 			this.oPlanningModel.setProperty("/data/children", aChildren);
 		},
 
@@ -722,7 +734,7 @@ sap.ui.define([
 		/**
 		 * Validation of assignment on change
 		 */
-		_validateForChange: function (oAssignItem, bAllowDelete) {
+		_validateForChange: function (oAssignItem) {
 			var oParams = {
 					ObjectId: oAssignItem.NODE_ID,
 					EndTimestamp: oAssignItem.EndDate,
@@ -744,9 +756,7 @@ sap.ui.define([
 				} else {
 					oAssignItem.isTemporary = false;
 					this._markAsPlanningChange(oPopoverData, true);
-					if (bAllowDelete) {
-						this._markAsPlanningDelete(oPopoverData);
-					}
+					this._markAsPlanningDelete(oPopoverData);
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
@@ -771,10 +781,9 @@ sap.ui.define([
 					oDemandModel.setProperty("/data", oData.results);
 					this.openDemandDialog();
 				} else {
-					oAssignItem.isDelete = true;
 					this._markAsPlanningDelete(oAssignItem);
 					if (bMarkChange) {
-						this._markAsPlanningChange(oAssignItem, true);
+						this._addSingleChildToParent(oAssignItem, true);
 					}
 					aAssignments.splice(index, 1);
 				}
@@ -838,11 +847,8 @@ sap.ui.define([
 				this._markAndClosePlanningPopover(oData);
 			} else {
 				//validate whether changes are happend or not
-				this._setChangeIndicator(oData);
-				if (oData.IS_STARTCHANGE) {
+				if (this._setChangeIndicator(oData)) {
 					this._validateForChange(oData);
-				} else if (oData.IS_ENDCHANGE || oData.IS_GROUPCHANGE) {
-					this._validateForChange(oData, true);
 				}
 				this._oPlanningPopover.close();
 			}
@@ -865,21 +871,10 @@ sap.ui.define([
 		 */
 		_setChangeIndicator: function (oData) {
 			var oldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
-			if (!moment(oData.StartDate).isSame(oldPopoverData.StartDate)) {
-				oData.IS_STARTCHANGE = true;
-			} else {
-				oData.IS_STARTCHANGE = false;
+			if (!moment(oData.StartDate).isSame(oldPopoverData.StartDate) || !moment(oData.EndDate).isSame(oldPopoverData.EndDate)) {
+				return true;
 			}
-			if (!moment(oData.EndDate).isSame(oldPopoverData.EndDate)) {
-				oData.IS_ENDCHANGE = true;
-			} else {
-				oData.IS_ENDCHANGE = false;
-			}
-			if (oData.ResourceGroupGuid !== oldPopoverData.ResourceGroupGuid) {
-				oData.IS_GROUPCHANGE = true;
-			} else {
-				oData.IS_GROUPCHANGE = false;
-			}
+			return false;
 		},
 
 		/**
@@ -914,7 +909,7 @@ sap.ui.define([
 		 * @param {oError} --errors from delete failure
 		 */
 		_deleteFailed: function (oError) {
-			//TODO delete failed handle
+			this.getModel().resetChanges();
 		},
 
 		/**
@@ -930,7 +925,7 @@ sap.ui.define([
 		 * failed to save the gantt changed entry
 		 */
 		_saveFailed: function (oError) {
-			//TODO save faile handle
+			this.getModel().resetChanges();
 		}
 	});
 });
