@@ -394,14 +394,15 @@ sap.ui.define([
 							obj[property.name] = "";
 							if (oRowData[property.name]) {
 								obj[property.name] = oRowData[property.name];
-							}
-							/**
-							 * Bellow piece of code is written because of enddate with UTC for the multiple days are not wotking properly
-							 * Removed 1 more second from the enddate before send it to backend
-							 * Remove bellow code once we get valid loigc to send UTC date for multiple days selection
-							 */
-							if (property.name === "EndDate" && oRowData[property.name]) {
-								obj[property.name] = new Date(oRowData[property.name].getTime() - 1000);
+								
+								/**
+								 * Bellow piece of code is written because of enddate with UTC for the multiple days are not wotking properly
+								 * Removed 1 more second from the enddate before send it to backend
+								 * Remove bellow code once we get valid loigc to send UTC date for multiple days selection
+								 */
+								if (property.name === "EndDate" && oRowData[property.name]) {
+									obj[property.name] = new Date(oRowData[property.name].getTime() - 1000);
+								}
 							}
 						});
 						singleentry.properties = obj;
