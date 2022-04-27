@@ -291,8 +291,7 @@ sap.ui.define([
 				sMsg = this.getResourceBundle().getText("msg.confirmCancel");
 
 			var successFn = function () {
-				this.oPlanningModel.setData(deepClone(this.oOriginData));
-				this._setBackgroudShapes(this._sGanttViewMode);
+				this._loadGanttData();
 			};
 			this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
 		},
