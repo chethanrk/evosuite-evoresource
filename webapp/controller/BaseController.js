@@ -3,7 +3,7 @@ sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"com/evorait/evosuite/evoresource/model/formatter",
 	"sap/ui/core/Fragment",
-	"com/evorait/evosuite/evoresource/model/Constants",
+	"com/evorait/evosuite/evoresource/model/Constants"
 ], function (Controller, Formatter, Fragment, Constants) {
 	"use strict";
 
@@ -343,9 +343,93 @@ sap.ui.define([
 			}
 		},
 
+		/***
+		 * Save changes generic method
+		 */
+		saveChanges: function (oSuccessCallback, oErrorCallback) {
+			var mParameters = {
+				groupId: "batchSave",
+				success: oSuccessCallback,
+				error: oErrorCallback
+			};
+			this._preparePayload(mParameters).then(function (oData) {
+				if (oData.length > 0) {
+					this.getModel().submitChanges(mParameters);
+				} else {
+					if (oSuccessCallback) {
+						oSuccessCallback();
+					}
+				}
+			}.bind(this));
+		},
+
 		/* =========================================================== */
 		/* internal methods                                            */
 		/* =========================================================== */
+		/**
+		 * Preapre payload for the create new assigmentes 
+		 * Create changeset
+		 * used deferredgroups
+		 * @Param {mParameters} - details to odata model
+		 */
+		_preparePayload: function (mParameters) {
+			return new Promise(function (resolve) {
+				var aChangedData = this.oPlanningModel.getProperty("/changedData");
+				this.getModel().setDeferredGroups(["batchSave"]);
+				aChangedData.forEach(function (sPath) {
+					var oFoundData = this._getChildDataByKey("Guid", sPath, null),
+						oRowData = oFoundData.oData,
+						singleentry = {
+							groupId: "batchSave"
+						},
+						obj = {};
+					//collect all assignment properties who allowed for create
+					this.getModel().getMetaModel().loaded().then(function () {
+						var oMetaModel = this.getModel().getMetaModel(),
+							oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
+							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+							aProperty = oEntityType ? oEntityType.property : [];
+
+						aProperty.forEach(function (property) {
+							obj[property.name] = "";
+							if (oRowData[property.name]) {
+								obj[property.name] = oRowData[property.name];
+								
+								/**
+								 * Bellow piece of code is written because of enddate with UTC for the multiple days are not wotking properly
+								 * Removed 1 more second from the enddate before send it to backend
+								 * Remove bellow code once we get valid loigc to send UTC date for multiple days selection
+								 */
+								if (property.name === "EndDate" && oRowData[property.name]) {
+									obj[property.name] = new Date(oRowData[property.name].getTime() - 1000);
+								}
+							}
+						});
+						singleentry.properties = obj;
+						this.getModel().createEntry("/ResourceAssignmentSet", singleentry);
+					}.bind(this));
+				}.bind(this));
+				resolve(aChangedData);
+			}.bind(this));
+		},
+
+		/**
+		 * Preapre payload for the delete assigmentes 
+		 * Create changeset
+		 * used deferredgroups
+		 */
+		_prepareDeleteData: function () {
+			return new Promise(function (resolve) {
+				var aDeleteData = this.oPlanningModel.getProperty("/deletedData");
+				var param = {
+					groupId: "batchDelete"
+				};
+				aDeleteData.forEach(function (sPath) {
+					this.getModel().remove("/ResourceAssignmentSet('" + sPath + "')", param);
+				}.bind(this));
+				resolve(aDeleteData);
+			}.bind(this));
+		},
 
 		/**
 		 * loop trough all nested array of children
@@ -421,7 +505,9 @@ sap.ui.define([
 					} else if (aChildren[i].children && aChildren[i].children.length > 0) {
 						//search in other children
 						sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/children");
-						return sNewObj;
+						if (sNewObj) {
+							return sNewObj;
+						}
 					}
 				}
 			}
@@ -450,7 +536,7 @@ sap.ui.define([
 
 						if (aAssignments[j][sProperty] === sValue) {
 							newSpath = sPath + "/" + i + "/GanttHierarchyToResourceAssign/results/" + j;
-							aAllMatchedData.push(newSpath)
+							aAllMatchedData.push(newSpath);
 						}
 					}
 
@@ -462,7 +548,7 @@ sap.ui.define([
 
 								if (aInnerAssignments[l][sProperty] === sValue) {
 									newSpath = sPath + "/" + i + "/children/" + k + "/GanttHierarchyToResourceAssign/results/" + l;
-									aAllMatchedData.push(newSpath)
+									aAllMatchedData.push(newSpath);
 								}
 							}
 						}
@@ -482,7 +568,7 @@ sap.ui.define([
 				if (aChildren[i][sProperty] === sValue && aResourceAssign) {
 					var iResourceCount = oPopoverData.isNew ? aResourceAssign.results.length - 1 : aResourceAssign.results.length;
 					for (var j = 0; j < iResourceCount; j++) {
-						if (aResourceAssign.results[j].ResourceGroupGuid === sResourceGroupId) {
+						if (aResourceAssign.results[j].ResourceGroupGuid === sResourceGroupId && oPopoverData.Guid !== aResourceAssign.results[j].Guid) {
 							aResourceAssignment.push(aResourceAssign.results[j]);
 						}
 					}
@@ -495,7 +581,7 @@ sap.ui.define([
 		/**
 		 * validate duplicate resouce group in same time
 		 */
-		_validateDuplicateAsigment: function (oData, aResourceChild) {
+		_checkDuplicateAsigment: function (oData, aResourceChild) {
 			var sStartTime = oData.StartDate,
 				sEndTime = oData.EndDate,
 				bValidate = true;
@@ -512,6 +598,42 @@ sap.ui.define([
 				}
 			}.bind(this));
 			return bValidate;
+		},
+
+		/**
+		 * Validate the duplicate assigmnents to compare with other assignments
+		 */
+		_validateDuplicateAsigment: function () {
+			var oData = this.oPlanningModel.getProperty("/tempData/popover");
+
+			//get groups assigned to the selected resource
+			var aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
+
+			//validation for the existing assigments
+			if (!this._checkDuplicateAsigment(oData, aAssigments)) {
+				this.showMessageToast("Resource is already assigned to selected group at the selected time");
+				//reset if other assigmnt exist
+				this._resetChanges();
+				return true;
+			}
+			return false;
+		},
+
+		/**
+		 * reset the changes when overlapped with other assigmnment
+		 * reset the original shape details if validation gets failed
+		 */
+		_resetChanges: function () {
+			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
+				oldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
+				oFoundData = this._getChildrenDataByKey("Guid", oData.Guid, null);
+
+			// reset the original shape details if validation gets failed
+			if (oData.Guid === oldPopoverData.Guid) {
+				for (var i = 0; i < oFoundData.length; i++) {
+					this.oPlanningModel.setProperty(oFoundData[i], oldPopoverData);
+				}
+			}
 		},
 
 		/**
@@ -672,9 +794,7 @@ sap.ui.define([
 				error: function (oError) {
 					//Handle Error
 					oViewModel.setProperty("/busy", false);
-					MessageToast.show(oResourceBundle.getText("errorMessage"), {
-						duration: 5000
-					});
+					this.showMessageToast(oResourceBundle.getText("errorMessage"));
 				}
 			});
 

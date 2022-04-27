@@ -6,12 +6,11 @@ sap.ui.define([
 	"sap/base/util/deepClone",
 	"sap/base/util/deepEqual",
 	"com/evorait/evosuite/evoresource/model/models",
-	"sap/gantt/misc/Format",
 	"sap/ui/core/Fragment",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/m/MessageBox"
-], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Format, Fragment, Filter, FilterOperator,
+], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Fragment, Filter, FilterOperator,
 	MessageBox) {
 	"use strict";
 
@@ -112,17 +111,7 @@ sap.ui.define([
 			this._sGanttViewMode = formatter.getViewMapping(this._defaultView);
 
 			//idPageResourcePlanningWrapper
-			this.oOriginData = {
-				data: {
-					children: []
-				},
-				tempData: {},
-				changedData: [],
-				hasChanges: false,
-				deletedData: []
-			};
-			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
-			this.oPlanningModel.setData(deepClone(this.oOriginData));
+			this._initialisePlanningModel();
 
 			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
 				this._setNewHorizon(oResult.DEFAULT_GANTT_START_DATE, oResult.DEFAULT_GANTT_END_DATE);
@@ -215,7 +204,6 @@ sap.ui.define([
 				return;
 			}
 			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getTime())) {
-				// if (oTargetControl) {
 				// create popover
 				if (!this._oPlanningPopover) {
 					Fragment.load({
@@ -278,7 +266,28 @@ sap.ui.define([
 		/**
 		 * @param {object} oEvent -
 		 */
-		onPressSave: function () {},
+		onPressSave: function () {
+			if (!this.oPlanningModel.getProperty("/hasChanges")) {
+				sap.m.MessageToast.show("No changes");
+				return;
+			}
+
+			console.log(this.oPlanningModel.getData());
+			this.getModel().setDeferredGroups(["batchDelete"]);
+			var mParam = {
+				urlParameters: null,
+				groupId: "batchDelete",
+				success: this._deleteSuccess.bind(this),
+				error: this._deleteFailed.bind(this)
+			};
+			this._prepareDeleteData(mParam).then(function (oData) {
+				if (oData.length > 0) {
+					this.getModel().submitChanges(mParam);
+				} else {
+					this.saveChanges(this._saveSuccess.bind(this), this._saveFailed.bind(this));
+				}
+			}.bind(this));
+		},
 
 		/**
 		 * @param {object} oEvent -
@@ -313,7 +322,6 @@ sap.ui.define([
 		 * delete a shape inside Gantt
 		 * user needs confirm deletion and when its not freshly created assignment 
 		 * a validation request is send to backend
-		 * 
 		 * @param {object} oEvent - event of delete button press
 		 */
 		onPressDeleteAssignment: function (oEvent) {
@@ -325,7 +333,12 @@ sap.ui.define([
 				this._oPlanningPopover.close();
 			};
 			var cancelcallback = function () {};
-			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
+			if (oData.isNew) {
+				this._removeAssignmentShape(oData, true);
+				this._oPlanningPopover.close();
+			} else {
+				this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
+			}
 		},
 
 		/**
@@ -340,16 +353,37 @@ sap.ui.define([
 				oData = this.oPlanningModel.getProperty("/tempData/popover");
 
 			oSource.setValueState(sap.ui.core.ValueState.None);
-			oData.RESOURCE_GROUP_COLOR = oSelContext.getProperty("ResourceGroupColor");
+			//validate duplicate assignments
+			if (this._validateDuplicateAsigment()) {
+				return;
+			}
 
-			//delete created assigmnemet 
-			this._removeAssignmentShape(oData,true);
+			//oData.RESOURCE_GROUP_COLOR = oSelContext.getProperty("ResourceGroupColor");
+			this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", oSelContext.getProperty("ResourceGroupColor"));
 
-			var newPopoverdata = oData;
-			newPopoverdata.DESCRIPTION = oSelContext.getProperty("ResourceGroupDesc");
+			//var newPopoverdata = oData;
+			oData.DESCRIPTION = oSelContext.getProperty("ResourceGroupDesc");
+			if (oData.isNew) {
+				//add different resource group if it is not exist
+				this._addSingleChildToParent(oData);
+				this._removeAssignmentShape(oData, true);
+			} else {
+				this._removeAssignmentShape(oData, true, true);
+				this._oPlanningPopover.close();
+			}
+		},
 
-			//add different resource group if it is not exist
-			this._addSingleChildToParent(newPopoverdata);
+		/**
+		 * chnage selected date to UTC date to make display valid date on the screen
+		 */
+		onChangeDate: function (oEvent) {
+			var oDateRange = oEvent.getSource();
+
+			this.oPlanningModel.setProperty("/tempData/popover/StartDate", formatter.convertToUTCDate(oDateRange.getDateValue()));
+			this.oPlanningModel.setProperty("/tempData/popover/EndDate", formatter.convertToUTCDate(oDateRange.getSecondDateValue()));
+
+			//validate for the overlapping
+			this._validateDuplicateAsigment();
 		},
 
 		/**
@@ -385,6 +419,7 @@ sap.ui.define([
 		 * 
 		 */
 		_loadGanttData: function () {
+			this._initialisePlanningModel();
 			this._getResourceData(0)
 				.then(this._getResourceData.bind(this))
 				.then(function () {
@@ -461,10 +496,6 @@ sap.ui.define([
 			this.oPlanningModel.setProperty("/data/children", aChildren);
 		},
 
-		fnTimeConverter: function (sTimestamp) {
-			return Format.abapTimestampToDate(sTimestamp);
-		},
-
 		/**
 		 * set a clickable shape for every cell in Gantt view
 		 * @param {object} oViewMapping - from formatter.js view mapping with functions
@@ -506,33 +537,40 @@ sap.ui.define([
 		 */
 		_markAsPlanningChange: function (oData, isNewChange) {
 			var oFoundData = this._getChildDataByKey("Guid", oData.Guid, null),
-				aChanges = this.oPlanningModel.getProperty("/changedData");
+				aChanges = this.oPlanningModel.getProperty("/changedData"),
+				aDeleteData = this.oPlanningModel.getProperty("/deletedData");
 
 			//object change needs added to "/changedData" array by path
 			if (isNewChange) {
-				if (oFoundData && aChanges.indexOf(oFoundData.sPath) < 0) {
-					aChanges.push(oFoundData.sPath);
+				if (oFoundData && oFoundData.oData && aChanges.indexOf(oFoundData.oData.Guid) < 0) {
+					aChanges.push(oFoundData.oData.Guid);
 				}
 			} else if (isNewChange === false) {
 				//object change needs removed from "/changedData" array by path
-				if (oFoundData && aChanges.indexOf(oFoundData.sPath) >= 0) {
-					aChanges.splice(aChanges.indexOf(oFoundData.sPath), 1);
+				if (oFoundData && oFoundData.oData && aChanges.indexOf(oFoundData.oData.Guid) >= 0) {
+					aChanges.splice(aChanges.indexOf(oFoundData.oData.Guid), 1);
 				}
 			}
-			this.oPlanningModel.setProperty("/hasChanges", aChanges.length > 0);
+			this.oPlanningModel.setProperty("/hasChanges", (aChanges.length > 0 || aDeleteData.length > 0));
 		},
 
+		/**
+		 * find path to object data inside gantt planning model
+		 * add or remove this path to array of deletedData
+		 * @param {object} oData - object what has changed
+		 **/
 		_markAsPlanningDelete: function (oData) {
 			var oFoundData = this._getChildDataByKey("Guid", oData.Guid, null),
-				aChanges = this.oPlanningModel.getProperty("/deletedData");
+				aChanges = this.oPlanningModel.getProperty("/changedData"),
+				aDeleteData = this.oPlanningModel.getProperty("/deletedData");
 
-			//object change needs added to "/changedData" array by path
+			//object change needs added to "/changedData" array by GUID
 
-			if (oFoundData && aChanges.indexOf(oFoundData.sPath) < 0) {
-				aChanges.push(oFoundData.sPath);
+			if (oFoundData && oFoundData.oData && aDeleteData.indexOf(oFoundData.oData.Guid) < 0) {
+				aDeleteData.push(oFoundData.oData.Guid);
 			}
 
-			this.oPlanningModel.setProperty("/hasChanges", aChanges.length > 0);
+			this.oPlanningModel.setProperty("/hasChanges", (aChanges.length > 0 || aDeleteData.length > 0));
 		},
 
 		/**
@@ -576,7 +614,7 @@ sap.ui.define([
 		 * Add new Resource Group under Resource in Gantt
 		 * @param {object} oData - Resource Group data to be added under Resource if not exist
 		 */
-		_addSingleChildToParent: function (oData) {
+		_addSingleChildToParent: function (oData, bAllowMarkChange) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			this.getObjectFromEntity("GanttResourceHierarchySet", oData).then(function (oGanntObject) {
 				oGanntObject["bgTasks"] = oData["bgTasks"];
@@ -596,6 +634,16 @@ sap.ui.define([
 				this._addNewAssignmentShape(oData);
 				//Reset bgTasks when new resource added to the gantt
 				this._setBackgroudShapes(this._sGanttViewMode);
+
+				if (bAllowMarkChange && !oData.isNew) {
+					var oFoundData = this._getChildDataByKey("Guid", oData.Guid, null),
+						sPath = oFoundData.sPath;
+					this.oPlanningModel.setProperty(sPath + "/isNew", true);
+					this.oPlanningModel.setProperty(sPath + "/isTemporary", false);
+					this.oPlanningModel.setProperty(sPath + "/PARENT_NODE_ID", "");
+					this.oPlanningModel.setProperty(sPath + "/NODE_ID", "");
+					this._markAsPlanningChange(oData, true);
+				}
 			}.bind(this));
 		},
 		/**
@@ -638,15 +686,20 @@ sap.ui.define([
 						results: []
 					};
 				}
+
 				if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid && !oItem.ResourceGroupGuid) {
 					//add to resource itself
-					oItem.GanttHierarchyToResourceAssign.results.push(oData);
+					if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
+						oItem.GanttHierarchyToResourceAssign.results.push(oData);
+					}
 				} else if (oItem.ResourceGroupGuid && oItem.ResourceGroupGuid === oData.ResourceGroupGuid && oItem.ResourceGuid === oData.ResourceGuid) {
 					//add to resource group
-					oItem.GanttHierarchyToResourceAssign.results.push(oData);
+					if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
+						oItem.GanttHierarchyToResourceAssign.results.push(oData);
+					}
 				}
 			};
-			aChildren = this._recurseAllChildren(aChildren, callbackFn, oAssignData);
+			aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
 			this.oPlanningModel.setProperty("/data/children", aChildren);
 		},
 
@@ -655,7 +708,7 @@ sap.ui.define([
 		 * @param {object} oAssignData - object of assignment based on entityType of assignment 
 		 * 
 		 */
-		_removeAssignmentShape: function (oAssignData, removeNew) {
+		_removeAssignmentShape: function (oAssignData, removeNew, bMarkChange) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			if (!oAssignData.isTemporary && !removeNew) {
 				return;
@@ -670,7 +723,7 @@ sap.ui.define([
 							this._markAsPlanningChange(oAssignItem, false);
 							aAssignments.splice(index, 1);
 						} else {
-							this._validateForDelete(oAssignItem, aAssignments, index);
+							this._validateForDelete(oAssignItem, aAssignments, index, bMarkChange);
 						}
 					}
 				}.bind(this));
@@ -683,13 +736,14 @@ sap.ui.define([
 		 */
 		_validateForChange: function (oAssignItem) {
 			var oParams = {
-					ObjectId: oAssignItem.Guid,
+					ObjectId: oAssignItem.NODE_ID,
 					EndTimestamp: oAssignItem.EndDate,
 					StartTimestamp: oAssignItem.StartDate
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel"),
 				oFoundData = this._getChildrenDataByKey("Guid", oAssignItem.Guid, null),
+				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
 
 			var callbackfunction = function (oData) {
@@ -701,11 +755,10 @@ sap.ui.define([
 					this.openDemandDialog();
 				} else {
 					oAssignItem.isTemporary = false;
-					this._markAsPlanningChange(oAssignItem, true);
+					this._markAsPlanningChange(oPopoverData, true);
+					this._markAsPlanningDelete(oPopoverData);
 				}
-
 				this.oPlanningModel.refresh();
-
 			}.bind(this);
 			this._oPlanningPopover.close();
 			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
@@ -714,9 +767,9 @@ sap.ui.define([
 		/**
 		 * list if demands who are assigned to this time frame
 		 */
-		_validateForDelete: function (oAssignItem, aAssignments, index) {
+		_validateForDelete: function (oAssignItem, aAssignments, index, bMarkChange) {
 			var oParams = {
-					ObjectId: oAssignItem.Guid,
+					ObjectId: oAssignItem.NODE_ID,
 					EndTimestamp: oAssignItem.EndDate,
 					StartTimestamp: oAssignItem.StartDate
 				},
@@ -728,8 +781,10 @@ sap.ui.define([
 					oDemandModel.setProperty("/data", oData.results);
 					this.openDemandDialog();
 				} else {
-					oAssignItem.isDelete = true;
 					this._markAsPlanningDelete(oAssignItem);
+					if (bMarkChange) {
+						this._addSingleChildToParent(oAssignItem, true);
+					}
 					aAssignments.splice(index, 1);
 				}
 				this.oPlanningModel.refresh();
@@ -783,15 +838,8 @@ sap.ui.define([
 		 */
 		_validateAssignment: function () {
 			var oData = this.oPlanningModel.getProperty("/tempData/popover");
-
-			//get groups assigned to the selected resource
-			var aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
-
-			//validation for the existing assigments
-			if (!this._validateDuplicateAsigment(oData, aAssigments)) {
-				this.showMessageToast("Resource is already assigned to selected group at the selected time");
-				//reset if other assigmnt exist
-				this._resetChanges();
+			//validation for the duplicates
+			if (this._validateDuplicateAsigment()) {
 				return;
 			}
 
@@ -799,14 +847,10 @@ sap.ui.define([
 				this._markAndClosePlanningPopover(oData);
 			} else {
 				//validate whether changes are happend or not
-				this._setChangeIndicator(oData);
-
-				if (oData.IS_STARTCHANGE || oData.IS_ENDCHANGE || oData.IS_GROUPCHANGE) {
+				if (this._setChangeIndicator(oData)) {
 					this._validateForChange(oData);
-					this._markAndClosePlanningPopover(oData);
-				} else {
-					this._oPlanningPopover.close();
 				}
+				this._oPlanningPopover.close();
 			}
 		},
 
@@ -827,38 +871,61 @@ sap.ui.define([
 		 */
 		_setChangeIndicator: function (oData) {
 			var oldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
-			if (!moment(oData.StartDate).isSame(oldPopoverData.StartDate)) {
-				oData.IS_STARTCHANGE = true;
-			} else {
-				oData.IS_STARTCHANGE = false;
+			if (!moment(oData.StartDate).isSame(oldPopoverData.StartDate) || !moment(oData.EndDate).isSame(oldPopoverData.EndDate)) {
+				return true;
 			}
-			if (!moment(oData.EndDate).isSame(oldPopoverData.EndDate)) {
-				oData.IS_ENDCHANGE = true;
-			} else {
-				oData.IS_ENDCHANGE = false;
-			}
-			if (oData.ResourceGroupGuid !== oldPopoverData.ResourceGroupGuid) {
-				oData.IS_GROUPCHANGE = true;
-			} else {
-				oData.IS_GROUPCHANGE = false;
-			}
+			return false;
 		},
 
 		/**
-		 * reset the changes when overlapped with other assigmnment
-		 * reset the original shape details if validation gets failed
+		 * Set initial data to the planning model
 		 */
-		_resetChanges: function () {
-			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
-				oldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
-				oFoundData = this._getChildrenDataByKey("Guid", oData.Guid, null);
+		_initialisePlanningModel: function () {
+			//idPageResourcePlanningWrapper
+			this.oOriginData = {
+				data: {
+					children: []
+				},
+				tempData: {},
+				changedData: [],
+				hasChanges: false,
+				deletedData: []
+			};
+			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
+			this.oPlanningModel.setData(deepClone(this.oOriginData));
+		},
 
-			// reset the original shape details if validation gets failed
-			if (oData.Guid === oldPopoverData.Guid) {
-				for (var i = 0; i < oFoundData.length; i++) {
-					this.oPlanningModel.setProperty(oFoundData[i], oldPopoverData);
-				}
-			}
+		/**
+		 * When delete assignments are success look for the save function if any changed data is available 
+		 * for the create or update
+		 * @param {oResponse}  -response of delete success
+		 */
+		_deleteSuccess: function (oResponse) {
+			this.saveChanges(this._saveSuccess.bind(this), this._saveFailed.bind(this));
+		},
+
+		/**
+		 * when delete assignments failed
+		 * @param {oError} --errors from delete failure
+		 */
+		_deleteFailed: function (oError) {
+			this.getModel().resetChanges();
+		},
+
+		/**
+		 * save the changed entries in the gantt
+		 * refresh the gantt
+		 */
+		_saveSuccess: function (oResponse) {
+			this.showMessageToast("Successfully updated");
+			this._loadGanttData();
+		},
+
+		/**
+		 * failed to save the gantt changed entry
+		 */
+		_saveFailed: function (oError) {
+			this.getModel().resetChanges();
 		}
 	});
 });

@@ -7,7 +7,7 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	"com/evorait/evosuite/evoresource/model/Constants",
+	"com/evorait/evosuite/evoresource/model/Constants"
 ], function (UIComponent, Device, models, MessageManager, JSONModel, Filter, FilterOperator, Constants) {
 	"use strict";
 
@@ -52,8 +52,8 @@ sap.ui.define([
 					defaultEndDate: moment().endOf("month").add(1, "months").toDate(),
 					popoverPlacement: sap.m.PlacementType.HorizontalPreferredRight
 				},
-				draggedData:null,
-				launchMode: Constants.LAUNCH_MODE.BSP,
+				draggedData: null,
+				launchMode: Constants.LAUNCH_MODE.BSP
 			}), "viewModel");
 
 			this.setModel(models.createHelperModel(), "ganttPlanningModel");
@@ -66,7 +66,7 @@ sap.ui.define([
 			this.MessageManager = new MessageManager();
 
 			this._getTemplateProps();
-			
+
 			this._setApp2AppLinks();
 
 			// get System Information
@@ -213,6 +213,6 @@ sap.ui.define([
 					});
 					this.getModel("templateProperties").setProperty("/navLinks/", mProps);
 				}.bind(this));
-		},
+		}
 	});
 });
