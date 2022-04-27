@@ -8,7 +8,7 @@
 				<f:DynamicPageHeader id="idResourceGroupHeader" pinnable="true" class="sapUiNoContentPadding">
 					<f:content>
 						<smartFilterBar:SmartFilterBar id="idResourceGroupFilter" persistencyKey="com.evorait.evosuite.evoresource.ResourceGroupFilterbar"
-							entitySet="ResourceGroupSet" showClearButton="true" showGoOnFB="false" useToolbar="true">
+							entitySet="ResourceGroupSet" showClearButton="true" useToolbar="true" liveMode="true">
 							<smartFilterBar:controlConfiguration>
 								<core:ExtensionPoint name="FilterExtP|ResourceGroup|ResourceGroupSet|ControlConfiguration"/>
 							</smartFilterBar:controlConfiguration>
