@@ -267,12 +267,6 @@ sap.ui.define([
 		 * @param {object} oEvent -
 		 */
 		onPressSave: function () {
-			if (!this.oPlanningModel.getProperty("/hasChanges")) {
-				sap.m.MessageToast.show("No changes");
-				return;
-			}
-
-			console.log(this.oPlanningModel.getData());
 			this.getModel().setDeferredGroups(["batchDelete"]);
 			var mParam = {
 				urlParameters: null,
