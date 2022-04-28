@@ -611,7 +611,7 @@ sap.ui.define([
 
 			//validation for the existing assigments
 			if (!this._checkDuplicateAsigment(oData, aAssigments)) {
-				this.showMessageToast("Resource is already assigned to selected group at the selected time");
+				this.showMessageToast(this.getResourceBundle().getText("msg.errorduplicateresource"));
 				//reset if other assigmnt exist
 				this._resetChanges();
 				return true;

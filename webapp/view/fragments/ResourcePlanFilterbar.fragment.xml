@@ -20,9 +20,9 @@
 						<core:Item key="{templateProperties>Key}" text="{templateProperties>Description}"/>
 					</Select>-->
 					<Select id="idFilterGanttPlanningMode" customData:hasValue="true" forceSelection="true" change="onChangeTimeMode">
-						<core:Item key="DAY" text="Daily"/>
-						<core:Item key="WEEK" text="Weekly"/>
-						<core:Item key="MONTH" text="Monthly"/>
+						<core:Item key="DAY" text="{i18n>lbl.daily}"/>
+						<core:Item key="WEEK" text="{i18n>lbl.weekly}"/>
+						<core:Item key="MONTH" text="{i18n>lbl.monthly}"/>
 					</Select>
 				</smartFilterBar:customControl>
 			</smartFilterBar:ControlConfiguration>
