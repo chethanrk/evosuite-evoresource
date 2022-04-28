@@ -358,17 +358,14 @@ sap.ui.define([
 				return;
 			}
 
-			//oData.RESOURCE_GROUP_COLOR = oSelContext.getProperty("ResourceGroupColor");
-			this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", oSelContext.getProperty("ResourceGroupColor"));
-
-			//var newPopoverdata = oData;
-			oData.DESCRIPTION = oSelContext.getProperty("ResourceGroupDesc");
 			if (oData.isNew) {
+				this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", oSelContext.getProperty("ResourceGroupColor"));
+				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("ResourceGroupDesc"));
 				//add different resource group if it is not exist
 				this._addSingleChildToParent(oData);
 				this._removeAssignmentShape(oData, true);
 			} else {
-				this._removeAssignmentShape(oData, true, true);
+				this._removeAssignmentShape(oData, true, oSelContext);
 				this._oPlanningPopover.close();
 			}
 		},
@@ -706,9 +703,10 @@ sap.ui.define([
 		/**
 		 * remove freshly created shape from gantt chart
 		 * @param {object} oAssignData - object of assignment based on entityType of assignment 
-		 * 
+		 * @param removeNew boolena value to ensure remove new assignment
+		 * @param {sChangedContext} - changed context of group
 		 */
-		_removeAssignmentShape: function (oAssignData, removeNew, bMarkChange) {
+		_removeAssignmentShape: function (oAssignData, removeNew, sChangedContext) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			if (!oAssignData.isTemporary && !removeNew) {
 				return;
@@ -723,7 +721,7 @@ sap.ui.define([
 							this._markAsPlanningChange(oAssignItem, false);
 							aAssignments.splice(index, 1);
 						} else {
-							this._validateForDelete(oAssignItem, aAssignments, index, bMarkChange);
+							this._validateForDelete(oAssignItem, aAssignments, index, sChangedContext);
 						}
 					}
 				}.bind(this));
@@ -767,7 +765,7 @@ sap.ui.define([
 		/**
 		 * list if demands who are assigned to this time frame
 		 */
-		_validateForDelete: function (oAssignItem, aAssignments, index, bMarkChange) {
+		_validateForDelete: function (oAssignItem, aAssignments, index, sChangedContext) {
 			var oParams = {
 					ObjectId: oAssignItem.NODE_ID,
 					EndTimestamp: oAssignItem.EndDate,
@@ -782,7 +780,9 @@ sap.ui.define([
 					this.openDemandDialog();
 				} else {
 					this._markAsPlanningDelete(oAssignItem);
-					if (bMarkChange) {
+					if (sChangedContext) {
+						oAssignItem.RESOURCE_GROUP_COLOR = sChangedContext.getProperty("ResourceGroupColor");
+						oAssignItem.DESCRIPTION = sChangedContext.getProperty("ResourceGroupDesc");
 						this._addSingleChildToParent(oAssignItem, true);
 					}
 					aAssignments.splice(index, 1);
