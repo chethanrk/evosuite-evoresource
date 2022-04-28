@@ -803,7 +803,7 @@ sap.ui.define([
 		 */
 		_addResourceGroupColor: function () {
 			var oData = this.oPlanningModel.getProperty("/tempData/popover");
-			if (oData.ResourceGroupGuid) {
+			if (oData.ResourceGroupGuid && oData.isNew) {
 				setTimeout(function () {
 					var oGroupSelection = sap.ui.getCore().byId("idResourceGroupGroup");
 					if (oGroupSelection && oGroupSelection.getSelectedItem()) {

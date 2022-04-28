@@ -1,11 +1,6 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:form="sap.ui.layout.form">
 	<Dialog title="{i18n>xtit.demands}" resizable="true" contentWidth="50%">
 		<List items="{ path: 'demandModel>/data' }">
-			<infoToolbar>
-				<OverflowToolbar active="true">
-					<Label text="Edit/Delete of selected assignment is not possible because these demands are assigned for this group"/>
-				</OverflowToolbar>
-			</infoToolbar>
 			<ObjectListItem title="{demandModel>DemandDesc}">
 				<firstStatus>
 					<ObjectStatus text="{i18n>lbl.showDemand}" active="true" state="Information" press="onShowDemandPress"/>
