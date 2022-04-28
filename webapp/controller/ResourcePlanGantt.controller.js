@@ -267,12 +267,6 @@ sap.ui.define([
 		 * @param {object} oEvent -
 		 */
 		onPressSave: function () {
-			if (!this.oPlanningModel.getProperty("/hasChanges")) {
-				sap.m.MessageToast.show("No changes");
-				return;
-			}
-
-			console.log(this.oPlanningModel.getData());
 			this.getModel().setDeferredGroups(["batchDelete"]);
 			var mParam = {
 				urlParameters: null,
@@ -297,8 +291,7 @@ sap.ui.define([
 				sMsg = this.getResourceBundle().getText("msg.confirmCancel");
 
 			var successFn = function () {
-				this.oPlanningModel.setData(deepClone(this.oOriginData));
-				this._setBackgroudShapes(this._sGanttViewMode);
+				this._loadGanttData();
 			};
 			this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
 		},
