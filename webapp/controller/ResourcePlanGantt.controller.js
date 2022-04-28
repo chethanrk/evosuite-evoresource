@@ -910,7 +910,7 @@ sap.ui.define([
 		 * refresh the gantt
 		 */
 		_saveSuccess: function (oResponse) {
-			this.showMessageToast("Successfully updated");
+			this.showMessageToast(this.getResourceBundle().getText("msg.successfullyupdated"));
 			this._loadGanttData();
 		},
 

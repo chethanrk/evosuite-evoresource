@@ -22,7 +22,7 @@
 							<gnt2:GanttChartContainer id="idResourcePlanGanttChartContainer" enableCursorLine="false" enableTimeScrollSync="false">
 								<gnt2:toolbar>
 									<gnt2:ContainerToolbar class="gantt-containerToolbar" alignCustomContentToRight="true" showTimeZoomControl="true" zoomControlType="None"
-										showLegendButton="true">
+										showLegendButton="false">
 										<gnt2:content>
 											<tnt:InfoLabel text="{i18n>xtxt.unsavedChanges}" colorScheme="1" displayOnly="true" visible="{ganttPlanningModel>/hasChanges}"/>
 											<ToolbarSpacer/>
