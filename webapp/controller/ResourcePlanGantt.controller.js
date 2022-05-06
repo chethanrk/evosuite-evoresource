@@ -221,12 +221,8 @@ sap.ui.define([
 						}.bind(this));
 
 						//after popover gets closed remove popover data
-						this._oPlanningPopover.attachAfterClose(function () {
-							var oData = this.oPlanningModel.getProperty("/tempData/popover");
-							this._removeAssignmentShape(oData);
-							this.oPlanningModel.setProperty("/tempData/popover", {});
-							this.oPlanningModel.setProperty("/tempData/oldPopoverData", {});
-							this.reValidateForm(this.getView().getControlsByFieldGroupId("changeShapeInput"));
+						this._oPlanningPopover.attachAfterClose(function (oEvent) {
+							this._afterPopoverClose(oEvent);
 						}.bind(this));
 					}.bind(this));
 				} else {
@@ -354,9 +350,14 @@ sap.ui.define([
 			if (oData.isNew) {
 				this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", oSelContext.getProperty("ResourceGroupColor"));
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("ResourceGroupDesc"));
+
+				this._removeAssignmentShape(oData, true);
 				//add different resource group if it is not exist
 				this._addSingleChildToParent(oData);
-				this._removeAssignmentShape(oData, true);
+
+				if (!oData.isTemporary) {
+					this._oPlanningPopover.close();
+				}
 			} else {
 				this._removeAssignmentShape(oData, true, oSelContext);
 				this._oPlanningPopover.close();
@@ -373,7 +374,10 @@ sap.ui.define([
 			this.oPlanningModel.setProperty("/tempData/popover/EndDate", formatter.convertToUTCDate(oDateRange.getSecondDateValue()));
 
 			//validate for the overlapping
-			this._validateDuplicateAsigment();
+			if (this._validateDuplicateAsigment()) {
+				return;
+			}
+			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", true);
 		},
 
 		/**
@@ -532,12 +536,12 @@ sap.ui.define([
 
 			//object change needs added to "/changedData" array by path
 			if (isNewChange) {
-				if (oFoundData && oFoundData.oData && aChanges.indexOf(oFoundData.oData.Guid) < 0) {
+				if (oFoundData && oFoundData.oData && oFoundData.oData.Guid && aChanges.indexOf(oFoundData.oData.Guid) < 0) {
 					aChanges.push(oFoundData.oData.Guid);
 				}
 			} else if (isNewChange === false) {
 				//object change needs removed from "/changedData" array by path
-				if (oFoundData && oFoundData.oData && aChanges.indexOf(oFoundData.oData.Guid) >= 0) {
+				if (oFoundData && oFoundData.oData && oFoundData.oData.Guid && aChanges.indexOf(oFoundData.oData.Guid) >= 0) {
 					aChanges.splice(aChanges.indexOf(oFoundData.oData.Guid), 1);
 				}
 			}
@@ -632,8 +636,8 @@ sap.ui.define([
 					this.oPlanningModel.setProperty(sPath + "/isTemporary", false);
 					this.oPlanningModel.setProperty(sPath + "/PARENT_NODE_ID", "");
 					this.oPlanningModel.setProperty(sPath + "/NODE_ID", "");
-					this._markAsPlanningChange(oData, true);
 				}
+				this._markAsPlanningChange(oData, true);
 			}.bind(this));
 		},
 		/**
@@ -839,6 +843,7 @@ sap.ui.define([
 			if (oData.isNew) {
 				this._markAndClosePlanningPopover(oData);
 			} else {
+				this.oPlanningModel.setProperty("/tempData/popover/isTemporary", false);
 				//validate whether changes are happend or not
 				if (this._setChangeIndicator(oData)) {
 					this._validateForChange(oData);
@@ -919,6 +924,30 @@ sap.ui.define([
 		 */
 		_saveFailed: function (oError) {
 			this.getModel().resetChanges();
+		},
+
+		/**
+		 * Handle afteclose popover close
+		 * Set the changes if not validated
+		 * reset the binding data after close the popover
+		 * Reset the form validation after close the popover
+		 */
+		_afterPopoverClose: function (oEvent) {
+			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
+				oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
+			if (oData.isTemporary && oOldAssignmentData && oOldAssignmentData.Guid) {
+				var oFoundData = this._getChildrenDataByKey("Guid", oData.Guid, null);
+				if (oFoundData && oFoundData.length === 2) {
+					for (var i = 0; i < oFoundData.length; i++) {
+						this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
+					}
+					this.oPlanningModel.setProperty("/tempData/popover/isTemporary", false);
+				}
+			}
+			this._removeAssignmentShape(oData);
+			this.oPlanningModel.setProperty("/tempData/popover", {});
+			this.oPlanningModel.setProperty("/tempData/oldPopoverData", {});
+			this.reValidateForm(this.getView().getControlsByFieldGroupId("changeShapeInput"));
 		}
 	});
 });
