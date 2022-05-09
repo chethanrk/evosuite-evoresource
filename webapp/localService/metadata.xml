@@ -1,0 +1,143 @@
+<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
+	xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData" Version="1.0">
+	<edmx:Reference xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
+		Uri="https://ed1.evorait.net:50103/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMON',Version='0001',SAP__Origin='LOCAL_800')/$value">
+		<edmx:Include Namespace="com.sap.vocabularies.Common.v1"/>
+	</edmx:Reference>
+	<edmx:Reference xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
+		Uri="https://ed1.evorait.net:50103/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CORE',Version='0001',SAP__Origin='LOCAL_800')/$value">
+		<edmx:Include Namespace="Org.OData.Core.V1"/>
+	</edmx:Reference>
+	<edmx:Reference xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
+		Uri="https://ed1.evorait.net:50103/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMUNICATION',Version='0001',SAP__Origin='LOCAL_800')/$value">
+		<edmx:Include Namespace="com.sap.vocabularies.Communication.v1"/>
+	</edmx:Reference>
+	<edmx:Reference xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
+		Uri="https://ed1.evorait.net:50103/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_TIMELINE',Version='0001',SAP__Origin='LOCAL_800')/$value">
+		<edmx:Include Namespace="com.sap.vocabularies.Timeline.v1"/>
+	</edmx:Reference>
+	<edmx:Reference xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
+		Uri="https://ed1.evorait.net:50103/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_UI',Version='0001',SAP__Origin='LOCAL_800')/$value">
+		<edmx:Include Namespace="com.sap.vocabularies.UI.v1"/>
+		<edmx:Include Namespace="com.sap.vocabularies.UI.v1" Alias="UI"/>
+		<edmx:Include Namespace="com.sap.vocabularies.Common.v1" Alias="COMMON"/>
+	</edmx:Reference>
+	<edmx:DataServices m:DataServiceVersion="2.0">
+		<Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="com.evorait.evoresourc" xml:lang="en" sap:schema-version="1">
+			<EntityType Name="SystemInformation" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="Username"/>
+				</Key>
+				<Property Name="Username" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="User Name"/>
+				<Property Name="PersNo" Type="Edm.String" Nullable="false" MaxLength="8" sap:label="Personnel No."/>
+				<Property Name="Firstname" Type="Edm.String" Nullable="false" MaxLength="40" sap:label="First name"/>
+				<Property Name="Lastname" Type="Edm.String" Nullable="false" MaxLength="40" sap:label="Last name"/>
+				<Property Name="Fullname" Type="Edm.String" Nullable="false" MaxLength="80" sap:label="Full Name"/>
+				<Property Name="ServerPath" Type="Edm.String" Nullable="false" sap:label="Server path"/>
+				<Property Name="CoreVersion" Type="Edm.String" Nullable="false" sap:label="Core version"/>
+				<Property Name="Client" Type="Edm.String" Nullable="false" MaxLength="3" sap:label="Client"/>
+				<Property Name="Systemid" Type="Edm.String" Nullable="false" MaxLength="8" sap:label="SAP System ID"/>
+				<Property Name="UserProfile" Type="Edm.String" Nullable="false" MaxLength="20" sap:label="User Profile"/>
+			</EntityType>
+			<EntityType Name="ResourceGroup" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="ResourceGroupGuid"/>
+				</Key>
+				<Property Name="ResourceGroupGuid" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="Resource group GUID"/>
+				<Property Name="ResourceGroupId" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="Resource group ID"/>
+				<Property Name="ResourceGroupDesc" Type="Edm.String" Nullable="false" MaxLength="100" sap:label="Resource group desc"/>
+				<Property Name="ResourceGroupUnitId" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="Res. Group Unit ID"/>
+				<Property Name="ResourceGroupUnitDesc" Type="Edm.String" Nullable="false" MaxLength="40" sap:label="Res. Grp. unit desc."/>
+				<Property Name="Search" Type="Edm.String" Nullable="false" sap:label="String"/>
+				<Property Name="RESOURCE_GROUP_COLOR" Type="Edm.String" MaxLength="7" sap:label="Resource Group Color" sap:is-extension-field="true"/>
+			</EntityType>
+			<EntityType Name="GanttResourceHierarchy" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="NodeId"/>
+				</Key>
+				<Property Name="NodeId" Type="Edm.String" Nullable="false" MaxLength="132" sap:label="Node Id"/>
+				<Property Name="ParentNodeId" Type="Edm.String" MaxLength="132" sap:label="Parent Node Id"/>
+				<Property Name="Drillstate" Type="Edm.String" Nullable="false" MaxLength="10" sap:label="Drill State"/>
+				<Property Name="ResourceGroupGuid" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="Resource group GUID"/>
+				<Property Name="ResourceGuid" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="Resource GUID"/>
+				<Property Name="ResourceGroupUnitId" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="Res. Group Unit ID"/>
+				<Property Name="ResourceGroupId" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="Resource group ID"/>
+				<Property Name="Description" Type="Edm.String" MaxLength="100" sap:label="Resource group desc"/>
+				<Property Name="HierarchyLevel" Type="Edm.Byte" Nullable="false" sap:label="Hierarchy level"/>
+				<Property Name="NodeType" Type="Edm.String" Nullable="false" MaxLength="10" sap:label="Object type"/>
+				<Property Name="StartDate" Type="Edm.DateTime" Precision="0" sap:label="Time Stamp"/>
+				<Property Name="EndDate" Type="Edm.DateTime" Precision="0" sap:label="Time Stamp"/>
+				<Property Name="ChildCount" Type="Edm.Int32" sap:label="Child Count"/>
+				<NavigationProperty Name="AssignmentSet" Relationship="com.evorait.evoresourc.GanttHierarchyToAssignment"
+					FromRole="FromRole_GanttHierarchyToAssignment" ToRole="ToRole_GanttHierarchyToAssignment"/>
+			</EntityType>
+			<EntityType Name="Assignment" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="Guid"/>
+				</Key>
+				<Property Name="AssignmentType" Type="Edm.String" Nullable="false" MaxLength="3" sap:label="Assignment Type"/>
+				<Property Name="DateFrom" Type="Edm.DateTime" Precision="0" sap:label="From Date" sap:creatable="false" sap:updatable="false"
+					sap:filterable="false"/>
+				<Property Name="Guid" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="Assignment GUID" sap:creatable="false"
+					sap:updatable="false"/>
+				<Property Name="DateTo" Type="Edm.DateTime" Precision="0" sap:label="To Date" sap:creatable="false" sap:updatable="false"
+					sap:filterable="false"/>
+				<Property Name="ObjectId" Type="Edm.String" MaxLength="132" sap:label="Node Id" sap:creatable="false" sap:updatable="false"/>
+				<Property Name="ResourceGroupGuid" Type="Edm.String" MaxLength="32" sap:label="Resource group GUID" sap:creatable="true"
+					sap:updatable="true"/>
+				<Property Name="ResourceGuid" Type="Edm.String" MaxLength="32" sap:label="Resource GUID" sap:creatable="true" sap:updatable="true"/>
+				<Property Name="LASTNAME" Type="Edm.String" MaxLength="100" sap:label="Last Name" sap:creatable="false" sap:updatable="false"
+					sap:filterable="false" sap:is-extension-field="true"/>
+				<Property Name="FIRSTNAME" Type="Edm.String" MaxLength="100" sap:label="First Name" sap:creatable="false" sap:updatable="false"
+					sap:filterable="false" sap:is-extension-field="true"/>
+				<Property Name="NODE_TYPE" Type="Edm.String" MaxLength="10" sap:label="Object type" sap:creatable="false" sap:updatable="false"
+					sap:is-extension-field="true"/>
+				<Property Name="GROUP_DESCRIPTION" Type="Edm.String" MaxLength="40" sap:label="Resource group desc." sap:creatable="false"
+					sap:updatable="false" sap:filterable="false" sap:is-extension-field="true"/>
+				<Property Name="RESOURCE_DESCRIPTION" Type="Edm.String" MaxLength="100" sap:label="Resource group desc" sap:creatable="false"
+					sap:updatable="false" sap:filterable="false" sap:is-extension-field="true"/>
+			</EntityType>
+			<Association Name="GanttHierarchyToAssignment" sap:content-version="1">
+				<End Type="com.evorait.evoresourc.GanttResourceHierarchy" Multiplicity="1" Role="FromRole_GanttHierarchyToAssignment"/>
+				<End Type="com.evorait.evoresourc.Assignment" Multiplicity="*" Role="ToRole_GanttHierarchyToAssignment"/>
+				<ReferentialConstraint>
+					<Principal Role="FromRole_GanttHierarchyToAssignment">
+						<PropertyRef Name="NodeId"/>
+					</Principal>
+					<Dependent Role="ToRole_GanttHierarchyToAssignment">
+						<PropertyRef Name="ObjectId"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<EntityContainer Name="com_evorait_evoresourc_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
+				<EntitySet Name="SystemInformationSet" EntityType="com.evorait.evoresourc.SystemInformation" sap:content-version="1"/>
+				<EntitySet Name="ResourceGroupSet" EntityType="com.evorait.evoresourc.ResourceGroup" sap:content-version="1"/>
+				<EntitySet Name="GanttResourceHierarchySet" EntityType="com.evorait.evoresourc.GanttResourceHierarchy" sap:content-version="1"/>
+				<AssociationSet Name="GanttHierarchyToAssignmentSet" Association="com.evorait.evoorderrelate.GanttHierarchyToAssignment"
+					sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
+					<End EntitySet="GanttResourceHierarchySet" Role="FromRole_GanttHierarchyToAssignment"/>
+					<End EntitySet="AssignmentSet" Role="ToRole_GanttHierarchyToAssignment"/>
+				</AssociationSet>
+			</EntityContainer>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.GanttResourceHierarchy">
+				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
+					<Collection/>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.ResourceGroup">
+				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
+					<Collection/>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.SystemInformation">
+				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
+					<Collection/>
+				</Annotation>
+			</Annotations>
+			<atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="self"
+				href="https://ed1.evorait.net:50103/sap/opu/odata/EVORA/ER_MAIN_SRV/$metadata"/>
+			<atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="latest-version"
+				href="https://ed1.evorait.net:50103/sap/opu/odata/EVORA/ER_MAIN_SRV/$metadata"/>
+		</Schema>
+	</edmx:DataServices>
+</edmx:Edmx>

@@ -1,0 +1,38 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:form="sap.ui.layout.form">
+	<Dialog title="{i18n>xtit.demands}" resizable="true" draggable="true" contentWidth="50%">
+		<Table items="{ path: 'demandModel>/data' }">
+			<infoToolbar>
+				<OverflowToolbar design="Info" active="true">
+					<Label text="Edit/Delete operation is not possible because the bellow demands are assigned to the selected assignment"/>
+				</OverflowToolbar>
+			</infoToolbar>
+			<columns>
+				<Column demandPopin="true">
+					<Text text="{i18n>xtit.demands}"/>
+				</Column>
+				<Column demandPopin="true" hAlign="Right">
+					<Text text="{i18n>lbl.fromdate}"/>
+				</Column>
+				<Column demandPopin="true" hAlign="Right">
+					<Text text="{i18n>lbl.todate}"/>
+				</Column>
+				<Column demandPopin="true" hAlign="Right">
+					<Text text=""/>
+				</Column>
+			</columns>
+			<items>
+				<ColumnListItem>
+					<cells>
+						<Text text="{demandModel>DemandDesc}"/>
+						<Text text="{path:'demandModel>DateFrom',formatter:'.formatter.date'}"/>
+						<Text text="{path:'demandModel>DateTo',formatter:'.formatter.date'}"/>
+						<Button icon="sap-icon://detail-view" tooltip="{i18n>lbl.showDemand}" press="onShowDemandPress"/>
+					</cells>
+				</ColumnListItem>
+			</items>
+		</Table>
+		<endButton>
+			<Button text="{i18n>btn.close}" press="onDemandDialogClose"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

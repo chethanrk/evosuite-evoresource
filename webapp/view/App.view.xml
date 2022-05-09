@@ -1,0 +1,5 @@
+<mvc:View controllerName="com.evorait.evosuite.evoresource.controller.App" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
+	<App id="app" busy="{viewModel>/busy}" busyIndicatorDelay="{viewModel>/delay}">
+		<NavContainer id="appPanel" class="panelPage"/>
+	</App>
+</mvc:View>

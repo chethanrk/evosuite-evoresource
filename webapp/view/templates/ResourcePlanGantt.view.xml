@@ -1,0 +1,127 @@
+<mvc:View height="100%" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.f"
+	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" xmlns:dnd="sap.ui.core.dnd"
+	controllerName="com.evorait.evosuite.evoresource.controller.ResourcePlanGantt" xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1" xmlns:gnt2="sap.gantt.simple" xmlns:tnt="sap.tnt"
+	xmlns:axistime="sap.gantt.axistime" xmlns:config="sap.gantt.config" xmlns:table="sap.ui.table">
+	<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
+		<template:alias name=".evoAH" value="com.evorait.evosuite.evoresource.model.AnnotationHelper">
+			<template:with path="templateProperties>/" var="tempProps">
+				<f:DynamicPage id="idPageResourcePlanGantt" class="sapUiNoContentPadding" headerExpanded="true" preserveHeaderStateOnScroll="false">
+					<!-- DynamicPage Header -->
+					<f:header>
+						<f:DynamicPageHeader pinnable="false">
+							<f:content>
+								<core:ExtensionPoint name="PageExtP|ResourcePlanGantt|GanttResourceHierarchySet|Head">
+									<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.ResourcePlanFilterbar" type="XML"/>
+								</core:ExtensionPoint>
+							</f:content>
+						</f:DynamicPageHeader>
+					</f:header>
+					<f:content>
+						<template:with path="tempProps>/ganttConfigs/" var="ganttConfigs">
+							<gnt2:GanttChartContainer id="idResourcePlanGanttChartContainer" enableCursorLine="false" enableTimeScrollSync="false">
+								<gnt2:toolbar>
+									<gnt2:ContainerToolbar class="gantt-containerToolbar" alignCustomContentToRight="true" showTimeZoomControl="true" zoomControlType="None"
+										showLegendButton="false">
+										<gnt2:content>
+											<tnt:InfoLabel text="{i18n>xtxt.unsavedChanges}" colorScheme="1" displayOnly="true" visible="{ganttPlanningModel>/hasChanges}"/>
+											<ToolbarSpacer/>
+											<core:ExtensionPoint name="GanttExtP|ResourcePlanGantt|GanttResourceHierarchySet|ContainerToolbar|Before"/>
+											<Button id="idResourcePlanBtnSave" text="{i18n>xbtn.save}" icon="sap-icon://save" type="Emphasized" press="onPressSave"
+												enabled="{ganttPlanningModel>/hasChanges}"/>
+											<Button id="idResourcePlanBtnCancel" text="{i18n>xbtn.reset}" icon="sap-icon://cancel" press="onPressCancel"
+												enabled="{ganttPlanningModel>/hasChanges}"/>
+											<Text text="|"/>
+											<Button id="idResourcePlanBtnToday" text="{i18n>xbtn.today}" press="onPressToday"/>
+											<core:ExtensionPoint name="GanttExtP|ResourcePlanGantt|GanttResourceHierarchySet|ContainerToolbar|After"/>
+										</gnt2:content>
+									</gnt2:ContainerToolbar>
+								</gnt2:toolbar>
+								<gnt2:GanttChartWithTable id="idResourcePlanGanttChartTable" shapeSelectionMode="Single" shapePress="onShapePress" ghostAlignment="Start"
+									adhocLineLayer="Bottom" nowLineInUTC="false" shapeMouseEnter="onShapeMouseEnter"
+									shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}" visibleHorizonUpdate="onVisibleHorizonUpdate">
+									<gnt2:axisTimeStrategy>
+										<axistime:StepwiseZoomStrategy id="idResourcePlanGanttZoom" zoomLevels="3">
+											<axistime:totalHorizon>
+												<config:TimeHorizon id="idResourcePlanGanttTimeHorizon" startTime="{viewModel>/gantt/defaultStartDate}"
+													endTime="{viewModel>/gantt/defaultEndDate}"/>
+											</axistime:totalHorizon>
+										</axistime:StepwiseZoomStrategy>
+									</gnt2:axisTimeStrategy>
+									<gnt2:table>
+										<table:TreeTable id="idResourcePlanGanttTreeTable" selectionMode="Single" visibleRowCountMode="Auto" rowActionCount="2" threshold="10"
+											enableColumnReordering="true" enableBusyIndicator="true" busyStateChanged="onBusyStateChanged" enableCellFilter="false"
+											columnHeaderVisible="true" selectionBehavior="RowOnly"
+											rows="{path: 'ganttPlanningModel>/data', parameters: { arrayNames: ['children'], numberOfExpandedLevels: 1, groupId: 'GanttTree'} }">
+											<table:extension>
+												<OverflowToolbar id="idResourcePlanGanttToolbar">
+													<content>
+														<Button id="idResourcePlanGanttExpandAll" icon="sap-icon://expand-all" press="onClickExpandCollapse" type="Transparent" tooltip="Expand all">
+															<customData>
+																<core:CustomData key="Function" value="EXPAND"/>
+															</customData>
+														</Button>
+														<Button id="idResourcePlanGanttCollapseAll" icon="sap-icon://collapse-all" press="onClickExpandCollapse" type="Transparent"
+															tooltip="Collapse all">
+															<customData>
+																<core:CustomData key="Function" value="COLLAPSE"/>
+															</customData>
+														</Button>
+														<ToolbarSpacer/>
+													</content>
+												</OverflowToolbar>
+											</table:extension>
+											<table:columns>
+												<template:repeat list="{path:'tempProps>ganttConfigs/lineItems/'}" var="lineItem">
+													<table:Column sortProperty="{:= ${lineItem>Value/Path}}">
+														<Text text="{:= '{/' + ${ganttConfigs>entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"/>
+														<table:template>
+															<Label text="{:= '{ganttPlanningModel>'+ ${lineItem>Value/Path} +'}'}"/>
+														</table:template>
+													</table:Column>
+												</template:repeat>
+											</table:columns>
+											<table:rowActionTemplate></table:rowActionTemplate>
+											<table:rowSettingsTemplate>
+												<gnt2:GanttRowSettings rowId="{ganttPlanningModel>Guid}" shapes1="{path: 'ganttPlanningModel>bgTasks', templateShareable:false}"
+													shapes2="{ path:'ganttPlanningModel>GanttHierarchyToResourceAssign/results', templateShareable:true }">
+													<gnt2:shapes1>
+														<gnt2:BaseRectangle scheme="hiddenBackground" countInBirdEye="false"
+															time="{path: 'ganttPlanningModel>startTime', formatter:'.formatter.fnTimeConverter'}"
+															endTime="{path: 'ganttPlanningModel>endTime', formatter:'.formatter.fnTimeConverter'}" connectable="false" resizable="false"
+															selectable="true" draggable="false" showTitle="false" fill="transparent" fillOpacity="0" strokeOpacity="0" opacity="1" stroke="transparent"
+															strokeWidth="1" height="32" yBias="0"></gnt2:BaseRectangle>
+													</gnt2:shapes1>
+													<gnt2:shapes2>
+														<gnt2:BaseRectangle shapeId="{ganttPlanningModel>Guid}" countInBirdEye="true"
+															time="{path:'ganttPlanningModel>StartDate',formatter:'.formatter.convertFromUTCDate'}" height="20"
+															endTime="{path:'ganttPlanningModel>EndDate',formatter:'.formatter.convertFromUTCDate'}" title="{ganttPlanningModel>DESCRIPTION}"
+															showTitle="true" tooltip="{ganttPlanningModel>DESCRIPTION}" fill="{ganttPlanningModel>RESOURCE_GROUP_COLOR}"
+															stroke="{parts: ['ganttPlanningModel>RESOURCE_GROUP_COLOR',{value:'-20', model:'ganttPlanningModel'}], formatter: '.formatter.shadeColor'}"
+															strokeWidth="1" opacity="{= ${ganttPlanningModel>isTemporary} === true ? 0.5 : 1}" resizable="false" selectable="true" draggable="false"
+															rx="4" ry="4"></gnt2:BaseRectangle>
+													</gnt2:shapes2>
+												</gnt2:GanttRowSettings>
+											</table:rowSettingsTemplate>
+											<table:dragDropConfig>
+												<dnd:DropInfo targetAggregation="rows" dropPosition="On" drop="onResourceGroupDrop"/>
+											</table:dragDropConfig>
+										</table:TreeTable>
+									</gnt2:table>
+								</gnt2:GanttChartWithTable>
+							</gnt2:GanttChartContainer>
+						</template:with>
+					</f:content>
+					<!-- DynamicPage Footer -->
+					<f:footer>
+						<OverflowToolbar id="idPageResourcePlanningFooter" visible="false">
+							<core:ExtensionPoint name="PageExtP|ResourcePlanGantt|GanttResourceHierarchySet|Footer|Left"/>
+							<ToolbarSpacer/>
+							<core:ExtensionPoint name="PageExtP|ResourcePlanGantt|GanttResourceHierarchySet|Footer|Right"/>
+						</OverflowToolbar>
+					</f:footer>
+				</f:DynamicPage>
+			</template:with>
+		</template:alias>
+	</template:alias>
+</mvc:View>

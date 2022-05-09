@@ -1,0 +1,105 @@
+{
+	"d": {
+		"results": [{
+			"NodeId": "0AA10FE57E901EDB83D587FE20C3C1F9",
+			"ParentNodeId": "",
+			"HierarchyLevel": 0,
+			"Drillstate": "collapsed",
+			"Description": "Michaela Schlage",
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"StartTime": "PT00H00M00S",
+			"EndDate": null,
+			"EndTime": "PT00H00M00S",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDB83D587FE20C3C1F9",
+			"ResourceGroupUnitId": "",
+			"ChildCount": 0,
+			"AssignmentSet": {}
+		}, {
+			"NodeId": "0AA10FE57E901EE9BBCE7C317649FB0D",
+			"ParentNodeId": "",
+			"HierarchyLevel": 0,
+			"Drillstate": "collapsed",
+			"Description": "Rahul Inamadar",
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"StartTime": "PT00H00M00S",
+			"EndDate": null,
+			"EndTime": "PT00H00M00S",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EE9BBCE7C317649FB0D",
+			"ResourceGroupUnitId": "",
+			"ChildCount": 0,
+			"AssignmentSet": {
+				"results": [
+
+				]
+			}
+		}, {
+			"NodeId": "0AA10FE57E901ED9B7D4F248D20BFB75",
+			"ParentNodeId": "",
+			"HierarchyLevel": 0,
+			"Drillstate": "collapsed",
+			"Description": "Valerii Dibrov",
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"StartTime": "PT00H00M00S",
+			"EndDate": null,
+			"EndTime": "PT00H00M00S",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901ED9B7D4F248D20BFB75",
+			"ResourceGroupUnitId": "",
+			"ChildCount": 0,
+			"AssignmentSet": {}
+		}, {
+			"NodeId": "0AA10FE57E901ED9B7D4E42EF916BB5F//0AA10FE57E901EDB83D587FE20C3C1F9",
+			"ParentNodeId": "0AA10FE57E901EDB83D587FE20C3C1F9",
+			"HierarchyLevel": 1,
+			"Drillstate": "leaf",
+			"Description": "Amber Cluster",
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"StartTime": "PT00H00M00S",
+			"EndDate": null,
+			"EndTime": "PT00H00M00S",
+			"ResourceGroupGuid": "0AA10FE57E901ED9B7D4E42EF916BB5F",
+			"ResourceGuid": "0AA10FE57E901EDB83D587FE20C3C1F9",
+			"ResourceGroupUnitId": "",
+			"ChildCount": 0,
+			"AssignmentSet": {}
+		}, {
+			"NodeId": "0AA10FE57E901EEC87A3C340ABA18D53//0AA10FE57E901EDB83D587FE20C3C1F9",
+			"ParentNodeId": "0AA10FE57E901EDB83D587FE20C3C1F9",
+			"HierarchyLevel": 1,
+			"Drillstate": "leaf",
+			"Description": "Product Cluster",
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"StartTime": "PT00H00M00S",
+			"EndDate": null,
+			"EndTime": "PT00H00M00S",
+			"ResourceGroupGuid": "0AA10FE57E901EEC87A3C340ABA18D53",
+			"ResourceGuid": "0AA10FE57E901EDB83D587FE20C3C1F9",
+			"ResourceGroupUnitId": "",
+			"ChildCount": 0,
+			"AssignmentSet": {}
+		}, {
+			"NodeId": "0AA10FE57E901EEC87A3B896245A4D47//0AA10FE57E901EDB83D587FE20C3C1F9",
+			"ParentNodeId": "0AA10FE57E901EDB83D587FE20C3C1F9",
+			"HierarchyLevel": 1,
+			"Drillstate": "leaf",
+			"Description": "Royal Cluster",
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"StartTime": "PT00H00M00S",
+			"EndDate": null,
+			"EndTime": "PT00H00M00S",
+			"ResourceGroupGuid": "0AA10FE57E901EEC87A3B896245A4D47",
+			"ResourceGuid": "0AA10FE57E901EDB83D587FE20C3C1F9",
+			"ResourceGroupUnitId": "",
+			"ChildCount": 0,
+			"AssignmentSet": {}
+		}]
+	}
+}

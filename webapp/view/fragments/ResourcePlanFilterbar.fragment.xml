@@ -1,0 +1,35 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<smartFilterBar:SmartFilterBar id="idPageResourcePlanningSmartFilterBar" entitySet="GanttResourceHierarchySet" useDateRangeType="true"
+		persistencyKey="com.evorait.evosuite.evoresource.GanttFilterbar" initialized="onInitializedSmartVariant" search="onSearch">
+		<!-- layout data used to make the table growing but the filter bar fixed -->
+		<smartFilterBar:layoutData>
+			<FlexItemData shrinkFactor="0"/>
+		</smartFilterBar:layoutData>
+		<smartFilterBar:controlConfiguration>
+			<smartFilterBar:ControlConfiguration index="0" mandatory="mandatory" key="StartDate" groupId="_BASIC">
+				<smartFilterBar:customControl>
+					<DateRangeSelection id="idFilterGanttPlanningDateRange" dateValue="{viewModel>/gantt/defaultStartDate}"
+						secondDateValue="{viewModel>/gantt/defaultEndDate}" enabled="true"/>
+				</smartFilterBar:customControl>
+			</smartFilterBar:ControlConfiguration>
+			<smartFilterBar:ControlConfiguration index="0" mandatory="mandatory" key="Mode" label="Mode" groupId="_BASIC" visibleInAdvancedArea="true">
+				<smartFilterBar:customControl>
+					<!--<Select id="idFilterGanttPlanningMode" customData:hasValue="true" forceSelection="true" change="onChangeTimeMode"
+						items="{path: 'templateProperties>/GanttViewSet'}">
+						<core:Item key="{templateProperties>Key}" text="{templateProperties>Description}"/>
+					</Select>-->
+					<Select id="idFilterGanttPlanningMode" customData:hasValue="true" forceSelection="true" change="onChangeTimeMode">
+						<core:Item key="DAY" text="{i18n>lbl.daily}"/>
+						<core:Item key="WEEK" text="{i18n>lbl.weekly}"/>
+						<core:Item key="MONTH" text="{i18n>lbl.monthly}"/>
+					</Select>
+				</smartFilterBar:customControl>
+			</smartFilterBar:ControlConfiguration>
+			<core:ExtensionPoint name="FilterExtP|ResourcePlanGantt|GanttResourceHierarchySet|ControlConfiguration"/>
+		</smartFilterBar:controlConfiguration>
+		<smartFilterBar:groupConfiguration>
+			<core:ExtensionPoint name="FilterExtP|ResourcePlanGantt|GanttResourceHierarchySet|GroupConfiguration"/>
+		</smartFilterBar:groupConfiguration>
+	</smartFilterBar:SmartFilterBar>
+</core:FragmentDefinition>

@@ -1,0 +1,30 @@
+<mvc:View controllerName="com.evorait.evosuite.evoresource.controller.Split2HorizontalViews" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m"
+	xmlns:layout="sap.ui.layout" xmlns:core="sap.ui.core">
+	<Page id="idPageSplit2Horizontal" class="sapUiNoContentPadding">
+		<customHeader>
+			<Bar id="idPageSplit2HorizontalHeader">
+				<contentLeft>
+					<Button id="idPageSplit2HorizontalNavBack" icon="sap-icon://nav-back" tooltip="nav-back" press="onNavBack" visible="{viewModel>/isSubPage}"/>
+					<Title id="idPageSplit2HorizontalTitle" text="{i18n>appTitle}"/>
+					<!--<Image src="{path: '', formatter: '.formatter.getLogoImageLink' }" densityAware="false" height="30px" alt="EvoResource" id="imageLogo"/>-->
+					<core:ExtensionPoint name="PageExtP|Split2HorizontalViews|NavigationBar|Left"/>
+				</contentLeft>
+				<contentMiddle/>
+				<contentRight>
+					<core:ExtensionPoint name="PageExtP|Split2HorizontalViews|NavigationBar|Right"/>
+					<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.PageActions" type="XML"/>
+				</contentRight>
+			</Bar>
+		</customHeader>
+		<content>
+			<layout:Splitter resize="onResize">
+				<NavContainer id="idPageSplitLeftPanel">
+					<layoutData>
+						<layout:SplitterLayoutData size="70%"/>
+					</layoutData>
+				</NavContainer>
+				<NavContainer id="idPageSplitRightPanel"/>
+			</layout:Splitter>
+		</content>
+	</Page>
+</mvc:View>

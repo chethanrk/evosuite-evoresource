@@ -1,0 +1,14 @@
+{
+	"d": {
+		"results": [{
+			"Key": "DAY",
+			"Description": "Daily"
+		}, {
+			"Key": "WEEK",
+			"Description": "Weekly"
+		}, {
+			"Key": "MONTH",
+			"Description": "Monthly"
+		}]
+	}
+}

@@ -1,0 +1,7 @@
+<mvc:View controllerName="com.evorait.evosuite.evoresource.controller.ResourcePlanningMain" xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+	xmlns="sap.m" xmlns:core="sap.ui.core" height="100%">
+	<Page id="idPageResourcePlanningWrapper" class="sapUiNoContentPadding" showHeader="false" showFooter="false" showSubHeader="false"
+		showNavButton="false">
+		<content></content>
+	</Page>
+</mvc:View>
