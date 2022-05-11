@@ -22,8 +22,8 @@
 						<Text text="{user>/Systemid}"></Text>
 						<Label text="{/#SystemInformation/Client/@sap:label}"></Label>
 						<Text text="{user>/Client}"></Text>
-						<Label text="{/#SystemInformation/USER_PROFILE/@sap:label}"></Label>
-						<Text text="{user>/USER_PROFILE}"></Text>
+						<Label text="{/#SystemInformation/UserProfile/@sap:label}"></Label>
+						<Text text="{user>/UserProfile}"></Text>
 					</form:content>
 				</form:SimpleForm>
 			</core:ExtensionPoint>
