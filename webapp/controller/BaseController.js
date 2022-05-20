@@ -289,7 +289,8 @@ sap.ui.define([
 				};
 			}
 
-			var isValid = true;
+			var isValid = true,
+				invalidFields = [];
 
 			//validate mandatory fields
 			for (var i = 0; i < aCustomFields.length; i++) {
@@ -394,7 +395,7 @@ sap.ui.define([
 							obj[property.name] = "";
 							if (oRowData[property.name]) {
 								obj[property.name] = oRowData[property.name];
-								
+
 								/**
 								 * Bellow piece of code is written because of enddate with UTC for the multiple days are not wotking properly
 								 * Removed 1 more second from the enddate before send it to backend

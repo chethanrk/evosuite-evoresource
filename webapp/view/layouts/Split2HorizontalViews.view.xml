@@ -9,7 +9,9 @@
 					<!--<Image src="{path: '', formatter: '.formatter.getLogoImageLink' }" densityAware="false" height="30px" alt="EvoResource" id="imageLogo"/>-->
 					<core:ExtensionPoint name="PageExtP|Split2HorizontalViews|NavigationBar|Left"/>
 				</contentLeft>
-				<contentMiddle/>
+				<contentMiddle>
+					<core:ExtensionPoint name="PageExtP|Split2HorizontalViews|NavigationBar|Middle"/>
+				</contentMiddle>
 				<contentRight>
 					<core:ExtensionPoint name="PageExtP|Split2HorizontalViews|NavigationBar|Right"/>
 					<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.PageActions" type="XML"/>

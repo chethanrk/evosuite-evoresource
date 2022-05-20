@@ -30,6 +30,11 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Before
 				},
+				onVisibleHorizonUpdate: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
 				onSearch: {
 					public: true,
 					final: false,
@@ -74,6 +79,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
+				},
+				onChangeDate: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				},
 				onPressToday: {
 					public: true,
@@ -143,7 +153,7 @@ sap.ui.define([
 		},
 
 		/**
-		 * when user srolls horizontal inside cgantt chart 
+		 * When user srolls horizontal inside gantt chart 
 		 * save visible start and end date
 		 * @param {object} oEvent - event when gantt chart visible view changes
 		 */
@@ -260,9 +270,10 @@ sap.ui.define([
 			this.openShapeChangePopover(oDroppedTarget, oPopoverData);
 		},
 		/**
-		 * @param {object} oEvent -
+		 * Button event press save Gantt changes
+		 * @param {object} oEvent
 		 */
-		onPressSave: function () {
+		onPressSave: function (oEvent) {
 			this.getModel().setDeferredGroups(["batchDelete"]);
 			var mParam = {
 				urlParameters: null,
@@ -280,9 +291,11 @@ sap.ui.define([
 		},
 
 		/**
-		 * @param {object} oEvent -
+		 * Button event to cancel all Gantt changes
+		 * User has to confirm reset of changes
+		 * @param {object} oEvent
 		 */
-		onPressCancel: function () {
+		onPressCancel: function (oEvent) {
 			var sTitle = this.getResourceBundle().getText("tit.confirmCancel"),
 				sMsg = this.getResourceBundle().getText("msg.confirmCancel");
 
@@ -333,7 +346,7 @@ sap.ui.define([
 		/**
 		 * On change resource group
 		 * set the color code to shape
-		 * @param {oEvent}
+		 * @param {object} oEvent
 		 */
 		onChangeResourceGroup: function (oEvent) {
 			var oSource = oEvent.getSource(),
@@ -365,7 +378,8 @@ sap.ui.define([
 		},
 
 		/**
-		 * chnage selected date to UTC date to make display valid date on the screen
+		 * change selected date to UTC date to make display valid date on the screen
+		 * @param {object} oEvent
 		 */
 		onChangeDate: function (oEvent) {
 			var oDateRange = oEvent.getSource();
@@ -381,8 +395,8 @@ sap.ui.define([
 		},
 
 		/**
-		 * on click on today adjust the view of Gantt horizon.
-		 * @param oEvent
+		 * On click on today adjust the view of Gantt horizon
+		 * @param {object} oEvent
 		 */
 		onPressToday: function (oEvent) {
 			this.changeGanttHorizonViewAt(this.getModel("viewModel"), this.oZoomStrategy.getZoomLevel(), this.oZoomStrategy);
@@ -390,8 +404,8 @@ sap.ui.define([
 
 		/**
 		 * On click on expand the tree nodes gets expand to level 1
-		 * On click on collapse all the tree nodes will be collapsed to root.
-		 * @param oEvent
+		 * On click on collapse all the tree nodes will be collapsed to root
+		 * @param {object} oEvent
 		 */
 		onClickExpandCollapse: function (oEvent) {
 			var oButton = oEvent.getSource(),
@@ -402,6 +416,15 @@ sap.ui.define([
 			} else {
 				this._treeTable.collapseAll();
 			}
+		},
+
+		/**
+		 * Trigger when Demand link press navigate to EvoPlan
+		 * @param {object} oEvent
+		 */
+		onShowDemandPress: function (oEvent) {
+			var oSource = oEvent.getSource();
+			this.openApp2AppPopover(oSource, "demandModel", "Orderid");
 		},
 
 		/* =========================================================== */
@@ -466,7 +489,7 @@ sap.ui.define([
 		 */
 		_addChildrenToParent: function (iLevel, oResData) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children"),
-				aAssignments = []
+				aAssignments = [];
 			var callbackFn = function (oItem) {
 				oItem.children = [];
 				aAssignments = [];
@@ -640,14 +663,19 @@ sap.ui.define([
 				this._markAsPlanningChange(oData, true);
 			}.bind(this));
 		},
+
 		/**
 		 * Checks if Resource Group is already exist under Resource
 		 * @param {object} aResourceData - Resource Group data to be added under Resource if not exist
 		 * @param {object} sResourceGroupGuid - Resource guid to be checked inside aResourceData
 		 */
 		_checkIfGroupExist: function (aResourceData, sResourceGroupGuid) {
-			if (aResourceData && aResourceData.children)
-				return aResourceData.children.some(oChild => oChild.ResourceGroupGuid === sResourceGroupGuid);
+			if (aResourceData && aResourceData.children) {
+				return aResourceData.children.some(function (oChild) {
+					return oChild.ResourceGroupGuid === sResourceGroupGuid;
+				});
+			}
+			return false;
 		},
 
 		/**
@@ -811,20 +839,12 @@ sap.ui.define([
 				setTimeout(function () {
 					var oGroupSelection = sap.ui.getCore().byId("idResourceGroupGroup");
 					if (oGroupSelection && oGroupSelection.getSelectedItem()) {
-						var sColor = oGroupSelection.getSelectedItem().getBindingContext().getProperty("ResourceGroupColor")
+						var sColor = oGroupSelection.getSelectedItem().getBindingContext().getProperty("ResourceGroupColor");
 						oData.RESOURCE_GROUP_COLOR = sColor;
 						this.oPlanningModel.refresh();
 					}
 				}.bind(this), 1000);
 			}
-		},
-
-		/**
-		 * Trigger when Demand link press
-		 */
-		onShowDemandPress: function (oEvent) {
-			var oSource = oEvent.getSource();
-			this.openApp2AppPopover(oSource, "demandModel", "Orderid");
 		},
 
 		/**
