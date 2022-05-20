@@ -1,51 +1,49 @@
 <mvc:View controllerName="com.evorait.evosuite.evoresource.controller.ResourceGroupTable" xmlns:core="sap.ui.core"
 	xmlns:mvc="sap.ui.core.mvc" xmlns:f="sap.f" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar" xmlns:smartTable="sap.ui.comp.smarttable"
 	displayBlock="true" xmlns="sap.m" xmlns:smartvariants="sap.ui.comp.smartvariants" xmlns:dnd="sap.ui.core.dnd">
-	<Page id="idResourceGroupPage" showHeader="false">
-		<f:DynamicPage id="iResourceGroupDynamicPage" headerExpanded="true" fitContent="true" preserveHeaderStateOnScroll="true"
-			toggleHeaderOnTitleClick="false" class="sapUiNoContentPadding">
-			<f:header>
-				<f:DynamicPageHeader id="idResourceGroupHeader" pinnable="true" class="sapUiNoContentPadding">
-					<f:content>
-						<smartFilterBar:SmartFilterBar id="idResourceGroupFilter" persistencyKey="com.evorait.evosuite.evoresource.ResourceGroupFilterbar"
-							entitySet="ResourceGroupSet" showClearButton="true" useToolbar="true" liveMode="true">
-							<smartFilterBar:controlConfiguration>
-								<core:ExtensionPoint name="FilterExtP|ResourceGroup|ResourceGroupSet|ControlConfiguration"/>
-							</smartFilterBar:controlConfiguration>
-							<smartFilterBar:groupConfiguration>
-								<core:ExtensionPoint name="FilterExtP|ResourceGroup|ResourceGroupSet|GroupConfiguration"/>
-							</smartFilterBar:groupConfiguration>
-						</smartFilterBar:SmartFilterBar>
-					</f:content>
-				</f:DynamicPageHeader>
-			</f:header>
-			<f:content>
-				<smartTable:SmartTable header="{i18n>xtit.group}" id="idResourceGroupTable" smartFilterId="idResourceGroupFilter"
-					entitySet="ResourceGroupSet" enableAutoBinding="true" tableType="ResponsiveTable" demandPopin="true" useTablePersonalisation="false"
-					useExportToExcel="false" requestAtLeastFields="ResourceGroupGuid,ResourceGroupId,ResourceGroupColor,ResourceGroupUnitDesc">
-					<smartTable:customToolbar>
-						<Toolbar>
-							<ToolbarSpacer/>
-							<core:ExtensionPoint name="TableExtP|ResourceGroup|ResourceGroupSet|CustomToolbar"/>
-						</Toolbar>
-					</smartTable:customToolbar>
-					<Table id="idResourceGroupCustomTable">
-						<columns>
-							<core:ExtensionPoint name="TableExtP|ResourceGroup|ResourceGroupSet|CustomColumn"/>
-						</columns>
-						<items>
-							<ColumnListItem>
-								<cells>
-									<core:ExtensionPoint name="TableExtP|ResourceGroup|ResourceGroupSet|CustomCell"/>
-								</cells>
-							</ColumnListItem>
-						</items>
-						<dragDropConfig>
-							<dnd:DragInfo groupName="resourceGroup" sourceAggregation="items" dragStart="onResourceGroupDragStart" dragEnd="onResourceGroupDragEnd"/>
-						</dragDropConfig>
-					</Table>
-				</smartTable:SmartTable>
-			</f:content>
-		</f:DynamicPage>
-	</Page>
+	<f:DynamicPage id="iResourceGroupDynamicPage" headerExpanded="true" fitContent="true" preserveHeaderStateOnScroll="true"
+		toggleHeaderOnTitleClick="false" class="sapUiNoContentPadding">
+		<f:header>
+			<f:DynamicPageHeader id="idResourceGroupHeader" pinnable="true" class="sapUiNoContentPadding">
+				<f:content>
+					<smartFilterBar:SmartFilterBar id="idResourceGroupFilter" persistencyKey="com.evorait.evosuite.evoresource.ResourceGroupFilterbar"
+						entitySet="ResourceGroupSet" showClearButton="true" useToolbar="true" liveMode="true">
+						<smartFilterBar:controlConfiguration>
+							<core:ExtensionPoint name="FilterExtP|ResourceGroup|ResourceGroupSet|ControlConfiguration"/>
+						</smartFilterBar:controlConfiguration>
+						<smartFilterBar:groupConfiguration>
+							<core:ExtensionPoint name="FilterExtP|ResourceGroup|ResourceGroupSet|GroupConfiguration"/>
+						</smartFilterBar:groupConfiguration>
+					</smartFilterBar:SmartFilterBar>
+				</f:content>
+			</f:DynamicPageHeader>
+		</f:header>
+		<f:content>
+			<smartTable:SmartTable header="{i18n>xtit.group}" id="idResourceGroupTable" smartFilterId="idResourceGroupFilter"
+				entitySet="ResourceGroupSet" enableAutoBinding="true" tableType="ResponsiveTable" demandPopin="true" useTablePersonalisation="false"
+				useExportToExcel="false" requestAtLeastFields="ResourceGroupGuid,ResourceGroupId,ResourceGroupColor,ResourceGroupUnitDesc">
+				<smartTable:customToolbar>
+					<Toolbar>
+						<ToolbarSpacer/>
+						<core:ExtensionPoint name="TableExtP|ResourceGroup|ResourceGroupSet|CustomToolbar"/>
+					</Toolbar>
+				</smartTable:customToolbar>
+				<Table id="idResourceGroupCustomTable">
+					<columns>
+						<core:ExtensionPoint name="TableExtP|ResourceGroup|ResourceGroupSet|CustomColumn"/>
+					</columns>
+					<items>
+						<ColumnListItem>
+							<cells>
+								<core:ExtensionPoint name="TableExtP|ResourceGroup|ResourceGroupSet|CustomCell"/>
+							</cells>
+						</ColumnListItem>
+					</items>
+					<dragDropConfig>
+						<dnd:DragInfo groupName="resourceGroup" sourceAggregation="items" dragStart="onResourceGroupDragStart" dragEnd="onResourceGroupDragEnd"/>
+					</dragDropConfig>
+				</Table>
+			</smartTable:SmartTable>
+		</f:content>
+	</f:DynamicPage>
 </mvc:View>
