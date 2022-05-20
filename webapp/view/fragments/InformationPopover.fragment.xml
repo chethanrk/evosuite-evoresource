@@ -31,7 +31,7 @@
 		</content>
 		<buttons>
 			<Button text="{i18n>btn.close}" press="onCloseDialog"/>
-			<core:ExtensionPoint name="DialogExtP|OrderDetail|SystemInformationSet|Buttons"/>
+			<core:ExtensionPoint name="DialogExtP|InformationPopover|SystemInformationSet|Buttons"/>
 		</buttons>
 	</Dialog>
 </core:FragmentDefinition>

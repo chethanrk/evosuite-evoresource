@@ -1,6 +1,7 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
 	<ResponsivePopover id="isPopoverChangeSHape" class="sapUiContentPadding" showHeader="false" placement="{viewModel>/gantt/popoverPlacement}">
 		<content>
+			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|Form|Before"/>
 			<f:SimpleForm id="idFormChangeShape" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3"
 				labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
 				singleContainerFullSize="true">
@@ -22,6 +23,7 @@
 						minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}"/>
 				</f:content>
 			</f:SimpleForm>
+			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|Form|After"/>
 		</content>
 		<beginButton>
 			<Button text="{i18n>xbtn.delete}" press="onPressDeleteAssignment" visible="true"/>
