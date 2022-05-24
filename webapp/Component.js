@@ -7,8 +7,9 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	"com/evorait/evosuite/evoresource/model/Constants"
-], function (UIComponent, Device, models, MessageManager, JSONModel, Filter, FilterOperator, Constants) {
+	"com/evorait/evosuite/evoresource/model/Constants",
+	"com/evorait/evosuite/evoresource/controller/ErrorHandler"
+], function (UIComponent, Device, models, MessageManager, JSONModel, Filter, FilterOperator, Constants, ErrorHandler) {
 	"use strict";
 
 	var oCoreMessageManager = sap.ui.getCore().getMessageManager();
@@ -74,6 +75,9 @@ sap.ui.define([
 
 			// enable routing
 			this.getRouter().initialize();
+
+			// initialize the error handler with the component
+			this._oErrorHandler = new ErrorHandler(this);
 		},
 
 		/**
