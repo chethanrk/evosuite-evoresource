@@ -13,9 +13,10 @@
 						</Select>
 						<Label text="{i18n>xfld.popoverSelect}" required="true"/>
 						<ComboBox id="idResourceGroupGroup" required="true" showSecondaryValues="true" name="ResourceGroupGuid" fieldGroupIds="changeShapeInput"
-							items="{ path: '/ResourceGroupSet', sorter: { path: 'ResourceGroupDesc' }}"
+							items="{ path: 'viewModel>/ResourceGroup', sorter: { path: 'ResourceGroupDesc' }}"
 							selectedKey="{ganttPlanningModel>/tempData/popover/ResourceGroupGuid}" change="onChangeResourceGroup">
-							<core:ListItem key="{ResourceGroupGuid}" text="{ResourceGroupDesc}" additionalText="{ResourceGroupUnitId}"/>
+							<core:ListItem key="{viewModel>ResourceGroupGuid}" text="{viewModel>ResourceGroupDesc}"
+								additionalText="{viewModel>ResourceGroupUnitId}"/>
 						</ComboBox>
 						<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
 						<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"

@@ -199,7 +199,8 @@ sap.ui.define([
 					Guid: new Date().getTime(),
 					sStartTime: sStartTime,
 					sEndTime: sEndTime,
-					oResourceObject: oRowData
+					oResourceObject: oRowData,
+					bDragged: false
 				};
 
 			this.openShapeChangePopover(mParams.shape, oPopoverData);
@@ -210,9 +211,6 @@ sap.ui.define([
 		 * @param {object} oPopoverData - Data to be displayed in Popover
 		 */
 		openShapeChangePopover: function (oTargetControl, oPopoverData) {
-			if (!this._validateForOpenPopover()) {
-				return;
-			}
 			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getTime())) {
 				// create popover
 				if (!this._oPlanningPopover) {
@@ -227,7 +225,9 @@ sap.ui.define([
 
 						//after popover gets opened check popover data for resource group color
 						this._oPlanningPopover.attachAfterOpen(function () {
-							this._addResourceGroupColor();
+							var oData = this.oPlanningModel.getProperty("/tempData/popover");
+							this._addResourceGroupColor(oData);
+							this._validateForOpenPopover(oData);
 						}.bind(this));
 
 						//after popover gets closed remove popover data
@@ -265,7 +265,8 @@ sap.ui.define([
 				Guid: new Date().getTime(),
 				sStartTime: sStartTime,
 				sEndTime: sEndTime,
-				oResourceObject: oObject
+				oResourceObject: oObject,
+				bDragged: true
 			};
 			this.openShapeChangePopover(oDroppedTarget, oPopoverData);
 		},
@@ -601,12 +602,13 @@ sap.ui.define([
 				sStartTime = oPopoverData["sStartTime"],
 				sEndTime = oPopoverData["sEndTime"],
 				oResourceObject = oPopoverData["oResourceObject"],
+				bDragged = oPopoverData["bDragged"],
 				oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
 				oChildData;
 
 			if (oTargetControl.sParentAggregationName === "shapes1") {
 				//its background shape
-				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject).then(function (oData) {
+				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject, bDragged).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oData));
 					if (oData && oData.ResourceGroupGuid) {
@@ -821,29 +823,26 @@ sap.ui.define([
 		/**
 		 * validated if popover can be visible or not
 		 */
-		_validateForOpenPopover: function () {
+		_validateForOpenPopover: function (oData) {
 			var bPopover = this.getView().getModel("user").getProperty("/ENABLE_PLANNING_POPOVER");
-			if (!bPopover) {
-				this.showMessageToast(this.getResourceBundle().getText("xtxt.noAuthorization"));
+			if (oData.bDragged && !bPopover) {
+				this.oPlanningModel.setProperty("/tempData/popover/bDragged", false);
+				this.onPressChangeAssignment();
 			}
-			return bPopover;
 		},
 
 		/**
 		 * To update resource group color based on selected resource group
 		 * time out is to wait to load ResourceGroupSet data
 		 */
-		_addResourceGroupColor: function () {
-			var oData = this.oPlanningModel.getProperty("/tempData/popover");
+		_addResourceGroupColor: function (oData) {
 			if (oData.ResourceGroupGuid && oData.isNew) {
-				setTimeout(function () {
-					var oGroupSelection = sap.ui.getCore().byId("idResourceGroupGroup");
-					if (oGroupSelection && oGroupSelection.getSelectedItem()) {
-						var sColor = oGroupSelection.getSelectedItem().getBindingContext().getProperty("ResourceGroupColor");
-						oData.RESOURCE_GROUP_COLOR = sColor;
-						this.oPlanningModel.refresh();
-					}
-				}.bind(this), 1000);
+				var oGroupSelection = sap.ui.getCore().byId("idResourceGroupGroup");
+				if (oGroupSelection && oGroupSelection.getSelectedItem()) {
+					var sColor = oGroupSelection.getSelectedItem().getBindingContext("viewModel").getProperty("ResourceGroupColor");
+					oData.RESOURCE_GROUP_COLOR = sColor;
+					this.oPlanningModel.refresh();
+				}
 			}
 		},
 
