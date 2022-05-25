@@ -69,6 +69,8 @@ sap.ui.define([
 			this._getTemplateProps();
 
 			this._setApp2AppLinks();
+			
+			this._getResourceGroupDetails();
 
 			// get System Information
 			this._getSystemInformation();
@@ -179,6 +181,17 @@ sap.ui.define([
 				this.readData("/PropertyValueDeterminationSet", []).then(function (oData) {
 					this.getModel("DefaultInformationModel").setProperty("/defaultProperties", oData.results);
 					resolve(oData.results[0]);
+				}.bind(this));
+			}.bind(this));
+		},
+		/**
+		 * Calls the PropertyValueDetermination 
+		 */
+		_getResourceGroupDetails: function () {
+			this.oDefaultInfoProm = new Promise(function (resolve) {
+				this.readData("/ResourceGroupSet", []).then(function (oData) {
+					this.getModel("viewModel").setProperty("/ResourceGroup", oData.results);
+					resolve(oData.results);
 				}.bind(this));
 			}.bind(this));
 		},

@@ -240,7 +240,7 @@ sap.ui.define([
 		 * @param {object} oEndTime - end date of shape 
 		 * @param {object} oRowData - row context data from Gantt row
 		 */
-		createNewTempAssignment: function (oStartTime, oEndTime, oRowData) {
+		createNewTempAssignment: function (oStartTime, oEndTime, oRowData, bDragged) {
 			return new Promise(function (resolve) {
 				var obj = {
 					minDate: new Date(),
@@ -273,6 +273,7 @@ sap.ui.define([
 					obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
 					obj.PARENT_NODE_ID = oRowData.NodeId;
 					obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
+					obj.bDragged = bDragged;
 					resolve(obj);
 				}.bind(this));
 			}.bind(this));
