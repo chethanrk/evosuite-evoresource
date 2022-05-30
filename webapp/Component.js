@@ -44,6 +44,7 @@ sap.ui.define([
 
 			//helper model viewModel
 			this.setModel(models.createHelperModel({
+				logoUrl: sap.ui.require.toUrl("com/evorait/evosuite/evoresource/assets/img/EvoResource.png"),
 				busy: true,
 				delay: 100,
 				densityClass: this.getContentDensityClass(),
