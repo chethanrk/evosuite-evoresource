@@ -30,6 +30,11 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Before
 				},
+				onVisibleHorizonUpdate: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
 				onSearch: {
 					public: true,
 					final: false,
@@ -74,6 +79,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
+				},
+				onChangeDate: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				},
 				onPressToday: {
 					public: true,
@@ -143,7 +153,7 @@ sap.ui.define([
 		},
 
 		/**
-		 * when user srolls horizontal inside cgantt chart 
+		 * When user srolls horizontal inside gantt chart 
 		 * save visible start and end date
 		 * @param {object} oEvent - event when gantt chart visible view changes
 		 */
@@ -189,7 +199,8 @@ sap.ui.define([
 					Guid: new Date().getTime(),
 					sStartTime: sStartTime,
 					sEndTime: sEndTime,
-					oResourceObject: oRowData
+					oResourceObject: oRowData,
+					bDragged: false
 				};
 
 			this.openShapeChangePopover(mParams.shape, oPopoverData);
@@ -200,9 +211,6 @@ sap.ui.define([
 		 * @param {object} oPopoverData - Data to be displayed in Popover
 		 */
 		openShapeChangePopover: function (oTargetControl, oPopoverData) {
-			if (!this._validateForOpenPopover()) {
-				return;
-			}
 			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getTime())) {
 				// create popover
 				if (!this._oPlanningPopover) {
@@ -217,7 +225,9 @@ sap.ui.define([
 
 						//after popover gets opened check popover data for resource group color
 						this._oPlanningPopover.attachAfterOpen(function () {
-							this._addResourceGroupColor();
+							var oData = this.oPlanningModel.getProperty("/tempData/popover");
+							this._addResourceGroupColor(oData);
+							this._validateForOpenPopover(oData);
 						}.bind(this));
 
 						//after popover gets closed remove popover data
@@ -255,14 +265,16 @@ sap.ui.define([
 				Guid: new Date().getTime(),
 				sStartTime: sStartTime,
 				sEndTime: sEndTime,
-				oResourceObject: oObject
+				oResourceObject: oObject,
+				bDragged: true
 			};
 			this.openShapeChangePopover(oDroppedTarget, oPopoverData);
 		},
 		/**
-		 * @param {object} oEvent -
+		 * Button event press save Gantt changes
+		 * @param {object} oEvent
 		 */
-		onPressSave: function () {
+		onPressSave: function (oEvent) {
 			this.getModel().setDeferredGroups(["batchDelete"]);
 			var mParam = {
 				urlParameters: null,
@@ -280,9 +292,11 @@ sap.ui.define([
 		},
 
 		/**
-		 * @param {object} oEvent -
+		 * Button event to cancel all Gantt changes
+		 * User has to confirm reset of changes
+		 * @param {object} oEvent
 		 */
-		onPressCancel: function () {
+		onPressCancel: function (oEvent) {
 			var sTitle = this.getResourceBundle().getText("tit.confirmCancel"),
 				sMsg = this.getResourceBundle().getText("msg.confirmCancel");
 
@@ -333,7 +347,7 @@ sap.ui.define([
 		/**
 		 * On change resource group
 		 * set the color code to shape
-		 * @param {oEvent}
+		 * @param {object} oEvent
 		 */
 		onChangeResourceGroup: function (oEvent) {
 			var oSource = oEvent.getSource(),
@@ -365,7 +379,8 @@ sap.ui.define([
 		},
 
 		/**
-		 * chnage selected date to UTC date to make display valid date on the screen
+		 * change selected date to UTC date to make display valid date on the screen
+		 * @param {object} oEvent
 		 */
 		onChangeDate: function (oEvent) {
 			var oDateRange = oEvent.getSource();
@@ -381,8 +396,8 @@ sap.ui.define([
 		},
 
 		/**
-		 * on click on today adjust the view of Gantt horizon.
-		 * @param oEvent
+		 * On click on today adjust the view of Gantt horizon
+		 * @param {object} oEvent
 		 */
 		onPressToday: function (oEvent) {
 			this.changeGanttHorizonViewAt(this.getModel("viewModel"), this.oZoomStrategy.getZoomLevel(), this.oZoomStrategy);
@@ -390,8 +405,8 @@ sap.ui.define([
 
 		/**
 		 * On click on expand the tree nodes gets expand to level 1
-		 * On click on collapse all the tree nodes will be collapsed to root.
-		 * @param oEvent
+		 * On click on collapse all the tree nodes will be collapsed to root
+		 * @param {object} oEvent
 		 */
 		onClickExpandCollapse: function (oEvent) {
 			var oButton = oEvent.getSource(),
@@ -402,6 +417,15 @@ sap.ui.define([
 			} else {
 				this._treeTable.collapseAll();
 			}
+		},
+
+		/**
+		 * Trigger when Demand link press navigate to EvoPlan
+		 * @param {object} oEvent
+		 */
+		onShowDemandPress: function (oEvent) {
+			var oSource = oEvent.getSource();
+			this.openApp2AppPopover(oSource, "demandModel", "Orderid");
 		},
 
 		/* =========================================================== */
@@ -466,7 +490,7 @@ sap.ui.define([
 		 */
 		_addChildrenToParent: function (iLevel, oResData) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children"),
-				aAssignments = []
+				aAssignments = [];
 			var callbackFn = function (oItem) {
 				oItem.children = [];
 				aAssignments = [];
@@ -578,12 +602,13 @@ sap.ui.define([
 				sStartTime = oPopoverData["sStartTime"],
 				sEndTime = oPopoverData["sEndTime"],
 				oResourceObject = oPopoverData["oResourceObject"],
+				bDragged = oPopoverData["bDragged"],
 				oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
 				oChildData;
 
 			if (oTargetControl.sParentAggregationName === "shapes1") {
 				//its background shape
-				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject).then(function (oData) {
+				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject, bDragged).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oData));
 					if (oData && oData.ResourceGroupGuid) {
@@ -640,14 +665,19 @@ sap.ui.define([
 				this._markAsPlanningChange(oData, true);
 			}.bind(this));
 		},
+
 		/**
 		 * Checks if Resource Group is already exist under Resource
 		 * @param {object} aResourceData - Resource Group data to be added under Resource if not exist
 		 * @param {object} sResourceGroupGuid - Resource guid to be checked inside aResourceData
 		 */
 		_checkIfGroupExist: function (aResourceData, sResourceGroupGuid) {
-			if (aResourceData && aResourceData.children)
-				return aResourceData.children.some(oChild => oChild.ResourceGroupGuid === sResourceGroupGuid);
+			if (aResourceData && aResourceData.children) {
+				return aResourceData.children.some(function (oChild) {
+					return oChild.ResourceGroupGuid === sResourceGroupGuid;
+				});
+			}
+			return false;
 		},
 
 		/**
@@ -793,38 +823,27 @@ sap.ui.define([
 		/**
 		 * validated if popover can be visible or not
 		 */
-		_validateForOpenPopover: function () {
+		_validateForOpenPopover: function (oData) {
 			var bPopover = this.getView().getModel("user").getProperty("/ENABLE_PLANNING_POPOVER");
-			if (!bPopover) {
-				this.showMessageToast(this.getResourceBundle().getText("xtxt.noAuthorization"));
+			if (oData.bDragged && !bPopover) {
+				this.oPlanningModel.setProperty("/tempData/popover/bDragged", false);
+				this.onPressChangeAssignment();
 			}
-			return bPopover;
 		},
 
 		/**
 		 * To update resource group color based on selected resource group
 		 * time out is to wait to load ResourceGroupSet data
 		 */
-		_addResourceGroupColor: function () {
-			var oData = this.oPlanningModel.getProperty("/tempData/popover");
+		_addResourceGroupColor: function (oData) {
 			if (oData.ResourceGroupGuid && oData.isNew) {
-				setTimeout(function () {
-					var oGroupSelection = sap.ui.getCore().byId("idResourceGroupGroup");
-					if (oGroupSelection && oGroupSelection.getSelectedItem()) {
-						var sColor = oGroupSelection.getSelectedItem().getBindingContext().getProperty("ResourceGroupColor")
-						oData.RESOURCE_GROUP_COLOR = sColor;
-						this.oPlanningModel.refresh();
-					}
-				}.bind(this), 1000);
+				var oGroupSelection = sap.ui.getCore().byId("idResourceGroupGroup");
+				if (oGroupSelection && oGroupSelection.getSelectedItem()) {
+					var sColor = oGroupSelection.getSelectedItem().getBindingContext("viewModel").getProperty("ResourceGroupColor");
+					oData.RESOURCE_GROUP_COLOR = sColor;
+					this.oPlanningModel.refresh();
+				}
 			}
-		},
-
-		/**
-		 * Trigger when Demand link press
-		 */
-		onShowDemandPress: function (oEvent) {
-			var oSource = oEvent.getSource();
-			this.openApp2AppPopover(oSource, "demandModel", "Orderid");
 		},
 
 		/**

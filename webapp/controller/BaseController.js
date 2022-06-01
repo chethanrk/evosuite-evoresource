@@ -240,7 +240,7 @@ sap.ui.define([
 		 * @param {object} oEndTime - end date of shape 
 		 * @param {object} oRowData - row context data from Gantt row
 		 */
-		createNewTempAssignment: function (oStartTime, oEndTime, oRowData) {
+		createNewTempAssignment: function (oStartTime, oEndTime, oRowData, bDragged) {
 			return new Promise(function (resolve) {
 				var obj = {
 					minDate: new Date(),
@@ -273,6 +273,7 @@ sap.ui.define([
 					obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
 					obj.PARENT_NODE_ID = oRowData.NodeId;
 					obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
+					obj.bDragged = bDragged;
 					resolve(obj);
 				}.bind(this));
 			}.bind(this));
@@ -289,7 +290,8 @@ sap.ui.define([
 				};
 			}
 
-			var isValid = true;
+			var isValid = true,
+				invalidFields = [];
 
 			//validate mandatory fields
 			for (var i = 0; i < aCustomFields.length; i++) {
@@ -394,7 +396,7 @@ sap.ui.define([
 							obj[property.name] = "";
 							if (oRowData[property.name]) {
 								obj[property.name] = oRowData[property.name];
-								
+
 								/**
 								 * Bellow piece of code is written because of enddate with UTC for the multiple days are not wotking properly
 								 * Removed 1 more second from the enddate before send it to backend

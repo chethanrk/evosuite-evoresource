@@ -7,8 +7,9 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	"com/evorait/evosuite/evoresource/model/Constants"
-], function (UIComponent, Device, models, MessageManager, JSONModel, Filter, FilterOperator, Constants) {
+	"com/evorait/evosuite/evoresource/model/Constants",
+	"com/evorait/evosuite/evoresource/controller/ErrorHandler"
+], function (UIComponent, Device, models, MessageManager, JSONModel, Filter, FilterOperator, Constants, ErrorHandler) {
 	"use strict";
 
 	var oCoreMessageManager = sap.ui.getCore().getMessageManager();
@@ -43,6 +44,7 @@ sap.ui.define([
 
 			//helper model viewModel
 			this.setModel(models.createHelperModel({
+				logoUrl: sap.ui.require.toUrl("com/evorait/evosuite/evoresource/assets/img/EvoResource.png"),
 				busy: true,
 				delay: 100,
 				densityClass: this.getContentDensityClass(),
@@ -68,12 +70,17 @@ sap.ui.define([
 			this._getTemplateProps();
 
 			this._setApp2AppLinks();
+			
+			this._getResourceGroupDetails();
 
 			// get System Information
 			this._getSystemInformation();
 
 			// enable routing
 			this.getRouter().initialize();
+
+			// initialize the error handler with the component
+			this._oErrorHandler = new ErrorHandler(this);
 		},
 
 		/**
@@ -175,6 +182,17 @@ sap.ui.define([
 				this.readData("/PropertyValueDeterminationSet", []).then(function (oData) {
 					this.getModel("DefaultInformationModel").setProperty("/defaultProperties", oData.results);
 					resolve(oData.results[0]);
+				}.bind(this));
+			}.bind(this));
+		},
+		/**
+		 * Calls the PropertyValueDetermination 
+		 */
+		_getResourceGroupDetails: function () {
+			this.oDefaultInfoProm = new Promise(function (resolve) {
+				this.readData("/ResourceGroupSet", []).then(function (oData) {
+					this.getModel("viewModel").setProperty("/ResourceGroup", oData.results);
+					resolve(oData.results);
 				}.bind(this));
 			}.bind(this));
 		},

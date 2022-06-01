@@ -1,27 +1,32 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
 	<ResponsivePopover id="isPopoverChangeSHape" class="sapUiContentPadding" showHeader="false" placement="{viewModel>/gantt/popoverPlacement}">
 		<content>
-			<f:SimpleForm id="idFormChangeShape" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3"
-				labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
-				singleContainerFullSize="true">
-				<f:content>
-					<Label text="{i18n>xfld.popoverType}"/>
-					<Select forceSelection="true" selectedKey="{ganttPlanningModel>/tempData/popover/AssignmentType}" editable="false">
-						<core:Item key="GROUP" text="{i18n>xtxt.group}"/>
-					</Select>
-					<Label text="{i18n>xfld.popoverSelect}" required="true"/>
-					<ComboBox id="idResourceGroupGroup" required="true" showSecondaryValues="true" name="ResourceGroupGuid" fieldGroupIds="changeShapeInput"
-						items="{ path: '/ResourceGroupSet', sorter: { path: 'ResourceGroupDesc' }}"
-						selectedKey="{ganttPlanningModel>/tempData/popover/ResourceGroupGuid}" change="onChangeResourceGroup">
-						<core:ListItem key="{ResourceGroupGuid}" text="{ResourceGroupDesc}" additionalText="{ResourceGroupUnitId}"/>
-					</ComboBox>
-					<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
-					<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"
-						dateValue="{path:'ganttPlanningModel>/tempData/popover/StartDate',formatter:'.formatter.convertFromUTCDate'}"
-						secondDateValue="{path:'ganttPlanningModel>/tempData/popover/EndDate',formatter:'.formatter.convertFromUTCDate'}"
-						minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}"/>
-				</f:content>
-			</f:SimpleForm>
+			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|Before"/>
+			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|Instead">
+				<f:SimpleForm id="idFormChangeShape" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3"
+					labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
+					singleContainerFullSize="true">
+					<f:content>
+						<Label text="{i18n>xfld.popoverType}"/>
+						<Select forceSelection="true" selectedKey="{ganttPlanningModel>/tempData/popover/AssignmentType}" editable="false">
+							<core:Item key="GROUP" text="{i18n>xtxt.group}"/>
+						</Select>
+						<Label text="{i18n>xfld.popoverSelect}" required="true"/>
+						<ComboBox id="idResourceGroupGroup" required="true" showSecondaryValues="true" name="ResourceGroupGuid" fieldGroupIds="changeShapeInput"
+							items="{ path: 'viewModel>/ResourceGroup', sorter: { path: 'ResourceGroupDesc' }}"
+							selectedKey="{ganttPlanningModel>/tempData/popover/ResourceGroupGuid}" change="onChangeResourceGroup">
+							<core:ListItem key="{viewModel>ResourceGroupGuid}" text="{viewModel>ResourceGroupDesc}"
+								additionalText="{viewModel>ResourceGroupUnitId}"/>
+						</ComboBox>
+						<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
+						<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"
+							dateValue="{path:'ganttPlanningModel>/tempData/popover/StartDate',formatter:'.formatter.convertFromUTCDate'}"
+							secondDateValue="{path:'ganttPlanningModel>/tempData/popover/EndDate',formatter:'.formatter.convertFromUTCDate'}"
+							minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}"/>
+					</f:content>
+				</f:SimpleForm>
+			</core:ExtensionPoint>
+			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|After"/>
 		</content>
 		<beginButton>
 			<Button text="{i18n>xbtn.delete}" press="onPressDeleteAssignment" visible="true"/>
