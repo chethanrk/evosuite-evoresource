@@ -116,7 +116,7 @@
 					"name": "ResourcePlanning",
 					"target": [
 						"resourcePlanningMain",
-						"resourceGroupTable"
+						"resourcePlanningSide"
 					]
 				}
 			],
@@ -135,9 +135,9 @@
 					"parent": "splitHorNavigation",
 					"viewId": "EvoResourceResourcePlanning"
 				},
-				"resourceGroupTable": {
+				"resourcePlanningSide": {
 					"viewType": "XML",
-					"viewName": "ResourceGroupTable",
+					"viewName": "ResourcePlanningSide",
 					"viewPath": "com.evorait.evosuite.evoresource.view",
 					"controlId": "idPageSplitRightPanel",
 					"parent": "splitHorNavigation",

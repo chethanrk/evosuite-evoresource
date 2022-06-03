@@ -2,5 +2,28 @@
 	"GanttConfigs": {
 		"tab": "Gantt",
 		"entitySet": "GanttResourceHierarchySetarchySet"
-	}
+	},
+	"IconTabBarTable":[
+		{
+			"tabName": "ResourceGroup",
+			"lineItemQualifier": "",
+			"presentationVariantQualifier": "",
+			"useSmartField": false,
+			"header": "{i18n>tit.items}",
+			"tableType": "ResponsiveTable",
+			"useExportToExcel": false,
+			"useVariantManagement": false,
+			"useTablePersonalisation": false,
+			"demandPopin": true,
+			"showRowCount": true,
+			"enableAutoBinding": true,
+			"entitySet": "ResourceGroupSet",
+			"tableBindingPath": "",
+			"requestAtLeastFields": "ResourceGroupGuid,ResourceGroupId,ResourceGroupColor,ResourceGroupUnitDesc",
+			"class": "",
+			"CustomToolbar": false,
+			"CustomContent": "com.evorait.evosuite.evoorder.view.templates.AttachmentTableContent",
+			"CustomData": []
+		}	
+	]
 }
