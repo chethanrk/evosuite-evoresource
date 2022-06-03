@@ -8,8 +8,7 @@
 			"tabName": "ResourceGroup",
 			"lineItemQualifier": "",
 			"presentationVariantQualifier": "",
-			"useSmartField": false,
-			"header": "{i18n>tit.items}",
+			"header": "{i18n>xtit.groups}",
 			"tableType": "ResponsiveTable",
 			"useExportToExcel": false,
 			"useVariantManagement": false,
@@ -20,10 +19,40 @@
 			"entitySet": "ResourceGroupSet",
 			"tableBindingPath": "",
 			"requestAtLeastFields": "ResourceGroupGuid,ResourceGroupId,ResourceGroupColor,ResourceGroupUnitDesc",
-			"class": "",
-			"CustomToolbar": false,
-			"CustomContent": "com.evorait.evosuite.evoorder.view.templates.AttachmentTableContent",
-			"CustomData": []
-		}	
+			"class": ""
+		},
+		{
+			"tabName": "Shift",
+			"lineItemQualifier": "",
+			"presentationVariantQualifier": "",
+			"header": "{i18n>xtit.shift}",
+			"tableType": "ResponsiveTable",
+			"useExportToExcel": false,
+			"useVariantManagement": false,
+			"useTablePersonalisation": false,
+			"demandPopin": true,
+			"showRowCount": true,
+			"enableAutoBinding": true,
+			"entitySet": "ResourceGroupSet",
+			"tableBindingPath": "",
+			"requestAtLeastFields": "ResourceGroupGuid,ResourceGroupId,ResourceGroupColor,ResourceGroupUnitDesc",
+			"class": ""
+		},{
+			"tabName": "TimeAllocation",
+			"lineItemQualifier": "",
+			"presentationVariantQualifier": "",
+			"header": "{i18n>xtit.timeallocation}",
+			"tableType": "ResponsiveTable",
+			"useExportToExcel": false,
+			"useVariantManagement": false,
+			"useTablePersonalisation": false,
+			"demandPopin": true,
+			"showRowCount": true,
+			"enableAutoBinding": true,
+			"entitySet": "ResourceGroupSet",
+			"tableBindingPath": "",
+			"requestAtLeastFields": "ResourceGroupGuid,ResourceGroupId,ResourceGroupColor,ResourceGroupUnitDesc",
+			"class": ""
+		}
 	]
 }
