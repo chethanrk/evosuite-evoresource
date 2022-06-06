@@ -4,7 +4,7 @@ sap.ui.define([
 ], function (BaseController,formatter) {
 	"use strict";
 
-	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanningSide", {
+	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanningSideView", {
 
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.

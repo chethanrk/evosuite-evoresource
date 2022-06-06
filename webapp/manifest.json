@@ -137,7 +137,7 @@
 				},
 				"resourcePlanningSide": {
 					"viewType": "XML",
-					"viewName": "ResourcePlanningSide",
+					"viewName": "ResourcePlanningSideView",
 					"viewPath": "com.evorait.evosuite.evoresource.view",
 					"controlId": "idPageSplitRightPanel",
 					"parent": "splitHorNavigation",
