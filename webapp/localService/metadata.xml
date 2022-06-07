@@ -80,7 +80,7 @@
 				<Property Name="TimeAllocationName" Type="Edm.String" MaxLength="100" sap:label="Name" sap:creatable="false" sap:updatable="false"
 					sap:filterable="true"/>
 				<Property Name="TimeAllocationType" Type="Edm.String" MaxLength="100" sap:label="Type" sap:creatable="false" sap:updatable="false"
-					sap:filterable="true"/>
+					sap:filterable="true" sap:sortable="true"/>
 			</EntityType>
 			<EntityType Name="GanttResourceHierarchy" sap:content-version="1">
 				<Key>
@@ -421,6 +421,26 @@
 				</Annotation>
 			</Annotations>
 			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.TimeAllocation">
+				<Annotation Term="UI.PresentationVariant">
+					<Record Type="UI.PresentationVariantType">
+						<PropertyValue Property="SortOrder">
+							<Collection>
+								<Record Type="Common.SortOrderType">
+									<PropertyValue Property="Property" PropertyPath="TimeAllocationType"/>
+									<PropertyValue Property="Descending" Bool="true"/>
+								</Record>
+							</Collection>
+						</PropertyValue>
+						<PropertyValue Property="GroupBy">
+							<Collection>
+								<PropertyPath>TimeAllocationType</PropertyPath>
+							</Collection>
+						</PropertyValue>
+						<PropertyValue Property="RequestAtLeast">
+							<Collection/>
+						</PropertyValue>
+					</Record>
+				</Annotation>
 				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
 					<Collection>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
@@ -430,35 +450,14 @@
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
 							<PropertyValue Property="Value" Path="TimeAllocationType"/>
 							<PropertyValue Property="Position" Int="2"/>
-							<Property Name="TimeAllocationName" Type="Edm.String" MaxLength="100" sap:label="Name" sap:creatable="false" sap:updatable="false"
-								sap:filterable="true"/>/>
 						</Record>
 					</Collection>
 				</Annotation>
 				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
 					<Collection>
 						<PropertyPath>TimeAllocationName</PropertyPath>
+						<PropertyPath>TimeAllocationType</PropertyPath>
 					</Collection>
-				</Annotation>
-				<Annotation Term="com.sap.vocabularies.UI.v1.PresentationVariant">
-					<Record Type="com.sap.vocabularies.UI.v1.PresentationVariantType">
-						<PropertyValue Property="SortOrder">
-							<Collection>
-								<Record Type="Common.SortOrderType">
-									<PropertyValue Property="Property" PropertyPath="TimeAllocationType"/>
-									<PropertyValue Property="Descending" PropertyPath="true"/>
-								</Record>
-							</Collection>
-						</PropertyValue>
-						<PropertyValue Property="RequestAtLeast">
-							<Collection/>
-						</PropertyValue>
-						<PropertyValue Property="GroupBy">
-							<Collection>
-								<PropertyPath>TimeAllocationType</PropertyPath>
-							</Collection>
-						</PropertyValue>
-					</Record>
 				</Annotation>
 			</Annotations>
 			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.ResourceGroup/ResourceGroupDesc">
