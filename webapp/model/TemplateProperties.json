@@ -33,9 +33,9 @@
 			"demandPopin": true,
 			"showRowCount": true,
 			"enableAutoBinding": true,
-			"entitySet": "ResourceGroupSet",
+			"entitySet": "ShiftSet",
 			"tableBindingPath": "",
-			"requestAtLeastFields": "ResourceGroupGuid,ResourceGroupId,ResourceGroupColor,ResourceGroupUnitDesc",
+			"requestAtLeastFields": "ShiftName,StartTime,EndTime",
 			"class": ""
 		},{
 			"tabName": "TimeAllocation",
@@ -49,9 +49,9 @@
 			"demandPopin": true,
 			"showRowCount": true,
 			"enableAutoBinding": true,
-			"entitySet": "ResourceGroupSet",
+			"entitySet": "TimeAllocationSet",
 			"tableBindingPath": "",
-			"requestAtLeastFields": "ResourceGroupGuid,ResourceGroupId,ResourceGroupColor,ResourceGroupUnitDesc",
+			"requestAtLeastFields": "TimeAllocationGuid,TimeAllocationName,TimeAllocationType",
 			"class": ""
 		}
 	]

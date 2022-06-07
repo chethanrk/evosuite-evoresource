@@ -1,0 +1,33 @@
+{
+	"d": {
+		"results": [{
+			"TimeAllocationGuid": "0AA10FE57E901EDB979391C3E9F615A1",
+			"TimeAllocationName": "Casual Leave",
+			"TimeAllocationType":"Absense"
+		}, {
+			"TimeAllocationGuid": "0AA10FE57E901EDB979391C3E9F615A2",
+			"TimeAllocationName": "Halfday Leave",
+			"TimeAllocationType":"Absense"
+		}, {
+			"TimeAllocationGuid": "0AA10FE57E901EDB979391C3E9F615A3",
+			"TimeAllocationName": "Paid Leave",
+			"TimeAllocationType":"Absense"
+		}, {
+			"TimeAllocationGuid": "0AA10FE57E901EDB979391C3E9F615A4",
+			"TimeAllocationName": "On Call",
+			"TimeAllocationType":"Availability"
+		}, {
+			"TimeAllocationGuid": "0AA10FE57E901EDB979391C3E9F615A5",
+			"TimeAllocationName": "Available",
+			"TimeAllocationType":"Availability"
+		}, {
+			"TimeAllocationGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"TimeAllocationName": "Training",
+			"TimeAllocationType":"Blocker"
+		}, {
+			"TimeAllocationGuid": "0AA10FE57E901EDB979391C3E9F615A7",
+			"TimeAllocationName": "Project Blocker",
+			"TimeAllocationType":"Blocker"
+		}]
+	}
+}
