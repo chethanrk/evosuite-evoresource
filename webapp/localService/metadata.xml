@@ -421,26 +421,6 @@
 				</Annotation>
 			</Annotations>
 			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.TimeAllocation">
-				<Annotation Term="UI.PresentationVariant">
-					<Record Type="UI.PresentationVariantType">
-						<PropertyValue Property="SortOrder">
-							<Collection>
-								<Record Type="Common.SortOrderType">
-									<PropertyValue Property="Property" PropertyPath="TimeAllocationType"/>
-									<PropertyValue Property="Descending" Bool="true"/>
-								</Record>
-							</Collection>
-						</PropertyValue>
-						<PropertyValue Property="GroupBy">
-							<Collection>
-								<PropertyPath>TimeAllocationType</PropertyPath>
-							</Collection>
-						</PropertyValue>
-						<PropertyValue Property="RequestAtLeast">
-							<Collection/>
-						</PropertyValue>
-					</Record>
-				</Annotation>
 				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
 					<Collection>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
