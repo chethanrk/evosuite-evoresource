@@ -1,7 +1,6 @@
 sap.ui.define([
 	"com/evorait/evosuite/evoresource/controller/BaseController",
-	"sap/ui/core/mvc/OverrideExecution",
-	"sap/m/GroupHeaderListItem",
+	"sap/ui/core/mvc/OverrideExecution"
 ], function (BaseController, OverrideExecution,GroupHeaderListItem) {
 	"use strict";
 
@@ -55,18 +54,6 @@ sap.ui.define([
 		 */
 		onResourceGroupDragEnd: function (oEvent) {
 
-		},
-		getType: function (oEvent) {
-			debugger;
-			return oEvent.getProperty('Type');
-		},
-		getGroupHeader: function (oEvent) {
-			debugger;
-			if (oEvent.key === "EL") var text = "Electronics";
-			else if (oEvent.key === "PA") text = "Paddy";
-			return new GroupHeaderListItem({
-				title: text
-			})
-		},
+		}
 	});
 });
