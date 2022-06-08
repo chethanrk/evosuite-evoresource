@@ -447,10 +447,6 @@
 							<PropertyValue Property="Value" Path="TimeAllocationName"/>
 							<PropertyValue Property="Position" Int="1"/>
 						</Record>
-						<Record Type="com.sap.vocabularies.UI.v1.DataField">
-							<PropertyValue Property="Value" Path="TimeAllocationType"/>
-							<PropertyValue Property="Position" Int="2"/>
-						</Record>
 					</Collection>
 				</Annotation>
 				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">

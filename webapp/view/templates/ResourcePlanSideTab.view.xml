@@ -16,8 +16,9 @@
 											<f:header>
 												<f:DynamicPageHeader id="idDynamicPageHeader--{path:'contentTabs>tabName'}" pinnable="true" class="sapUiNoContentPadding">
 													<f:content>
-														<smartFilterBar:SmartFilterBar id="idSmartFilter--{path:'contentTabs>tabName'}" persistencyKey="com.evorait.evosuite.evoresource.ResourceGroupFilterbar"
-															entitySet="{:= ${contentTabs>entitySet}}" showClearButton="true" useToolbar="true" liveMode="true">
+														<smartFilterBar:SmartFilterBar id="idSmartFilter--{path:'contentTabs>tabName'}"
+															persistencyKey="com.evorait.evosuite.evoresource.ResourceGroupFilterbar" entitySet="{:= ${contentTabs>entitySet}}" showClearButton="true"
+															useToolbar="true" liveMode="true">
 															<smartFilterBar:controlConfiguration>
 																<core:ExtensionPoint name="FilterExtP|{path:'contentTabs>tabName'}|{path:'contentTabs>entitySet'}|ControlConfiguration"/>
 															</smartFilterBar:controlConfiguration>
@@ -29,9 +30,10 @@
 												</f:DynamicPageHeader>
 											</f:header>
 											<f:content>
-												<smartTable:SmartTable header="{:= ${contentTabs>header}}" id="idSmartTable--{path:'contentTabs>tabName'}" smartFilterId="idSmartFilter--{path:'contentTabs>tabName'}"
-													entitySet="{:= ${contentTabs>entitySet}}" enableAutoBinding="true" tableType="ResponsiveTable" demandPopin="true" useTablePersonalisation="false"
-													useExportToExcel="false" requestAtLeastFields="{:= ${contentTabs>requestAtLeastFields}}">
+												<smartTable:SmartTable header="{:= ${contentTabs>header}}" id="idSmartTable--{path:'contentTabs>tabName'}"
+													smartFilterId="idSmartFilter--{path:'contentTabs>tabName'}" entitySet="{:= ${contentTabs>entitySet}}" enableAutoBinding="true"
+													tableType="ResponsiveTable" demandPopin="true" useTablePersonalisation="false" useExportToExcel="false"
+													requestAtLeastFields="{:= ${contentTabs>requestAtLeastFields}}">
 													<smartTable:customToolbar>
 														<Toolbar>
 															<ToolbarSpacer/>
@@ -41,10 +43,20 @@
 													<Table id="idCustomTable--{path:'contentTabs>tabName'}">
 														<columns>
 															<core:ExtensionPoint name="TableExtP|{path:'contentTabs>tabName'}|{path:'contentTabs>entitySet'}|CustomColumn"/>
+															<template:if test="{:= (${contentTabs>tabName} === 'TimeAllocation')}">
+																<Column mergeDuplicates="true">
+																	<header>
+																		<Text text="Type"/>
+																	</header>
+																</Column>
+															</template:if>
 														</columns>
 														<items>
 															<ColumnListItem>
 																<cells>
+																	<template:if test="{:= (${contentTabs>tabName} === 'TimeAllocation')}">
+																		<Label text="{TimeAllocationType}" design="Bold"/>
+																	</template:if>
 																	<core:ExtensionPoint name="TableExtP|{path:'contentTabs>tabName'}|{path:'contentTabs>entitySet'}|CustomCell"/>
 																</cells>
 															</ColumnListItem>
