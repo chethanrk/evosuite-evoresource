@@ -9,9 +9,10 @@ sap.ui.define([
 	"sap/ui/core/Fragment",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	"sap/m/MessageBox"
+	"sap/m/MessageBox",
+	"sap/gantt/misc/Utility",
 ], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Fragment, Filter, FilterOperator,
-	MessageBox) {
+	MessageBox, Utility) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanGantt", {
@@ -204,6 +205,27 @@ sap.ui.define([
 				};
 
 			this.openShapeChangePopover(mParams.shape, oPopoverData);
+		},
+
+		onShapeDrop: function (oEvent) {
+			debugger
+			var sShapeId = oEvent.getParameter("lastDraggedShapeUid"),
+				oShapeInfo = Utility.parseUid(sShapeId),
+				oTargetShape = oEvent.getParameter("targetShape"),
+				oStartTime = oTargetShape.getProperty("time"),
+				oEndTime = oTargetShape.getProperty("endTime"),
+				sGuid = oShapeInfo.shapeId,
+				oFoundData = [],
+				oAssignment = {};
+				oFoundData = this._getChildrenDataByKey("Guid",sGuid, null);
+				
+				if(oFoundData){
+					oFoundData.forEach(function(sPath){
+						oAssignment = this.getModel("ganttPlanningModel").getProperty(sPath);
+						oAssignment.StartDate = oStartTime;
+						oAssignment.EndDate = oEndTime;
+					}.bind(this));
+				}
 		},
 		/**
 		 * Called to open ShapeChangePopover
