@@ -4,71 +4,89 @@
 	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1">
 	<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
 		<template:alias name=".evoAH" value="com.evorait.evosuite.evoresource.model.AnnotationHelper">
-			<template:with path="templateProperties>/" var="tempProps">
-				<Page id="idResourceGroupPage" showHeader="false">
-					<IconTabBar id="idIconTabBar" stretchContentHeight="true" class="sapUiNoContentPadding">
-						<items>
-							<template:with path="tempProps>/IconTabBarTable" helper="sap.ui.model.odata.AnnotationHelper.resolvePath" var="contentTabs">
-								<template:repeat list="{contentTabs>}">
-									<IconTabFilter id="idTab--{path:'contentTabs>tabName'}" text="{:= ${contentTabs>header}}" key="{:= ${contentTabs>tabName}}">
-										<f:DynamicPage id="idDynamicPage--{path:'contentTabs>tabName'}" headerExpanded="true" fitContent="true" preserveHeaderStateOnScroll="true"
-											toggleHeaderOnTitleClick="false" class="sapUiNoContentPadding">
-											<f:header>
-												<f:DynamicPageHeader id="idDynamicPageHeader--{path:'contentTabs>tabName'}" pinnable="true" class="sapUiNoContentPadding">
-													<f:content>
-														<smartFilterBar:SmartFilterBar id="idSmartFilter--{path:'contentTabs>tabName'}"
-															persistencyKey="com.evorait.evosuite.evoresource.ResourceGroupFilterbar" entitySet="{:= ${contentTabs>entitySet}}" showClearButton="true"
-															useToolbar="true" liveMode="true">
-															<smartFilterBar:controlConfiguration>
-																<core:ExtensionPoint name="FilterExtP|{path:'contentTabs>tabName'}|{path:'contentTabs>entitySet'}|ControlConfiguration"/>
-															</smartFilterBar:controlConfiguration>
-															<smartFilterBar:groupConfiguration>
-																<core:ExtensionPoint name="FilterExtP|{path:'contentTabs>tabName'}|{path:'contentTabs>entitySet'}|GroupConfiguration"/>
-															</smartFilterBar:groupConfiguration>
-														</smartFilterBar:SmartFilterBar>
-													</f:content>
-												</f:DynamicPageHeader>
-											</f:header>
-											<f:content>
-												<smartTable:SmartTable header="{:= ${contentTabs>header}}" id="idSmartTable--{path:'contentTabs>tabName'}"
-													smartFilterId="idSmartFilter--{path:'contentTabs>tabName'}" entitySet="{:= ${contentTabs>entitySet}}" enableAutoBinding="true"
-													tableType="ResponsiveTable" demandPopin="true" useTablePersonalisation="false" useExportToExcel="false"
-													requestAtLeastFields="{:= ${contentTabs>requestAtLeastFields}}" beforeRebindTable ="onBeforeRebindSmartTable">
-													<smartTable:customToolbar>
-														<Toolbar>
-															<ToolbarSpacer/>
-															<core:ExtensionPoint name="TableExtP|{path:'contentTabs>tabName'}|{path:'contentTabs>entitySet'}|CustomToolbar"/>
-														</Toolbar>
-													</smartTable:customToolbar>
-													<Table id="idCustomTable--{path:'contentTabs>tabName'}">
-														<columns>
-															<core:ExtensionPoint name="TableExtP|{path:'contentTabs>tabName'}|{path:'contentTabs>entitySet'}|CustomColumn"/>
-														</columns>
-														<items>
-															<ColumnListItem>
-																<cells>
-																	<core:ExtensionPoint name="TableExtP|{path:'contentTabs>tabName'}|{path:'contentTabs>entitySet'}|CustomCell"/>
-																</cells>
-															</ColumnListItem>
-														</items>
-														<dragDropConfig>
-															<dnd:DragInfo groupName="resourceGroup" sourceAggregation="items" dragStart="onResourceGroupDragStart" dragEnd="onResourceGroupDragEnd"/>
-														</dragDropConfig>
-													</Table>
-													<smartTable:customData>
-														<core:CustomData key="isGroup" value="{path:'contentTabs>isGroup'}"/>
-														<core:CustomData key="groupProperty" value="{path:'contentTabs>groupProperty'}"/>
-													</smartTable:customData>
-												</smartTable:SmartTable>
-											</f:content>
-										</f:DynamicPage>
-									</IconTabFilter>
-								</template:repeat>
-							</template:with>
-						</items>
-					</IconTabBar>
-				</Page>
-			</template:with>
+			<Page id="idResourceGroupPage" showHeader="false">
+				<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
+					<template:with path="templateProperties>/annotationPath" helper="com.evorait.evosuite.evoresource.model.AnnotationHelper.resolveModelPath"
+						var="paths">
+						<IconTabBar id="idIconTabBar" stretchContentHeight="true" class="sapUiNoContentPadding">
+							<items>
+								<template:with path="paths>" helper="sap.ui.model.odata.AnnotationHelper.resolvePath" var="contentTabs">
+									<template:repeat list="{contentTabs>}">
+										<IconTabFilter id="idTab--{path:'contentTabs>Core.LongDescription/String'}"
+											text="{path:'contentTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"
+											key="{path:'contentTabs>Core.LongDescription/String'}">
+											<content>
+												<template:with path="templateProperties>/" var="tempProps">
+													<f:DynamicPage id="idDynamicPage--{path:'contentTabs>Core.LongDescription/String'}" headerExpanded="true" fitContent="true"
+														preserveHeaderStateOnScroll="true" toggleHeaderOnTitleClick="false" class="sapUiNoContentPadding">
+														<f:header>
+															<f:DynamicPageHeader id="idDynamicPageHeader--{path:'contentTabs>Core.LongDescription/String'}" pinnable="true"
+																class="sapUiNoContentPadding">
+																<f:content>
+																	<template:repeat list="{tempProps>/IconTabBarTable}" var="tableDetails">
+																		<template:if test="{:= (${contentTabs>Core.Description/String} === ${tableDetails>tabName})}">
+																			<smartFilterBar:SmartFilterBar id="idSmartFilter--{path:'contentTabs>Core.LongDescription/String'}"
+																				persistencyKey="com.evorait.evosuite.evoresource.ResourceGroupFilterbar" entitySet="{:= ${tableDetails>entitySet}}" showClearButton="true"
+																				useToolbar="true" liveMode="true">
+																				<smartFilterBar:controlConfiguration>
+																					<core:ExtensionPoint name="FilterExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'tableDetails>entitySet'}|ControlConfiguration"/>
+																				</smartFilterBar:controlConfiguration>
+																				<smartFilterBar:groupConfiguration>
+																					<core:ExtensionPoint name="FilterExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'tableDetails>entitySet'}|GroupConfiguration"/>
+																				</smartFilterBar:groupConfiguration>
+																			</smartFilterBar:SmartFilterBar>
+																		</template:if>
+																	</template:repeat>
+																</f:content>
+															</f:DynamicPageHeader>
+														</f:header>
+														<f:content>
+															<template:repeat list="{tempProps>/IconTabBarTable}" var="tableDetails">
+																<template:if test="{:= (${contentTabs>Core.Description/String} === ${tableDetails>tabName})}">
+																	<smartTable:SmartTable header="{:= ${tableDetails>header}}" id="idSmartTable--{path:'contentTabs>Core.LongDescription/String'}"
+																		smartFilterId="idSmartFilter--{path:'contentTabs>Core.LongDescription/String'}" entitySet="{:= ${tableDetails>entitySet}}"
+																		enableAutoBinding="true" tableType="ResponsiveTable" demandPopin="true" useTablePersonalisation="false" useExportToExcel="false"
+																		requestAtLeastFields="{:= ${tableDetails>requestAtLeastFields}}" beforeRebindTable="onBeforeRebindSmartTable">
+																		<smartTable:customToolbar>
+																			<Toolbar>
+																				<ToolbarSpacer/>
+																				<core:ExtensionPoint name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'tableDetails>entitySet'}|CustomToolbar"/>
+																			</Toolbar>
+																		</smartTable:customToolbar>
+																		<Table id="idCustomTable--{path:'contentTabs>Core.LongDescription/String'}">
+																			<columns>
+																				<core:ExtensionPoint name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'tableDetails>entitySet'}|CustomColumn"/>
+																			</columns>
+																			<items>
+																				<ColumnListItem>
+																					<cells>
+																						<core:ExtensionPoint name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'tableDetails>entitySet'}|CustomCell"/>
+																					</cells>
+																				</ColumnListItem>
+																			</items>
+																			<dragDropConfig>
+																				<dnd:DragInfo groupName="resourceGroup" sourceAggregation="items" dragStart="onResourceGroupDragStart" dragEnd="onResourceGroupDragEnd"/>
+																			</dragDropConfig>
+																		</Table>
+																		<smartTable:customData>
+																			<core:CustomData key="isGroup" value="{path:'tableDetails>isGroup'}"/>
+																			<core:CustomData key="groupProperty" value="{path:'tableDetails>groupProperty'}"/>
+																		</smartTable:customData>
+																	</smartTable:SmartTable>
+																</template:if>
+															</template:repeat>
+														</f:content>
+													</f:DynamicPage>
+												</template:with>
+											</content>
+										</IconTabFilter>
+									</template:repeat>
+								</template:with>
+							</items>
+						</IconTabBar>
+					</template:with>
+				</template:alias>
+			</Page>
 		</template:alias>
 	</template:alias>
 </mvc:View>

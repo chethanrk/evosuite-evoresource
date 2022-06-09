@@ -386,6 +386,28 @@
 						</PropertyValue>
 					</Record>
 				</Annotation>
+				<Annotation Term="UI.Facets" Qualifier="CustomRightViewTabs">
+					<Collection>
+						<Record Type="UI.ReferenceFacet">
+							<PropertyValue Property="Target" AnnotationPath="@UI.LineItem"/>
+							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Groups"/>
+							<Annotation Term="Core.Description" String="ResourceGroup"/>
+							<Annotation Term="Core.LongDescription" String="ResourceGroup"/>
+						</Record>
+						<Record Type="UI.ReferenceFacet">
+							<PropertyValue Property="Target" AnnotationPath="@UI.LineItem"/>
+							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Shifts"/>
+							<Annotation Term="Core.Description" String="Shift"/>
+							<Annotation Term="Core.LongDescription" String="Shift"/>
+						</Record>
+						<Record Type="UI.ReferenceFacet">
+							<PropertyValue Property="Target" AnnotationPath="@UI.LineItem"/>
+							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Time Allocations"/>
+							<Annotation Term="Core.Description" String="TimeAllocation"/>
+							<Annotation Term="Core.LongDescription" String="TimeAllocation"/>
+						</Record>
+					</Collection>
+				</Annotation>
 			</Annotations>
 			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.Shift">
 				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">

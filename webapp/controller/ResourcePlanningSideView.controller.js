@@ -25,7 +25,7 @@ sap.ui.define([
 						sViewName = "com.evorait.evosuite.evoresource.view.templates.ResourcePlanSideTab#ResourcePlanSideIconTab";
 						// sEntitySet = "GanttResourceHierarchySet";
 						//get annotation line items
-						// this._getLineItems(sEntitySet);
+						this._setIconTabBarPageInfo();
 						this._onRouteMatched(oEvent, sViewName, sEntitySet);
 					}
 				}.bind(this));
@@ -36,8 +36,15 @@ sap.ui.define([
 			this.getModel().metadataLoaded().then(function () {
 				// var sPath = this.getEntityPath(sEntitySet, mParams);
 				//get template and create views
-				this.insertTemplateFragment(null, sViewName, "idPageResourcePlanningSideWrapper", this._afterBindSuccess.bind(this));
+				this.insertTemplateFragment("/ResourceGroupSet", sViewName, "idPageResourcePlanningSideWrapper", this._afterBindSuccess.bind(this));
 			}.bind(this));
+		},
+		
+		_setIconTabBarPageInfo: function () {
+			this.getModel("templateProperties").setProperty("/annotationPath", {
+				entitySet: "ResourceGroupSet",
+				path: "com.sap.vocabularies.UI.v1.Facets#CustomRightViewTabs"
+			});
 		},
 
 		/**
