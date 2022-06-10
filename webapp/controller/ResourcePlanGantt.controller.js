@@ -208,24 +208,54 @@ sap.ui.define([
 		},
 
 		onShapeDrop: function (oEvent) {
-			debugger
-			var sShapeId = oEvent.getParameter("lastDraggedShapeUid"),
-				oShapeInfo = Utility.parseUid(sShapeId),
-				oTargetShape = oEvent.getParameter("targetShape"),
-				oStartTime = oTargetShape.getProperty("time"),
-				oEndTime = oTargetShape.getProperty("endTime"),
-				sGuid = oShapeInfo.shapeId,
-				oFoundData = [],
+			this.changeShapeDate(oEvent);
+
+		},
+		onShapeResize: function (oEvent) {
+			this.changeShapeDate(oEvent);
+		},
+
+		changeShapeDate: function (oEvent) {
+			var sShapeId,
+				oShapeInfo,
+				oTargetShape,
+				oStartTime,
+				oEndTime,
+				sGuid,
+				aFoundData = [],
+				sOldDataPath,
+				oOldData = [],
 				oAssignment = {};
-				oFoundData = this._getChildrenDataByKey("Guid",sGuid, null);
-				
-				if(oFoundData){
-					oFoundData.forEach(function(sPath){
-						oAssignment = this.getModel("ganttPlanningModel").getProperty(sPath);
-						oAssignment.StartDate = oStartTime;
-						oAssignment.EndDate = oEndTime;
-					}.bind(this));
-				}
+
+			if (oEvent.getId() === 'shapeDrop') {
+				sShapeId = oEvent.getParameter("lastDraggedShapeUid");
+				oShapeInfo = Utility.parseUid(sShapeId);
+				oTargetShape = oEvent.getParameter("targetShape");
+				oStartTime = oTargetShape.getProperty("time");
+				oEndTime = oTargetShape.getProperty("endTime");
+			} else if (oEvent.getId() === 'shapeResize') {
+				sShapeId = oEvent.getParameter("shapeUid");
+				oShapeInfo = Utility.parseUid(sShapeId);
+				oStartTime = oEvent.getParameter("newTime")[0];
+				oEndTime = oEvent.getParameter("newTime")[1];
+			}
+			sGuid = oShapeInfo.shapeId;
+			aFoundData = this._getChildrenDataByKey("Guid", sGuid, null);
+			sOldDataPath = this._getChildDataByKey("Guid", sGuid, null);
+			oOldData = deepClone(sOldDataPath.oData);
+			if (aFoundData) {
+				aFoundData.forEach(function (sPath) {
+					oAssignment = this.getModel("ganttPlanningModel").getProperty(sPath);
+					oAssignment.StartDate = oStartTime;
+					oAssignment.EndDate = oEndTime;
+				}.bind(this));
+			}
+			this.getModel("ganttPlanningModel").refresh();
+			
+			
+			this.oPlanningModel.setProperty("/tempData/popover",oAssignment);
+			this.oPlanningModel.setProperty("/tempData/oldPopoverData",oOldData);
+			this._validateAssignment();
 		},
 		/**
 		 * Called to open ShapeChangePopover
