@@ -837,7 +837,9 @@ sap.ui.define([
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
-			this._oPlanningPopover.close();
+			if(this._oPlanningPopover){
+				this._oPlanningPopover.close();
+			}
 			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 		},
 

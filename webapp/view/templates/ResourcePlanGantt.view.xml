@@ -37,7 +37,7 @@
 										</gnt2:content>
 									</gnt2:ContainerToolbar>
 								</gnt2:toolbar>
-								<gnt2:GanttChartWithTable id="idResourcePlanGanttChartTable" shapeSelectionMode="Single" shapePress="onShapePress" ghostAlignment="Start"
+								<gnt2:GanttChartWithTable id="idResourcePlanGanttChartTable" shapeSelectionMode="Single" shapeDoubleClick="onShapePress" ghostAlignment="Start"
 									adhocLineLayer="Bottom" nowLineInUTC="false" shapeMouseEnter="onShapeMouseEnter" shapeDrop="onShapeDrop" shapeResize="onShapeResize"
 									shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}" visibleHorizonUpdate="onVisibleHorizonUpdate">
 									<gnt2:axisTimeStrategy>
