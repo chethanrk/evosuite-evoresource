@@ -1,21 +1,30 @@
 {
 	"d": {
 		"results": [{
-			"ShiftGuid": "0AA10FE57E901EDB979391C3E9F615A6",
-			"ShiftName":"Morning Shift",
-			"StartTime": "06:00",
-			"EndTime": "14:00"
+			"TemplateId": "0AA10FE57E901EDB979391C3E9F615A6",
+			"TemplateDesc": "Morning Shift",
+			"GroupId": "001",
+			"ScheduleId": "001",
+			"ScheduleIdDesc": "Morning Shift",
+			"FromTime": "",
+			"ToTime": ""
 		}, {
 
-			"ShiftGuid": "0AA10FE57E901EDB979391C3E9F615A3",
-			"ShiftName":"Evening Shift",
-			"StartTime": "14:00",
-			"EndTime": "22:00"
-		},{
-			"ShiftGuid": "0AA10FE57E901EDB979391C3E9F615A4",
-			"ShiftName":"Night Shift",
-			"StartTime": "22:00",
-			"EndTime": "06:00"
+			"TemplateId": "0AA10FE57E901EDB979391C3E9F615A2",
+			"TemplateDesc": "Morning Shift",
+			"GroupId": "001",
+			"ScheduleId": "001",
+			"ScheduleIdDesc": "Evening Shift",
+			"FromTime": "",
+			"ToTime": ""
+		}, {
+			"TemplateId": "0AA10FE57E901EDB979391C3E9F615A3",
+			"TemplateDesc": "Morning Shift",
+			"GroupId": "001",
+			"ScheduleId": "001",
+			"ScheduleIdDesc": "Night Shift",
+			"FromTime": "",
+			"ToTime": ""
 		}]
 	}
 }

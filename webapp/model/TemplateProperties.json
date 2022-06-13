@@ -40,7 +40,7 @@
 		"isGroup": "",
 		"groupProperty": ""
 	}, {
-		"tabName": "TimeAllocation",
+		"tabName": "TimeAllocationSet",
 		"lineItemQualifier": "",
 		"presentationVariantQualifier": "",
 		"header": "{i18n>xtit.timeallocation}",

@@ -61,15 +61,15 @@
 			</EntityType>
 			<EntityType Name="Shift" sap:content-version="1">
 				<Key>
-					<PropertyRef Name="ShiftGuid"/>
+					<PropertyRef Name="TemplateId"/>
 				</Key>
-				<Property Name="ShiftGuid" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="Shift GUID" sap:creatable="false"
-					sap:updatable="false" sap:filterable="false"/>
-				<Property Name="ShiftName" Type="Edm.String" MaxLength="100" sap:label="Shift" sap:creatable="false" sap:updatable="false"
-					sap:filterable="true"/>
-				<Property Name="StartTime" Type="Edm.String" MaxLength="12" sap:label="Start Time" sap:creatable="false" sap:updatable="false"
-					sap:filterable="true"/>
-				<Property Name="EndTime" Type="Edm.String" MaxLength="12" sap:label="End Time" sap:creatable="false" sap:updatable="true"/>
+				<Property Name="TemplateId" Type="Edm.String" Nullable="false" MaxLength="4" sap:label="Template Id"/>
+				<Property Name="TemplateDesc" Type="Edm.String" Nullable="false" MaxLength="100" sap:label="Temp Description"/>
+				<Property Name="GroupId" Type="Edm.String" Nullable="false" MaxLength="4" sap:label="Group Id"/>
+				<Property Name="ScheduleId" Type="Edm.String" Nullable="false" MaxLength="4" sap:label="Schedule Id"/>
+				<Property Name="ScheduleIdDesc" Type="Edm.String" Nullable="false" MaxLength="100" sap:label="Schedule Desc"/>
+				<Property Name="FromTime" Type="Edm.Time" Nullable="false" Precision="0" sap:label="Shift Start Time"/>
+				<Property Name="ToTime" Type="Edm.Time" Nullable="false" Precision="0" sap:label="Shift End Time"/>
 			</EntityType>
 			<EntityType Name="TimeAllocation" sap:content-version="1">
 				<Key>
@@ -386,25 +386,25 @@
 						</PropertyValue>
 					</Record>
 				</Annotation>
-				<Annotation Term="UI.Facets" Qualifier="CustomRightViewTabs">
+				<Annotation Term="UI.Facets" Qualifier="EntityTabs">
 					<Collection>
 						<Record Type="UI.ReferenceFacet">
 							<PropertyValue Property="Target" AnnotationPath="@UI.LineItem"/>
 							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Groups"/>
-							<Annotation Term="Core.Description" String="ResourceGroup"/>
-							<Annotation Term="Core.LongDescription" String="ResourceGroup"/>
+							<Annotation Term="Core.Description" String="Table"/>
+							<Annotation Term="Core.LongDescription" String="ResourceGroupSet"/>
 						</Record>
 						<Record Type="UI.ReferenceFacet">
 							<PropertyValue Property="Target" AnnotationPath="@UI.LineItem"/>
 							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Shifts"/>
-							<Annotation Term="Core.Description" String="Shift"/>
-							<Annotation Term="Core.LongDescription" String="Shift"/>
+							<Annotation Term="Core.Description" String="Table"/>
+							<Annotation Term="Core.LongDescription" String="ShiftSet"/>
 						</Record>
 						<Record Type="UI.ReferenceFacet">
 							<PropertyValue Property="Target" AnnotationPath="@UI.LineItem"/>
-							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Time Allocations"/>
-							<Annotation Term="Core.Description" String="TimeAllocation"/>
-							<Annotation Term="Core.LongDescription" String="TimeAllocation"/>
+							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Time Allocaitons"/>
+							<Annotation Term="Core.Description" String="Table"/>
+							<Annotation Term="Core.LongDescription" String="TimeAllocationSet"/>
 						</Record>
 					</Collection>
 				</Annotation>
@@ -413,15 +413,15 @@
 				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
 					<Collection>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
-							<PropertyValue Property="Value" Path="ShiftName"/>
+							<PropertyValue Property="Value" Path="ScheduleIdDesc"/>
 							<PropertyValue Property="Position" Int="1"/>
 						</Record>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
-							<PropertyValue Property="Value" Path="StartTime"/>
+							<PropertyValue Property="Value" Path="FromTime"/>
 							<PropertyValue Property="Position" Int="2"/>
 						</Record>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
-							<PropertyValue Property="Value" Path="EndTime"/>
+							<PropertyValue Property="Value" Path="ToTime"/>
 							<PropertyValue Property="Position" Int="3"/>
 						</Record>
 					</Collection>
