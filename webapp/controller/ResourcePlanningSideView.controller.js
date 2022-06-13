@@ -43,7 +43,7 @@ sap.ui.define([
 		_setIconTabBarPageInfo: function () {
 			this.getModel("templateProperties").setProperty("/annotationPath", {
 				entitySet: "ResourceGroupSet",
-				path: "com.sap.vocabularies.UI.v1.Facets#CustomRightViewTabs"
+				path: "com.sap.vocabularies.UI.v1.Facets#EntityTabs"
 			});
 		},
 

@@ -4,7 +4,7 @@
 		"entitySet": "GanttResourceHierarchySetarchySet"
 	},
 	"IconTabBarTable": [{
-		"tabName": "ResourceGroup",
+		"tabName": "ResourceGroupSet",
 		"lineItemQualifier": "",
 		"presentationVariantQualifier": "",
 		"header": "{i18n>xtit.groups}",
@@ -22,7 +22,7 @@
 		"isGroup": "",
 		"groupProperty": ""
 	}, {
-		"tabName": "Shift",
+		"tabName": "ShiftSet",
 		"lineItemQualifier": "",
 		"presentationVariantQualifier": "",
 		"header": "{i18n>xtit.shift}",
@@ -35,7 +35,7 @@
 		"enableAutoBinding": true,
 		"entitySet": "ShiftSet",
 		"tableBindingPath": "",
-		"requestAtLeastFields": "ShiftName,StartTime,EndTime",
+		"requestAtLeastFields": "TemplateId,TemplateDesc,GroupId,ScheduleId,ScheduleIdDesc,FromTime,ToTime",
 		"class": "",
 		"isGroup": "",
 		"groupProperty": ""

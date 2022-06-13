@@ -24,15 +24,15 @@
 																class="sapUiNoContentPadding">
 																<f:content>
 																	<template:repeat list="{tempProps>/IconTabBarTable}" var="tableDetails">
-																		<template:if test="{:= (${contentTabs>Core.Description/String} === ${tableDetails>tabName})}">
+																		<template:if test="{:= (${contentTabs>Core.LongDescription/String} === ${tableDetails>tabName})}">
 																			<smartFilterBar:SmartFilterBar id="idSmartFilter--{path:'contentTabs>Core.LongDescription/String'}"
-																				persistencyKey="com.evorait.evosuite.evoresource.ResourceGroupFilterbar" entitySet="{:= ${tableDetails>entitySet}}" showClearButton="true"
+																				persistencyKey="com.evorait.evosuite.evoresource.ResourceGroupFilterbar" entitySet="{:= ${contentTabs>Core.LongDescription/String}}" showClearButton="true"
 																				useToolbar="true" liveMode="true">
 																				<smartFilterBar:controlConfiguration>
-																					<core:ExtensionPoint name="FilterExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'tableDetails>entitySet'}|ControlConfiguration"/>
+																					<core:ExtensionPoint name="FilterExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|ControlConfiguration"/>
 																				</smartFilterBar:controlConfiguration>
 																				<smartFilterBar:groupConfiguration>
-																					<core:ExtensionPoint name="FilterExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'tableDetails>entitySet'}|GroupConfiguration"/>
+																					<core:ExtensionPoint name="FilterExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|GroupConfiguration"/>
 																				</smartFilterBar:groupConfiguration>
 																			</smartFilterBar:SmartFilterBar>
 																		</template:if>
@@ -42,25 +42,25 @@
 														</f:header>
 														<f:content>
 															<template:repeat list="{tempProps>/IconTabBarTable}" var="tableDetails">
-																<template:if test="{:= (${contentTabs>Core.Description/String} === ${tableDetails>tabName})}">
-																	<smartTable:SmartTable header="{:= ${tableDetails>header}}" id="idSmartTable--{path:'contentTabs>Core.LongDescription/String'}"
-																		smartFilterId="idSmartFilter--{path:'contentTabs>Core.LongDescription/String'}" entitySet="{:= ${tableDetails>entitySet}}"
+																<template:if test="{:= (${contentTabs>Core.LongDescription/String} === ${tableDetails>tabName})}">
+																	<smartTable:SmartTable header="{path:'contentTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" id="idSmartTable--{path:'contentTabs>Core.LongDescription/String'}"
+																		smartFilterId="idSmartFilter--{path:'contentTabs>Core.LongDescription/String'}" entitySet="{:= ${contentTabs>Core.LongDescription/String}}"
 																		enableAutoBinding="true" tableType="ResponsiveTable" demandPopin="true" useTablePersonalisation="false" useExportToExcel="false"
 																		requestAtLeastFields="{:= ${tableDetails>requestAtLeastFields}}" beforeRebindTable="onBeforeRebindSmartTable">
 																		<smartTable:customToolbar>
 																			<Toolbar>
 																				<ToolbarSpacer/>
-																				<core:ExtensionPoint name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'tableDetails>entitySet'}|CustomToolbar"/>
+																				<core:ExtensionPoint name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|CustomToolbar"/>
 																			</Toolbar>
 																		</smartTable:customToolbar>
 																		<Table id="idCustomTable--{path:'contentTabs>Core.LongDescription/String'}">
 																			<columns>
-																				<core:ExtensionPoint name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'tableDetails>entitySet'}|CustomColumn"/>
+																				<core:ExtensionPoint name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|CustomColumn"/>
 																			</columns>
 																			<items>
 																				<ColumnListItem>
 																					<cells>
-																						<core:ExtensionPoint name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'tableDetails>entitySet'}|CustomCell"/>
+																						<core:ExtensionPoint name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|CustomCell"/>
 																					</cells>
 																				</ColumnListItem>
 																			</items>
