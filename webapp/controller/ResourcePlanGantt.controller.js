@@ -251,10 +251,9 @@ sap.ui.define([
 				}.bind(this));
 			}
 			this.getModel("ganttPlanningModel").refresh();
-			
-			
-			this.oPlanningModel.setProperty("/tempData/popover",oAssignment);
-			this.oPlanningModel.setProperty("/tempData/oldPopoverData",oOldData);
+
+			this.oPlanningModel.setProperty("/tempData/popover", oAssignment);
+			this.oPlanningModel.setProperty("/tempData/oldPopoverData", oOldData);
 			this._validateAssignment();
 		},
 		/**
@@ -837,7 +836,7 @@ sap.ui.define([
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
-			if(this._oPlanningPopover){
+			if (this._oPlanningPopover) {
 				this._oPlanningPopover.close();
 			}
 			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
@@ -921,7 +920,10 @@ sap.ui.define([
 				if (this._setChangeIndicator(oData)) {
 					this._validateForChange(oData);
 				}
-				this._oPlanningPopover.close();
+				if (this._oPlanningPopover) {
+					this._oPlanningPopover.close();
+				}
+
 			}
 		},
 
@@ -933,7 +935,9 @@ sap.ui.define([
 		_markAndClosePlanningPopover: function (oData) {
 			oData.isTemporary = false;
 			this._markAsPlanningChange(oData, true);
-			this._oPlanningPopover.close();
+			if (this._oPlanningPopover) {
+				this._oPlanningPopover.close();
+			}
 		},
 
 		/**
