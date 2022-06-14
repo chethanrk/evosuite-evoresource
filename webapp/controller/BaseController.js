@@ -901,6 +901,14 @@ sap.ui.define([
 				},
 				params: mParams
 			});
-		}
+		},
+		/**
+		 * Function will validtate if date is past, if date is past return true or else return false
+		 * @param oDate - date object to be checked
+		 */
+		_isDatePast: function (oDate) {
+			var isDatePast = moment(oDate).isBefore(new Date());
+			return isDatePast;
+		},
 	});
 });

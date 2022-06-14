@@ -231,13 +231,17 @@ sap.ui.define([
 				sShapeId = oEvent.getParameter("lastDraggedShapeUid");
 				oShapeInfo = Utility.parseUid(sShapeId);
 				oTargetShape = oEvent.getParameter("targetShape");
-				oStartTime = oTargetShape.getProperty("time");
-				oEndTime = oTargetShape.getProperty("endTime");
+				oStartTime = oTargetShape ? oTargetShape.getProperty("time") : null;
+				oEndTime = oTargetShape ? oTargetShape.getProperty("endTime") : null;
 			} else if (oEvent.getId() === 'shapeResize') {
 				sShapeId = oEvent.getParameter("shapeUid");
 				oShapeInfo = Utility.parseUid(sShapeId);
 				oStartTime = oEvent.getParameter("newTime")[0];
 				oEndTime = oEvent.getParameter("newTime")[1];
+			}
+			//validate if date is past
+			if (!oStartTime || !oEndTime || this._isDatePast(oStartTime) || this._isDatePast(oEndTime)) {
+				return;
 			}
 			sGuid = oShapeInfo.shapeId;
 			aFoundData = this._getChildrenDataByKey("Guid", sGuid, null);
@@ -907,6 +911,7 @@ sap.ui.define([
 		 */
 		_validateAssignment: function () {
 			var oData = this.oPlanningModel.getProperty("/tempData/popover");
+
 			//validation for the duplicates
 			if (this._validateDuplicateAsigment()) {
 				return;
