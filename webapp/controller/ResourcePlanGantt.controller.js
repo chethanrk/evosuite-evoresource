@@ -839,6 +839,7 @@ sap.ui.define([
 					this.openDemandDialog();
 				} else {
 					oAssignItem.isTemporary = false;
+					oAssignItem.isNew = true;
 					this._markAsPlanningChange(oPopoverData, true);
 					this._markAsPlanningDelete(oPopoverData);
 				}

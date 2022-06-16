@@ -172,16 +172,18 @@ sap.ui.define([
 		 * to get utc date object
 		 */
 
-		convertFromUTCDate: function (oDate) {
+		convertFromUTCDate: function (oDate,isNew) {
 			if (!oDate) {
 				return null;
 			}
 			var offsetMs = new Date().getTimezoneOffset() * 60 * 1000;
-
+			if(isNew){
+				return oDate
+			}
 			return new Date(oDate.getTime() + offsetMs);
 		},
 
-		convertToUTCDate: function (oDate) {
+		convertToUTCDate: function (oDate, isNew) {
 			if (!oDate) {
 				return null;
 			}
@@ -196,7 +198,8 @@ sap.ui.define([
 			var oDate = Format.abapTimestampToDate(sTimestamp);
 			var offsetMs = new Date().getTimezoneOffset() * 60 * 1000;
 
-			return new Date(oDate.getTime() - offsetMs);
+			// return new Date(oDate.getTime() - offsetMs);
+			return oDate;
 		},
 
 		/**

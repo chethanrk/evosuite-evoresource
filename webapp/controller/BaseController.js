@@ -385,6 +385,8 @@ sap.ui.define([
 							groupId: "batchSave"
 						},
 						obj = {};
+						oRowData.StartDate = Formatter.convertToUTCDate(oRowData.StartDate);                      
+						oRowData.EndDate = Formatter.convertToUTCDate(oRowData.EndDate);                      
 					//collect all assignment properties who allowed for create
 					this.getModel().getMetaModel().loaded().then(function () {
 						var oMetaModel = this.getModel().getMetaModel(),
