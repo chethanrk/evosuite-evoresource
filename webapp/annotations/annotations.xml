@@ -1,51 +1,32 @@
 <edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
-	<edmx:Reference Uri="/sap/bc/ui5_ui5/ui2/ushell/resources/sap/ushell/components/factsheet/vocabularies/UI.xml">
+	<edmx:Reference Uri="/sap/opu/odata/EVORA/ER_MAIN_SRV/$metadata">
+		<edmx:Include Alias="Metadata" Namespace="com.evorait.evoresource"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="https://wiki.scn.sap.com/wiki/download/attachments/448470968/UI.xml?api=v2">
 		<edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
 	</edmx:Reference>
-	<edmx:Reference Uri="http://docs.oasis-open.org/odata/odata/v4.0/errata02/os/complete/vocabularies/Core.xml">
-		<edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
-	</edmx:Reference>
-	<edmx:Reference Uri="http://docs.oasis-open.org/odata/odata/v4.0/cs01/vocabularies/Org.OData.Timeline.V1.xml">
-		<edmx:Include Alias="Timeline" Namespace="com.sap.vocabularies.Timeline.v1"/>
-	</edmx:Reference>
-	<edmx:Reference Uri="/sap/opu/odata/EVORA/ER_MAIN_SRV/$metadata">
-		<edmx:Include Alias="Metadata" Namespace="com.evorait.evoresourc"/>
-	</edmx:Reference>
 	<edmx:DataServices>
-		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.evorait.evoresourc">
-			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.GanttResourceHierarchy/Description">
-				<Annotation Term="com.sap.vocabularies.Common.v1.Label" String="Description"/>
-			</Annotations>
-			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.GanttResourceHierarchy">
-				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
+		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="evoresource.annotations.annotations.com.evorait.evoresource">
+			<Annotations Target="Metadata.Shift">
+				<Annotation Term="UI.SelectionFields">
 					<Collection>
-						<Record Type="com.sap.vocabularies.UI.v1.DataField">
-							<PropertyValue Property="Value" Path="Description"/>
-							<PropertyValue Property="Position" Int="1"/>
+						<PropertyPath>ScheduleIdDesc</PropertyPath>
+					</Collection>
+				</Annotation>
+				<Annotation Term="UI.LineItem">
+					<Collection>
+						<Record Type="UI.DataField">
+							<PropertyValue Property="Value" Path="ScheduleIdDesc"/>
+						</Record>
+						<Record Type="UI.DataField">
+							<PropertyValue Property="Value" Path="FromTime"/>
+						</Record>
+						<Record Type="UI.DataField">
+							<PropertyValue Property="Value" Path="ToTime"/>
 						</Record>
 					</Collection>
 				</Annotation>
 			</Annotations>
-			<!--<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.ResourceGroup">
-				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
-					<Collection>
-						<Record Type="com.sap.vocabularies.UI.v1.DataField">
-							<PropertyValue Property="Value" Path="ResourceGroupGuid"/>
-							<PropertyValue Property="Position" Int="1"/>
-						</Record>
-						<Record Type="com.sap.vocabularies.UI.v1.DataField">
-							<PropertyValue Property="Value" Path="ResourceGroupUnitId"/>
-							<PropertyValue Property="Position" Int="2"/>
-						</Record>
-					</Collection>
-				</Annotation>
-				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
-					<Collection>
-						<PropertyPath>ResourceGroupDesc</PropertyPath>
-						<PropertyPath>ResourceGroupUnitDesc</PropertyPath>
-					</Collection>
-				</Annotation>
-			</Annotations>-->
 		</Schema>
 	</edmx:DataServices>
 </edmx:Edmx>

@@ -409,7 +409,7 @@
 					</Collection>
 				</Annotation>
 			</Annotations>
-			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.Shift">
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.TimeAllocation">
 				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
 					<Collection>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
@@ -423,31 +423,6 @@
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
 							<PropertyValue Property="Value" Path="ToTime"/>
 							<PropertyValue Property="Position" Int="3"/>
-						</Record>
-					</Collection>
-				</Annotation>
-				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
-					<Collection>
-						<PropertyPath>ShiftName</PropertyPath>
-					</Collection>
-				</Annotation>
-				<Annotation Term="com.sap.vocabularies.UI.v1.PresentationVariant">
-					<Record Type="com.sap.vocabularies.UI.v1.PresentationVariantType">
-						<PropertyValue Property="SortOrder">
-							<Collection/>
-						</PropertyValue>
-						<PropertyValue Property="RequestAtLeast">
-							<Collection/>
-						</PropertyValue>
-					</Record>
-				</Annotation>
-			</Annotations>
-			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.TimeAllocation">
-				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
-					<Collection>
-						<Record Type="com.sap.vocabularies.UI.v1.DataField">
-							<PropertyValue Property="Value" Path="TimeAllocationName"/>
-							<PropertyValue Property="Position" Int="1"/>
 						</Record>
 					</Collection>
 				</Annotation>
