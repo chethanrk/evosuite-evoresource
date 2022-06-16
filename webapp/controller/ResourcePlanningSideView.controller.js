@@ -23,23 +23,32 @@ sap.ui.define([
 				this.getOwnerComponent().oTemplatePropsProm.then(function () {
 					if (sRouteName === "ResourcePlanning") {
 						sViewName = "com.evorait.evosuite.evoresource.view.templates.ResourcePlanSideTab#ResourcePlanSideIconTab";
-						// sEntitySet = "GanttResourceHierarchySet";
-						//get annotation line items
 						this._setIconTabBarPageInfo();
 						this._onRouteMatched(oEvent, sViewName, sEntitySet);
 					}
 				}.bind(this));
 			}.bind(this));
 		},
+		
+		/**
+		 * Called everytime when this view get naviagte
+		 * @param {object} oEvent
+		 * @param {string} sViewName - view name which is passed to TemplateRenderer
+		 * @param {string} sEntitySet - entityset name which is passed to template renderer to bind to view
+		 * @param {object} mParams - paramter to be added along with entityset to bind to view
+		 */
 		_onRouteMatched: function (oEvent, sViewName, sEntitySet, mParams) {
 			this.oViewModel.setProperty("/busy", true);
 			this.getModel().metadataLoaded().then(function () {
-				// var sPath = this.getEntityPath(sEntitySet, mParams);
 				//get template and create views
 				this.insertTemplateFragment("/ResourceGroupSet", sViewName, "idPageResourcePlanningSideWrapper", this._afterBindSuccess.bind(this));
 			}.bind(this));
 		},
 		
+		/**
+		 * Called to set entityset name and annotation to templateproperties json model
+		 * 
+		 */
 		_setIconTabBarPageInfo: function () {
 			this.getModel("templateProperties").setProperty("/annotationPath", {
 				entitySet: "ResourceGroupSet",
