@@ -225,14 +225,18 @@ sap.ui.define([
 				aFoundData = [],
 				sOldDataPath,
 				oOldData = [],
-				oAssignment = {};
+				oAssignment = {},
+				oDraggedShapeDates,
+				dateDifference;
 
 			if (oEvent.getId() === 'shapeDrop') {
 				sShapeId = oEvent.getParameter("lastDraggedShapeUid");
 				oShapeInfo = Utility.parseUid(sShapeId);
 				oTargetShape = oEvent.getParameter("targetShape");
+				oDraggedShapeDates = oEvent.getParameter("draggedShapeDates")[sShapeId];
+				dateDifference = moment(oDraggedShapeDates["endTime"]).diff(oDraggedShapeDates["time"]);
 				oStartTime = oTargetShape ? oTargetShape.getProperty("time") : null;
-				oEndTime = oTargetShape ? oTargetShape.getProperty("endTime") : null;
+				oEndTime = oStartTime ? new Date(moment(oStartTime).add(dateDifference)) : null;
 			} else if (oEvent.getId() === 'shapeResize') {
 				sShapeId = oEvent.getParameter("shapeUid");
 				oShapeInfo = Utility.parseUid(sShapeId);
