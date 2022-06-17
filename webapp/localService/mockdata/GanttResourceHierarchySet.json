@@ -1,105 +1,1648 @@
 {
 	"d": {
 		"results": [{
-			"NodeId": "0AA10FE57E901EDB83D587FE20C3C1F9",
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0A51491BD5A01EE8A5910DE06717D060')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0A51491BD5A01EE8A5910DE06717D060')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0A51491BD5A01EE8A5910DE06717D060",
 			"ParentNodeId": "",
-			"HierarchyLevel": 0,
 			"Drillstate": "collapsed",
-			"Description": "Michaela Schlage",
-			"NodeType": "RESOURCE",
-			"StartDate": null,
-			"StartTime": "PT00H00M00S",
-			"EndDate": null,
-			"EndTime": "PT00H00M00S",
 			"ResourceGroupGuid": "",
-			"ResourceGuid": "0AA10FE57E901EDB83D587FE20C3C1F9",
+			"ResourceGuid": "0A51491BD5A01EE8A5910DE06717D060",
 			"ResourceGroupUnitId": "",
-			"ChildCount": 0,
-			"AssignmentSet": {}
-		}, {
-			"NodeId": "0AA10FE57E901EE9BBCE7C317649FB0D",
-			"ParentNodeId": "",
-			"HierarchyLevel": 0,
-			"Drillstate": "collapsed",
+			"ResourceGroupId": "",
 			"Description": "Rahul Inamadar",
+			"HierarchyLevel": 0,
 			"NodeType": "RESOURCE",
 			"StartDate": null,
-			"StartTime": "PT00H00M00S",
 			"EndDate": null,
-			"EndTime": "PT00H00M00S",
-			"ResourceGroupGuid": "",
-			"ResourceGuid": "0AA10FE57E901EE9BBCE7C317649FB0D",
-			"ResourceGroupUnitId": "",
 			"ChildCount": 0,
-			"AssignmentSet": {
-				"results": [
-
-				]
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": [{
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EECB8E2150ED893E75B')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EECB8E2150ED893E75B')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EECB8E2150ED893E75B",
+					"StartDate": "/Date(1654560000000)/",
+					"EndDate": "/Date(1654646399000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+					"ResourceGuid": "0A51491BD5A01EE8A5910DE06717D060",
+					"NODE_ID": "0A51491BD5A01EE8A5910DE06717D060//0AA10FE57E901EDB979391C3E9F615A6",
+					"PARENT_NODE_ID": "0A51491BD5A01EE8A5910DE06717D060",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "RES_GRP",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#DE3163",
+					"DESCRIPTION": "Resource New Team"
+				}, {
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB9ABB98E8AD48B80')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB9ABB98E8AD48B80')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EDCB9ABB98E8AD48B80",
+					"StartDate": "/Date(1654732800000)/",
+					"EndDate": "/Date(1654819199000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+					"ResourceGuid": "0A51491BD5A01EE8A5910DE06717D060",
+					"NODE_ID": "0A51491BD5A01EE8A5910DE06717D060//0AA10FE57E901EDB979391C3E9F615A6",
+					"PARENT_NODE_ID": "0A51491BD5A01EE8A5910DE06717D060",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "RES_GRP",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#DE3163",
+					"DESCRIPTION": "Resource New Team"
+				}, {
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EECB9C327CA655C687A')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EECB9C327CA655C687A')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EECB9C327CA655C687A",
+					"StartDate": "/Date(1654905600000)/",
+					"EndDate": "/Date(1654991999000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+					"ResourceGuid": "0A51491BD5A01EE8A5910DE06717D060",
+					"NODE_ID": "0A51491BD5A01EE8A5910DE06717D060//0AA10FE57E901EDB979391C3E9F615A6",
+					"PARENT_NODE_ID": "0A51491BD5A01EE8A5910DE06717D060",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "RES_GRP",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#DE3163",
+					"DESCRIPTION": "Resource New Team"
+				}, {
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EECB9C32883511F687A')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EECB9C32883511F687A')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EECB9C32883511F687A",
+					"StartDate": "/Date(1655078400000)/",
+					"EndDate": "/Date(1655164799000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+					"ResourceGuid": "0A51491BD5A01EE8A5910DE06717D060",
+					"NODE_ID": "0A51491BD5A01EE8A5910DE06717D060//0AA10FE57E901EDB979391C3E9F615A6",
+					"PARENT_NODE_ID": "0A51491BD5A01EE8A5910DE06717D060",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "RES_GRP",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#DE3163",
+					"DESCRIPTION": "Resource New Team"
+				}, {
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EECA58E8CAA9CE8DA85')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EECA58E8CAA9CE8DA85')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EECA58E8CAA9CE8DA85",
+					"StartDate": "/Date(1643673600000)/",
+					"EndDate": "/Date(253402300799000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+					"ResourceGuid": "0A51491BD5A01EE8A5910DE06717D060",
+					"NODE_ID": "0A51491BD5A01EE8A5910DE06717D060//0AA10FE57E901EE9BBCE2297AA435A96",
+					"PARENT_NODE_ID": "0A51491BD5A01EE8A5910DE06717D060",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "EXTERNAL_T",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#CCCCFF",
+					"DESCRIPTION": "External Team"
+				}]
 			}
 		}, {
-			"NodeId": "0AA10FE57E901ED9B7D4F248D20BFB75",
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901ED9B7D4E42EF916DB5F')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901ED9B7D4E42EF916DB5F')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901ED9B7D4E42EF916DB5F",
 			"ParentNodeId": "",
-			"HierarchyLevel": 0,
 			"Drillstate": "collapsed",
-			"Description": "Valerii Dibrov",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901ED9B7D4E42EF916DB5F",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": "Mirco Adamy",
+			"HierarchyLevel": 0,
 			"NodeType": "RESOURCE",
 			"StartDate": null,
-			"StartTime": "PT00H00M00S",
 			"EndDate": null,
-			"EndTime": "PT00H00M00S",
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": [{
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EECB8B7D4E6DA581474')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EECB8B7D4E6DA581474')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EECB8B7D4E6DA581474",
+					"StartDate": "/Date(1654732800000)/",
+					"EndDate": "/Date(1655510399000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+					"ResourceGuid": "0AA10FE57E901ED9B7D4E42EF916DB5F",
+					"NODE_ID": "0AA10FE57E901ED9B7D4E42EF916DB5F//0AA10FE57E901EE9BBCE2297AA435A96",
+					"PARENT_NODE_ID": "0AA10FE57E901ED9B7D4E42EF916DB5F",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "EXTERNAL_T",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#CCCCFF",
+					"DESCRIPTION": "External Team"
+				}]
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901ED9B7D4E42EF916FB5F')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901ED9B7D4E42EF916FB5F')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901ED9B7D4E42EF916FB5F",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
 			"ResourceGroupGuid": "",
-			"ResourceGuid": "0AA10FE57E901ED9B7D4F248D20BFB75",
+			"ResourceGuid": "0AA10FE57E901ED9B7D4E42EF916FB5F",
 			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": "Alex Morgan",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
 			"ChildCount": 0,
-			"AssignmentSet": {}
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": [{
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB9ABBC9221D5AB82')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB9ABBC9221D5AB82')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EDCB9ABBC9221D5AB82",
+					"StartDate": "/Date(1654646400000)/",
+					"EndDate": "/Date(1654732799000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+					"ResourceGuid": "0AA10FE57E901ED9B7D4E42EF916FB5F",
+					"NODE_ID": "0AA10FE57E901ED9B7D4E42EF916FB5F//0AA10FE57E901EE9BBCE2297AA435A96",
+					"PARENT_NODE_ID": "0AA10FE57E901ED9B7D4E42EF916FB5F",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "EXTERNAL_T",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#CCCCFF",
+					"DESCRIPTION": "External Team"
+				}]
+			}
 		}, {
-			"NodeId": "0AA10FE57E901ED9B7D4E42EF916BB5F//0AA10FE57E901EDB83D587FE20C3C1F9",
-			"ParentNodeId": "0AA10FE57E901EDB83D587FE20C3C1F9",
-			"HierarchyLevel": 1,
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC5C763D')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC5C763D')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E716AC5C763D",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E716AC5C763D",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": " DMS",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": [{
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB18AE75DCA50873E')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB18AE75DCA50873E')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EDCB18AE75DCA50873E",
+					"StartDate": "/Date(1650844800000)/",
+					"EndDate": "/Date(1656115199000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+					"ResourceGuid": "0AA10FE57E901EDA9BF0E716AC5C763D",
+					"NODE_ID": "0AA10FE57E901EDA9BF0E716AC5C763D//0AA10FE57E901EDB979391C3E9F615A6",
+					"PARENT_NODE_ID": "0AA10FE57E901EDA9BF0E716AC5C763D",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "RES_GRP",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#DE3163",
+					"DESCRIPTION": "Resource New Team"
+				}]
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC5F163D')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC5F163D')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E716AC5F163D",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E716AC5F163D",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": "Dave Roach",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": [{
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB89322DE51CA8753')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB89322DE51CA8753')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EDCB89322DE51CA8753",
+					"StartDate": "/Date(1654732800000)/",
+					"EndDate": "/Date(1654819199000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+					"ResourceGuid": "0AA10FE57E901EDA9BF0E716AC5F163D",
+					"NODE_ID": "0AA10FE57E901EDA9BF0E716AC5F163D//0AA10FE57E901EE9BBCE2297AA435A96",
+					"PARENT_NODE_ID": "0AA10FE57E901EDA9BF0E716AC5F163D",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "EXTERNAL_T",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#CCCCFF",
+					"DESCRIPTION": "External Team"
+				}]
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC64763D')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC64763D')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E716AC64763D",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E716AC64763D",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": " EMP1",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": []
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC6A763D')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC6A763D')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E716AC6A763D",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E716AC6A763D",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": " FALKP",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": []
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E73B3BF3963D')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E73B3BF3963D')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E73B3BF3963D",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E73B3BF3963D",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": "Karl Kettler",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": []
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E76150A5D63D')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E76150A5D63D')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E76150A5D63D",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E76150A5D63D",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": "Laurin Kraus",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": [{
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB7B48769ECDF8AE6')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB7B48769ECDF8AE6')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EDCB7B48769ECDF8AE6",
+					"StartDate": "/Date(1653609600000)/",
+					"EndDate": "/Date(1661990399000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+					"ResourceGuid": "0AA10FE57E901EDA9BF0E76150A5D63D",
+					"NODE_ID": "0AA10FE57E901EDA9BF0E76150A5D63D//0AA10FE57E901EDB979391C3E9F615A6",
+					"PARENT_NODE_ID": "0AA10FE57E901EDA9BF0E76150A5D63D",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "RES_GRP",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#DE3163",
+					"DESCRIPTION": "Resource New Team"
+				}]
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7D3BC81763D')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7D3BC81763D')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E7D3BC81763D",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E7D3BC81763D",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": " OHMERT",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": []
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED1EF640')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED1EF640')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E7F9ED1EF640",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E7F9ED1EF640",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": "Heinz Chef",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": [{
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB7AFFB5628A8C579')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB7AFFB5628A8C579')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EDCB7AFFB5628A8C579",
+					"StartDate": "/Date(1655337600000)/",
+					"EndDate": "/Date(1655423999000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+					"ResourceGuid": "0AA10FE57E901EDA9BF0E7F9ED1EF640",
+					"NODE_ID": "0AA10FE57E901EDA9BF0E7F9ED1EF640//0AA10FE57E901EE9BBCE2297AA435A96",
+					"PARENT_NODE_ID": "0AA10FE57E901EDA9BF0E7F9ED1EF640",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "EXTERNAL_T",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#CCCCFF",
+					"DESCRIPTION": "External Team"
+				}]
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED255640')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED255640')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E7F9ED255640",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E7F9ED255640",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": "Alison Palm",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": [{
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB18CA87D4CD7E8BF')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB18CA87D4CD7E8BF')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EDCB18CA87D4CD7E8BF",
+					"StartDate": "/Date(1650844800000)/",
+					"EndDate": "/Date(1656115199000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+					"ResourceGuid": "0AA10FE57E901EDA9BF0E7F9ED255640",
+					"NODE_ID": "0AA10FE57E901EDA9BF0E7F9ED255640//0AA10FE57E901EDB979391C3E9F615A6",
+					"PARENT_NODE_ID": "0AA10FE57E901EDA9BF0E7F9ED255640",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "RES_GRP",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#DE3163",
+					"DESCRIPTION": "Resource New Team"
+				}]
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED2FB640')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED2FB640')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E7F9ED2FB640",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E7F9ED2FB640",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": "Frank Peters",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": [{
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDC9A911A6F3D9D2B9F')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDC9A911A6F3D9D2B9F')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EDC9A911A6F3D9D2B9F",
+					"StartDate": "/Date(1642636800000)/",
+					"EndDate": "/Date(1675209599000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+					"ResourceGuid": "0AA10FE57E901EDA9BF0E7F9ED2FB640",
+					"NODE_ID": "0AA10FE57E901EDA9BF0E7F9ED2FB640//0AA10FE57E901EE9BBCE2297AA435A96",
+					"PARENT_NODE_ID": "0AA10FE57E901EDA9BF0E7F9ED2FB640",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "EXTERNAL_T",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#CCCCFF",
+					"DESCRIPTION": "External Team"
+				}]
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED335640')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED335640')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E7F9ED335640",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E7F9ED335640",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": " PICH",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": []
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E9776C6F9640')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E9776C6F9640')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E9776C6F9640",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E9776C6F9640",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": " IDES",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": [{
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB18B9D26A0AF87DF')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB18B9D26A0AF87DF')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EDCB18B9D26A0AF87DF",
+					"StartDate": "/Date(1650844800000)/",
+					"EndDate": "/Date(1656115199000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+					"ResourceGuid": "0AA10FE57E901EDA9BF0E9776C6F9640",
+					"NODE_ID": "0AA10FE57E901EDA9BF0E9776C6F9640//0AA10FE57E901EDB979391C3E9F615A6",
+					"PARENT_NODE_ID": "0AA10FE57E901EDA9BF0E9776C6F9640",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "RES_GRP",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#DE3163",
+					"DESCRIPTION": "Resource New Team"
+				}]
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0EA1002B19640')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0EA1002B19640')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0EA1002B19640",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0EA1002B19640",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": "Arnold Volvo",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": []
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0EA5CAB137640')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0EA5CAB137640')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0EA5CAB137640",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0EA5CAB137640",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": " Kemet Corp",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": []
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDAABFB14E507A16F34')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDAABFB14E507A16F34')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDAABFB14E507A16F34",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDAABFB14E507A16F34",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": "Robb Bond",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": [{
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EECB7D0282372E08F20')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EECB7D0282372E08F20')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EECB7D0282372E08F20",
+					"StartDate": "/Date(1653868800000)/",
+					"EndDate": "/Date(1657238399000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+					"ResourceGuid": "0AA10FE57E901EDAABFB14E507A16F34",
+					"NODE_ID": "0AA10FE57E901EDAABFB14E507A16F34//0AA10FE57E901EE9BBCE2297AA435A96",
+					"PARENT_NODE_ID": "0AA10FE57E901EDAABFB14E507A16F34",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "EXTERNAL_T",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#CCCCFF",
+					"DESCRIPTION": "External Team"
+				}]
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDB84F74D818C7834F3')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDB84F74D818C7834F3')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDB84F74D818C7834F3",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDB84F74D818C7834F3",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": "Annette Moskorz",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": [{
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB8C66F88AC8106ED')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB8C66F88AC8106ED')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EDCB8C66F88AC8106ED",
+					"StartDate": "/Date(1654560000000)/",
+					"EndDate": "/Date(1654646399000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+					"ResourceGuid": "0AA10FE57E901EDB84F74D818C7834F3",
+					"NODE_ID": "0AA10FE57E901EDB84F74D818C7834F3//0AA10FE57E901EDB979391C3E9F615A6",
+					"PARENT_NODE_ID": "0AA10FE57E901EDB84F74D818C7834F3",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "RES_GRP",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#DE3163",
+					"DESCRIPTION": "Resource New Team"
+				}]
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDC9995DEBB7E2FDB6A')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDC9995DEBB7E2FDB6A')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDC9995DEBB7E2FDB6A",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EDC9995DEBB7E2FDB6A",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": "Vendor Assignment",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": [{
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB8932A29D00BE75E')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB8932A29D00BE75E')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EDCB8932A29D00BE75E",
+					"StartDate": "/Date(1654905600000)/",
+					"EndDate": "/Date(1654991999000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+					"ResourceGuid": "0AA10FE57E901EDC9995DEBB7E2FDB6A",
+					"NODE_ID": "0AA10FE57E901EDC9995DEBB7E2FDB6A//0AA10FE57E901EDB979391C3E9F615A6",
+					"PARENT_NODE_ID": "0AA10FE57E901EDC9995DEBB7E2FDB6A",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "RES_GRP",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#DE3163",
+					"DESCRIPTION": "Resource New Team"
+				}]
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EECA1B5CF6AF47F510A')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EECA1B5CF6AF47F510A')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EECA1B5CF6AF47F510A",
+			"ParentNodeId": "",
+			"Drillstate": "collapsed",
+			"ResourceGroupGuid": "",
+			"ResourceGuid": "0AA10FE57E901EECA1B5CF6AF47F510A",
+			"ResourceGroupUnitId": "",
+			"ResourceGroupId": "",
+			"Description": " Pankaj Singh Chaudhari",
+			"HierarchyLevel": 0,
+			"NodeType": "RESOURCE",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"results": [{
+					"__metadata": {
+						"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB19304F5AA564EEA')",
+						"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/ResourceAssignmentSet('0AA10FE57E901EDCB19304F5AA564EEA')",
+						"type": "com.evorait.evoresource.ResourceAssignment"
+					},
+					"Guid": "0AA10FE57E901EDCB19304F5AA564EEA",
+					"StartDate": "/Date(1650844800000)/",
+					"EndDate": "/Date(253402300799000)/",
+					"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+					"ResourceGuid": "0AA10FE57E901EECA1B5CF6AF47F510A",
+					"NODE_ID": "0AA10FE57E901EECA1B5CF6AF47F510A//0AA10FE57E901EDB979391C3E9F615A6",
+					"PARENT_NODE_ID": "0AA10FE57E901EECA1B5CF6AF47F510A",
+					"NODE_TYPE": "RES_GROUP",
+					"RESOURCE_GROUP_UNIT_ID": "EVOPLAN_TEST",
+					"RESOURCE_GROUP_UNIT_DESC": "",
+					"RESOURCE_GROUP_ID": "RES_GRP",
+					"RESOURCE_GROUP_DESC": "",
+					"RESOURCE_GROUP_COLOR": "#DE3163",
+					"DESCRIPTION": "Resource New Team"
+				}]
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0A51491BD5A01EE8A5910DE06717D060%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0A51491BD5A01EE8A5910DE06717D060%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0A51491BD5A01EE8A5910DE06717D060//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0A51491BD5A01EE8A5910DE06717D060",
 			"Drillstate": "leaf",
-			"Description": "Amber Cluster",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0A51491BD5A01EE8A5910DE06717D060",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
 			"NodeType": "RES_GROUP",
 			"StartDate": null,
-			"StartTime": "PT00H00M00S",
 			"EndDate": null,
-			"EndTime": "PT00H00M00S",
-			"ResourceGroupGuid": "0AA10FE57E901ED9B7D4E42EF916BB5F",
-			"ResourceGuid": "0AA10FE57E901EDB83D587FE20C3C1F9",
-			"ResourceGroupUnitId": "",
 			"ChildCount": 0,
-			"AssignmentSet": {}
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0A51491BD5A01EE8A5910DE06717D060%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
 		}, {
-			"NodeId": "0AA10FE57E901EEC87A3C340ABA18D53//0AA10FE57E901EDB83D587FE20C3C1F9",
-			"ParentNodeId": "0AA10FE57E901EDB83D587FE20C3C1F9",
-			"HierarchyLevel": 1,
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0A51491BD5A01EE8A5910DE06717D060%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0A51491BD5A01EE8A5910DE06717D060%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0A51491BD5A01EE8A5910DE06717D060//0AA10FE57E901EE9BBCE2297AA435A96",
+			"ParentNodeId": "0A51491BD5A01EE8A5910DE06717D060",
 			"Drillstate": "leaf",
-			"Description": "Product Cluster",
+			"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+			"ResourceGuid": "0A51491BD5A01EE8A5910DE06717D060",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "EXTERNAL_T",
+			"Description": "External Team",
+			"HierarchyLevel": 1,
 			"NodeType": "RES_GROUP",
 			"StartDate": null,
-			"StartTime": "PT00H00M00S",
 			"EndDate": null,
-			"EndTime": "PT00H00M00S",
-			"ResourceGroupGuid": "0AA10FE57E901EEC87A3C340ABA18D53",
-			"ResourceGuid": "0AA10FE57E901EDB83D587FE20C3C1F9",
-			"ResourceGroupUnitId": "",
 			"ChildCount": 0,
-			"AssignmentSet": {}
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0A51491BD5A01EE8A5910DE06717D060%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')/GanttHierarchyToResourceAssign"
+				}
+			}
 		}, {
-			"NodeId": "0AA10FE57E901EEC87A3B896245A4D47//0AA10FE57E901EDB83D587FE20C3C1F9",
-			"ParentNodeId": "0AA10FE57E901EDB83D587FE20C3C1F9",
-			"HierarchyLevel": 1,
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901ED9B7D4E42EF916DB5F%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901ED9B7D4E42EF916DB5F%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901ED9B7D4E42EF916DB5F//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0AA10FE57E901ED9B7D4E42EF916DB5F",
 			"Drillstate": "leaf",
-			"Description": "Royal Cluster",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0AA10FE57E901ED9B7D4E42EF916DB5F",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
 			"NodeType": "RES_GROUP",
 			"StartDate": null,
-			"StartTime": "PT00H00M00S",
 			"EndDate": null,
-			"EndTime": "PT00H00M00S",
-			"ResourceGroupGuid": "0AA10FE57E901EEC87A3B896245A4D47",
-			"ResourceGuid": "0AA10FE57E901EDB83D587FE20C3C1F9",
-			"ResourceGroupUnitId": "",
 			"ChildCount": 0,
-			"AssignmentSet": {}
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901ED9B7D4E42EF916DB5F%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901ED9B7D4E42EF916DB5F%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901ED9B7D4E42EF916DB5F%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901ED9B7D4E42EF916DB5F//0AA10FE57E901EE9BBCE2297AA435A96",
+			"ParentNodeId": "0AA10FE57E901ED9B7D4E42EF916DB5F",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+			"ResourceGuid": "0AA10FE57E901ED9B7D4E42EF916DB5F",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "EXTERNAL_T",
+			"Description": "External Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901ED9B7D4E42EF916DB5F%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901ED9B7D4E42EF916FB5F%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901ED9B7D4E42EF916FB5F%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901ED9B7D4E42EF916FB5F//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0AA10FE57E901ED9B7D4E42EF916FB5F",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0AA10FE57E901ED9B7D4E42EF916FB5F",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901ED9B7D4E42EF916FB5F%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901ED9B7D4E42EF916FB5F%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901ED9B7D4E42EF916FB5F%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901ED9B7D4E42EF916FB5F//0AA10FE57E901EE9BBCE2297AA435A96",
+			"ParentNodeId": "0AA10FE57E901ED9B7D4E42EF916FB5F",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+			"ResourceGuid": "0AA10FE57E901ED9B7D4E42EF916FB5F",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "EXTERNAL_T",
+			"Description": "External Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901ED9B7D4E42EF916FB5F%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC5C763D%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC5C763D%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E716AC5C763D//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0E716AC5C763D",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E716AC5C763D",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC5C763D%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC5C763D%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC5C763D%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E716AC5C763D//0AA10FE57E901EE9BBCE2297AA435A96",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0E716AC5C763D",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E716AC5C763D",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "EXTERNAL_T",
+			"Description": "External Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC5C763D%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC5F163D%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC5F163D%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E716AC5F163D//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0E716AC5F163D",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E716AC5F163D",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC5F163D%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC5F163D%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC5F163D%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E716AC5F163D//0AA10FE57E901EE9BBCE2297AA435A96",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0E716AC5F163D",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E716AC5F163D",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "EXTERNAL_T",
+			"Description": "External Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC5F163D%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC64763D%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC64763D%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E716AC64763D//0AA10FE57E901EE9BBCE2297AA435A96",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0E716AC64763D",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E716AC64763D",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "EXTERNAL_T",
+			"Description": "External Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC64763D%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC6A763D%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC6A763D%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E716AC6A763D//0AA10FE57E901EE9BBCE2297AA435A96",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0E716AC6A763D",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E716AC6A763D",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "EXTERNAL_T",
+			"Description": "External Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E716AC6A763D%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E73B3BF3963D%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E73B3BF3963D%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E73B3BF3963D//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0E73B3BF3963D",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E73B3BF3963D",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E73B3BF3963D%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E76150A5D63D%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E76150A5D63D%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E76150A5D63D//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0E76150A5D63D",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E76150A5D63D",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E76150A5D63D%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7D3BC81763D%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7D3BC81763D%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E7D3BC81763D//0AA10FE57E901EE9BBCE2297AA435A96",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0E7D3BC81763D",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E7D3BC81763D",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "EXTERNAL_T",
+			"Description": "External Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7D3BC81763D%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED1EF640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED1EF640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E7F9ED1EF640//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0E7F9ED1EF640",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E7F9ED1EF640",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED1EF640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED1EF640%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED1EF640%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E7F9ED1EF640//0AA10FE57E901EE9BBCE2297AA435A96",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0E7F9ED1EF640",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E7F9ED1EF640",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "EXTERNAL_T",
+			"Description": "External Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED1EF640%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED255640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED255640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E7F9ED255640//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0E7F9ED255640",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E7F9ED255640",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED255640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED2FB640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED2FB640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E7F9ED2FB640//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0E7F9ED2FB640",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E7F9ED2FB640",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED2FB640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED2FB640%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED2FB640%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E7F9ED2FB640//0AA10FE57E901EE9BBCE2297AA435A96",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0E7F9ED2FB640",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E7F9ED2FB640",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "EXTERNAL_T",
+			"Description": "External Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED2FB640%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED335640%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED335640%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E7F9ED335640//0AA10FE57E901EE9BBCE2297AA435A96",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0E7F9ED335640",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E7F9ED335640",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "EXTERNAL_T",
+			"Description": "External Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E7F9ED335640%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E9776C6F9640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E9776C6F9640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0E9776C6F9640//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0E9776C6F9640",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0E9776C6F9640",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0E9776C6F9640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0EA1002B19640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0EA1002B19640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0EA1002B19640//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0EA1002B19640",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0EA1002B19640",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0EA1002B19640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0EA5CAB137640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0EA5CAB137640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0EA5CAB137640//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0EA5CAB137640",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0EA5CAB137640",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0EA5CAB137640%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0EA5CAB137640%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0EA5CAB137640%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDA9BF0EA5CAB137640//0AA10FE57E901EE9BBCE2297AA435A96",
+			"ParentNodeId": "0AA10FE57E901EDA9BF0EA5CAB137640",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+			"ResourceGuid": "0AA10FE57E901EDA9BF0EA5CAB137640",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "EXTERNAL_T",
+			"Description": "External Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDA9BF0EA5CAB137640%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDAABFB14E507A16F34%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDAABFB14E507A16F34%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDAABFB14E507A16F34//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0AA10FE57E901EDAABFB14E507A16F34",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0AA10FE57E901EDAABFB14E507A16F34",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDAABFB14E507A16F34%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDAABFB14E507A16F34%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDAABFB14E507A16F34%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDAABFB14E507A16F34//0AA10FE57E901EE9BBCE2297AA435A96",
+			"ParentNodeId": "0AA10FE57E901EDAABFB14E507A16F34",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+			"ResourceGuid": "0AA10FE57E901EDAABFB14E507A16F34",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "EXTERNAL_T",
+			"Description": "External Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDAABFB14E507A16F34%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDB84F74D818C7834F3%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDB84F74D818C7834F3%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDB84F74D818C7834F3//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0AA10FE57E901EDB84F74D818C7834F3",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0AA10FE57E901EDB84F74D818C7834F3",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDB84F74D818C7834F3%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDB84F74D818C7834F3%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDB84F74D818C7834F3%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDB84F74D818C7834F3//0AA10FE57E901EE9BBCE2297AA435A96",
+			"ParentNodeId": "0AA10FE57E901EDB84F74D818C7834F3",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+			"ResourceGuid": "0AA10FE57E901EDB84F74D818C7834F3",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "EXTERNAL_T",
+			"Description": "External Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDB84F74D818C7834F3%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDC9995DEBB7E2FDB6A%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDC9995DEBB7E2FDB6A%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDC9995DEBB7E2FDB6A//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0AA10FE57E901EDC9995DEBB7E2FDB6A",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0AA10FE57E901EDC9995DEBB7E2FDB6A",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDC9995DEBB7E2FDB6A%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDC9995DEBB7E2FDB6A%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDC9995DEBB7E2FDB6A%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EDC9995DEBB7E2FDB6A//0AA10FE57E901EE9BBCE2297AA435A96",
+			"ParentNodeId": "0AA10FE57E901EDC9995DEBB7E2FDB6A",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EE9BBCE2297AA435A96",
+			"ResourceGuid": "0AA10FE57E901EDC9995DEBB7E2FDB6A",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "EXTERNAL_T",
+			"Description": "External Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EDC9995DEBB7E2FDB6A%2F%2F0AA10FE57E901EE9BBCE2297AA435A96')/GanttHierarchyToResourceAssign"
+				}
+			}
+		}, {
+			"__metadata": {
+				"id": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EECA1B5CF6AF47F510A%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EECA1B5CF6AF47F510A%2F%2F0AA10FE57E901EDB979391C3E9F615A6')",
+				"type": "com.evorait.evoresource.GanttResourceHierarchy"
+			},
+			"NodeId": "0AA10FE57E901EECA1B5CF6AF47F510A//0AA10FE57E901EDB979391C3E9F615A6",
+			"ParentNodeId": "0AA10FE57E901EECA1B5CF6AF47F510A",
+			"Drillstate": "leaf",
+			"ResourceGroupGuid": "0AA10FE57E901EDB979391C3E9F615A6",
+			"ResourceGuid": "0AA10FE57E901EECA1B5CF6AF47F510A",
+			"ResourceGroupUnitId": "EVOPLAN_TEST",
+			"ResourceGroupId": "RES_GRP",
+			"Description": "Resource New Team",
+			"HierarchyLevel": 1,
+			"NodeType": "RES_GROUP",
+			"StartDate": null,
+			"EndDate": null,
+			"ChildCount": 0,
+			"PERNR": "00000000",
+			"GanttHierarchyToResourceAssign": {
+				"__deferred": {
+					"uri": "https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/GanttResourceHierarchySet('0AA10FE57E901EECA1B5CF6AF47F510A%2F%2F0AA10FE57E901EDB979391C3E9F615A6')/GanttHierarchyToResourceAssign"
+				}
+			}
 		}]
 	}
 }
