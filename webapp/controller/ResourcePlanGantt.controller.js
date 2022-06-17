@@ -187,7 +187,8 @@ sap.ui.define([
 		 */
 		onShapePress: function (oEvent) {
 			var mParams = oEvent.getParameters(),
-				oShape = mParams.shape;
+				oShape = mParams.shape,
+				isNew = oShape['sParentAggregationName'] === 'shape1';
 			if (!mParams || !oShape) {
 				return;
 			}
@@ -201,7 +202,8 @@ sap.ui.define([
 					sStartTime: sStartTime,
 					sEndTime: sEndTime,
 					oResourceObject: oRowData,
-					bDragged: false
+					bDragged: false,
+					isNew:isNew
 				};
 
 			this.openShapeChangePopover(mParams.shape, oPopoverData);
@@ -256,6 +258,7 @@ sap.ui.define([
 					oAssignment = this.getModel("ganttPlanningModel").getProperty(sPath);
 					oAssignment.StartDate = oStartTime;
 					oAssignment.EndDate = oEndTime;
+					oAssignment.isChanging = true;
 				}.bind(this));
 			}
 			this.getModel("ganttPlanningModel").refresh();

@@ -588,15 +588,18 @@ sap.ui.define([
 		_checkDuplicateAsigment: function (oData, aResourceChild) {
 			var sStartTime = oData.StartDate,
 				sEndTime = oData.EndDate,
-				bValidate = true;
+				bValidate = true,
+				sAssignmentStartDate,sAssignmentEndDate;
 
 			aResourceChild.forEach(function (oAssignment) {
-				if (moment(sStartTime).isSameOrAfter(oAssignment.StartDate) && moment(sEndTime).isSameOrBefore(oAssignment.EndDate)) {
+				sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.StartDate,false);
+				sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EndDate,false);
+				if (moment(sStartTime).isSameOrAfter(sAssignmentStartDate) && moment(sEndTime).isSameOrBefore(sAssignmentEndDate)) {
 					bValidate = false;
-				} else if (moment(sStartTime).isBetween(moment(oAssignment.StartDate), moment(oAssignment.EndDate)) || moment(sEndTime).isBetween(
-						moment(oAssignment.StartDate), moment(oAssignment.EndDate))) {
+				} else if (moment(sStartTime).isBetween(moment(sAssignmentStartDate), moment(sAssignmentEndDate)) || moment(sEndTime).isBetween(
+						moment(sAssignmentStartDate), moment(sAssignmentEndDate))) {
 					bValidate = false;
-				} else if (moment(oAssignment.StartDate).isBetween(moment(sStartTime), moment(sEndTime)) || moment(oAssignment.EndDate).isBetween(
+				} else if (moment(sAssignmentStartDate).isBetween(moment(sStartTime), moment(sEndTime)) || moment(sAssignmentEndDate).isBetween(
 						moment(sStartTime), moment(sEndTime))) {
 					bValidate = false;
 				}
