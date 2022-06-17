@@ -2,31 +2,7 @@
 	<edmx:Reference Uri="/sap/opu/odata/EVORA/ER_MAIN_SRV/$metadata">
 		<edmx:Include Alias="Metadata" Namespace="com.evorait.evoresource"/>
 	</edmx:Reference>
-	<edmx:Reference Uri="https://wiki.scn.sap.com/wiki/download/attachments/448470968/UI.xml?api=v2">
-		<edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
-	</edmx:Reference>
 	<edmx:DataServices>
-		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="evoresource.annotations.annotations.com.evorait.evoresource">
-			<Annotations Target="Metadata.Shift">
-				<Annotation Term="UI.SelectionFields">
-					<Collection>
-						<PropertyPath>ScheduleIdDesc</PropertyPath>
-					</Collection>
-				</Annotation>
-				<Annotation Term="UI.LineItem">
-					<Collection>
-						<Record Type="UI.DataField">
-							<PropertyValue Property="Value" Path="ScheduleIdDesc"/>
-						</Record>
-						<Record Type="UI.DataField">
-							<PropertyValue Property="Value" Path="FromTime"/>
-						</Record>
-						<Record Type="UI.DataField">
-							<PropertyValue Property="Value" Path="ToTime"/>
-						</Record>
-					</Collection>
-				</Annotation>
-			</Annotations>
-		</Schema>
+		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="evoresource.annotations.annotations.com.evorait.evoresource"></Schema>
 	</edmx:DataServices>
 </edmx:Edmx>
