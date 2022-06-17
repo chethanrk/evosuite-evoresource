@@ -1,0 +1,30 @@
+{
+	"d": {
+		"results": [{
+			"TemplateId": "0AA10FE57E901EDB979391C3E9F615A6",
+			"TemplateDesc": "Morning Shift",
+			"GroupId": "001",
+			"ScheduleId": "001",
+			"ScheduleIdDesc": "Morning Shift",
+			"FromTime": "",
+			"ToTime": ""
+		}, {
+
+			"TemplateId": "0AA10FE57E901EDB979391C3E9F615A2",
+			"TemplateDesc": "Morning Shift",
+			"GroupId": "001",
+			"ScheduleId": "001",
+			"ScheduleIdDesc": "Evening Shift",
+			"FromTime": "",
+			"ToTime": ""
+		}, {
+			"TemplateId": "0AA10FE57E901EDB979391C3E9F615A3",
+			"TemplateDesc": "Morning Shift",
+			"GroupId": "001",
+			"ScheduleId": "001",
+			"ScheduleIdDesc": "Night Shift",
+			"FromTime": "",
+			"ToTime": ""
+		}]
+	}
+}

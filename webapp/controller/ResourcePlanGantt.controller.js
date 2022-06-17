@@ -414,7 +414,7 @@ sap.ui.define([
 		onChangeResourceGroup: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				oSelectedItem = oSource.getSelectedItem(),
-				oSelContext = oSelectedItem.getBindingContext(),
+				oSelContext = oSelectedItem.getBindingContext("viewModel"),
 				oData = this.oPlanningModel.getProperty("/tempData/popover");
 
 			oSource.setValueState(sap.ui.core.ValueState.None);

@@ -1,0 +1,92 @@
+<mvc:View height="100%" controllerName="com.evorait.evosuite.evoresource.controller.ResourcePlanSideTab" xmlns:core="sap.ui.core"
+	xmlns:mvc="sap.ui.core.mvc" xmlns:f="sap.f" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar" xmlns:smartTable="sap.ui.comp.smarttable"
+	displayBlock="true" xmlns="sap.m" xmlns:smartvariants="sap.ui.comp.smartvariants" xmlns:dnd="sap.ui.core.dnd"
+	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1">
+	<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
+		<template:alias name=".evoAH" value="com.evorait.evosuite.evoresource.model.AnnotationHelper">
+			<Page id="idResourceGroupPage" showHeader="false">
+				<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
+					<template:with path="templateProperties>/annotationPath" helper="com.evorait.evosuite.evoresource.model.AnnotationHelper.resolveModelPath"
+						var="paths">
+						<IconTabBar id="idIconTabBar" stretchContentHeight="true" class="sapUiNoContentPadding">
+							<items>
+								<template:with path="paths>" helper="sap.ui.model.odata.AnnotationHelper.resolvePath" var="contentTabs">
+									<template:repeat list="{contentTabs>}">
+										<IconTabFilter id="idTab--{path:'contentTabs>Core.LongDescription/String'}"
+											text="{path:'contentTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"
+											key="{path:'contentTabs>Core.LongDescription/String'}">
+											<content>
+												<template:with path="templateProperties>/" var="tempProps">
+													<f:DynamicPage id="idDynamicPage--{path:'contentTabs>Core.LongDescription/String'}" headerExpanded="true" fitContent="true"
+														preserveHeaderStateOnScroll="true" toggleHeaderOnTitleClick="false" class="sapUiNoContentPadding">
+														<f:header>
+															<f:DynamicPageHeader id="idDynamicPageHeader--{path:'contentTabs>Core.LongDescription/String'}" pinnable="true"
+																class="sapUiNoContentPadding">
+																<f:content>
+																	<template:repeat list="{tempProps>/IconTabBarTable}" var="tableDetails">
+																		<template:if test="{:= (${contentTabs>Core.LongDescription/String} === ${tableDetails>tabName})}">
+																			<smartFilterBar:SmartFilterBar id="idSmartFilter--{path:'contentTabs>Core.LongDescription/String'}"
+																				persistencyKey="com.evorait.evosuite.evoresource.ResourceGroupFilterbar" entitySet="{:= ${contentTabs>Core.LongDescription/String}}" showClearButton="true"
+																				useToolbar="true" liveMode="true">
+																				<smartFilterBar:controlConfiguration>
+																					<core:ExtensionPoint name="FilterExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|ControlConfiguration"/>
+																				</smartFilterBar:controlConfiguration>
+																				<smartFilterBar:groupConfiguration>
+																					<core:ExtensionPoint name="FilterExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|GroupConfiguration"/>
+																				</smartFilterBar:groupConfiguration>
+																			</smartFilterBar:SmartFilterBar>
+																		</template:if>
+																	</template:repeat>
+																</f:content>
+															</f:DynamicPageHeader>
+														</f:header>
+														<f:content>
+															<template:repeat list="{tempProps>/IconTabBarTable}" var="tableDetails">
+																<template:if test="{:= (${contentTabs>Core.LongDescription/String} === ${tableDetails>tabName})}">
+																	<smartTable:SmartTable header="{path:'contentTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" id="idSmartTable--{path:'contentTabs>Core.LongDescription/String'}"
+																		smartFilterId="idSmartFilter--{path:'contentTabs>Core.LongDescription/String'}" entitySet="{:= ${contentTabs>Core.LongDescription/String}}"
+																		enableAutoBinding="true" tableType="ResponsiveTable" demandPopin="true" useTablePersonalisation="false" useExportToExcel="false"
+																		requestAtLeastFields="{:= ${tableDetails>requestAtLeastFields}}" beforeRebindTable="onBeforeRebindSmartTable">
+																		<smartTable:customToolbar>
+																			<Toolbar>
+																				<ToolbarSpacer/>
+																				<core:ExtensionPoint name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|CustomToolbar"/>
+																			</Toolbar>
+																		</smartTable:customToolbar>
+																		<Table id="idCustomTable--{path:'contentTabs>Core.LongDescription/String'}">
+																			<columns>
+																				<core:ExtensionPoint name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|CustomColumn"/>
+																			</columns>
+																			<items>
+																				<ColumnListItem>
+																					<cells>
+																						<core:ExtensionPoint name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|CustomCell"/>
+																					</cells>
+																				</ColumnListItem>
+																			</items>
+																			<dragDropConfig>
+																				<dnd:DragInfo groupName="resourceGroup" sourceAggregation="items" dragStart="onResourceGroupDragStart" dragEnd="onResourceGroupDragEnd"/>
+																			</dragDropConfig>
+																		</Table>
+																		<smartTable:customData>
+																			<core:CustomData key="isGroup" value="{path:'tableDetails>isGroup'}"/>
+																			<core:CustomData key="groupProperty" value="{path:'tableDetails>groupProperty'}"/>
+																		</smartTable:customData>
+																	</smartTable:SmartTable>
+																</template:if>
+															</template:repeat>
+														</f:content>
+													</f:DynamicPage>
+												</template:with>
+											</content>
+										</IconTabFilter>
+									</template:repeat>
+								</template:with>
+							</items>
+						</IconTabBar>
+					</template:with>
+				</template:alias>
+			</Page>
+		</template:alias>
+	</template:alias>
+</mvc:View>
