@@ -181,7 +181,7 @@ sap.ui.define([
 		},
 
 		/**
-		 * when shape was pressed show popover with details of assignment
+		 * when shape was double pressed show popover with details of assignment
 		 * or create new temporary assignment
 		 * @param {object} oEvent - when shape in Gantt was selected
 		 */
@@ -209,14 +209,28 @@ sap.ui.define([
 			this.openShapeChangePopover(mParams.shape, oPopoverData);
 		},
 
+		/**
+		 * called when shape was dropped
+		 * Calling 'changeShapeDate' function with shape detail
+		 * @param {object} oEvent - when shape in Gantt was dropped
+		 */
 		onShapeDrop: function (oEvent) {
 			this.changeShapeDate(oEvent);
-
 		},
+		/**
+		 * called when shape was resized
+		 * Calling 'changeShapeDate' function with shape detail
+		 * @param {object} oEvent - when shape in Gantt was resized
+		 */
 		onShapeResize: function (oEvent) {
 			this.changeShapeDate(oEvent);
 		},
-
+		/**
+		 * Called after shape is dropped or resized
+		 * This method will change the start and end date of assignment according to dropped or resized date.
+		 * This method will validate if the date is valid and do backend validation. If validation fails reset the assignemnt to previoud date.
+		 * @param {object} oEvent - when shape in Gantt was /dropped/resized
+		 */
 		changeShapeDate: function (oEvent) {
 			var sShapeId,
 				oShapeInfo,

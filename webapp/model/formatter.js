@@ -196,9 +196,6 @@ sap.ui.define([
 		 */
 		fnTimeConverter: function (sTimestamp) {
 			var oDate = Format.abapTimestampToDate(sTimestamp);
-			var offsetMs = new Date().getTimezoneOffset() * 60 * 1000;
-
-			// return new Date(oDate.getTime() - offsetMs);
 			return oDate;
 		},
 
