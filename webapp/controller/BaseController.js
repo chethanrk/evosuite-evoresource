@@ -593,6 +593,7 @@ sap.ui.define([
 				sAssignmentStartDate,sAssignmentEndDate;
 
 			aResourceChild.forEach(function (oAssignment) {
+				// added formatter to convert the date from UTC to local time for UI Validation
 				sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.StartDate,false);
 				sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EndDate,false);
 				if (moment(sStartTime).isSameOrAfter(sAssignmentStartDate) && moment(sEndTime).isSameOrBefore(sAssignmentEndDate)) {
