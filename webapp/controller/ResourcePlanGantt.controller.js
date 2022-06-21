@@ -460,7 +460,7 @@ sap.ui.define([
 		 */
 		onChangeDate: function (oEvent) {
 			var oDateRange = oEvent.getSource();
-
+			// added formatter to convert the date to UTC before backend call
 			this.oPlanningModel.setProperty("/tempData/popover/StartDate", formatter.convertToUTCDate(oDateRange.getDateValue()));
 			this.oPlanningModel.setProperty("/tempData/popover/EndDate", formatter.convertToUTCDate(oDateRange.getSecondDateValue()));
 
@@ -836,6 +836,7 @@ sap.ui.define([
 		 * Validation of assignment on change
 		 */
 		_validateForChange: function (oAssignItem) {
+			// added formatter to convert the date to UTC before backend call
 			var oParams = {
 					ObjectId: oAssignItem.NODE_ID,
 					EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),

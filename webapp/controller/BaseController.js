@@ -385,6 +385,7 @@ sap.ui.define([
 							groupId: "batchSave"
 						},
 						obj = {};
+						// added formatter to convert the date to UTC before backend call
 						oRowData.StartDate = Formatter.convertToUTCDate(oRowData.StartDate);                      
 						oRowData.EndDate = Formatter.convertToUTCDate(oRowData.EndDate);                      
 					//collect all assignment properties who allowed for create
