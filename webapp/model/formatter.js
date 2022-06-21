@@ -183,7 +183,7 @@ sap.ui.define([
 			return new Date(oDate.getTime() + offsetMs);
 		},
 
-		convertToUTCDate: function (oDate, isNew) {
+		convertToUTCDate: function (oDate) {
 			if (!oDate) {
 				return null;
 			}
