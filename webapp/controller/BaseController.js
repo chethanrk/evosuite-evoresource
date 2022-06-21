@@ -385,7 +385,7 @@ sap.ui.define([
 							groupId: "batchSave"
 						},
 						obj = {};
-						// added formatter to convert the date to UTC before backend call
+						
 						oRowData.StartDate = Formatter.convertToUTCDate(oRowData.StartDate);                      
 						oRowData.EndDate = Formatter.convertToUTCDate(oRowData.EndDate);                      
 					//collect all assignment properties who allowed for create
@@ -399,13 +399,19 @@ sap.ui.define([
 							obj[property.name] = "";
 							if (oRowData[property.name]) {
 								obj[property.name] = oRowData[property.name];
-
+								
+								// added formatter to convert the date to UTC before backend call
+								if (property.name === "StartDate" && oRowData[property.name]) {
+									obj[property.name] = Formatter.convertToUTCDate(obj[property.name]);
+								}
 								/**
 								 * Bellow piece of code is written because of enddate with UTC for the multiple days are not wotking properly
+								 * added formatter to convert the date to UTC before backend call
 								 * Removed 1 more second from the enddate before send it to backend
 								 * Remove bellow code once we get valid loigc to send UTC date for multiple days selection
 								 */
 								if (property.name === "EndDate" && oRowData[property.name]) {
+									obj[property.name] = Formatter.convertToUTCDate(obj[property.name]);
 									obj[property.name] = new Date(oRowData[property.name].getTime() - 1000);
 								}
 							}
