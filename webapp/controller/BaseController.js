@@ -396,13 +396,19 @@ sap.ui.define([
 							obj[property.name] = "";
 							if (oRowData[property.name]) {
 								obj[property.name] = oRowData[property.name];
-
+								
+								// added formatter to convert the date to UTC before backend call
+								if (property.name === "StartDate" && oRowData[property.name]) {
+									obj[property.name] = Formatter.convertToUTCDate(obj[property.name]);
+								}
 								/**
 								 * Bellow piece of code is written because of enddate with UTC for the multiple days are not wotking properly
+								 * added formatter to convert the date to UTC before backend call
 								 * Removed 1 more second from the enddate before send it to backend
 								 * Remove bellow code once we get valid loigc to send UTC date for multiple days selection
 								 */
 								if (property.name === "EndDate" && oRowData[property.name]) {
+									obj[property.name] = Formatter.convertToUTCDate(obj[property.name]);
 									obj[property.name] = new Date(oRowData[property.name].getTime() - 1000);
 								}
 							}
@@ -586,15 +592,19 @@ sap.ui.define([
 		_checkDuplicateAsigment: function (oData, aResourceChild) {
 			var sStartTime = oData.StartDate,
 				sEndTime = oData.EndDate,
-				bValidate = true;
+				bValidate = true,
+				sAssignmentStartDate,sAssignmentEndDate;
 
 			aResourceChild.forEach(function (oAssignment) {
-				if (moment(sStartTime).isSameOrAfter(oAssignment.StartDate) && moment(sEndTime).isSameOrBefore(oAssignment.EndDate)) {
+				// added formatter to convert the date from UTC to local time for UI Validation
+				sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.StartDate,false);
+				sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EndDate,false);
+				if (moment(sStartTime).isSameOrAfter(sAssignmentStartDate) && moment(sEndTime).isSameOrBefore(sAssignmentEndDate)) {
 					bValidate = false;
-				} else if (moment(sStartTime).isBetween(moment(oAssignment.StartDate), moment(oAssignment.EndDate)) || moment(sEndTime).isBetween(
-						moment(oAssignment.StartDate), moment(oAssignment.EndDate))) {
+				} else if (moment(sStartTime).isBetween(moment(sAssignmentStartDate), moment(sAssignmentEndDate)) || moment(sEndTime).isBetween(
+						moment(sAssignmentStartDate), moment(sAssignmentEndDate))) {
 					bValidate = false;
-				} else if (moment(oAssignment.StartDate).isBetween(moment(sStartTime), moment(sEndTime)) || moment(oAssignment.EndDate).isBetween(
+				} else if (moment(sAssignmentStartDate).isBetween(moment(sStartTime), moment(sEndTime)) || moment(sAssignmentEndDate).isBetween(
 						moment(sStartTime), moment(sEndTime))) {
 					bValidate = false;
 				}
@@ -901,6 +911,14 @@ sap.ui.define([
 				},
 				params: mParams
 			});
-		}
+		},
+		/**
+		 * Function will validtate if date is past, if date is past return true or else return false
+		 * @param oDate - date object to be checked
+		 */
+		_isDatePast: function (oDate) {
+			var isDatePast = moment(oDate).isBefore(new Date());
+			return isDatePast;
+		},
 	});
 });

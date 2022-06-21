@@ -9,9 +9,10 @@ sap.ui.define([
 	"sap/ui/core/Fragment",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	"sap/m/MessageBox"
+	"sap/m/MessageBox",
+	"sap/gantt/misc/Utility",
 ], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Fragment, Filter, FilterOperator,
-	MessageBox) {
+	MessageBox, Utility) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanGantt", {
@@ -180,13 +181,14 @@ sap.ui.define([
 		},
 
 		/**
-		 * when shape was pressed show popover with details of assignment
+		 * when shape was double pressed show popover with details of assignment
 		 * or create new temporary assignment
 		 * @param {object} oEvent - when shape in Gantt was selected
 		 */
 		onShapePress: function (oEvent) {
 			var mParams = oEvent.getParameters(),
-				oShape = mParams.shape;
+				oShape = mParams.shape,
+				isNew = oShape['sParentAggregationName'] === 'shape1';
 			if (!mParams || !oShape) {
 				return;
 			}
@@ -200,10 +202,84 @@ sap.ui.define([
 					sStartTime: sStartTime,
 					sEndTime: sEndTime,
 					oResourceObject: oRowData,
-					bDragged: false
+					bDragged: false,
+					isNew:isNew
 				};
 
 			this.openShapeChangePopover(mParams.shape, oPopoverData);
+		},
+
+		/**
+		 * called when shape was dropped
+		 * Calling 'changeShapeDate' function with shape detail
+		 * @param {object} oEvent - when shape in Gantt was dropped
+		 */
+		onShapeDrop: function (oEvent) {
+			this.changeShapeDate(oEvent);
+		},
+		/**
+		 * called when shape was resized
+		 * Calling 'changeShapeDate' function with shape detail
+		 * @param {object} oEvent - when shape in Gantt was resized
+		 */
+		onShapeResize: function (oEvent) {
+			this.changeShapeDate(oEvent);
+		},
+		/**
+		 * Called after shape is dropped or resized
+		 * This method will change the start and end date of assignment according to dropped or resized date.
+		 * This method will validate if the date is valid and do backend validation. If validation fails reset the assignemnt to previoud date.
+		 * @param {object} oEvent - when shape in Gantt was /dropped/resized
+		 */
+		changeShapeDate: function (oEvent) {
+			var sShapeId,
+				oShapeInfo,
+				oTargetShape,
+				oStartTime,
+				oEndTime,
+				sGuid,
+				aFoundData = [],
+				sOldDataPath,
+				oOldData = [],
+				oAssignment = {},
+				oDraggedShapeDates,
+				dateDifference;
+
+			if (oEvent.getId() === 'shapeDrop') {
+				sShapeId = oEvent.getParameter("lastDraggedShapeUid");
+				oShapeInfo = Utility.parseUid(sShapeId);
+				oTargetShape = oEvent.getParameter("targetShape");
+				oDraggedShapeDates = oEvent.getParameter("draggedShapeDates")[sShapeId];
+				dateDifference = moment(oDraggedShapeDates["endTime"]).diff(oDraggedShapeDates["time"]);
+				oStartTime = oTargetShape ? oTargetShape.getProperty("time") : null;
+				oEndTime = oStartTime ? new Date(moment(oStartTime).add(dateDifference)) : null;
+			} else if (oEvent.getId() === 'shapeResize') {
+				sShapeId = oEvent.getParameter("shapeUid");
+				oShapeInfo = Utility.parseUid(sShapeId);
+				oStartTime = oEvent.getParameter("newTime")[0];
+				oEndTime = oEvent.getParameter("newTime")[1];
+			}
+			//validate if date is past
+			if (!oStartTime || !oEndTime || this._isDatePast(oStartTime) || this._isDatePast(oEndTime)) {
+				return;
+			}
+			sGuid = oShapeInfo.shapeId;
+			aFoundData = this._getChildrenDataByKey("Guid", sGuid, null);
+			sOldDataPath = this._getChildDataByKey("Guid", sGuid, null);
+			oOldData = deepClone(sOldDataPath.oData);
+			if (aFoundData) {
+				aFoundData.forEach(function (sPath) {
+					oAssignment = this.getModel("ganttPlanningModel").getProperty(sPath);
+					oAssignment.StartDate = oStartTime;
+					oAssignment.EndDate = oEndTime;
+					oAssignment.isChanging = true;
+				}.bind(this));
+			}
+			this.getModel("ganttPlanningModel").refresh();
+
+			this.oPlanningModel.setProperty("/tempData/popover", oAssignment);
+			this.oPlanningModel.setProperty("/tempData/oldPopoverData", oOldData);
+			this._validateAssignment();
 		},
 		/**
 		 * Called to open ShapeChangePopover
@@ -384,15 +460,15 @@ sap.ui.define([
 		 */
 		onChangeDate: function (oEvent) {
 			var oDateRange = oEvent.getSource();
-
-			this.oPlanningModel.setProperty("/tempData/popover/StartDate", formatter.convertToUTCDate(oDateRange.getDateValue()));
-			this.oPlanningModel.setProperty("/tempData/popover/EndDate", formatter.convertToUTCDate(oDateRange.getSecondDateValue()));
+			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oDateRange.getDateValue());
+			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oDateRange.getSecondDateValue());
 
 			//validate for the overlapping
 			if (this._validateDuplicateAsigment()) {
 				return;
 			}
 			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", true);
+			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
 		},
 
 		/**
@@ -760,10 +836,11 @@ sap.ui.define([
 		 * Validation of assignment on change
 		 */
 		_validateForChange: function (oAssignItem) {
+			// added formatter to convert the date to UTC before backend call
 			var oParams = {
 					ObjectId: oAssignItem.NODE_ID,
-					EndTimestamp: oAssignItem.EndDate,
-					StartTimestamp: oAssignItem.StartDate
+					EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),
+					StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate)
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel"),
@@ -785,7 +862,9 @@ sap.ui.define([
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
-			this._oPlanningPopover.close();
+			if (this._oPlanningPopover) {
+				this._oPlanningPopover.close();
+			}
 			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 		},
 
@@ -854,6 +933,7 @@ sap.ui.define([
 		 */
 		_validateAssignment: function () {
 			var oData = this.oPlanningModel.getProperty("/tempData/popover");
+
 			//validation for the duplicates
 			if (this._validateDuplicateAsigment()) {
 				return;
@@ -867,7 +947,10 @@ sap.ui.define([
 				if (this._setChangeIndicator(oData)) {
 					this._validateForChange(oData);
 				}
-				this._oPlanningPopover.close();
+				if (this._oPlanningPopover) {
+					this._oPlanningPopover.close();
+				}
+
 			}
 		},
 
@@ -879,7 +962,9 @@ sap.ui.define([
 		_markAndClosePlanningPopover: function (oData) {
 			oData.isTemporary = false;
 			this._markAsPlanningChange(oData, true);
-			this._oPlanningPopover.close();
+			if (this._oPlanningPopover) {
+				this._oPlanningPopover.close();
+			}
 		},
 
 		/**
