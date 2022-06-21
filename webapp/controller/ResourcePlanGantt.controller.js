@@ -460,15 +460,15 @@ sap.ui.define([
 		 */
 		onChangeDate: function (oEvent) {
 			var oDateRange = oEvent.getSource();
-			// added formatter to convert the date to UTC before backend call
-			this.oPlanningModel.setProperty("/tempData/popover/StartDate", formatter.convertToUTCDate(oDateRange.getDateValue()));
-			this.oPlanningModel.setProperty("/tempData/popover/EndDate", formatter.convertToUTCDate(oDateRange.getSecondDateValue()));
+			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oDateRange.getDateValue());
+			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oDateRange.getSecondDateValue());
 
 			//validate for the overlapping
 			if (this._validateDuplicateAsigment()) {
 				return;
 			}
 			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", true);
+			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
 		},
 
 		/**
@@ -857,7 +857,6 @@ sap.ui.define([
 					this.openDemandDialog();
 				} else {
 					oAssignItem.isTemporary = false;
-					oAssignItem.isNew = true;
 					this._markAsPlanningChange(oPopoverData, true);
 					this._markAsPlanningDelete(oPopoverData);
 				}
