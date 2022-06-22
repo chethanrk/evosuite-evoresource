@@ -137,6 +137,44 @@ sap.ui.define([
 		}
 	};
 
+	var getCurrentDayString = function (oData) {
+		var oDate = moment(new Date(oData.StartDate)),
+			day = oDate.day(),
+			nthOfMoth = Math.ceil(oDate.date() / 7);
+		var sDay, snthMonth;
+		if (day === 0) {
+			sDay = "Sunday";
+		} else if (day === 1) {
+			sDay = "Monday";
+		} else if (day === 2) {
+			sDay = "Tuesday";
+		} else if (day === 3) {
+			sDay = "Wednesday";
+		} else if (day === 4) {
+			sDay = "Thursday";
+		} else if (day === 5) {
+			sDay = "Friday";
+		} else if (day === 6) {
+			sDay = "Saturday";
+		}
+		if (nthOfMoth === 1) {
+			snthMonth = "first";
+		} else if (nthOfMoth === 2) {
+			snthMonth = "second";
+		} else if (nthOfMoth === 3) {
+			snthMonth = "third";
+		} else if (nthOfMoth === 4) {
+			snthMonth = "fourth";
+		} else if (nthOfMoth === 5) {
+			snthMonth = "fifth";
+		}
+
+		return {
+			"snthMonth": snthMonth,
+			"sDay": sDay
+		};
+	};
+
 	return {
 
 		/**
@@ -172,12 +210,12 @@ sap.ui.define([
 		 * to get utc date object
 		 */
 
-		convertFromUTCDate: function (oDate,isNew,isChanging) {
+		convertFromUTCDate: function (oDate, isNew, isChanging) {
 			if (!oDate) {
 				return null;
 			}
 			var offsetMs = new Date().getTimezoneOffset() * 60 * 1000;
-			if(isNew || isChanging){
+			if (isNew || isChanging) {
 				return oDate;
 			}
 			return new Date(oDate.getTime() + offsetMs);
@@ -239,6 +277,55 @@ sap.ui.define([
 			var BB = B.toString(16).length === 1 ? "0" + B.toString(16) : B.toString(16);
 			return "#" + RR + GG + BB;
 		},
+
+		/**
+		 * To get description for the repeat selection
+		 */
+		repaetModeDescription: function (repeatModeSelection) {
+			if (!repeatModeSelection || repeatModeSelection === "NEVER") {
+				return "";
+			}
+			if (repeatModeSelection === "DAY") {
+				return "day(s)";
+			} else if (repeatModeSelection === "WEEK") {
+				return "week(s)";
+			} else if (repeatModeSelection === "MONTH") {
+				return "month(s)";
+			}
+			return "";
+		},
+
+		/**
+		 * Validate the changeshape popover repeat fileds
+		 */
+		validateVisibilityEvery: function (oPopOverData) {
+			if (oPopOverData && oPopOverData.Repeat && oPopOverData.Repeat !== "NEVER" && oPopOverData.isNew) {
+				return true;
+			}
+			return false;
+		},
+
+		getDay: function (oData) {
+			if (!oData) {
+				return "";
+			}
+			var sDay = new Date(oData.StartDate).getDate().toString();
+			var iDay = sDay.length < 2 ? "0" + sDay : sDay;
+			return "Day " + iDay;
+		},
+
+		getDays: function (oData) {
+			if (!oData) {
+				return "";
+			}
+
+			var oDaysCalculated = getCurrentDayString(oData);
+			return "The " + oDaysCalculated.snthMonth + " " + oDaysCalculated.sDay;
+		},
+
+		getDayString: function (oData) {
+			return getCurrentDayString(oData);
+		}
 	};
 
 });

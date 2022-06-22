@@ -246,7 +246,12 @@ sap.ui.define([
 					minDate: new Date(),
 					isTemporary: true,
 					isNew: true,
-					Guid: new Date().getTime()
+					Guid: new Date().getTime(),
+					Repeat: "NEVER",
+					Every: "",
+					Days: [],
+					On: 0,
+					RepeatEndDate: new Date()
 				};
 				//collect all assignment properties who allowed for create
 				this.getModel().getMetaModel().loaded().then(function () {
@@ -396,7 +401,7 @@ sap.ui.define([
 							obj[property.name] = "";
 							if (oRowData[property.name]) {
 								obj[property.name] = oRowData[property.name];
-								
+
 								// added formatter to convert the date to UTC before backend call
 								if (property.name === "StartDate" && oRowData[property.name]) {
 									obj[property.name] = Formatter.convertToUTCDate(obj[property.name]);
@@ -593,12 +598,12 @@ sap.ui.define([
 			var sStartTime = oData.StartDate,
 				sEndTime = oData.EndDate,
 				bValidate = true,
-				sAssignmentStartDate,sAssignmentEndDate;
+				sAssignmentStartDate, sAssignmentEndDate;
 
 			aResourceChild.forEach(function (oAssignment) {
 				// added formatter to convert the date from UTC to local time for UI Validation
-				sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.StartDate,false);
-				sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EndDate,false);
+				sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.StartDate, false);
+				sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EndDate, false);
 				if (moment(sStartTime).isSameOrAfter(sAssignmentStartDate) && moment(sEndTime).isSameOrBefore(sAssignmentEndDate)) {
 					bValidate = false;
 				} else if (moment(sStartTime).isBetween(moment(sAssignmentStartDate), moment(sAssignmentEndDate)) || moment(sEndTime).isBetween(
