@@ -872,9 +872,7 @@ sap.ui.define([
 					}
 					this.openDemandDialog();
 				} else {
-					oAssignItem.isTemporary = false;
-					this._markAsPlanningChange(oPopoverData, true);
-					this._markAsPlanningDelete(oPopoverData);
+					this._changeAssignment(oPopoverData);
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
@@ -885,11 +883,19 @@ sap.ui.define([
 			if (bAssignmentCheck) {
 				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 			} else {
-				oAssignItem.isTemporary = false;
-				this._markAsPlanningChange(oPopoverData, true);
-				this._markAsPlanningDelete(oPopoverData);
+				this._changeAssignment(oPopoverData);
 			}
 
+		},
+
+		/**
+		 * Method will get call after validation is done, if validation pass, edited data will be stored in Gantt.
+		 * @param {object} oAssignmentData - edited data
+		 */
+		_changeAssignment: function (oAssignmentData) {
+			oAssignmentData.isTemporary = false;
+			this._markAsPlanningChange(oAssignmentData, true);
+			this._markAsPlanningDelete(oAssignmentData);
 		},
 
 		/**
@@ -910,28 +916,33 @@ sap.ui.define([
 					oDemandModel.setProperty("/data", oData.results);
 					this.openDemandDialog();
 				} else {
-					this._markAsPlanningDelete(oAssignItem);
-					if (sChangedContext) {
-						oAssignItem.RESOURCE_GROUP_COLOR = sChangedContext.getProperty("ResourceGroupColor");
-						oAssignItem.DESCRIPTION = sChangedContext.getProperty("ResourceGroupDesc");
-						this._addSingleChildToParent(oAssignItem, true);
-					}
-					aAssignments.splice(index, 1);
+					this._deleteAssignment(oAssignItem, aAssignments, index, sChangedContext);
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
 			if (bAssignmentCheck) {
 				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 			} else {
-				this._markAsPlanningDelete(oAssignItem);
-				if (sChangedContext) {
-					oAssignItem.RESOURCE_GROUP_COLOR = sChangedContext.getProperty("ResourceGroupColor");
-					oAssignItem.DESCRIPTION = sChangedContext.getProperty("ResourceGroupDesc");
-					this._addSingleChildToParent(oAssignItem, true);
-				}
-				aAssignments.splice(index, 1);
+				this._deleteAssignment(oAssignItem, aAssignments, index, sChangedContext);
 			}
 
+		},
+		/**
+		 * Method will get call after validation is done, if validation pass, data will get delete from gantt.
+		 * @param {object} oAssignmentData - deleted data
+		 * @param {array} aAssignments - all assignments
+		 * @param {integer} index - index of the assignment to be deleted from "aAssignments"
+		 * @param {object} sChangedContext - context of changed group
+		 * 
+		 */
+		_deleteAssignment: function (oAssignmentData, aAssignments, index, sChangedContext) {
+			this._markAsPlanningDelete(oAssignmentData);
+			if (sChangedContext) {
+				oAssignmentData.RESOURCE_GROUP_COLOR = sChangedContext.getProperty("ResourceGroupColor");
+				oAssignmentData.DESCRIPTION = sChangedContext.getProperty("ResourceGroupDesc");
+				this._addSingleChildToParent(oAssignmentData, true);
+			}
+			aAssignments.splice(index, 1);
 		},
 		/**
 		 * validated if popover can be visible or not
