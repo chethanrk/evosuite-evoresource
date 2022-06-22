@@ -101,17 +101,17 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Before
 				},
-				onShapeDrop:{
+				onShapeDrop: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
 				},
-				onShapeResize:{
+				onShapeResize: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
 				},
-				changeShapeDate:{
+				changeShapeDate: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
@@ -218,7 +218,7 @@ sap.ui.define([
 					sEndTime: sEndTime,
 					oResourceObject: oRowData,
 					bDragged: false,
-					isNew:isNew
+					isNew: isNew
 				};
 
 			this.openShapeChangePopover(mParams.shape, oPopoverData);
@@ -861,7 +861,8 @@ sap.ui.define([
 				oDemandModel = this.getModel("demandModel"),
 				oFoundData = this._getChildrenDataByKey("Guid", oAssignItem.Guid, null),
 				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
-				oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
+				oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
+				bAssignmentCheck = this.getView().getModel("user").getProperty("/ENABLE_ASSIGNMENT_CHECK");
 
 			var callbackfunction = function (oData) {
 				if (oData.results.length > 0) {
@@ -880,7 +881,15 @@ sap.ui.define([
 			if (this._oPlanningPopover) {
 				this._oPlanningPopover.close();
 			}
-			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
+
+			if (bAssignmentCheck) {
+				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
+			} else {
+				oAssignItem.isTemporary = false;
+				this._markAsPlanningChange(oPopoverData, true);
+				this._markAsPlanningDelete(oPopoverData);
+			}
+
 		},
 
 		/**
@@ -889,11 +898,12 @@ sap.ui.define([
 		_validateForDelete: function (oAssignItem, aAssignments, index, sChangedContext) {
 			var oParams = {
 					ObjectId: oAssignItem.NODE_ID,
-					EndTimestamp: oAssignItem.EndDate,
-					StartTimestamp: oAssignItem.StartDate
+					EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),
+					StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate)
 				},
 				sFunctionName = "ValidateResourceAssignment",
-				oDemandModel = this.getModel("demandModel");
+				oDemandModel = this.getModel("demandModel"),
+				bAssignmentCheck = this.getView().getModel("user").getProperty("/ENABLE_ASSIGNMENT_CHECK");
 
 			var callbackfunction = function (oData) {
 				if (oData.results.length > 0) {
@@ -910,8 +920,17 @@ sap.ui.define([
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
-
-			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
+			if (bAssignmentCheck) {
+				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
+			} else {
+				this._markAsPlanningDelete(oAssignItem);
+				if (sChangedContext) {
+					oAssignItem.RESOURCE_GROUP_COLOR = sChangedContext.getProperty("ResourceGroupColor");
+					oAssignItem.DESCRIPTION = sChangedContext.getProperty("ResourceGroupDesc");
+					this._addSingleChildToParent(oAssignItem, true);
+				}
+				aAssignments.splice(index, 1);
+			}
 
 		},
 		/**
