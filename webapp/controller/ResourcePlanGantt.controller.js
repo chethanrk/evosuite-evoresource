@@ -100,6 +100,21 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
+				},
+				onShapeDrop:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onShapeResize:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				changeShapeDate:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
 				}
 			}
 		},
