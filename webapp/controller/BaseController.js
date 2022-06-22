@@ -721,9 +721,6 @@ sap.ui.define([
 				sStartDate = moment().startOf("day").subtract(1, "day").toDate();
 				sEndDate = moment().endOf("day").add(1, "day").toDate();
 			}
-
-			this.getModel("viewModel").setProperty("/gantt/defaultStartDate", sStartDate);
-			this.getModel("viewModel").setProperty("/gantt/defaultEndDate", sEndDate);
 			oAxisTimeStrategy.setVisibleHorizon(new sap.gantt.config.TimeHorizon({
 				startTime: sStartDate,
 				endTime: sEndDate
