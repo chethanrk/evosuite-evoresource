@@ -271,8 +271,8 @@ sap.ui.define([
 			} else if (oEvent.getId() === 'shapeResize') {
 				sShapeId = oEvent.getParameter("shapeUid");
 				oShapeInfo = Utility.parseUid(sShapeId);
-				oStartTime = oEvent.getParameter("newTime")[0];
-				oEndTime = oEvent.getParameter("newTime")[1];
+				oStartTime = moment(oEvent.getParameter("newTime")[0]).startOf('day').toDate();
+				oEndTime = moment(oEvent.getParameter("newTime")[1]).endOf('day').toDate();
 			}
 			//validate if date is past
 			if (!oStartTime || !oEndTime || this._isDatePast(oStartTime) || this._isDatePast(oEndTime)) {
@@ -716,6 +716,7 @@ sap.ui.define([
 				//its a assignment
 				var oAssignData = oContext.getObject();
 				this._setShapePopoverPosition(oAssignData);
+				oAssignData.minDate = new Date();
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
 			}
@@ -904,8 +905,8 @@ sap.ui.define([
 		_validateForDelete: function (oAssignItem, aAssignments, index, sChangedContext) {
 			var oParams = {
 					ObjectId: oAssignItem.NODE_ID,
-					EndTimestamp: oAssignItem.EndDate,
-					StartTimestamp: oAssignItem.StartDate
+					EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),
+					StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate)
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel"),
