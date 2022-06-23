@@ -904,8 +904,8 @@ sap.ui.define([
 		_validateForDelete: function (oAssignItem, aAssignments, index, sChangedContext) {
 			var oParams = {
 					ObjectId: oAssignItem.NODE_ID,
-					EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),
-					StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate)
+					EndTimestamp: oAssignItem.EndDate,
+					StartTimestamp: oAssignItem.StartDate
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel"),
