@@ -137,6 +137,10 @@ sap.ui.define([
 		}
 	};
 
+	/**
+	 * get current day string and occurence of the day in the month
+	 * oData popover data
+	 */
 	var getCurrentDayString = function (oData) {
 		var oDate = moment(new Date(oData.StartDate)),
 			day = oDate.day(),
@@ -280,6 +284,7 @@ sap.ui.define([
 
 		/**
 		 * To get description for the repeat selection
+		 * repeatModeSelection repeat selected mode
 		 */
 		repaetModeDescription: function (repeatModeSelection) {
 			if (!repeatModeSelection || repeatModeSelection === "NEVER") {
@@ -297,6 +302,7 @@ sap.ui.define([
 
 		/**
 		 * Validate the changeshape popover repeat fileds
+		 * oPopOverData popover data
 		 */
 		validateVisibilityEvery: function (oPopOverData) {
 			if (oPopOverData && oPopOverData.Repeat && oPopOverData.Repeat !== "NEVER" && oPopOverData.isNew) {
@@ -305,6 +311,11 @@ sap.ui.define([
 			return false;
 		},
 
+		/**
+		 * get formatted string of following format
+		 * Day XX
+		 * oData popovr data
+		 */
 		getDay: function (oData) {
 			if (!oData) {
 				return "";
@@ -314,6 +325,11 @@ sap.ui.define([
 			return "Day " + iDay;
 		},
 
+		/**
+		 * get formatted string of the following format
+		 * The XX th weekday 
+		 * oData popover data
+		 */
 		getDays: function (oData) {
 			if (!oData) {
 				return "";
@@ -323,6 +339,10 @@ sap.ui.define([
 			return "The " + oDaysCalculated.snthMonth + " " + oDaysCalculated.sDay;
 		},
 
+		/**
+		 * return string value of selected date
+		 * oData popover data
+		 */
 		getDayString: function (oData) {
 			return getCurrentDayString(oData);
 		}

@@ -1,5 +1,6 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
-	<ResponsivePopover id="isPopoverChangeSHape" class="sapUiContentPadding" showHeader="false" placement="{viewModel>/gantt/popoverPlacement}">
+	<ResponsivePopover id="isPopoverChangeSHape" class="sapUiContentPadding" showHeader="false" placement="{viewModel>/gantt/popoverPlacement}"
+		contentWidth="30%">
 		<content>
 			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|Before"/>
 			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|Instead">
@@ -24,7 +25,7 @@
 							minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}"/>
 						<Label text="Repeat"/>
 						<Select id="idRepeatMode" forceSelection="true" change="onChangeRepeatMode" selectedKey="{ganttPlanningModel>/tempData/popover/Repeat}"
-							visible="{= ${ganttPlanningModel>/tempData/popover/isNew} ? true : false}" fieldGroupIds="changeShapeInput">
+							visible="{= ${ganttPlanningModel>/tempData/popover/isTemporary} ? true : false}" fieldGroupIds="changeShapeInput">
 							<core:Item key="NEVER" text="Never"/>
 							<core:Item key="DAY" text="{i18n>lbl.daily}"/>
 							<core:Item key="WEEK" text="{i18n>lbl.weekly}"/>
@@ -32,7 +33,7 @@
 						</Select>
 						<Label text="Every" required="{= ${ganttPlanningModel>/tempData/popover/Repeat} !== 'NEVER'}"/>
 						<Input type="Number" description="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.repaetModeDescription'}"
-							visible="{= ${ganttPlanningModel>/tempData/popover/Repeat} !== 'NEVER' ? ${ganttPlanningModel>/tempData/popover/isNew} ? true : false : false}"
+							visible="{= ${ganttPlanningModel>/tempData/popover/Repeat} !== 'NEVER' ? ${ganttPlanningModel>/tempData/popover/isTemporary} ? true : false : false}"
 							value="{ganttPlanningModel>/tempData/popover/Every}" required="{= ${ganttPlanningModel>/tempData/popover/Repeat} !== 'NEVER'}"
 							fieldGroupIds="changeShapeInput" liveChange="onEveryLiveChange"/>
 						<Label text="On" required="{= ${ganttPlanningModel>/tempData/popover/Repeat} === 'WEEK'}"/>
@@ -56,7 +57,7 @@
 						<Label text="End Date" required="{= ${ganttPlanningModel>/tempData/popover/Repeat} !== 'NEVER'}"/>
 						<DatePicker id="idDatePicker" fieldGroupIds="changeShapeInput" dateValue="{ganttPlanningModel>/tempData/popover/RepeatEndDate}"
 							minDate="{ganttPlanningModel>/tempData/popover/minDate}" required="{= ${ganttPlanningModel>/tempData/popover/Repeat} !== 'NEVER'}"
-							visible="{= ${ganttPlanningModel>/tempData/popover/Repeat} !== 'NEVER' ? ${ganttPlanningModel>/tempData/popover/isNew} ? true : false : false}"/>
+							visible="{= ${ganttPlanningModel>/tempData/popover/Repeat} !== 'NEVER' ? ${ganttPlanningModel>/tempData/popover/isTemporary} ? true : false : false}"/>
 					</f:content>
 				</f:SimpleForm>
 			</core:ExtensionPoint>
