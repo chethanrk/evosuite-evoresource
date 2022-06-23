@@ -101,17 +101,17 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Before
 				},
-				onShapeDrop:{
+				onShapeDrop: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
 				},
-				onShapeResize:{
+				onShapeResize: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
 				},
-				changeShapeDate:{
+				changeShapeDate: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
@@ -218,7 +218,7 @@ sap.ui.define([
 					sEndTime: sEndTime,
 					oResourceObject: oRowData,
 					bDragged: false,
-					isNew:isNew
+					isNew: isNew
 				};
 
 			this.openShapeChangePopover(mParams.shape, oPopoverData);
@@ -861,7 +861,8 @@ sap.ui.define([
 				oDemandModel = this.getModel("demandModel"),
 				oFoundData = this._getChildrenDataByKey("Guid", oAssignItem.Guid, null),
 				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
-				oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
+				oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
+				bAssignmentCheck = this.getView().getModel("user").getProperty("/ENABLE_ASSIGNMENT_CHECK");
 
 			var callbackfunction = function (oData) {
 				if (oData.results.length > 0) {
@@ -871,16 +872,30 @@ sap.ui.define([
 					}
 					this.openDemandDialog();
 				} else {
-					oAssignItem.isTemporary = false;
-					this._markAsPlanningChange(oPopoverData, true);
-					this._markAsPlanningDelete(oPopoverData);
+					this._changeAssignment(oPopoverData);
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
 			if (this._oPlanningPopover) {
 				this._oPlanningPopover.close();
 			}
-			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
+
+			if (bAssignmentCheck) {
+				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
+			} else {
+				this._changeAssignment(oPopoverData);
+			}
+
+		},
+
+		/**
+		 * Method will get call after validation is done, if validation pass, edited data will be stored in Gantt.
+		 * @param {object} oAssignmentData - edited data
+		 */
+		_changeAssignment: function (oAssignmentData) {
+			oAssignmentData.isTemporary = false;
+			this._markAsPlanningChange(oAssignmentData, true);
+			this._markAsPlanningDelete(oAssignmentData);
 		},
 
 		/**
@@ -893,26 +908,41 @@ sap.ui.define([
 					StartTimestamp: oAssignItem.StartDate
 				},
 				sFunctionName = "ValidateResourceAssignment",
-				oDemandModel = this.getModel("demandModel");
+				oDemandModel = this.getModel("demandModel"),
+				bAssignmentCheck = this.getView().getModel("user").getProperty("/ENABLE_ASSIGNMENT_CHECK");
 
 			var callbackfunction = function (oData) {
 				if (oData.results.length > 0) {
 					oDemandModel.setProperty("/data", oData.results);
 					this.openDemandDialog();
 				} else {
-					this._markAsPlanningDelete(oAssignItem);
-					if (sChangedContext) {
-						oAssignItem.RESOURCE_GROUP_COLOR = sChangedContext.getProperty("ResourceGroupColor");
-						oAssignItem.DESCRIPTION = sChangedContext.getProperty("ResourceGroupDesc");
-						this._addSingleChildToParent(oAssignItem, true);
-					}
-					aAssignments.splice(index, 1);
+					this._deleteAssignment(oAssignItem, aAssignments, index, sChangedContext);
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
+			if (bAssignmentCheck) {
+				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
+			} else {
+				this._deleteAssignment(oAssignItem, aAssignments, index, sChangedContext);
+			}
 
-			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
-
+		},
+		/**
+		 * Method will get call after validation is done, if validation pass, data will get delete from gantt.
+		 * @param {object} oAssignmentData - deleted data
+		 * @param {array} aAssignments - all assignments
+		 * @param {integer} index - index of the assignment to be deleted from "aAssignments"
+		 * @param {object} sChangedContext - context of changed group
+		 * 
+		 */
+		_deleteAssignment: function (oAssignmentData, aAssignments, index, sChangedContext) {
+			this._markAsPlanningDelete(oAssignmentData);
+			if (sChangedContext) {
+				oAssignmentData.RESOURCE_GROUP_COLOR = sChangedContext.getProperty("ResourceGroupColor");
+				oAssignmentData.DESCRIPTION = sChangedContext.getProperty("ResourceGroupDesc");
+				this._addSingleChildToParent(oAssignmentData, true);
+			}
+			aAssignments.splice(index, 1);
 		},
 		/**
 		 * validated if popover can be visible or not
