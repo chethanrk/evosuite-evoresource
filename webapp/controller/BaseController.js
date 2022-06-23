@@ -293,28 +293,12 @@ sap.ui.define([
 			var isValid = true,
 				invalidFields = [];
 
-			
+			//validate mandatory fields
 			for (var i = 0; i < aCustomFields.length; i++) {
-				//validate mandatory fields
 				if (aCustomFields[i].getValue) {
 					var sValue = aCustomFields[i].getValue();
 					try {
 						if (aCustomFields[i].getRequired() && aCustomFields[i].getEditable() && (!sValue || sValue.trim() === "")) {
-							aCustomFields[i].setValueState(sap.ui.core.ValueState.Error);
-							isValid = false;
-							invalidFields.push(aCustomFields[i]);
-						} else {
-							aCustomFields[i].setValueState(sap.ui.core.ValueState.None);
-						}
-					} catch (e) {
-						//do nothing
-					}
-				}
-				
-				//validate date field-checking if date is past
-				if (aCustomFields[i].getDateValue && aCustomFields[i].getProperty("name") === "DateFrom") {
-					try {
-						if (this._isDatePast(aCustomFields[i].getDateValue()) || this._isDatePast(aCustomFields[i].getSecondDateValue())) {
 							aCustomFields[i].setValueState(sap.ui.core.ValueState.Error);
 							isValid = false;
 							invalidFields.push(aCustomFields[i]);
@@ -930,7 +914,7 @@ sap.ui.define([
 		 * @param oDate - date object to be checked
 		 */
 		_isDatePast: function (oDate) {
-			var isDatePast = moment(oDate).isBefore(moment().startOf("day").toDate());
+			var isDatePast = moment(oDate).isBefore(new Date());
 			return isDatePast;
 		},
 	});
