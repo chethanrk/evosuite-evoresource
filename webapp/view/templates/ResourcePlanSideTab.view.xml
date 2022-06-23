@@ -45,7 +45,7 @@
 																<template:if test="{:= (${contentTabs>Core.LongDescription/String} === ${tableDetails>tabName})}">
 																	<smartTable:SmartTable header="{path:'contentTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" id="idSmartTable--{path:'contentTabs>Core.LongDescription/String'}"
 																		smartFilterId="idSmartFilter--{path:'contentTabs>Core.LongDescription/String'}" entitySet="{:= ${contentTabs>Core.LongDescription/String}}"
-																		enableAutoBinding="true" tableType="ResponsiveTable" demandPopin="true" useTablePersonalisation="false" useExportToExcel="false"
+																		enableAutoBinding="true" tableType="ResponsiveTable" demandPopin="true" useTablePersonalisation="true" useExportToExcel="false"
 																		requestAtLeastFields="{:= ${tableDetails>requestAtLeastFields}}" beforeRebindTable="onBeforeRebindSmartTable">
 																		<smartTable:customToolbar>
 																			<Toolbar>

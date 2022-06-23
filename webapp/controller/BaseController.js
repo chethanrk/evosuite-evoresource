@@ -922,7 +922,7 @@ sap.ui.define([
 		 * @param oDate - date object to be checked
 		 */
 		_isDatePast: function (oDate) {
-			var isDatePast = moment(oDate).isBefore(new Date());
+			var isDatePast = moment(oDate).isBefore(moment().startOf('day').toDate());
 			return isDatePast;
 		},
 	});
