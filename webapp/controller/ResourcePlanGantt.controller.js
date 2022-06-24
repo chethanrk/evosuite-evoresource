@@ -552,8 +552,7 @@ sap.ui.define([
 					sUri = "/GanttResourceHierarchySet",
 					mParams = {
 						"$expand": "GanttHierarchyToResourceAssign,GanttHierarchyToShift"
-					},
-					aGanttData = [];
+					};
 
 				if (iLevel > 0) {
 					mParams = {};
