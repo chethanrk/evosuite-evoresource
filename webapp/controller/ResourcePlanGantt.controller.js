@@ -551,8 +551,9 @@ sap.ui.define([
 					aFilters = oFilterBar.getFilters(),
 					sUri = "/GanttResourceHierarchySet",
 					mParams = {
-						"$expand": "GanttHierarchyToResourceAssign"
-					};
+						"$expand": "GanttHierarchyToResourceAssign,GanttHierarchyToShift"
+					},
+					aGanttData = [];
 
 				if (iLevel > 0) {
 					mParams = {};
@@ -581,7 +582,8 @@ sap.ui.define([
 		 */
 		_addChildrenToParent: function (iLevel, oResData) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children"),
-				aAssignments = [];
+				aAssignments = [],
+				aShift = [];
 			var callbackFn = function (oItem) {
 				oItem.children = [];
 				aAssignments = [];
@@ -595,8 +597,17 @@ sap.ui.define([
 									aAssignments.push(oAssignment);
 								}
 							});
+							oResItem.GanttHierarchyToResourceAssign.results = aAssignments.length > 0 ? aAssignments : [];
 						}
-						oResItem.GanttHierarchyToResourceAssign.results = aAssignments.length > 0 ? aAssignments : [];
+
+						//add shift data o children shift
+						if (oResItem.NodeType === "SHIFT") {
+							if (oItem.GanttHierarchyToShift && oItem.GanttHierarchyToShift.results.length > 0) {
+								aShift = oItem.GanttHierarchyToShift.results;
+							}
+							oResItem.GanttHierarchyToShift.results = aShift.length > 0 ? aShift : [];
+						}
+
 						oItem.children.push(oResItem);
 					}
 				});
