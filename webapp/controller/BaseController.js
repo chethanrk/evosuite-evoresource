@@ -250,30 +250,33 @@ sap.ui.define([
 				};
 				//collect all assignment properties who allowed for create
 				this.getModel().getMetaModel().loaded().then(function () {
-					var oMetaModel = this.getModel().getMetaModel(),
-						oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
-						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-						aProperty = oEntityType ? oEntityType.property : [];
+					if (oRowData.NodeType === "RESOURCE" || oRowData.NodeType === "RES_GROUP") {
 
-					aProperty.forEach(function (property) {
-						var isCreatable = property["sap:creatable"];
-						if (typeof isCreatable === "undefined" || isCreatable === true) {
-							obj[property.name] = "";
-							if (oRowData[property.name]) {
-								obj[property.name] = oRowData[property.name];
+						var oMetaModel = this.getModel().getMetaModel(),
+							oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
+							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+							aProperty = oEntityType ? oEntityType.property : [];
+
+						aProperty.forEach(function (property) {
+							var isCreatable = property["sap:creatable"];
+							if (typeof isCreatable === "undefined" || isCreatable === true) {
+								obj[property.name] = "";
+								if (oRowData[property.name]) {
+									obj[property.name] = oRowData[property.name];
+								}
 							}
-						}
-					});
+						});
 
-					obj.StartDate = oStartTime;
-					obj.EndDate = oEndTime;
-					obj.NODE_TYPE = "GROUP";
-					obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
-					obj.ResourceGuid = oRowData.ResourceGuid;
-					obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
-					obj.PARENT_NODE_ID = oRowData.NodeId;
-					obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
-					obj.bDragged = bDragged;
+						obj.StartDate = oStartTime;
+						obj.EndDate = oEndTime;
+						obj.NODE_TYPE = "GROUP";
+						obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
+						obj.ResourceGuid = oRowData.ResourceGuid;
+						obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
+						obj.PARENT_NODE_ID = oRowData.NodeId;
+						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
+						obj.bDragged = bDragged;
+					}
 					resolve(obj);
 				}.bind(this));
 			}.bind(this));
@@ -396,7 +399,7 @@ sap.ui.define([
 							obj[property.name] = "";
 							if (oRowData[property.name]) {
 								obj[property.name] = oRowData[property.name];
-								
+
 								// added formatter to convert the date to UTC before backend call
 								if (property.name === "StartDate" && oRowData[property.name]) {
 									obj[property.name] = Formatter.convertToUTCDate(obj[property.name]);
@@ -593,12 +596,12 @@ sap.ui.define([
 			var sStartTime = oData.StartDate,
 				sEndTime = oData.EndDate,
 				bValidate = true,
-				sAssignmentStartDate,sAssignmentEndDate;
+				sAssignmentStartDate, sAssignmentEndDate;
 
 			aResourceChild.forEach(function (oAssignment) {
 				// added formatter to convert the date from UTC to local time for UI Validation
-				sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.StartDate,false);
-				sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EndDate,false);
+				sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.StartDate, false);
+				sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EndDate, false);
 				if (moment(sStartTime).isSameOrAfter(sAssignmentStartDate) && moment(sEndTime).isSameOrBefore(sAssignmentEndDate)) {
 					bValidate = false;
 				} else if (moment(sStartTime).isBetween(moment(sAssignmentStartDate), moment(sAssignmentEndDate)) || moment(sEndTime).isBetween(
