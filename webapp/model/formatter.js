@@ -141,36 +141,36 @@ sap.ui.define([
 	 * get current day string and occurence of the day in the month
 	 * oData popover data
 	 */
-	var getCurrentDayString = function (oData) {
+	var getCurrentDayString = function (oData, oResourceBundle) {
 		var oDate = moment(new Date(oData.StartDate)),
 			day = oDate.day(),
 			nthOfMoth = Math.ceil(oDate.date() / 7);
 		var sDay, snthMonth;
 		if (day === 0) {
-			sDay = "Sunday";
+			sDay = oResourceBundle.getText("xlbl.Sun");
 		} else if (day === 1) {
-			sDay = "Monday";
+			sDay = oResourceBundle.getText("xlbl.Mon");
 		} else if (day === 2) {
-			sDay = "Tuesday";
+			sDay = oResourceBundle.getText("xlbl.Tue");
 		} else if (day === 3) {
-			sDay = "Wednesday";
+			sDay = oResourceBundle.getText("xlbl.Wed");
 		} else if (day === 4) {
-			sDay = "Thursday";
+			sDay = oResourceBundle.getText("xlbl.Thu");
 		} else if (day === 5) {
-			sDay = "Friday";
+			sDay = oResourceBundle.getText("xlbl.Fri");
 		} else if (day === 6) {
-			sDay = "Saturday";
+			sDay = oResourceBundle.getText("xlbl.Sat");
 		}
 		if (nthOfMoth === 1) {
-			snthMonth = "first";
+			snthMonth = oResourceBundle.getText("xlbl.first");
 		} else if (nthOfMoth === 2) {
-			snthMonth = "second";
+			snthMonth = oResourceBundle.getText("xlbl.second");
 		} else if (nthOfMoth === 3) {
-			snthMonth = "third";
+			snthMonth = oResourceBundle.getText("xlbl.third");
 		} else if (nthOfMoth === 4) {
-			snthMonth = "fourth";
+			snthMonth = oResourceBundle.getText("xlbl.fourth");
 		} else if (nthOfMoth === 5) {
-			snthMonth = "fifth";
+			snthMonth = oResourceBundle.getText("xlbl.fifth");
 		}
 
 		return {
@@ -287,6 +287,7 @@ sap.ui.define([
 		 * repeatModeSelection repeat selected mode
 		 */
 		repaetModeDescription: function (repeatModeSelection) {
+			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
 			if (!repeatModeSelection || repeatModeSelection === "NEVER") {
 				return "";
 			}
@@ -317,12 +318,13 @@ sap.ui.define([
 		 * oData popovr data
 		 */
 		getDay: function (oData) {
+			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
 			if (!oData) {
 				return "";
 			}
 			var sDay = new Date(oData.StartDate).getDate().toString();
 			var iDay = sDay.length < 2 ? "0" + sDay : sDay;
-			return "Day " + iDay;
+			return oResourceBundle.getText("xdsr.Day", iDay);
 		},
 
 		/**
@@ -331,12 +333,13 @@ sap.ui.define([
 		 * oData popover data
 		 */
 		getDays: function (oData) {
+			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
 			if (!oData) {
 				return "";
 			}
 
-			var oDaysCalculated = getCurrentDayString(oData);
-			return "The " + oDaysCalculated.snthMonth + " " + oDaysCalculated.sDay;
+			var oDaysCalculated = getCurrentDayString(oData, oResourceBundle);
+			return oResourceBundle.getText("xdsr.occurence", [oDaysCalculated.snthMonth, oDaysCalculated.sDay]);
 		},
 
 		/**
@@ -344,7 +347,19 @@ sap.ui.define([
 		 * oData popover data
 		 */
 		getDayString: function (oData) {
-			return getCurrentDayString(oData);
+			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
+			return getCurrentDayString(oData, oResourceBundle);
+		},
+
+		/**
+		 * visibility of every input box
+		 */
+		everyAndEndDateVisibility: function (Repeat, isTemporary) {
+			if (Repeat && isTemporary && Repeat !== "NEVER") {
+				return true;
+			}
+
+			return false;
 		}
 	};
 

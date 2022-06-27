@@ -1172,8 +1172,9 @@ sap.ui.define([
 					if (oData.On === 0) {
 						newData.StartDate = oStartDate.add(iEvery, 'months').toDate();
 					} else if (oData.On === 1) {
-						var oDayCalculated = formatter.getDayString(oData);
-						newData.StartDate = oStartDate.add(iEvery, 'months').day(oDayCalculated.sDay).toDate();
+						var oStrDate = moment(oData.StartDate),
+							iDay = oStrDate.day();
+						newData.StartDate = oStartDate.add(iEvery, 'months').day(iDay).toDate();
 					}
 
 					this._validateAndPrepareNewAssignment(newData, oData, dayCounter);
