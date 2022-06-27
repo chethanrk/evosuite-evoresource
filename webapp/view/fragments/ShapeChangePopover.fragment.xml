@@ -1,6 +1,6 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
 	<ResponsivePopover id="isPopoverChangeSHape" class="sapUiContentPadding" showHeader="false" placement="{viewModel>/gantt/popoverPlacement}"
-		contentWidth="30%">
+		contentWidth="30%" contentHeight="auto">
 		<content>
 			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|Before"/>
 			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|Instead">
