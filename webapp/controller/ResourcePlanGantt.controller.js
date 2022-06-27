@@ -854,8 +854,39 @@ sap.ui.define([
 		_addNewAssignmentShape: function (oAssignData) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			var callbackFn = function (oItem, oData, idx) {
-				if (oItem.NodeType === "RESOURCE" || oItem.NodeType === "RES_GROUP") {
-					// adding only if NodeType is "Resource"-Parent or "Resource Group"
+				if (oItem.NodeType === "RESOURCE") {
+					if (oData.NODE_TYPE === "RESOURCE" || oData.NODE_TYPE === "RES_GROUP") {
+						if (!oItem.GanttHierarchyToResourceAssign) {
+							oItem.GanttHierarchyToResourceAssign = {
+								results: []
+							};
+						}
+						if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid && !oItem.ResourceGroupGuid) {
+							//add to resource itself
+							if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
+								oItem.GanttHierarchyToResourceAssign.results.push(oData);
+							}
+						} else if (oItem.ResourceGroupGuid && oItem.ResourceGroupGuid === oData.ResourceGroupGuid && oItem.ResourceGuid === oData.ResourceGuid) {
+							//add to resource group
+							if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
+								oItem.GanttHierarchyToResourceAssign.results.push(oData);
+							}
+						}
+					} else if (oData.NODE_TYPE === "SHIFT") {
+						if (!oItem.GanttHierarchyToShift) {
+							oItem.GanttHierarchyToShift = {
+								results: []
+							};
+						}
+						if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid) {
+							//add to resource itself
+							if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
+								oItem.GanttHierarchyToShift.results.push(oData);
+							}
+						}
+					}
+
+				} else if (oItem.NodeType === "RES_GROUP" && oData.NODE_TYPE === "RES_GROUP") {
 					if (!oItem.GanttHierarchyToResourceAssign) {
 						oItem.GanttHierarchyToResourceAssign = {
 							results: []
@@ -870,6 +901,19 @@ sap.ui.define([
 						//add to resource group
 						if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
 							oItem.GanttHierarchyToResourceAssign.results.push(oData);
+						}
+					}
+				} else if (oItem.NodeType === "SHIFT" && oData.NODE_TYPE === "SHIFT") {
+					// adding only if NodeType is Shift"
+					if (!oItem.GanttHierarchyToShift) {
+						oItem.GanttHierarchyToShift = {
+							results: []
+						};
+					}
+					if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid) {
+						//add to resource itself
+						if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
+							oItem.GanttHierarchyToShift.results.push(oData);
 						}
 					}
 				}

@@ -255,33 +255,31 @@ sap.ui.define([
 				};
 				//collect all assignment properties who allowed for create
 				this.getModel().getMetaModel().loaded().then(function () {
-					if (oRowData.NodeType === "RESOURCE" || oRowData.NodeType === "RES_GROUP") {
-						// create assignment only if NodeType is "Resource"-Parent or "Resource Group"
-						var oMetaModel = this.getModel().getMetaModel(),
-							oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
-							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-							aProperty = oEntityType ? oEntityType.property : [];
 
-						aProperty.forEach(function (property) {
-							var isCreatable = property["sap:creatable"];
-							if (typeof isCreatable === "undefined" || isCreatable === true) {
-								obj[property.name] = "";
-								if (oRowData[property.name]) {
-									obj[property.name] = oRowData[property.name];
-								}
+					var oMetaModel = this.getModel().getMetaModel(),
+						oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
+						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+						aProperty = oEntityType ? oEntityType.property : [];
+
+					aProperty.forEach(function (property) {
+						var isCreatable = property["sap:creatable"];
+						if (typeof isCreatable === "undefined" || isCreatable === true) {
+							obj[property.name] = "";
+							if (oRowData[property.name]) {
+								obj[property.name] = oRowData[property.name];
 							}
-						});
-                        obj.RepeatEndDate = oEndTime;
-						obj.StartDate = oStartTime;
-						obj.EndDate = oEndTime;
-						obj.NODE_TYPE = "GROUP";
-						obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
-						obj.ResourceGuid = oRowData.ResourceGuid;
-						obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
-						obj.PARENT_NODE_ID = oRowData.NodeId;
-						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
-						obj.bDragged = bDragged;
-					}
+						}
+					});
+					obj.RepeatEndDate = oEndTime;
+					obj.StartDate = oStartTime;
+					obj.EndDate = oEndTime;
+					obj.NODE_TYPE = oRowData.NodeType;
+					obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
+					obj.ResourceGuid = oRowData.ResourceGuid;
+					obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
+					obj.PARENT_NODE_ID = oRowData.NodeId;
+					obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
+					obj.bDragged = bDragged;
 					resolve(obj);
 				}.bind(this));
 			}.bind(this));
@@ -519,6 +517,27 @@ sap.ui.define([
 				} else if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results.length > 0) {
 					//search in assignments
 					sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/GanttHierarchyToResourceAssign/results");
+					if (sNewObj) {
+						return sNewObj;
+					} else if (aChildren[i].children && aChildren[i].children.length > 0) {
+						//search in other children
+						sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/children");
+						if (sNewObj) {
+							return sNewObj;
+						}
+					}
+				}
+			}
+			for (var i = 0; i < aChildren.length; i++) {
+				if (aChildren[i][sProperty] === sValue) {
+					sPath += "/" + i;
+					return {
+						sPath: sPath,
+						oData: aChildren[i]
+					};
+				} else if (aChildren[i].GanttHierarchyToShift && aChildren[i].GanttHierarchyToShift.results.length > 0) {
+					//search in assignments
+					sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/GanttHierarchyToShift/results");
 					if (sNewObj) {
 						return sNewObj;
 					} else if (aChildren[i].children && aChildren[i].children.length > 0) {
