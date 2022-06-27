@@ -31,11 +31,12 @@
 							<core:Item key="WEEK" text="{i18n>lbl.weekly}"/>
 							<core:Item key="MONTH" text="{i18n>lbl.monthly}"/>
 						</Select>
-						<Label text="{i18n>xfld.Every}" required="{= ${ganttPlanningModel>/tempData/popover/Repeat} !== 'NEVER'}"/>
+						<Label text="{i18n>xfld.Every}" required="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.requiredValidate'}"/>
 						<Input type="Number" description="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.repaetModeDescription'}"
 							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/Repeat'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'}],formatter:'.formatter.everyAndEndDateVisibility'}"
-							value="{ganttPlanningModel>/tempData/popover/Every}" required="{= ${ganttPlanningModel>/tempData/popover/Repeat} !== 'NEVER'}"
-							fieldGroupIds="changeShapeInput" liveChange="onEveryLiveChange"/>
+							value="{ganttPlanningModel>/tempData/popover/Every}"
+							required="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.requiredValidate'}" fieldGroupIds="changeShapeInput"
+							liveChange="onEveryLiveChange"/>
 						<Label text="{i18n>xfld.On}" required="{= ${ganttPlanningModel>/tempData/popover/Repeat} === 'WEEK'}"/>
 						<MultiComboBox maxWidth="100%" selectedKeys="{ganttPlanningModel>/tempData/popover/Days}"
 							visible="{= ${ganttPlanningModel>/tempData/popover/Repeat} === 'WEEK'}" fieldGroupIds="changeShapeInput"
@@ -54,9 +55,10 @@
 							<RadioButton text="{path:'ganttPlanningModel>/tempData/popover',formatter:'.formatter.getDay'}"/>
 							<RadioButton text="{path:'ganttPlanningModel>/tempData/popover',formatter:'.formatter.getDays'}"/>
 						</RadioButtonGroup>
-						<Label text="{i18n>xfld.EndDate}" required="{= ${ganttPlanningModel>/tempData/popover/Repeat} !== 'NEVER'}"/>
+						<Label text="{i18n>xfld.EndDate}" required="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.requiredValidate'}"/>
 						<DatePicker id="idDatePicker" fieldGroupIds="changeShapeInput" dateValue="{ganttPlanningModel>/tempData/popover/RepeatEndDate}"
-							minDate="{ganttPlanningModel>/tempData/popover/minDate}" required="{= ${ganttPlanningModel>/tempData/popover/Repeat} !== 'NEVER'}"
+							minDate="{ganttPlanningModel>/tempData/popover/minDate}"
+							required="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.requiredValidate'}"
 							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/Repeat'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'}],formatter:'.formatter.everyAndEndDateVisibility'}"/>
 					</f:content>
 				</f:SimpleForm>

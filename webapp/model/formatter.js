@@ -347,6 +347,16 @@ sap.ui.define([
 			}
 
 			return false;
+		},
+
+		/**
+		 * Validate the field based on the repeat mode
+		 */
+		requiredValidate: function (Repeat) {
+			if (Repeat && Repeat !== "NEVER") {
+				return true;
+			}
+			return false;
 		}
 	};
 
