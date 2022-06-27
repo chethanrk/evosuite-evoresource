@@ -1044,7 +1044,7 @@ sap.ui.define([
 				return;
 			}
 
-			if (oData || (oData.Repeat && oData.Repeat === "NEVER")) {
+			if (!oData.Repeat || oData.Repeat === "NEVER") {
 				if (oData.isNew) {
 					oData.isTemporary = false;
 					this._markAsPlanningChange(oData, true);
