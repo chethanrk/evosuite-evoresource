@@ -40,13 +40,13 @@
 						<MultiComboBox maxWidth="100%" selectedKeys="{ganttPlanningModel>/tempData/popover/Days}"
 							visible="{= ${ganttPlanningModel>/tempData/popover/Repeat} === 'WEEK'}" fieldGroupIds="changeShapeInput"
 							required="{= ${ganttPlanningModel>/tempData/popover/Repeat} === 'WEEK'}" selectionChange="onChangeDaySelection">
-							<core:Item key="Sunday" text="{i18n>xlbl.Sun}"/>
-							<core:Item key="Monday" text="{i18n>xlbl.Mon}"/>
-							<core:Item key="Tuesday" text="{i18n>xlbl.Tue}"/>
-							<core:Item key="Wednesday" text="{i18n>xlbl.Wed}"/>
-							<core:Item key="Thursday" text="{i18n>xlbl.Thu}"/>
-							<core:Item key="Friday" text="{i18n>xlbl.Fri}"/>
-							<core:Item key="Saturday" text="{i18n>xlbl.Sat}"/>
+							<core:Item key="0" text="{i18n>xlbl.Sun}"/>
+							<core:Item key="1" text="{i18n>xlbl.Mon}"/>
+							<core:Item key="2" text="{i18n>xlbl.Tue}"/>
+							<core:Item key="3" text="{i18n>xlbl.Wed}"/>
+							<core:Item key="4" text="{i18n>xlbl.Thu}"/>
+							<core:Item key="5" text="{i18n>xlbl.Fri}"/>
+							<core:Item key="6" text="{i18n>xlbl.Sat}"/>
 						</MultiComboBox>
 						<Label text="{i18n>xfld.On}" required="{= ${ganttPlanningModel>/tempData/popover/Repeat} === 'MONTH'}"/>
 						<RadioButtonGroup id="rbg1" selectedIndex="{ganttPlanningModel>/tempData/popover/On}" class="sapUiMediumMarginBottom"

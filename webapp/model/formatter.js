@@ -143,24 +143,11 @@ sap.ui.define([
 	 */
 	var getCurrentDayString = function (oData, oResourceBundle) {
 		var oDate = moment(new Date(oData.StartDate)),
-			day = oDate.day(),
 			nthOfMoth = Math.ceil(oDate.date() / 7);
 		var sDay, snthMonth;
-		if (day === 0) {
-			sDay = oResourceBundle.getText("xlbl.Sun");
-		} else if (day === 1) {
-			sDay = oResourceBundle.getText("xlbl.Mon");
-		} else if (day === 2) {
-			sDay = oResourceBundle.getText("xlbl.Tue");
-		} else if (day === 3) {
-			sDay = oResourceBundle.getText("xlbl.Wed");
-		} else if (day === 4) {
-			sDay = oResourceBundle.getText("xlbl.Thu");
-		} else if (day === 5) {
-			sDay = oResourceBundle.getText("xlbl.Fri");
-		} else if (day === 6) {
-			sDay = oResourceBundle.getText("xlbl.Sat");
-		}
+
+		sDay = oDate.format("dddd");
+
 		if (nthOfMoth === 1) {
 			snthMonth = oResourceBundle.getText("xlbl.first");
 		} else if (nthOfMoth === 2) {
