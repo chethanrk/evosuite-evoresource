@@ -551,7 +551,7 @@ sap.ui.define([
 					aFilters = oFilterBar.getFilters(),
 					sUri = "/GanttResourceHierarchySet",
 					mParams = {
-						"$expand": "GanttHierarchyToResourceAssign"
+						"$expand": "GanttHierarchyToResourceAssign,GanttHierarchyToShift"
 					};
 
 				if (iLevel > 0) {
@@ -581,7 +581,8 @@ sap.ui.define([
 		 */
 		_addChildrenToParent: function (iLevel, oResData) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children"),
-				aAssignments = [];
+				aAssignments = [],
+				aShift = [];
 			var callbackFn = function (oItem) {
 				oItem.children = [];
 				aAssignments = [];
@@ -595,8 +596,17 @@ sap.ui.define([
 									aAssignments.push(oAssignment);
 								}
 							});
+
 						}
 						oResItem.GanttHierarchyToResourceAssign.results = aAssignments.length > 0 ? aAssignments : [];
+						// add shift data o children shift
+						if (oResItem.NodeType === "SHIFT") {
+							if (oItem.GanttHierarchyToShift && oItem.GanttHierarchyToShift.results.length > 0) {
+								aShift = oItem.GanttHierarchyToShift.results;
+							}
+							oResItem.GanttHierarchyToShift.results = aShift.length > 0 ? aShift : [];
+						}
+
 						oItem.children.push(oResItem);
 					}
 				});
@@ -797,21 +807,23 @@ sap.ui.define([
 		_addNewAssignmentShape: function (oAssignData) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			var callbackFn = function (oItem, oData, idx) {
-				if (!oItem.GanttHierarchyToResourceAssign) {
-					oItem.GanttHierarchyToResourceAssign = {
-						results: []
-					};
-				}
-
-				if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid && !oItem.ResourceGroupGuid) {
-					//add to resource itself
-					if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-						oItem.GanttHierarchyToResourceAssign.results.push(oData);
+				if (oItem.NodeType === "RESOURCE" || oItem.NodeType === "RES_GROUP") {
+					// adding only if NodeType is "Resource"-Parent or "Resource Group"
+					if (!oItem.GanttHierarchyToResourceAssign) {
+						oItem.GanttHierarchyToResourceAssign = {
+							results: []
+						};
 					}
-				} else if (oItem.ResourceGroupGuid && oItem.ResourceGroupGuid === oData.ResourceGroupGuid && oItem.ResourceGuid === oData.ResourceGuid) {
-					//add to resource group
-					if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-						oItem.GanttHierarchyToResourceAssign.results.push(oData);
+					if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid && !oItem.ResourceGroupGuid) {
+						//add to resource itself
+						if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
+							oItem.GanttHierarchyToResourceAssign.results.push(oData);
+						}
+					} else if (oItem.ResourceGroupGuid && oItem.ResourceGroupGuid === oData.ResourceGroupGuid && oItem.ResourceGuid === oData.ResourceGuid) {
+						//add to resource group
+						if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
+							oItem.GanttHierarchyToResourceAssign.results.push(oData);
+						}
 					}
 				}
 			};

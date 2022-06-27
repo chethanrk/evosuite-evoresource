@@ -37,9 +37,10 @@
 										</gnt2:content>
 									</gnt2:ContainerToolbar>
 								</gnt2:toolbar>
-								<gnt2:GanttChartWithTable id="idResourcePlanGanttChartTable" shapeSelectionMode="Single" shapeDoubleClick="onShapePress" ghostAlignment="Start"
-									adhocLineLayer="Bottom" nowLineInUTC="false" shapeMouseEnter="onShapeMouseEnter" shapeDrop="onShapeDrop" shapeResize="onShapeResize"
-									shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}" visibleHorizonUpdate="onVisibleHorizonUpdate">
+								<gnt2:GanttChartWithTable id="idResourcePlanGanttChartTable" shapeSelectionMode="Single" shapeDoubleClick="onShapePress"
+									ghostAlignment="Start" adhocLineLayer="Bottom" nowLineInUTC="false" shapeMouseEnter="onShapeMouseEnter" shapeDrop="onShapeDrop"
+									shapeResize="onShapeResize" shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}"
+									visibleHorizonUpdate="onVisibleHorizonUpdate">
 									<gnt2:axisTimeStrategy>
 										<axistime:StepwiseZoomStrategy id="idResourcePlanGanttZoom" zoomLevels="3">
 											<axistime:totalHorizon>
@@ -84,7 +85,8 @@
 											<table:rowActionTemplate></table:rowActionTemplate>
 											<table:rowSettingsTemplate>
 												<gnt2:GanttRowSettings rowId="{ganttPlanningModel>NodeId}" shapes1="{path: 'ganttPlanningModel>bgTasks', templateShareable:false}"
-													shapes2="{ path:'ganttPlanningModel>GanttHierarchyToResourceAssign/results', templateShareable:true }">
+													shapes2="{ path:'ganttPlanningModel>GanttHierarchyToResourceAssign/results', templateShareable:true }"
+													shapes3="{ path:'ganttPlanningModel>GanttHierarchyToShift/results', templateShareable:true }">
 													<gnt2:shapes1>
 														<gnt2:BaseRectangle scheme="hiddenBackground" countInBirdEye="false"
 															time="{path: 'ganttPlanningModel>startTime', formatter:'.formatter.fnTimeConverter'}"
@@ -93,14 +95,11 @@
 															strokeWidth="1" height="32" yBias="0"></gnt2:BaseRectangle>
 													</gnt2:shapes1>
 													<gnt2:shapes2>
-														<gnt2:BaseRectangle shapeId="{ganttPlanningModel>Guid}" countInBirdEye="true"
-															time="{parts:[{path:'ganttPlanningModel>StartDate'},{path:'ganttPlanningModel>isNew'},{path:'ganttPlanningModel>isChanging'}],formatter:'.formatter.convertFromUTCDate'}" height="20"
-															endTime="{parts:[{path:'ganttPlanningModel>EndDate'},{path:'ganttPlanningModel>isNew'},{path:'ganttPlanningModel>isChanging'}],formatter:'.formatter.convertFromUTCDate'}" title="{ganttPlanningModel>DESCRIPTION}"
-															showTitle="true" tooltip="{ganttPlanningModel>DESCRIPTION}" fill="{ganttPlanningModel>RESOURCE_GROUP_COLOR}"
-															stroke="{parts: ['ganttPlanningModel>RESOURCE_GROUP_COLOR',{value:'-20', model:'ganttPlanningModel'}], formatter: '.formatter.shadeColor'}"
-															strokeWidth="1" opacity="{= ${ganttPlanningModel>isTemporary} === true ? 0.5 : 1}" resizable="true" selectable="true" draggable="true"
-															rx="4" ry="4"></gnt2:BaseRectangle>
+														<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.shapes.GroupAssignment" type="XML"/>
 													</gnt2:shapes2>
+													<gnt2:shapes3>
+														<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.shapes.ShiftAssignment" type="XML"/>
+													</gnt2:shapes3>
 												</gnt2:GanttRowSettings>
 											</table:rowSettingsTemplate>
 											<table:dragDropConfig>
