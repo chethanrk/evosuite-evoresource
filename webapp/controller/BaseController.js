@@ -255,30 +255,33 @@ sap.ui.define([
 				};
 				//collect all assignment properties who allowed for create
 				this.getModel().getMetaModel().loaded().then(function () {
-					var oMetaModel = this.getModel().getMetaModel(),
-						oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
-						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-						aProperty = oEntityType ? oEntityType.property : [];
+					if (oRowData.NodeType === "RESOURCE" || oRowData.NodeType === "RES_GROUP") {
+						// create assignment only if NodeType is "Resource"-Parent or "Resource Group"
+						var oMetaModel = this.getModel().getMetaModel(),
+							oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
+							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+							aProperty = oEntityType ? oEntityType.property : [];
 
-					aProperty.forEach(function (property) {
-						var isCreatable = property["sap:creatable"];
-						if (typeof isCreatable === "undefined" || isCreatable === true) {
-							obj[property.name] = "";
-							if (oRowData[property.name]) {
-								obj[property.name] = oRowData[property.name];
+						aProperty.forEach(function (property) {
+							var isCreatable = property["sap:creatable"];
+							if (typeof isCreatable === "undefined" || isCreatable === true) {
+								obj[property.name] = "";
+								if (oRowData[property.name]) {
+									obj[property.name] = oRowData[property.name];
+								}
 							}
-						}
-					});
-					obj.RepeatEndDate = oEndTime;
-					obj.StartDate = oStartTime;
-					obj.EndDate = oEndTime;
-					obj.NODE_TYPE = "GROUP";
-					obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
-					obj.ResourceGuid = oRowData.ResourceGuid;
-					obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
-					obj.PARENT_NODE_ID = oRowData.NodeId;
-					obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
-					obj.bDragged = bDragged;
+						});
+                        obj.RepeatEndDate = oEndTime;
+						obj.StartDate = oStartTime;
+						obj.EndDate = oEndTime;
+						obj.NODE_TYPE = "GROUP";
+						obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
+						obj.ResourceGuid = oRowData.ResourceGuid;
+						obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
+						obj.PARENT_NODE_ID = oRowData.NodeId;
+						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
+						obj.bDragged = bDragged;
+					}
 					resolve(obj);
 				}.bind(this));
 			}.bind(this));
