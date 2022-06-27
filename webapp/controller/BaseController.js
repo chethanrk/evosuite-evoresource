@@ -246,7 +246,12 @@ sap.ui.define([
 					minDate: new Date(),
 					isTemporary: true,
 					isNew: true,
-					Guid: new Date().getTime()
+					Guid: new Date().getTime(),
+					Repeat: "NEVER",
+					Every: "",
+					Days: [],
+					On: 0,
+					RepeatEndDate: new Date()
 				};
 				//collect all assignment properties who allowed for create
 				this.getModel().getMetaModel().loaded().then(function () {
@@ -266,7 +271,7 @@ sap.ui.define([
 								}
 							}
 						});
-
+                        obj.RepeatEndDate = oEndTime;
 						obj.StartDate = oStartTime;
 						obj.EndDate = oEndTime;
 						obj.NODE_TYPE = "GROUP";
@@ -300,6 +305,9 @@ sap.ui.define([
 			for (var i = 0; i < aCustomFields.length; i++) {
 				if (aCustomFields[i].getValue) {
 					var sValue = aCustomFields[i].getValue();
+					if (aCustomFields[i] instanceof sap.m.MultiComboBox) {
+						sValue = aCustomFields[i].getSelectedKeys().length;
+					}
 					try {
 						if (aCustomFields[i].getRequired() && aCustomFields[i].getEditable() && (!sValue || sValue.trim() === "")) {
 							aCustomFields[i].setValueState(sap.ui.core.ValueState.Error);

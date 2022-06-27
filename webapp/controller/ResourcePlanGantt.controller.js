@@ -115,6 +115,21 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
+				},
+				onChangeDaySelection: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onEveryLiveChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onChangeRepeatMode: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -517,6 +532,38 @@ sap.ui.define([
 		onShowDemandPress: function (oEvent) {
 			var oSource = oEvent.getSource();
 			this.openApp2AppPopover(oSource, "demandModel", "Orderid");
+		},
+
+		/**
+		 * Change event for th repeat mode selection
+		 * reset the repeat mode data each time selection gets changed
+		 */
+		onChangeRepeatMode: function (oEvent) {
+			this.oPlanningModel.setProperty("/tempData/popover/Every", "");
+			this.oPlanningModel.setProperty("/tempData/popover/Days", []);
+			this.oPlanningModel.setProperty("/tempData/popover/On", 0);
+		},
+
+		/**
+		 * Live change event for the every repeat count field
+		 * reset the value state if value inside the field
+		 */
+		onEveryLiveChange: function (oEvent) {
+			var oSource = oEvent.getSource();
+			if (oSource.getValue()) {
+				oSource.setValueState("None");
+			}
+		},
+
+		/**
+		 * change event for the day selection combobox
+		 * reset the value state if any item selection
+		 */
+		onChangeDaySelection: function (oEvent) {
+			var oSource = oEvent.getSource();
+			if (oSource.getSelectedKeys() && oSource.getSelectedKeys().length) {
+				oSource.setValueState("None");
+			}
 		},
 
 		/* =========================================================== */
@@ -985,41 +1032,33 @@ sap.ui.define([
 
 		/**
 		 * Validate assigment while create/update 
+		 * Created repeated assignments
 		 * Change of shape assignment
 		 * check if group or date range was changed
 		 * when it was changed send validation request
 		 */
 		_validateAssignment: function () {
 			var oData = this.oPlanningModel.getProperty("/tempData/popover");
-
 			//validation for the duplicates
 			if (this._validateDuplicateAsigment()) {
 				return;
 			}
 
-			if (oData.isNew) {
-				this._markAndClosePlanningPopover(oData);
+			if (!oData.Repeat || oData.Repeat === "NEVER") {
+				if (oData.isNew) {
+					oData.isTemporary = false;
+					this._markAsPlanningChange(oData, true);
+				} else {
+					this.oPlanningModel.setProperty("/tempData/popover/isTemporary", false);
+					//validate whether changes are happend or not
+					if (this._setChangeIndicator(oData)) {
+						this._validateForChange(oData);
+					}
+				}
 			} else {
-				this.oPlanningModel.setProperty("/tempData/popover/isTemporary", false);
-				//validate whether changes are happend or not
-				if (this._setChangeIndicator(oData)) {
-					this._validateForChange(oData);
-				}
-				if (this._oPlanningPopover) {
-					this._oPlanningPopover.close();
-				}
-
+				//repeat assignement creation
+				this._repeatAssignments(oData);
 			}
-		},
-
-		/**
-		 * To call change planning popover data to done
-		 * close planning popover
-		 * @param {oData} popover data
-		 */
-		_markAndClosePlanningPopover: function (oData) {
-			oData.isTemporary = false;
-			this._markAsPlanningChange(oData, true);
 			if (this._oPlanningPopover) {
 				this._oPlanningPopover.close();
 			}
@@ -1110,6 +1149,95 @@ sap.ui.define([
 			this.oPlanningModel.setProperty("/tempData/popover", {});
 			this.oPlanningModel.setProperty("/tempData/oldPopoverData", {});
 			this.reValidateForm(this.getView().getControlsByFieldGroupId("changeShapeInput"));
+		},
+
+		/**
+		 * Create repeated assignments
+		 * Calculate the future assignments based on sented repeat mode
+		 * @param {oData} Initial popover selection
+		 */
+		_repeatAssignments: function (oData) {
+			var newData, iEvery = 0,
+				dayCounter = 0,
+				oStartDate = moment(oData.StartDate);
+
+			do {
+				if (oData.Repeat === "DAY") {
+					newData = deepClone(oData);
+					newData.StartDate = oStartDate.add(iEvery, 'days').toDate();
+
+					this._validateAndPrepareNewAssignment(newData, oData, dayCounter);
+					oStartDate = moment(newData.StartDate);
+
+				} else if (oData.Repeat === "WEEK") {
+					var week = oStartDate;
+					for (var d = 0; d < oData.Days.length; d++) {
+						newData = deepClone(oData);
+						newData.StartDate = moment(week).day(oData.Days[d]).toDate();
+
+						this._validateAndPrepareNewAssignment(newData, oData, dayCounter, d);
+					}
+					oStartDate = moment(oStartDate.add(iEvery, 'weeks').startOf('weeks').toDate());
+
+				} else if (oData.Repeat === "MONTH") {
+					newData = deepClone(oData);
+					if (oData.On === 0) {
+						newData.StartDate = oStartDate.add(iEvery, 'months').toDate();
+					} else if (oData.On === 1) {
+						var oStrDate = moment(oData.StartDate),
+							iDay = oStrDate.day();
+						newData.StartDate = oStartDate.add(iEvery, 'months').day(iDay).toDate();
+					}
+
+					this._validateAndPrepareNewAssignment(newData, oData, dayCounter);
+					oStartDate = moment(newData.StartDate);
+				}
+
+				dayCounter++;
+				iEvery = parseInt(oData.Every, 10);
+			}
+			while (oStartDate.isBefore(moment(oData.RepeatEndDate)));
+		},
+
+		/**
+		 * validate the duplicate assignments
+		 * Add new shape to gantt
+		 * mark it to save
+		 * @param {data} - data to be save fot he new assignment
+		 * @param {oData} - date with popover selection
+		 */
+		_validateAndAddNewAssignment: function (data, oData) {
+			var aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
+			//validation for the existing assigments
+			if (this._checkDuplicateAsigment(data, aAssigments)) {
+				this._addNewAssignmentShape(data);
+				data.isTemporary = false;
+				this._markAsPlanningChange(data, true);
+			} else {
+				//TODO message for the overlapping
+			}
+		},
+
+		/**
+		 * Biuld new Guid
+		 * Validate startdate is less than repeat end date and greater than current date
+		 * Calculate enddate for the new assignment
+		 * call _validateAndAddNewAssignment
+		 * @{param} newData - data for new assignment
+		 * @{param} oData - popover data
+		 * @param iCounter - integer indicator
+		 * @param iDayIndex - integer days loop index
+		 */
+		_validateAndPrepareNewAssignment: function (newData, oData, iCounter, iDayIndex) {
+			newData.Guid = newData.Guid + iCounter;
+			if (iDayIndex) {
+				newData.Guid = newData.Guid + iCounter + iDayIndex;
+			}
+			newData.EndDate = moment(newData.StartDate).endOf('day').toDate();
+
+			if (moment(newData.StartDate).isSameOrAfter(oData.StartDate) && moment(newData.StartDate).isSameOrBefore(moment(oData.RepeatEndDate))) {
+				this._validateAndAddNewAssignment(newData, oData);
+			}
 		}
 	});
 });

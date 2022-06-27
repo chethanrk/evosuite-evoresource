@@ -70,7 +70,7 @@ sap.ui.define([
 			this._getTemplateProps();
 
 			this._setApp2AppLinks();
-			
+
 			this._getResourceGroupDetails();
 
 			// get System Information

@@ -1,5 +1,6 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
-	<ResponsivePopover id="isPopoverChangeSHape" class="sapUiContentPadding" showHeader="false" placement="{viewModel>/gantt/popoverPlacement}">
+	<ResponsivePopover id="isPopoverChangeSHape" class="sapUiContentPadding" showHeader="false" placement="{viewModel>/gantt/popoverPlacement}"
+		contentWidth="30%" contentHeight="auto">
 		<content>
 			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|Before"/>
 			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|Instead">
@@ -15,14 +16,50 @@
 						<ComboBox id="idResourceGroupGroup" required="true" showSecondaryValues="true" name="ResourceGroupGuid" fieldGroupIds="changeShapeInput"
 							items="{ path: 'viewModel>/ResourceGroup', sorter: { path: 'ResourceGroupDesc' }}"
 							selectedKey="{ganttPlanningModel>/tempData/popover/ResourceGroupGuid}" change="onChangeResourceGroup">
-							<core:ListItem key="{viewModel>ResourceGroupGuid}" text="{viewModel>ResourceGroupDesc}"
-								additionalText="{viewModel>ResourceGroupUnitId}"/>
+							<core:ListItem key="{viewModel>ResourceGroupGuid}" text="{viewModel>ResourceGroupDesc}" additionalText="{viewModel>ResourceGroupUnitId}"/>
 						</ComboBox>
 						<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
 						<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"
 							dateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/StartDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
 							secondDateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/EndDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
 							minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}"/>
+						<Label text="{i18n>xfld.Repeat}"/>
+						<Select id="idRepeatMode" forceSelection="true" change="onChangeRepeatMode" selectedKey="{ganttPlanningModel>/tempData/popover/Repeat}"
+							visible="{= ${ganttPlanningModel>/tempData/popover/isTemporary} ? true : false}" fieldGroupIds="changeShapeInput">
+							<core:Item key="NEVER" text="{i18n>xfld.Never}"/>
+							<core:Item key="DAY" text="{i18n>lbl.daily}"/>
+							<core:Item key="WEEK" text="{i18n>lbl.weekly}"/>
+							<core:Item key="MONTH" text="{i18n>lbl.monthly}"/>
+						</Select>
+						<Label text="{i18n>xfld.Every}" required="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.requiredValidate'}"/>
+						<Input type="Number" description="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.repaetModeDescription'}"
+							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/Repeat'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'}],formatter:'.formatter.everyAndEndDateVisibility'}"
+							value="{ganttPlanningModel>/tempData/popover/Every}"
+							required="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.requiredValidate'}" fieldGroupIds="changeShapeInput"
+							liveChange="onEveryLiveChange"/>
+						<Label text="{i18n>xfld.On}" required="{= ${ganttPlanningModel>/tempData/popover/Repeat} === 'WEEK'}"/>
+						<MultiComboBox maxWidth="100%" selectedKeys="{ganttPlanningModel>/tempData/popover/Days}"
+							visible="{= ${ganttPlanningModel>/tempData/popover/Repeat} === 'WEEK'}" fieldGroupIds="changeShapeInput"
+							required="{= ${ganttPlanningModel>/tempData/popover/Repeat} === 'WEEK'}" selectionChange="onChangeDaySelection">
+							<core:Item key="0" text="{i18n>xlbl.Sun}"/>
+							<core:Item key="1" text="{i18n>xlbl.Mon}"/>
+							<core:Item key="2" text="{i18n>xlbl.Tue}"/>
+							<core:Item key="3" text="{i18n>xlbl.Wed}"/>
+							<core:Item key="4" text="{i18n>xlbl.Thu}"/>
+							<core:Item key="5" text="{i18n>xlbl.Fri}"/>
+							<core:Item key="6" text="{i18n>xlbl.Sat}"/>
+						</MultiComboBox>
+						<Label text="{i18n>xfld.On}" required="{= ${ganttPlanningModel>/tempData/popover/Repeat} === 'MONTH'}"/>
+						<RadioButtonGroup id="rbg1" selectedIndex="{ganttPlanningModel>/tempData/popover/On}" class="sapUiMediumMarginBottom"
+							visible="{= ${ganttPlanningModel>/tempData/popover/Repeat} === 'MONTH'}" fieldGroupIds="changeShapeInput">
+							<RadioButton text="{path:'ganttPlanningModel>/tempData/popover',formatter:'.formatter.getDay'}"/>
+							<RadioButton text="{path:'ganttPlanningModel>/tempData/popover',formatter:'.formatter.getDays'}"/>
+						</RadioButtonGroup>
+						<Label text="{i18n>xfld.EndDate}" required="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.requiredValidate'}"/>
+						<DatePicker id="idDatePicker" fieldGroupIds="changeShapeInput" dateValue="{ganttPlanningModel>/tempData/popover/RepeatEndDate}"
+							minDate="{ganttPlanningModel>/tempData/popover/minDate}"
+							required="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.requiredValidate'}"
+							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/Repeat'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'}],formatter:'.formatter.everyAndEndDateVisibility'}"/>
 					</f:content>
 				</f:SimpleForm>
 			</core:ExtensionPoint>

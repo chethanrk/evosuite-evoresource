@@ -137,6 +137,35 @@ sap.ui.define([
 		}
 	};
 
+	/**
+	 * get current day string and occurence of the day in the month
+	 * oData popover data
+	 */
+	var getCurrentDayString = function (oData, oResourceBundle) {
+		var oDate = moment(new Date(oData.StartDate)),
+			nthOfMoth = Math.ceil(oDate.date() / 7);
+		var sDay, snthMonth;
+
+		sDay = oDate.format("dddd");
+
+		if (nthOfMoth === 1) {
+			snthMonth = oResourceBundle.getText("xlbl.first");
+		} else if (nthOfMoth === 2) {
+			snthMonth = oResourceBundle.getText("xlbl.second");
+		} else if (nthOfMoth === 3) {
+			snthMonth = oResourceBundle.getText("xlbl.third");
+		} else if (nthOfMoth === 4) {
+			snthMonth = oResourceBundle.getText("xlbl.fourth");
+		} else if (nthOfMoth === 5) {
+			snthMonth = oResourceBundle.getText("xlbl.fifth");
+		}
+
+		return {
+			"snthMonth": snthMonth,
+			"sDay": sDay
+		};
+	};
+
 	return {
 
 		/**
@@ -172,12 +201,12 @@ sap.ui.define([
 		 * to get utc date object
 		 */
 
-		convertFromUTCDate: function (oDate,isNew,isChanging) {
+		convertFromUTCDate: function (oDate, isNew, isChanging) {
 			if (!oDate) {
 				return null;
 			}
 			var offsetMs = new Date().getTimezoneOffset() * 60 * 1000;
-			if(isNew || isChanging){
+			if (isNew || isChanging) {
 				return oDate;
 			}
 			return new Date(oDate.getTime() + offsetMs);
@@ -239,6 +268,96 @@ sap.ui.define([
 			var BB = B.toString(16).length === 1 ? "0" + B.toString(16) : B.toString(16);
 			return "#" + RR + GG + BB;
 		},
+
+		/**
+		 * To get description for the repeat selection
+		 * repeatModeSelection repeat selected mode
+		 */
+		repaetModeDescription: function (repeatModeSelection) {
+			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
+			if (!repeatModeSelection || repeatModeSelection === "NEVER") {
+				return "";
+			}
+			if (repeatModeSelection === "DAY") {
+				return "day(s)";
+			} else if (repeatModeSelection === "WEEK") {
+				return "week(s)";
+			} else if (repeatModeSelection === "MONTH") {
+				return "month(s)";
+			}
+			return "";
+		},
+
+		/**
+		 * Validate the changeshape popover repeat fileds
+		 * oPopOverData popover data
+		 */
+		validateVisibilityEvery: function (oPopOverData) {
+			if (oPopOverData && oPopOverData.Repeat && oPopOverData.Repeat !== "NEVER" && oPopOverData.isNew) {
+				return true;
+			}
+			return false;
+		},
+
+		/**
+		 * get formatted string of following format
+		 * Day XX
+		 * oData popovr data
+		 */
+		getDay: function (oData) {
+			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
+			if (!oData) {
+				return "";
+			}
+			var sDay = new Date(oData.StartDate).getDate().toString();
+			var iDay = sDay.length < 2 ? "0" + sDay : sDay;
+			return oResourceBundle.getText("xdsr.Day", iDay);
+		},
+
+		/**
+		 * get formatted string of the following format
+		 * The XX th weekday 
+		 * oData popover data
+		 */
+		getDays: function (oData) {
+			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
+			if (!oData) {
+				return "";
+			}
+
+			var oDaysCalculated = getCurrentDayString(oData, oResourceBundle);
+			return oResourceBundle.getText("xdsr.occurence", [oDaysCalculated.snthMonth, oDaysCalculated.sDay]);
+		},
+
+		/**
+		 * return string value of selected date
+		 * oData popover data
+		 */
+		getDayString: function (oData) {
+			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
+			return getCurrentDayString(oData, oResourceBundle);
+		},
+
+		/**
+		 * visibility of every input box
+		 */
+		everyAndEndDateVisibility: function (Repeat, isTemporary) {
+			if (Repeat && isTemporary && Repeat !== "NEVER") {
+				return true;
+			}
+
+			return false;
+		},
+
+		/**
+		 * Validate the field based on the repeat mode
+		 */
+		requiredValidate: function (Repeat) {
+			if (Repeat && Repeat !== "NEVER") {
+				return true;
+			}
+			return false;
+		}
 	};
 
 });
