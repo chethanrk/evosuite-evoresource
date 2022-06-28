@@ -963,6 +963,7 @@ sap.ui.define([
 		 */
 		_validateForDelete: function (oAssignItem, aAssignments, index, sChangedContext) {
 			var oParams = {
+					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
 					EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),
 					StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate)
