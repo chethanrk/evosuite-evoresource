@@ -919,8 +919,8 @@ sap.ui.define([
 			var oParams = {
 					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
-					EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),
-					StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate)
+					EndTimestamp: oAssignItem.EndDate,
+					StartTimestamp: oAssignItem.StartDate
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel"),
@@ -966,32 +966,23 @@ sap.ui.define([
 		/**
 		 * list if demands who are assigned to this time frame
 		 */
-		_validateForDelete: function (oAssignItem, aAssignments, index, sChangedContext) {
+		_validateForDelete: function (oAssignItem, sChangedContext) {
 			var oParams = {
 					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
-					EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),
-					StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate)
+					EndTimestamp: oAssignItem.EndDate,
+					StartTimestamp: oAssignItem.StartDate
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel"),
 				bAssignmentCheck = this.getView().getModel("user").getProperty("/ENABLE_ASSIGNMENT_CHECK");
 
-			var callbackfunction = function (oData) {
-				if (oData.results.length > 0) {
-					oDemandModel.setProperty("/data", oData.results);
+			var callbackfunction = function (oDemandData) {
+				if (oDemandData.results.length > 0) {
+					oDemandModel.setProperty("/data", oDemandData.results);
 					this.openDemandDialog();
 				} else {
-					var aChildren = this.oPlanningModel.getProperty("/data/children");
-					var callbackFn = function (oItem, oData, idx) {
-						var aAssignments = oItem.GanttHierarchyToResourceAssign ? oItem.GanttHierarchyToResourceAssign.results : [];
-						aAssignments.forEach(function (oAssignItem, index) {
-
-						});
-						this._deleteAssignment(oAssignItem, aAssignments, idx, sChangedContext);
-					};
-					aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignItem);
-					this.oPlanningModel.setProperty("/data/children", aChildren);
+					this._deleteAssignment(oAssignItem, sChangedContext);
 
 				}
 				this.oPlanningModel.refresh();
@@ -999,26 +990,37 @@ sap.ui.define([
 			if (bAssignmentCheck) {
 				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 			} else {
-				this._deleteAssignment(oAssignItem, aAssignments, index, sChangedContext);
+				this._deleteAssignment(oAssignItem, sChangedContext);
 			}
 
 		},
+
 		/**
 		 * Method will get call after validation is done, if validation pass, data will get delete from gantt.
 		 * @param {object} oAssignmentData - deleted data
-		 * @param {array} aAssignments - all assignments
-		 * @param {integer} index - index of the assignment to be deleted from "aAssignments"
 		 * @param {object} sChangedContext - context of changed group
 		 * 
 		 */
-		_deleteAssignment: function (oAssignmentData, aAssignments, index, sChangedContext) {
-			this._markAsPlanningDelete(oAssignmentData);
-			if (sChangedContext) {
-				oAssignmentData.RESOURCE_GROUP_COLOR = sChangedContext.getProperty("ResourceGroupColor");
-				oAssignmentData.DESCRIPTION = sChangedContext.getProperty("ResourceGroupDesc");
-				this._addSingleChildToParent(oAssignmentData, true);
-			}
-			aAssignments.splice(index, 1);
+		_deleteAssignment: function (oAssignmentData, sChangedContext) {
+			var aChildren = this.oPlanningModel.getProperty("/data/children");
+			var callbackFn = function (oItem, oData, idx) {
+				var aAssignments = oItem.GanttHierarchyToResourceAssign ? oItem.GanttHierarchyToResourceAssign.results : [];
+				aAssignments.forEach(function (oAssignItemData, index) {
+					if (oAssignItemData.Guid === oData.Guid) {
+						this._markAsPlanningDelete(oAssignItemData);
+						if (sChangedContext) {
+							oAssignItemData.RESOURCE_GROUP_COLOR = sChangedContext.getProperty("ResourceGroupColor");
+							oAssignItemData.DESCRIPTION = sChangedContext.getProperty("ResourceGroupDesc");
+							this._addSingleChildToParent(oAssignItemData, true);
+						}
+						aAssignments.splice(index, 1);
+						// this._deleteAssignment(oAssignItemData, aAssignments, index, sChangedContext);
+					}
+				}.bind(this));
+
+			};
+			aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignmentData);
+			this.oPlanningModel.setProperty("/data/children", aChildren);
 		},
 		/**
 		 * validated if popover can be visible or not
