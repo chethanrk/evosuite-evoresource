@@ -834,7 +834,7 @@ sap.ui.define([
 					//Handle Error
 					oViewModel.setProperty("/busy", false);
 					this.showMessageToast(oResourceBundle.getText("errorMessage"));
-				}
+				}.bind(this)
 			});
 
 		},
