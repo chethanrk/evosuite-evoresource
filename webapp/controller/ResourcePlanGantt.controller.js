@@ -894,13 +894,9 @@ sap.ui.define([
 					var aAssignments = oItem.GanttHierarchyToResourceAssign ? oItem.GanttHierarchyToResourceAssign.results : [];
 					aAssignments.forEach(function (oAssignItem, index) {
 						if (oAssignItem.Guid === oData.Guid) {
-							if (oData.isNew) {
-								//remove from resource and group when its a shape who was not yet saved by user
-								this._markAsPlanningChange(oAssignItem, false);
-								aAssignments.splice(index, 1);
-							} else {
-								// this._validateForDelete(oAssignItem, aAssignments, index, sChangedContext);
-							}
+							this._markAsPlanningChange(oAssignItem, false);
+							aAssignments.splice(index, 1);
+
 						}
 					}.bind(this));
 				};
@@ -915,7 +911,6 @@ sap.ui.define([
 		 * Validation of assignment on change
 		 */
 		_validateForChange: function (oAssignItem) {
-			// added formatter to convert the date to UTC before backend call
 			var oParams = {
 					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
@@ -950,7 +945,6 @@ sap.ui.define([
 			} else {
 				this._changeAssignment(oPopoverData);
 			}
-
 		},
 
 		/**
@@ -1014,7 +1008,6 @@ sap.ui.define([
 							this._addSingleChildToParent(oAssignItemData, true);
 						}
 						aAssignments.splice(index, 1);
-						// this._deleteAssignment(oAssignItemData, aAssignments, index, sChangedContext);
 					}
 				}.bind(this));
 
