@@ -913,6 +913,7 @@ sap.ui.define([
 		_validateForChange: function (oAssignItem) {
 			// added formatter to convert the date to UTC before backend call
 			var oParams = {
+					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
 					EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),
 					StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate)
