@@ -889,23 +889,27 @@ sap.ui.define([
 			if (!oAssignData.isTemporary && !removeNew) {
 				return;
 			}
-
-			var callbackFn = function (oItem, oData, idx) {
-				var aAssignments = oItem.GanttHierarchyToResourceAssign ? oItem.GanttHierarchyToResourceAssign.results : [];
-				aAssignments.forEach(function (oAssignItem, index) {
-					if (oAssignItem.Guid === oData.Guid) {
-						if (oData.isNew) {
-							//remove from resource and group when its a shape who was not yet saved by user
-							this._markAsPlanningChange(oAssignItem, false);
-							aAssignments.splice(index, 1);
-						} else {
-							this._validateForDelete(oAssignItem, aAssignments, index, sChangedContext);
+			if (oAssignData.isNew) {
+				var callbackFn = function (oItem, oData, idx) {
+					var aAssignments = oItem.GanttHierarchyToResourceAssign ? oItem.GanttHierarchyToResourceAssign.results : [];
+					aAssignments.forEach(function (oAssignItem, index) {
+						if (oAssignItem.Guid === oData.Guid) {
+							if (oData.isNew) {
+								//remove from resource and group when its a shape who was not yet saved by user
+								this._markAsPlanningChange(oAssignItem, false);
+								aAssignments.splice(index, 1);
+							} else {
+								// this._validateForDelete(oAssignItem, aAssignments, index, sChangedContext);
+							}
 						}
-					}
-				}.bind(this));
-			};
-			aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
-			this.oPlanningModel.setProperty("/data/children", aChildren);
+					}.bind(this));
+				};
+				aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
+				this.oPlanningModel.setProperty("/data/children", aChildren);
+			} else {
+				this._validateForDelete(oAssignData, sChangedContext);
+			}
+
 		},
 		/**
 		 * Validation of assignment on change
@@ -978,7 +982,17 @@ sap.ui.define([
 					oDemandModel.setProperty("/data", oData.results);
 					this.openDemandDialog();
 				} else {
-					this._deleteAssignment(oAssignItem, aAssignments, index, sChangedContext);
+					var aChildren = this.oPlanningModel.getProperty("/data/children");
+					var callbackFn = function (oItem, oData, idx) {
+						var aAssignments = oItem.GanttHierarchyToResourceAssign ? oItem.GanttHierarchyToResourceAssign.results : [];
+						aAssignments.forEach(function (oAssignItem, index) {
+
+						});
+						this._deleteAssignment(oAssignItem, aAssignments, idx, sChangedContext);
+					};
+					aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignItem);
+					this.oPlanningModel.setProperty("/data/children", aChildren);
+
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
