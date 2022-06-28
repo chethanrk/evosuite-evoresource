@@ -514,7 +514,7 @@ sap.ui.define([
 						sPath: sPath,
 						oData: aChildren[i]
 					};
-				} else if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results.length > 0) {
+				} else if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results && aChildren[i].GanttHierarchyToResourceAssign.results.length > 0) {
 					//search in assignments
 					sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/GanttHierarchyToResourceAssign/results");
 					if (sNewObj) {
@@ -535,7 +535,7 @@ sap.ui.define([
 						sPath: sPath,
 						oData: aChildren[i]
 					};
-				} else if (aChildren[i].GanttHierarchyToShift && aChildren[i].GanttHierarchyToShift.results.length > 0) {
+				} else if (aChildren[i].GanttHierarchyToShift && aChildren[i].GanttHierarchyToShift.results && aChildren[i].GanttHierarchyToShift.results.length > 0) {
 					//search in assignments
 					sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/GanttHierarchyToShift/results");
 					if (sNewObj) {

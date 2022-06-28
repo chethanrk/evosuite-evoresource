@@ -649,7 +649,10 @@ sap.ui.define([
 						// add shift data o children shift
 						if (oResItem.NodeType === "SHIFT") {
 							if (oItem.GanttHierarchyToShift && oItem.GanttHierarchyToShift.results.length > 0) {
-								aShift = oItem.GanttHierarchyToShift.results;
+								oItem.GanttHierarchyToShift.results.forEach(function (oAssignment, idx) {
+									aShift.push(oAssignment)
+								})
+
 							}
 							oResItem.GanttHierarchyToShift.results = aShift.length > 0 ? aShift : [];
 						}
@@ -769,7 +772,7 @@ sap.ui.define([
 					}
 
 				}.bind(this));
-			} else if (oTargetControl.sParentAggregationName === "shapes2" && oContext) {
+			} else if ((oTargetControl.sParentAggregationName === "shapes2" || oTargetControl.sParentAggregationName === "shapes3") && oContext) {
 				//its a assignment
 				var oAssignData = oContext.getObject();
 				this._setShapePopoverPosition(oAssignData);
@@ -935,7 +938,12 @@ sap.ui.define([
 			}
 			if (oAssignData.isNew) {
 				var callbackFn = function (oItem, oData, idx) {
-					var aAssignments = oItem.GanttHierarchyToResourceAssign ? oItem.GanttHierarchyToResourceAssign.results : [];
+					var aAssignments = [];
+					if (oData.NODE_TYPE === "RES_GROUP") {
+						aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign.results : []) : [];
+					} else if (oData.NODE_TYPE === "SHIFT") {
+						aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
+					}
 					aAssignments.forEach(function (oAssignItem, index) {
 						if (oAssignItem.Guid === oData.Guid) {
 							this._markAsPlanningChange(oAssignItem, false);
