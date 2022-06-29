@@ -357,6 +357,26 @@ sap.ui.define([
 				return true;
 			}
 			return false;
+		},
+
+		/**
+		 * Validate the field based on the week mode
+		 */
+		weekModeValidation: function (Repeat) {
+			if (Repeat && Repeat === "WEEK") {
+				return true;
+			}
+			return false;
+		},
+
+		/**
+		 * Validate the field based on the month mode
+		 */
+		monthModeValidation: function (Repeat) {
+			if (Repeat && Repeat === "MONTH") {
+				return true;
+			}
+			return false;
 		}
 	};
 
