@@ -364,9 +364,10 @@ sap.ui.define([
 				oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id),
 				sStartTime = oDroppedTarget.getTime(),
 				sEndTime = oDroppedTarget.getEndTime(),
-				oPopoverData;
-
-			oObject = this.copyObjectData(oObject, oDraggedObject.data, ["__metadata"]);
+				oPopoverData,
+				aIgnoreProperty=["__metadata","NodeId"];
+			
+			oObject = this.copyObjectData(oObject, oDraggedObject.data, aIgnoreProperty);
 			oPopoverData = {
 				Guid: new Date().getTime(),
 				sStartTime: sStartTime,
@@ -663,6 +664,7 @@ sap.ui.define([
 			var callbackFn = function (oItem) {
 				oItem.children = [];
 				aAssignments = [];
+				aShift = [];
 				oResData.forEach(function (oResItem) {
 					aAssignments = [];
 					if (oItem.NodeId === oResItem.ParentNodeId) {
@@ -680,8 +682,8 @@ sap.ui.define([
 						if (oResItem.NodeType === "SHIFT") {
 							if (oItem.GanttHierarchyToShift && oItem.GanttHierarchyToShift.results.length > 0) {
 								oItem.GanttHierarchyToShift.results.forEach(function (oAssignment, idx) {
-									aShift.push(oAssignment)
-								})
+									aShift.push(oAssignment);
+								});
 
 							}
 							oResItem.GanttHierarchyToShift.results = aShift.length > 0 ? aShift : [];
@@ -690,7 +692,7 @@ sap.ui.define([
 						oItem.children.push(oResItem);
 					}
 				});
-			};
+			}.bind(this);
 			aChildren = this._recurseChildren2Level(aChildren, iLevel, callbackFn);
 			this.oPlanningModel.setProperty("/data/children", aChildren);
 		},
@@ -792,7 +794,7 @@ sap.ui.define([
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject, bDragged).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oData));
-					if (oData && oData.ResourceGroupGuid) {
+					if (oData && oData.NODE_TYPE !== "RESOURCE") {
 						oChildData = Object.assign(oData, {
 							bgTasks: oPopoverData.oResourceObject.bgTasks
 						});
@@ -822,11 +824,15 @@ sap.ui.define([
 				oGanntObject["Description"] = oData["DESCRIPTION"];
 				oGanntObject["ChildCount"] = 0;
 				oGanntObject["HierarchyLevel"] = 1;
-				oGanntObject["NodeType"] = "RES_GROUP";
+				oGanntObject["NodeType"] = oData["NODE_TYPE"];
 				oGanntObject["ParentNodeId"] = oData["PARENT_NODE_ID"].split("//")[0];
 				oGanntObject["NodeId"] = oData["ParentNodeId"] + "//" + new Date().getTime();
 				var callbackFn = function (oItem, oData) {
-					if (!this._checkIfGroupExist(oItem, oData["ResourceGroupGuid"]) && oItem.NodeId === oData.ParentNodeId && oItem.children) {
+					if (oData.NodeType === "RES_GROUP" && !this._checkIfGroupExist(oItem, oData["ResourceGroupGuid"])  && oItem.NodeId === oData.ParentNodeId && oItem.children) {
+						oItem.children.push(oData);
+					}
+					
+					if(oData.NodeType === "SHIFT" && !this._checkIfShiftExist(oItem) && oItem.NodeId === oData.ParentNodeId && oItem.children){
 						oItem.children.push(oData);
 					}
 				}.bind(this);
@@ -857,6 +863,15 @@ sap.ui.define([
 			if (aResourceData && aResourceData.children) {
 				return aResourceData.children.some(function (oChild) {
 					return oChild.ResourceGroupGuid === sResourceGroupGuid;
+				});
+			}
+			return false;
+		},
+		
+		_checkIfShiftExist: function (aResourceData) {
+			if (aResourceData && aResourceData.children) {
+				return aResourceData.children.some(function (oChild) {
+					return oChild.NODE_TYPE === "SHIFT";
 				});
 			}
 			return false;

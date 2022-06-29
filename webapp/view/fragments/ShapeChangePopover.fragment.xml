@@ -22,9 +22,9 @@
 						</ComboBox>
 						<ComboBox id="idShift" required="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}" showSecondaryValues="true" name="Shift" fieldGroupIds="changeShapeInput"
 							items="{ path: 'viewModel>/Shifts'}"
-							selectedKey="{ganttPlanningModel>/tempData/popover/TemplateId}" change="onChangeShift"
+							selectedKey="{parts:[{path:'ganttPlanningModel>/tempData/popover/ScheduleId'},{path:'ganttPlanningModel>/tempData/popover/TemplateId'}],formatter:'.formatter.getShiftKey'}" change="onChangeShift"
 							visible = "{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}">
-							<core:ListItem key="{viewModel>TemplateId}" text="{viewModel>ScheduleIdDesc}" additionalText="{viewModel>ScheduleId}"/>
+							<core:ListItem key="{parts:[{path:'viewModel>ScheduleId'},{path:'viewModel>TemplateId'}],formatter:'.formatter.getShiftKey'}" text="{viewModel>ScheduleIdDesc}" additionalText="{viewModel>ScheduleId}"/>
 						</ComboBox>
 						<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
 						<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"

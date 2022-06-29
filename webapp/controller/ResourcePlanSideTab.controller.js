@@ -40,7 +40,14 @@ sap.ui.define([
 				oDraggedControl = oDragSession.getDragControl(),
 				oContext = oDraggedControl.getBindingContext(),
 				sPath = oDraggedControl.getBindingContext().getPath(),
+				type = oEvent.getSource().getGroupName(),
+				NodeType = {
+					"Groups":"RES_GROUP",
+					"Shifts":"SHIFT"
+				}[type],
 				oObject = oContext.getObject(),
+				draggedData;
+				oObject.NodeType = NodeType;
 				draggedData = {
 					sPath: sPath,
 					data: oObject

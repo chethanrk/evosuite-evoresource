@@ -252,7 +252,9 @@ sap.ui.define([
 					Days: [],
 					On: 0,
 					RepeatEndDate: new Date()
-				};
+				},
+				oDraggedData = this.getView().getModel("viewModel").getProperty("/draggedData"),
+				nodeType = bDragged ? oDraggedData.data.NodeType : oRowData.NodeType;
 				//collect all assignment properties who allowed for create
 				this.getModel().getMetaModel().loaded().then(function () {
 					var oEntitySetList = {
@@ -261,14 +263,15 @@ sap.ui.define([
 						"SHIFT": "ShiftSet"
 					};
 					var oMetaModel = this.getModel().getMetaModel(),
-						oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[oRowData.NodeType]),
+						oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[nodeType]),
 						// oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
 						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
 						aProperty = oEntityType ? oEntityType.property : [];
 
 					aProperty.forEach(function (property) {
 						var isCreatable = property["sap:creatable"];
-						if (typeof isCreatable === "undefined" || isCreatable === true) {
+						// if (typeof isCreatable === "undefined" || isCreatable === true) {
+						if (true) {
 							obj[property.name] = "";
 							if (oRowData[property.name]) {
 								obj[property.name] = oRowData[property.name];
@@ -278,13 +281,21 @@ sap.ui.define([
 					obj.RepeatEndDate = oEndTime;
 					obj.StartDate = oStartTime;
 					obj.EndDate = oEndTime;
-					obj.NODE_TYPE = oRowData.NodeType;
+					obj.NODE_TYPE = nodeType;
 					obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
 					obj.ResourceGuid = oRowData.ResourceGuid;
 					obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
 					obj.PARENT_NODE_ID = oRowData.NodeId;
 					// obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
 					obj.bDragged = bDragged;
+					
+					if(nodeType === "RES_GROUP" || nodeType === "RESOURCE"){
+						obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
+						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
+					}else if(nodeType === "SHIFT"){
+						obj.DESCRIPTION = oRowData.ScheduleIdDesc || oRowData.Description;
+						obj.RESOURCE_GROUP_COLOR = oRowData.SHIFT_COLOR;
+					}
 					resolve(obj);
 				}.bind(this));
 			}.bind(this));

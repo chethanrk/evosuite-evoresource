@@ -357,6 +357,10 @@ sap.ui.define([
 				return true;
 			}
 			return false;
+		},
+		
+		getShiftKey:function(sScheduleId,sTemplateId){
+			return sScheduleId + sTemplateId;
 		}
 	};
 
