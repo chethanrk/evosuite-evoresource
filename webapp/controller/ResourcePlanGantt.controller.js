@@ -483,6 +483,36 @@ sap.ui.define([
 				this._oPlanningPopover.close();
 			}
 		},
+		
+		onChangeShift: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oSelectedItem = oSource.getSelectedItem(),
+				oSelContext = oSelectedItem.getBindingContext("viewModel"),
+				oData = this.oPlanningModel.getProperty("/tempData/popover");
+
+			oSource.setValueState(sap.ui.core.ValueState.None);
+			//validate duplicate assignments
+			if (this._validateDuplicateAsigment()) {
+				return;
+			}
+
+			if (oData.isNew) {
+				// this.oPlanningModel.setProperty("/tempData/popover/SHIFT_COLOR", oSelContext.getProperty("SHIFT_COLOR"));
+				this.oPlanningModel.setProperty("/tempData/popover/SHIFT_COLOR", "#8B0000");
+				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("ScheduleIdDesc"));
+
+				this._removeAssignmentShape(oData, true);
+				//add different resource group if it is not exist
+				this._addSingleChildToParent(oData);
+
+				if (!oData.isTemporary) {
+					this._oPlanningPopover.close();
+				}
+			} else {
+				this._removeAssignmentShape(oData, true, oSelContext);
+				this._oPlanningPopover.close();
+			}
+		},
 
 		/**
 		 * change selected date to UTC date to make display valid date on the screen
@@ -736,7 +766,7 @@ sap.ui.define([
 			//object change needs added to "/changedData" array by GUID
 
 			if (oFoundData && oFoundData.oData && aDeleteData.indexOf(oFoundData.oData.Guid) < 0) {
-				aDeleteData.push(oFoundData.oData.Guid);
+				aDeleteData.push(oFoundData.oData);
 			}
 
 			this.oPlanningModel.setProperty("/hasChanges", (aChanges.length > 0 || aDeleteData.length > 0));
@@ -1180,6 +1210,7 @@ sap.ui.define([
 		 */
 		_saveSuccess: function (oResponse) {
 			this.showMessageToast(this.getResourceBundle().getText("msg.successfullyupdated"));
+			this.getModel().resetChanges();
 			this._loadGanttData();
 		},
 

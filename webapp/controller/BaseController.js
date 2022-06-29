@@ -255,9 +255,14 @@ sap.ui.define([
 				};
 				//collect all assignment properties who allowed for create
 				this.getModel().getMetaModel().loaded().then(function () {
-
+					var oEntitySetList = {
+						"RESOURCE": "ResourceAssignmentSet",
+						"RES_GROUP": "ResourceAssignmentSet",
+						"SHIFT": "ShiftSet"
+					};
 					var oMetaModel = this.getModel().getMetaModel(),
-						oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
+						oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[oRowData.NodeType]),
+						// oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
 						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
 						aProperty = oEntityType ? oEntityType.property : [];
 
@@ -278,7 +283,7 @@ sap.ui.define([
 					obj.ResourceGuid = oRowData.ResourceGuid;
 					obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
 					obj.PARENT_NODE_ID = oRowData.NodeId;
-					obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
+					// obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
 					obj.bDragged = bDragged;
 					resolve(obj);
 				}.bind(this));
@@ -385,7 +390,12 @@ sap.ui.define([
 		 */
 		_preparePayload: function (mParameters) {
 			return new Promise(function (resolve) {
-				var aChangedData = this.oPlanningModel.getProperty("/changedData");
+				var aChangedData = this.oPlanningModel.getProperty("/changedData"),
+					oEntitySetList = {
+						"RESOURCE": "ResourceAssignmentSet",
+						"RES_GROUP": "ResourceAssignmentSet",
+						"SHIFT": "ShiftSet"
+					};
 				this.getModel().setDeferredGroups(["batchSave"]);
 				aChangedData.forEach(function (sPath) {
 					var oFoundData = this._getChildDataByKey("Guid", sPath, null),
@@ -393,11 +403,12 @@ sap.ui.define([
 						singleentry = {
 							groupId: "batchSave"
 						},
-						obj = {};
+						obj = {},
+						entitySet = oEntitySetList[oRowData.NODE_TYPE];
 					//collect all assignment properties who allowed for create
 					this.getModel().getMetaModel().loaded().then(function () {
 						var oMetaModel = this.getModel().getMetaModel(),
-							oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
+							oEntitySet = oMetaModel.getODataEntitySet(entitySet),
 							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
 							aProperty = oEntityType ? oEntityType.property : [];
 
@@ -423,7 +434,7 @@ sap.ui.define([
 							}
 						});
 						singleentry.properties = obj;
-						this.getModel().createEntry("/ResourceAssignmentSet", singleentry);
+						this.getModel().createEntry("/" + entitySet ,singleentry);
 					}.bind(this));
 				}.bind(this));
 				resolve(aChangedData);
@@ -439,10 +450,16 @@ sap.ui.define([
 			return new Promise(function (resolve) {
 				var aDeleteData = this.oPlanningModel.getProperty("/deletedData");
 				var param = {
-					groupId: "batchDelete"
-				};
-				aDeleteData.forEach(function (sPath) {
-					this.getModel().remove("/ResourceAssignmentSet('" + sPath + "')", param);
+						groupId: "batchDelete"
+					},
+					oEntitySetList = {
+						"RESOURCE": "ResourceAssignmentSet",
+						"RES_GROUP": "ResourceAssignmentSet",
+						"SHIFT": "ShiftSet"
+					};
+				aDeleteData.forEach(function (oAssignment) {
+					var entitySet = oEntitySetList[oAssignment.NODE_TYPE];
+					this.getModel().remove("/" + entitySet + "('" + oAssignment.Guid + "')", param);
 				}.bind(this));
 				resolve(aDeleteData);
 			}.bind(this));
@@ -514,7 +531,8 @@ sap.ui.define([
 						sPath: sPath,
 						oData: aChildren[i]
 					};
-				} else if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results && aChildren[i].GanttHierarchyToResourceAssign.results.length > 0) {
+				} else if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results && aChildren[i].GanttHierarchyToResourceAssign
+					.results.length > 0) {
 					//search in assignments
 					sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/GanttHierarchyToResourceAssign/results");
 					if (sNewObj) {
@@ -535,7 +553,8 @@ sap.ui.define([
 						sPath: sPath,
 						oData: aChildren[i]
 					};
-				} else if (aChildren[i].GanttHierarchyToShift && aChildren[i].GanttHierarchyToShift.results && aChildren[i].GanttHierarchyToShift.results.length > 0) {
+				} else if (aChildren[i].GanttHierarchyToShift && aChildren[i].GanttHierarchyToShift.results && aChildren[i].GanttHierarchyToShift.results
+					.length > 0) {
 					//search in assignments
 					sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/GanttHierarchyToShift/results");
 					if (sNewObj) {
