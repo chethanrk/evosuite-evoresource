@@ -967,8 +967,8 @@ sap.ui.define([
 			var oParams = {
 					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
-					EndTimestamp: oAssignItem.EndDate,
-					StartTimestamp: oAssignItem.StartDate
+					EndTimestamp: formatter.convertFromUTCDate(oAssignItem.EndDate),
+					StartTimestamp: formatter.convertFromUTCDate(oAssignItem.StartDate)
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel"),
