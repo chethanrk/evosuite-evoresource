@@ -807,7 +807,10 @@ sap.ui.define([
 				//its a assignment
 				var oAssignData = oContext.getObject();
 				this._setShapePopoverPosition(oAssignData);
+				//popover data adjustment with repeat mode
+				oAssignData.Repeat = "NEVER";
 				oAssignData.minDate = new Date();
+
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
 			}
