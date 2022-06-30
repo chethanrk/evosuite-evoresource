@@ -218,23 +218,32 @@ sap.ui.define([
 		onShapePress: function (oEvent) {
 			var mParams = oEvent.getParameters(),
 				oShape = mParams.shape,
-				isNew = oShape['sParentAggregationName'] === 'shape1';
+				isNew = oShape['sParentAggregationName'] === 'shape1',
+				oRowContext,
+				sStartTime,
+				sEndTime,
+				oRowData,
+				oPopoverData,
+				oParentData;
 			if (!mParams || !oShape) {
 				return;
 			}
-
-			var oRowContext = mParams.rowSettings.getParent().getBindingContext("ganttPlanningModel"),
-				sStartTime = oShape.getTime(),
-				sEndTime = oShape.getEndTime(),
-				oRowData = oRowContext.getObject(),
-				oPopoverData = {
-					Guid: new Date().getTime(),
-					sStartTime: sStartTime,
-					sEndTime: sEndTime,
-					oResourceObject: oRowData,
-					bDragged: false,
-					isNew: isNew
-				};
+			oRowContext = mParams.rowSettings.getParent().getBindingContext("ganttPlanningModel");
+			sStartTime = oShape.getTime();
+			sEndTime = oShape.getEndTime();
+			oRowData = oRowContext.getObject();
+			if (oRowData.NodeType !== "RESOURCE") {
+				oParentData = this._getParentResource(oRowData.ParentNodeId);
+				oRowData.TIME_ZONE = oParentData.TIME_ZONE;
+			}
+			oPopoverData = {
+				Guid: new Date().getTime(),
+				sStartTime: sStartTime,
+				sEndTime: sEndTime,
+				oResourceObject: oRowData,
+				bDragged: false,
+				isNew: isNew
+			};
 
 			this.openShapeChangePopover(mParams.shape, oPopoverData);
 		},
@@ -365,7 +374,13 @@ sap.ui.define([
 				sStartTime = oDroppedTarget.getTime(),
 				sEndTime = oDroppedTarget.getEndTime(),
 				oPopoverData,
-				aIgnoreProperty = ["__metadata", "NodeId"];
+				oParentData,
+				aIgnoreProperty = ["__metadata", "NodeId","TIME_ZONE"];
+
+			if (oObject.NodeType !== "RESOURCE") {
+				oParentData = this._getParentResource(oObject.ParentNodeId);
+				oObject.TIME_ZONE = oParentData.TIME_ZONE;
+			}
 
 			oObject = this.copyObjectData(oObject, oDraggedObject.data, aIgnoreProperty);
 			oPopoverData = {
@@ -1362,7 +1377,7 @@ sap.ui.define([
 				oldData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
 			this._removeAssignmentShape(oldData, true);
 			this._addSingleChildToParent(newData);
-			this.oPlanningModel.setProperty("/tempData/oldPopoverData",deepClone(newData));
+			this.oPlanningModel.setProperty("/tempData/oldPopoverData", deepClone(newData));
 		}
 	});
 });

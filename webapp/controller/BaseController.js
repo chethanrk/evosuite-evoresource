@@ -243,18 +243,18 @@ sap.ui.define([
 		createNewTempAssignment: function (oStartTime, oEndTime, oRowData, bDragged) {
 			return new Promise(function (resolve) {
 				var obj = {
-					minDate: new Date(),
-					isTemporary: true,
-					isNew: true,
-					Guid: new Date().getTime(),
-					Repeat: "NEVER",
-					Every: "",
-					Days: [],
-					On: 0,
-					RepeatEndDate: new Date()
-				},
-				oDraggedData = this.getView().getModel("viewModel").getProperty("/draggedData"),
-				nodeType = bDragged ? oDraggedData.data.NodeType : oRowData.NodeType;
+						minDate: new Date(),
+						isTemporary: true,
+						isNew: true,
+						Guid: new Date().getTime(),
+						Repeat: "NEVER",
+						Every: "",
+						Days: [],
+						On: 0,
+						RepeatEndDate: new Date()
+					},
+					oDraggedData = this.getView().getModel("viewModel").getProperty("/draggedData"),
+					nodeType = bDragged ? oDraggedData.data.NodeType : oRowData.NodeType;
 				//collect all assignment properties who allowed for create
 				this.getModel().getMetaModel().loaded().then(function () {
 					var oEntitySetList = {
@@ -288,11 +288,11 @@ sap.ui.define([
 					obj.PARENT_NODE_ID = oRowData.NodeId;
 					// obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
 					obj.bDragged = bDragged;
-					
-					if(nodeType === "RES_GROUP" || nodeType === "RESOURCE"){
+
+					if (nodeType === "RES_GROUP" || nodeType === "RESOURCE") {
 						obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
 						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
-					}else if(nodeType === "SHIFT"){
+					} else if (nodeType === "SHIFT") {
 						obj.DESCRIPTION = oRowData.ScheduleIdDesc || oRowData.Description;
 						obj.RESOURCE_GROUP_COLOR = oRowData.SHIFT_COLOR;
 					}
@@ -445,7 +445,7 @@ sap.ui.define([
 							}
 						});
 						singleentry.properties = obj;
-						this.getModel().createEntry("/" + entitySet ,singleentry);
+						this.getModel().createEntry("/" + entitySet, singleentry);
 					}.bind(this));
 				}.bind(this));
 				resolve(aChangedData);
@@ -977,5 +977,13 @@ sap.ui.define([
 			var isDatePast = moment(oDate).isBefore(moment().startOf('day').toDate());
 			return isDatePast;
 		},
+
+		_getParentResource: function (sNodeId) {
+			var aChildren = this.oPlanningModel.getProperty("/data/children");
+
+			return aChildren.find(function (oResource, idx) {
+				return oResource.NodeId === sNodeId;
+			}.bind(this));
+		}
 	});
 });
