@@ -9,7 +9,7 @@
 					singleContainerFullSize="true">
 					<f:content>
 						<Label text="{i18n>xfld.popoverType}"/>
-						<Select forceSelection="true" selectedKey="{ganttPlanningModel>/tempData/popover/NODE_TYPE}" editable="false">
+						<Select forceSelection="true" selectedKey="{ganttPlanningModel>/tempData/popover/NODE_TYPE}" editable="true" change="onChangeAssignmentType">
 							<core:Item key="RES_GROUP" text="{i18n>xtxt.group}"/>
 							<core:Item key="SHIFT" text="{i18n>xtxt.shift}"/>
 						</Select>
