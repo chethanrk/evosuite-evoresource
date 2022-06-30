@@ -833,7 +833,8 @@ sap.ui.define([
 					}
 					
 					if(oData.NodeType === "SHIFT" && !this._checkIfShiftExist(oItem) && oItem.NodeId === oData.ParentNodeId && oItem.children){
-						oItem.children.push(oData);
+						oData["Description"] = this.getResourceBundle('i18n').getText("xtit.shift");
+						oItem.children.unshift(oData);
 					}
 				}.bind(this);
 				aChildren = this._recurseAllChildren(aChildren, callbackFn, oGanntObject);
