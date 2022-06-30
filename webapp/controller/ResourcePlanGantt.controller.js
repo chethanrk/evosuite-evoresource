@@ -871,7 +871,7 @@ sap.ui.define([
 		_checkIfShiftExist: function (aResourceData) {
 			if (aResourceData && aResourceData.children) {
 				return aResourceData.children.some(function (oChild) {
-					return oChild.NODE_TYPE === "SHIFT";
+					return oChild.NodeType === "SHIFT";
 				});
 			}
 			return false;
