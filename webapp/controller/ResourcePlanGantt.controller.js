@@ -498,8 +498,7 @@ sap.ui.define([
 			}
 
 			if (oData.isNew) {
-				// this.oPlanningModel.setProperty("/tempData/popover/SHIFT_COLOR", oSelContext.getProperty("SHIFT_COLOR"));
-				this.oPlanningModel.setProperty("/tempData/popover/SHIFT_COLOR", "#8B0000");
+				this.oPlanningModel.setProperty("/tempData/popover/SHIFT_COLOR", oSelContext.getProperty("SHIFT_COLOR"));
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("ScheduleIdDesc"));
 
 				this._removeAssignmentShape(oData, true);
