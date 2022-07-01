@@ -10,6 +10,8 @@ sap.ui.define([
 	var oViewMapping = {
 		DAY: {
 			timeLine: "OneDay",
+			beginDate: moment().startOf("isoWeek").toDate(),
+			endDate: moment().endOf("isoWeek").toDate(),
 			bgDifferenceFn: function (oStartDate, oEndDate) {
 				return oEndDate.diff(oStartDate, "days");
 			},
@@ -32,6 +34,8 @@ sap.ui.define([
 		},
 		WEEK: {
 			timeLine: "OneWeek",
+			beginDate: moment().startOf("month").toDate(),
+			endDate: moment().endOf("month").toDate(),
 			bgDifferenceFn: function (oStartDate, oEndDate) {
 				return oEndDate.diff(oStartDate, 'weeks');
 			},
@@ -58,6 +62,8 @@ sap.ui.define([
 		},
 		MONTH: {
 			timeLine: "OneMonth",
+			beginDate: moment().startOf("month").subtract(1, "months").toDate(),
+			endDate: moment().endOf("month").add(2, "months").endOf("month").toDate(),
 			bgDifferenceFn: function (oStartDate, oEndDate) {
 				return oEndDate.diff(oStartDate, 'months');
 			},
@@ -377,6 +383,41 @@ sap.ui.define([
 				return true;
 			}
 			return false;
+		},
+
+		/**
+		 * Get default dates for selected mode
+		 */
+		getDefaultDates: function (sSelectkey, userModel) {
+			var sStartDate, sEndDate;
+			switch (sSelectkey) {
+			case "DAY":
+				sStartDate = userModel.getProperty("DEFAULT_DAILYVIEW_STARTDATE") ? userModel.getProperty("DEFAULT_DAILYVIEW_STARTDATE") :
+					oViewMapping[sSelectkey].beginDate;
+				sEndDate = userModel.getProperty("DEFAULT_DAILYVIEW_ENDDATE") ? userModel.getProperty("DEFAULT_DAILYVIEW_ENDDATE") :
+					oViewMapping[sSelectkey].endDate;
+				break;
+			case "WEEK":
+				sStartDate = userModel.getProperty("DEFAULT_WEEKLYVIEW_STARTDATE") ? userModel.getProperty("DEFAULT_WEEKLYVIEW_STARTDATE") :
+					oViewMapping[sSelectkey].beginDate;
+				sEndDate = userModel.getProperty("DEFAULT_WEEKLYVIEW_ENDDATE") ? userModel.getProperty("DEFAULT_WEEKLYVIEW_ENDDATE") :
+					oViewMapping[sSelectkey].endDate;
+				break;
+			case "MONTH":
+				sStartDate = userModel.getProperty("DEFAULT_MONTHLYVIEW_STARTDATE") ? userModel.getProperty("DEFAULT_MONTHLYVIEW_STARTDATE") :
+					oViewMapping[sSelectkey].beginDate;
+				sEndDate = userModel.getProperty("DEFAULT_MONTHLYVIEW_ENDDATE") ? userModel.getProperty("DEFAULT_MONTHLYVIEW_ENDDATE") :
+					oViewMapping[sSelectkey].endDate;
+				break;
+			default:
+				sStartDate = userModel.getProperty("DEFAULT_GANTT_START_DATE");
+				sEndDate = userModel.getProperty("DEFAULT_GANTT_END_DATE");
+				break;
+			}
+			return {
+				"StartDate": sStartDate,
+				"EndDate": sEndDate
+			};
 		}
 	};
 

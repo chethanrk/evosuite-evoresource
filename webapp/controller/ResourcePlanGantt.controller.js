@@ -138,6 +138,7 @@ sap.ui.define([
 		oPlanningModel: null,
 		_defaultView: "DAY",
 		_treeTable: null,
+		_previousView: "DAY",
 
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
@@ -155,7 +156,7 @@ sap.ui.define([
 			this._initialisePlanningModel();
 
 			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
-				this._setNewHorizon(oResult.DEFAULT_GANTT_START_DATE, oResult.DEFAULT_GANTT_END_DATE);
+				this._setNewHorizon(oResult.DEFAULT_DAILYVIEW_STARTDATE, oResult.DEFAULT_DAILYVIEW_ENDDATE);
 			}.bind(this));
 		},
 
@@ -169,10 +170,24 @@ sap.ui.define([
 		 */
 		onChangeTimeMode: function (oEvent) {
 			var mParam = oEvent.getParameters(),
-				sKey = mParam.selectedItem.getKey();
-			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
-			this._sGanttViewMode = formatter.getViewMapping(sKey);
-			this._setBackgroudShapes(this._sGanttViewMode);
+				sKey = mParam.selectedItem.getKey(),
+				bChanges = this.oPlanningModel.getProperty("/hasChanges"),
+				oSource = oEvent.getSource();
+			if (bChanges) {
+				var sTitle = this.getResourceBundle().getText("tit.confirmChange"),
+					sMsg = this.getResourceBundle().getText("msg.modeChange");
+				var successcallback = function () {
+					this._loadGanttData();
+					this._setDateFilter(sKey);
+				};
+				var cancelcallback = function () {
+					oSource.setSelectedKey(this._previousView);
+				};
+				this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
+			} else {
+				this._setDateFilter(sKey);
+				this._previousView = sKey;
+			}
 		},
 
 		/**
@@ -1252,6 +1267,20 @@ sap.ui.define([
 			if (moment(newData.StartDate).isSameOrAfter(oData.StartDate) && moment(newData.StartDate).isSameOrBefore(moment(oData.RepeatEndDate))) {
 				this._validateAndAddNewAssignment(newData, oData);
 			}
+		},
+
+		/**
+		 * Set start date and end date for smart filter accroding to mode selected and change gantt view
+		 * @param sKey - selected mode
+		 * @private
+		 */
+		_setDateFilter: function (sKey) {
+			var newDateRange = formatter.getDefaultDates(sKey, this.getModel("user"));
+			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
+			this._sGanttViewMode = formatter.getViewMapping(sKey);
+			this._setBackgroudShapes(this._sGanttViewMode);
+			this._previousView = sKey;
+			this._setNewHorizon(newDateRange.StartDate, newDateRange.EndDate);
 		}
 	});
 });
