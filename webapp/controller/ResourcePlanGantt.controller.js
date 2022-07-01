@@ -486,6 +486,7 @@ sap.ui.define([
 			if (oData.isNew) {
 				this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", oSelContext.getProperty("ResourceGroupColor"));
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("ResourceGroupDesc"));
+				this.oPlanningModel.setProperty("/tempData/popover/ResourceGroupDesc", oSelContext.getProperty("ResourceGroupDesc"));
 
 				this._removeAssignmentShape(oData, true);
 				//add different resource group if it is not exist
@@ -516,6 +517,7 @@ sap.ui.define([
 				this.oPlanningModel.setProperty("/tempData/popover/GroupId", oSelContext.getProperty("GroupId"));
 				this.oPlanningModel.setProperty("/tempData/popover/ScheduleId", oSelContext.getProperty("ScheduleId"));
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("ScheduleIdDesc"));
+				this.oPlanningModel.setProperty("/tempData/popover/ScheduleIdDesc", oSelContext.getProperty("ScheduleIdDesc"));
 				this.oPlanningModel.setProperty("/tempData/popover/TemplateId", oSelContext.getProperty("TemplateId"));
 				this.oPlanningModel.setProperty("/tempData/popover/TemplateDesc", oSelContext.getProperty("TemplateDesc"));
 				this.oPlanningModel.setProperty("/tempData/popover/ToTime", oSelContext.getProperty("ToTime"));
@@ -1272,7 +1274,7 @@ sap.ui.define([
 		_afterPopoverClose: function (oEvent) {
 			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
-			if (oData.isTemporary && oOldAssignmentData && oOldAssignmentData.Guid) {
+			if (!oData.isNew && oData.isTemporary && oOldAssignmentData && oOldAssignmentData.Guid) {
 				var oFoundData = this._getChildrenDataByKey("Guid", oData.Guid, null);
 				if (oFoundData && oFoundData.length === 2) {
 					for (var i = 0; i < oFoundData.length; i++) {
@@ -1377,13 +1379,21 @@ sap.ui.define([
 		},
 
 		onChangeAssignmentType: function (oEvent) {
-			var oSource = oEvent.getSource(),
-				oSelectedItem = oSource.getSelectedItem(),
-				oSelContext = oSelectedItem.getBindingContext("viewModel"),
-				newData = this.oPlanningModel.getProperty("/tempData/popover"),
-				oldData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
+			var newData = this.oPlanningModel.getProperty("/tempData/popover"),
+				oldData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
+				shapeDescription;
+			if(newData.NODE_TYPE === "RES_GROUP"){
+				shapeDescription = newData["ResourceGroupDesc"] || this.getResourceBundle().getText("xtit.group");
+				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", shapeDescription);
+			}else if(newData.NODE_TYPE === "SHIFT"){
+				shapeDescription = newData["ScheduleIdDesc"] || this.getResourceBundle().getText("xtit.shift");
+				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", shapeDescription);
+			}
 			this._removeAssignmentShape(oldData, true);
-			this._addSingleChildToParent(newData);
+			this.createNewTempAssignment(newData.StartDate, newData.EndDate, newData, false).then(function (oData) {
+				this._addSingleChildToParent(newData);
+			}.bind(this));
+			
 			this.oPlanningModel.setProperty("/tempData/oldPopoverData", deepClone(newData));
 		}
 	});

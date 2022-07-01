@@ -380,6 +380,12 @@ sap.ui.define([
 		},
 		getShiftKey:function(sScheduleId,sTemplateId){
 			return sScheduleId + sTemplateId;
+		},
+		setAssignmentTypeEditable:function(bIsNew,bIsTemporary){
+			if(bIsNew && bIsTemporary){
+				return true;
+			}
+			return false;
 		}
 	};
 

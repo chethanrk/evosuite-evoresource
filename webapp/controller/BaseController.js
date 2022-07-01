@@ -254,11 +254,17 @@ sap.ui.define([
 						RepeatEndDate: new Date()
 					},
 					oDraggedData = this.getView().getModel("viewModel").getProperty("/draggedData"),
-					nodeType = bDragged ? oDraggedData.data.NodeType : oRowData.NodeType;
-				//collect all assignment properties who allowed for create
+					nodeType;
+					// nodeType = bDragged ? oDraggedData.data.NodeType : oRowData.NodeType;
+
+					if (bDragged) nodeType = oDraggedData.data.NodeType;
+					 else {
+						if (oRowData.NodeType) nodeType = oRowData.NodeType;
+						else if (oRowData.NODE_TYPE) nodeType = oRowData.NODE_TYPE;
+					}
+					//collect all assignment properties who allowed for create
 				this.getModel().getMetaModel().loaded().then(function () {
 					var oEntitySetList = {
-						"RESOURCE": "ResourceAssignmentSet",
 						"RES_GROUP": "ResourceAssignmentSet",
 						"SHIFT": "ShiftSet"
 					};
@@ -267,16 +273,23 @@ sap.ui.define([
 						// oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
 						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
 						aProperty = oEntityType ? oEntityType.property : [];
+					
+					if(aProperty.length === 0){
+						for (var key in oEntitySetList) {
+							oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[key]);
+							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null;
+							aProperty = aProperty.concat(oEntityType ? oEntityType.property : [])
+						}
+					}
 
 					aProperty.forEach(function (property) {
 						var isCreatable = property["sap:creatable"];
 						// if (typeof isCreatable === "undefined" || isCreatable === true) {
-						if (true) {
 							obj[property.name] = "";
 							if (oRowData[property.name]) {
 								obj[property.name] = oRowData[property.name];
 							}
-						}
+						// }
 					});
 					obj.RepeatEndDate = oEndTime;
 					obj.StartDate = oStartTime;
@@ -288,8 +301,14 @@ sap.ui.define([
 					obj.PARENT_NODE_ID = oRowData.NodeId;
 					// obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
 					obj.bDragged = bDragged;
-
-					if (nodeType === "RES_GROUP" || nodeType === "RESOURCE") {
+					
+					if(nodeType === "RESOURCE"){
+						obj.NodeId = oRowData.NodeId;
+						obj.TIME_ZONE = oRowData.TIME_ZONE;
+						obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
+						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
+					}
+					if (nodeType === "RES_GROUP") {
 						obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
 						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
 					} else if (nodeType === "SHIFT") {
