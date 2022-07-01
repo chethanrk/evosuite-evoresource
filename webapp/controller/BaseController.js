@@ -617,7 +617,7 @@ sap.ui.define([
 				aInnerAssignments = [],
 				newSpath = sPath;
 			for (var i = 0; i < aChildren.length; i++) {
-				if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results.length > 0) {
+				if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results && aChildren[i].GanttHierarchyToResourceAssign.results.length > 0) {
 					aAssignments = aChildren[i].GanttHierarchyToResourceAssign.results;
 					for (var j = 0; j < aAssignments.length; j++) {
 
@@ -629,12 +629,37 @@ sap.ui.define([
 
 					aInnerChildren = aChildren[i].children;
 					for (var k = 0; k < aInnerChildren.length; k++) {
-						if (aInnerChildren[k].GanttHierarchyToResourceAssign && aInnerChildren[k].GanttHierarchyToResourceAssign.results.length > 0) {
+						if (aInnerChildren[k].GanttHierarchyToResourceAssign && aInnerChildren[k].GanttHierarchyToResourceAssign.results && aInnerChildren[k].GanttHierarchyToResourceAssign.results.length > 0) {
 							aInnerAssignments = aInnerChildren[k].GanttHierarchyToResourceAssign.results;
 							for (var l = 0; l < aInnerAssignments.length; l++) {
 
 								if (aInnerAssignments[l][sProperty] === sValue) {
 									newSpath = sPath + "/" + i + "/children/" + k + "/GanttHierarchyToResourceAssign/results/" + l;
+									aAllMatchedData.push(newSpath);
+								}
+							}
+						}
+					}
+				}
+				
+				if (aChildren[i].GanttHierarchyToShift && aChildren[i].GanttHierarchyToShift.results && aChildren[i].GanttHierarchyToShift.results.length > 0) {
+					aAssignments = aChildren[i].GanttHierarchyToShift.results;
+					for (var j = 0; j < aAssignments.length; j++) {
+
+						if (aAssignments[j][sProperty] === sValue) {
+							newSpath = sPath + "/" + i + "/GanttHierarchyToShift/results/" + j;
+							aAllMatchedData.push(newSpath);
+						}
+					}
+
+					aInnerChildren = aChildren[i].children;
+					for (var k = 0; k < aInnerChildren.length; k++) {
+						if (aInnerChildren[k].GanttHierarchyToShift && aInnerChildren[k].GanttHierarchyToShift.results && aInnerChildren[k].GanttHierarchyToShift.results.length > 0) {
+							aInnerAssignments = aInnerChildren[k].GanttHierarchyToShift.results;
+							for (var l = 0; l < aInnerAssignments.length; l++) {
+
+								if (aInnerAssignments[l][sProperty] === sValue) {
+									newSpath = sPath + "/" + i + "/children/" + k + "/GanttHierarchyToShift/results/" + l;
 									aAllMatchedData.push(newSpath);
 								}
 							}
