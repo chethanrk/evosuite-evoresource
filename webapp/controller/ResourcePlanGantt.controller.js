@@ -495,7 +495,6 @@ sap.ui.define([
 				this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", oSelContext.getProperty("ResourceGroupColor"));
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("ResourceGroupDesc"));
 				this.oPlanningModel.setProperty("/tempData/popover/ResourceGroupDesc", oSelContext.getProperty("ResourceGroupDesc"));
-				this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
 
 				this._removeAssignmentShape(oData, true);
 				//add different resource group if it is not exist
@@ -532,7 +531,6 @@ sap.ui.define([
 				this.oPlanningModel.setProperty("/tempData/popover/ToTime", oSelContext.getProperty("ToTime"));
 				this.oPlanningModel.setProperty("/tempData/popover/FromTime", oSelContext.getProperty("FromTime"));
 				this.oPlanningModel.setProperty("/tempData/popover/SHIFT_COLOR", oSelContext.getProperty("SHIFT_COLOR"));
-				this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
 
 				this._removeAssignmentShape(oData, true);
 				//add different resource group if it is not exist
