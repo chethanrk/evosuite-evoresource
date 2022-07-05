@@ -252,18 +252,18 @@ sap.ui.define([
 						Days: [],
 						On: 0,
 						RepeatEndDate: new Date(),
-						isEditable:true
+						isEditable: true
 					},
 					oDraggedData = this.getView().getModel("viewModel").getProperty("/draggedData"),
 					nodeType;
-					// nodeType = bDragged ? oDraggedData.data.NodeType : oRowData.NodeType;
+				// nodeType = bDragged ? oDraggedData.data.NodeType : oRowData.NodeType;
 
-					if (bDragged) nodeType = oDraggedData.data.NodeType;
-					 else {
-						if (oRowData.NodeType) nodeType = oRowData.NodeType;
-						else if (oRowData.NODE_TYPE) nodeType = oRowData.NODE_TYPE;
-					}
-					//collect all assignment properties who allowed for create
+				if (bDragged) nodeType = oDraggedData.data.NodeType;
+				else {
+					if (oRowData.NodeType) nodeType = oRowData.NodeType;
+					else if (oRowData.NODE_TYPE) nodeType = oRowData.NODE_TYPE;
+				}
+				//collect all assignment properties who allowed for create
 				this.getModel().getMetaModel().loaded().then(function () {
 					var oEntitySetList = {
 						"RES_GROUP": "ResourceAssignmentSet",
@@ -274,8 +274,8 @@ sap.ui.define([
 						// oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
 						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
 						aProperty = oEntityType ? oEntityType.property : [];
-					
-					if(aProperty.length === 0){
+
+					if (aProperty.length === 0) {
 						for (var key in oEntitySetList) {
 							oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[key]);
 							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null;
@@ -286,10 +286,10 @@ sap.ui.define([
 					aProperty.forEach(function (property) {
 						var isCreatable = property["sap:creatable"];
 						// if (typeof isCreatable === "undefined" || isCreatable === true) {
-							obj[property.name] = "";
-							if (oRowData[property.name]) {
-								obj[property.name] = oRowData[property.name];
-							}
+						obj[property.name] = "";
+						if (oRowData[property.name]) {
+							obj[property.name] = oRowData[property.name];
+						}
 						// }
 					});
 					obj.RepeatEndDate = oEndTime;
@@ -302,8 +302,8 @@ sap.ui.define([
 					obj.PARENT_NODE_ID = oRowData.NodeId;
 					// obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
 					obj.bDragged = bDragged;
-					
-					if(nodeType === "RESOURCE"){
+
+					if (nodeType === "RESOURCE") {
 						obj.NodeId = oRowData.NodeId;
 						obj.TIME_ZONE = oRowData.TIME_ZONE;
 						obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
@@ -618,7 +618,8 @@ sap.ui.define([
 				aInnerAssignments = [],
 				newSpath = sPath;
 			for (var i = 0; i < aChildren.length; i++) {
-				if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results && aChildren[i].GanttHierarchyToResourceAssign.results.length > 0) {
+				if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results && aChildren[i].GanttHierarchyToResourceAssign
+					.results.length > 0) {
 					aAssignments = aChildren[i].GanttHierarchyToResourceAssign.results;
 					for (var j = 0; j < aAssignments.length; j++) {
 
@@ -630,7 +631,8 @@ sap.ui.define([
 
 					aInnerChildren = aChildren[i].children;
 					for (var k = 0; k < aInnerChildren.length; k++) {
-						if (aInnerChildren[k].GanttHierarchyToResourceAssign && aInnerChildren[k].GanttHierarchyToResourceAssign.results && aInnerChildren[k].GanttHierarchyToResourceAssign.results.length > 0) {
+						if (aInnerChildren[k].GanttHierarchyToResourceAssign && aInnerChildren[k].GanttHierarchyToResourceAssign.results &&
+							aInnerChildren[k].GanttHierarchyToResourceAssign.results.length > 0) {
 							aInnerAssignments = aInnerChildren[k].GanttHierarchyToResourceAssign.results;
 							for (var l = 0; l < aInnerAssignments.length; l++) {
 
@@ -642,8 +644,9 @@ sap.ui.define([
 						}
 					}
 				}
-				
-				if (aChildren[i].GanttHierarchyToShift && aChildren[i].GanttHierarchyToShift.results && aChildren[i].GanttHierarchyToShift.results.length > 0) {
+
+				if (aChildren[i].GanttHierarchyToShift && aChildren[i].GanttHierarchyToShift.results && aChildren[i].GanttHierarchyToShift.results
+					.length > 0) {
 					aAssignments = aChildren[i].GanttHierarchyToShift.results;
 					for (var j = 0; j < aAssignments.length; j++) {
 
@@ -655,7 +658,8 @@ sap.ui.define([
 
 					aInnerChildren = aChildren[i].children;
 					for (var k = 0; k < aInnerChildren.length; k++) {
-						if (aInnerChildren[k].GanttHierarchyToShift && aInnerChildren[k].GanttHierarchyToShift.results && aInnerChildren[k].GanttHierarchyToShift.results.length > 0) {
+						if (aInnerChildren[k].GanttHierarchyToShift && aInnerChildren[k].GanttHierarchyToShift.results && aInnerChildren[k].GanttHierarchyToShift
+							.results.length > 0) {
 							aInnerAssignments = aInnerChildren[k].GanttHierarchyToShift.results;
 							for (var l = 0; l < aInnerAssignments.length; l++) {
 

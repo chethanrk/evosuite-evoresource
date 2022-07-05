@@ -243,7 +243,7 @@ sap.ui.define([
 				oResourceObject: oRowData,
 				bDragged: false,
 				isNew: isNew,
-				isEditable:true
+				isEditable: true
 			};
 
 			this.openShapeChangePopover(mParams.shape, oPopoverData);
@@ -303,18 +303,16 @@ sap.ui.define([
 			if (!oStartTime || !oEndTime || this._isDatePast(oStartTime) || this._isDatePast(oEndTime)) {
 				return;
 			}
-			
-			
-			
+
 			sGuid = oShapeInfo.shapeId;
 			aFoundData = this._getChildrenDataByKey("Guid", sGuid, null);
 			sOldDataPath = this._getChildDataByKey("Guid", sGuid, null);
-			
+
 			//validate if of Shift HR_SHIFT_FLAG is true
-			if(sOldDataPath.oData.NODE_TYPE === "SHIFT" && sOldDataPath.oData.HR_SHIFT_FLAG){
+			if (sOldDataPath.oData.NODE_TYPE === "SHIFT" && sOldDataPath.oData.HR_SHIFT_FLAG) {
 				return;
 			}
-			
+
 			oOldData = deepClone(sOldDataPath.oData);
 			if (aFoundData) {
 				aFoundData.forEach(function (sPath) {
@@ -385,7 +383,7 @@ sap.ui.define([
 				sEndTime = oDroppedTarget.getEndTime(),
 				oPopoverData,
 				oParentData,
-				aIgnoreProperty = ["__metadata", "NodeId","TIME_ZONE"];
+				aIgnoreProperty = ["__metadata", "NodeId", "TIME_ZONE"];
 
 			if (oObject.NodeType !== "RESOURCE") {
 				oParentData = this._getParentResource(oObject.ParentNodeId);
@@ -497,6 +495,7 @@ sap.ui.define([
 				this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", oSelContext.getProperty("ResourceGroupColor"));
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("ResourceGroupDesc"));
 				this.oPlanningModel.setProperty("/tempData/popover/ResourceGroupDesc", oSelContext.getProperty("ResourceGroupDesc"));
+				this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
 
 				this._removeAssignmentShape(oData, true);
 				//add different resource group if it is not exist
@@ -533,7 +532,7 @@ sap.ui.define([
 				this.oPlanningModel.setProperty("/tempData/popover/ToTime", oSelContext.getProperty("ToTime"));
 				this.oPlanningModel.setProperty("/tempData/popover/FromTime", oSelContext.getProperty("FromTime"));
 				this.oPlanningModel.setProperty("/tempData/popover/SHIFT_COLOR", oSelContext.getProperty("SHIFT_COLOR"));
-				
+				this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
 
 				this._removeAssignmentShape(oData, true);
 				//add different resource group if it is not exist
@@ -845,7 +844,7 @@ sap.ui.define([
 				oAssignData.Repeat = "NEVER";
 				oAssignData.minDate = new Date();
 				oAssignData.isEditable = true;
-				if(oTargetControl.sParentAggregationName === "shapes3"){
+				if (oTargetControl.sParentAggregationName === "shapes3") {
 					oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
 				}
 
@@ -1139,18 +1138,27 @@ sap.ui.define([
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			var callbackFn = function (oItem, oData, idx) {
 				var aAssignments;
-				if(oData.NODE_TYPE === "RES_GROUP"){
-					aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign.results : []) : [];
-				}else if(oData.NODE_TYPE === "SHIFT"){
+				if (oData.NODE_TYPE === "RES_GROUP") {
+					aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
+						.results : []) : [];
+				} else if (oData.NODE_TYPE === "SHIFT") {
 					aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
 				}
-				
+
 				aAssignments.forEach(function (oAssignItemData, index) {
 					if (oAssignItemData.Guid === oData.Guid) {
 						this._markAsPlanningDelete(oAssignItemData);
 						if (sChangedContext) {
-							oAssignItemData.RESOURCE_GROUP_COLOR = sChangedContext.getProperty("ResourceGroupColor");
-							oAssignItemData.DESCRIPTION = sChangedContext.getProperty("ResourceGroupDesc");
+							if (oAssignItemData.NODE_TYPE === "RES_GROUP") {
+								oAssignItemData.RESOURCE_GROUP_COLOR = sChangedContext.getProperty("ResourceGroupColor");
+								oAssignItemData.DESCRIPTION = sChangedContext.getProperty("ResourceGroupDesc");
+							} else if (oAssignItemData.NODE_TYPE === "SHIFT") {
+								oAssignItemData.SHIFT_COLOR = sChangedContext.getProperty("SHIFT_COLOR");
+								oAssignItemData.DESCRIPTION = sChangedContext.getProperty("ScheduleIdDesc");
+								oAssignItemData.PARENT_NODE_ID = oAssignItemData.NodeId;
+								oAssignItemData.ResourceGuid = oAssignItemData.ParentNodeId;
+							}
+
 							this._addSingleChildToParent(oAssignItemData, true);
 						}
 						aAssignments.splice(index, 1);
@@ -1402,10 +1410,10 @@ sap.ui.define([
 			var newData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oldData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
 				shapeDescription;
-			if(newData.NODE_TYPE === "RES_GROUP"){
+			if (newData.NODE_TYPE === "RES_GROUP") {
 				shapeDescription = newData["ResourceGroupDesc"] || this.getResourceBundle().getText("xtit.group");
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", shapeDescription);
-			}else if(newData.NODE_TYPE === "SHIFT"){
+			} else if (newData.NODE_TYPE === "SHIFT") {
 				shapeDescription = newData["ScheduleIdDesc"] || this.getResourceBundle().getText("xtit.shift");
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", shapeDescription);
 			}
@@ -1413,7 +1421,7 @@ sap.ui.define([
 			this.createNewTempAssignment(newData.StartDate, newData.EndDate, newData, false).then(function (oData) {
 				this._addSingleChildToParent(newData);
 			}.bind(this));
-			
+
 			this.oPlanningModel.setProperty("/tempData/oldPopoverData", deepClone(newData));
 		}
 	});
