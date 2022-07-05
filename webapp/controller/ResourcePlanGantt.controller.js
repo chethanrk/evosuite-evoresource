@@ -1140,7 +1140,7 @@ sap.ui.define([
 			var callbackFn = function (oItem, oData, idx) {
 				var aAssignments;
 				if(oData.NODE_TYPE === "RES_GROUP"){
-					aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.result ? oItem.GanttHierarchyToResourceAssign.results : []) : [];
+					aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign.results : []) : [];
 				}else if(oData.NODE_TYPE === "SHIFT"){
 					aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
 				}
