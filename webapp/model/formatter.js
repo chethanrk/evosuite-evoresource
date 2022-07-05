@@ -389,31 +389,25 @@ sap.ui.define([
 		 * Get default dates for selected mode
 		 */
 		getDefaultDates: function (sSelectkey, userModel) {
-			var sStartDate, sEndDate;
 			switch (sSelectkey) {
 			case "DAY":
-				sStartDate = userModel.getProperty("DEFAULT_DAILYVIEW_STARTDATE") ? userModel.getProperty("DEFAULT_DAILYVIEW_STARTDATE") :
-					oViewMapping[sSelectkey].beginDate;
-				sEndDate = userModel.getProperty("DEFAULT_DAILYVIEW_ENDDATE") ? userModel.getProperty("DEFAULT_DAILYVIEW_ENDDATE") :
-					oViewMapping[sSelectkey].endDate;
-				break;
+				return this.getDatesfromModel(userModel, "DAILYVIEW", sSelectkey);
 			case "WEEK":
-				sStartDate = userModel.getProperty("DEFAULT_WEEKLYVIEW_STARTDATE") ? userModel.getProperty("DEFAULT_WEEKLYVIEW_STARTDATE") :
-					oViewMapping[sSelectkey].beginDate;
-				sEndDate = userModel.getProperty("DEFAULT_WEEKLYVIEW_ENDDATE") ? userModel.getProperty("DEFAULT_WEEKLYVIEW_ENDDATE") :
-					oViewMapping[sSelectkey].endDate;
-				break;
+				return this.getDatesfromModel(userModel, "WEEKLYVIEW", sSelectkey);
 			case "MONTH":
-				sStartDate = userModel.getProperty("DEFAULT_MONTHLYVIEW_STARTDATE") ? userModel.getProperty("DEFAULT_MONTHLYVIEW_STARTDATE") :
-					oViewMapping[sSelectkey].beginDate;
-				sEndDate = userModel.getProperty("DEFAULT_MONTHLYVIEW_ENDDATE") ? userModel.getProperty("DEFAULT_MONTHLYVIEW_ENDDATE") :
-					oViewMapping[sSelectkey].endDate;
-				break;
+				return this.getDatesfromModel(userModel, "MONTHLYVIEW", sSelectkey);
 			default:
-				sStartDate = userModel.getProperty("DEFAULT_GANTT_START_DATE");
-				sEndDate = userModel.getProperty("DEFAULT_GANTT_END_DATE");
-				break;
+				return {
+					"StartDate": userModel.getProperty("/DEFAULT_GANTT_START_DATE"),
+					"EndDate": userModel.getProperty("/DEFAULT_GANTT_END_DATE")
+				};
 			}
+		},
+
+		getDatesfromModel: function (userModel, dateParams, sSelectKey) {
+			var sStartDate, sEndDate;
+			sStartDate = userModel.getProperty("/DEFAULT_" + dateParams + "_STARTDATE") || oViewMapping[sSelectKey].beginDate;
+			sEndDate = userModel.getProperty("/DEFAULT_" + dateParams + "_ENDDATE") || oViewMapping[sSelectKey].endDate;
 			return {
 				"StartDate": sStartDate,
 				"EndDate": sEndDate
