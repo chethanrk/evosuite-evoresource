@@ -6,25 +6,29 @@
 			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|Instead">
 				<f:SimpleForm id="idFormChangeShape" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3"
 					labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
-					singleContainerFullSize="true">
+					singleContainerFullSize="true" visible="{= ${ganttPlanningModel>/tempData/popover/isEditable}}">
 					<f:content>
 						<Label text="{i18n>xfld.popoverType}"/>
-						<Select forceSelection="true" selectedKey="{ganttPlanningModel>/tempData/popover/NODE_TYPE}" editable="{parts:[{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'}],formatter:'.formatter.setAssignmentTypeEditable'}" change="onChangeAssignmentType">
+						<Select forceSelection="true" selectedKey="{ganttPlanningModel>/tempData/popover/NODE_TYPE}"
+							editable="{parts:[{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'}],formatter:'.formatter.setAssignmentTypeEditable'}"
+							change="onChangeAssignmentType">
 							<core:Item key="RES_GROUP" text="{i18n>xtxt.group}"/>
 							<core:Item key="SHIFT" text="{i18n>xtxt.shift}"/>
 						</Select>
 						<Label text="{i18n>xfld.popoverSelect}" required="true"/>
-						<ComboBox id="idResourceGroupGroup" required="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'RES_GROUP'}" showSecondaryValues="true" name="ResourceGroupGuid" fieldGroupIds="changeShapeInput"
+						<ComboBox id="idResourceGroupGroup" required="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'RES_GROUP'}"
+							showSecondaryValues="true" name="ResourceGroupGuid" fieldGroupIds="changeShapeInput"
 							items="{ path: 'viewModel>/ResourceGroup', sorter: { path: 'ResourceGroupDesc' }}"
 							selectedKey="{ganttPlanningModel>/tempData/popover/ResourceGroupGuid}" change="onChangeResourceGroup"
-							visible = "{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'RES_GROUP'}">
+							visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'RES_GROUP'}">
 							<core:ListItem key="{viewModel>ResourceGroupGuid}" text="{viewModel>ResourceGroupDesc}" additionalText="{viewModel>ResourceGroupUnitId}"/>
 						</ComboBox>
-						<ComboBox id="idShift" required="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}" showSecondaryValues="true" name="Shift" fieldGroupIds="changeShapeInput"
-							items="{ path: 'viewModel>/Shifts'}"
-							selectedKey="{parts:[{path:'ganttPlanningModel>/tempData/popover/ScheduleId'},{path:'ganttPlanningModel>/tempData/popover/TemplateId'}],formatter:'.formatter.getShiftKey'}" change="onChangeShift"
-							visible = "{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}">
-							<core:ListItem key="{parts:[{path:'viewModel>ScheduleId'},{path:'viewModel>TemplateId'}],formatter:'.formatter.getShiftKey'}" text="{viewModel>ScheduleIdDesc}" additionalText="{viewModel>ScheduleId}"/>
+						<ComboBox id="idShift" required="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}" showSecondaryValues="true" name="Shift"
+							fieldGroupIds="changeShapeInput" items="{ path: 'viewModel>/Shifts'}"
+							selectedKey="{parts:[{path:'ganttPlanningModel>/tempData/popover/ScheduleId'},{path:'ganttPlanningModel>/tempData/popover/TemplateId'}],formatter:'.formatter.getShiftKey'}"
+							change="onChangeShift" visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}">
+							<core:ListItem key="{parts:[{path:'viewModel>ScheduleId'},{path:'viewModel>TemplateId'}],formatter:'.formatter.getShiftKey'}"
+								text="{viewModel>ScheduleIdDesc}" additionalText="{viewModel>ScheduleId}"/>
 						</ComboBox>
 						<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
 						<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"
@@ -71,14 +75,40 @@
 							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/Repeat'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'}],formatter:'.formatter.everyAndEndDateVisibility'}"/>
 					</f:content>
 				</f:SimpleForm>
+				<f:SimpleForm id="idFormDisplayShape" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3"
+					labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
+					singleContainerFullSize="true" visible="{= !${ganttPlanningModel>/tempData/popover/isEditable}}">
+					<Label text="{i18n>xfld.popoverType}"/>
+					<Select forceSelection="true" selectedKey="{ganttPlanningModel>/tempData/popover/NODE_TYPE}" editable="false">
+						<core:Item key="RES_GROUP" text="{i18n>xtxt.group}"/>
+						<core:Item key="SHIFT" text="{i18n>xtxt.shift}"/>
+					</Select>
+					<Label text="{i18n>xfld.description}"/>
+					<ComboBox items="{ path: 'viewModel>/ResourceGroup', sorter: { path: 'ResourceGroupDesc' }}"
+						selectedKey="{ganttPlanningModel>/tempData/popover/ResourceGroupGuid}"
+						visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'RES_GROUP'}" editable="false">
+						<core:ListItem key="{viewModel>ResourceGroupGuid}" text="{viewModel>ResourceGroupDesc}" additionalText="{viewModel>ResourceGroupUnitId}"/>
+					</ComboBox>
+					<ComboBox items="{ path: 'viewModel>/Shifts'}"
+						selectedKey="{parts:[{path:'ganttPlanningModel>/tempData/popover/ScheduleId'},{path:'ganttPlanningModel>/tempData/popover/TemplateId'}],formatter:'.formatter.getShiftKey'}"
+						visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}" editable="false">
+						<core:ListItem key="{parts:[{path:'viewModel>ScheduleId'},{path:'viewModel>TemplateId'}],formatter:'.formatter.getShiftKey'}"
+							text="{viewModel>ScheduleIdDesc}" additionalText="{viewModel>ScheduleId}"/>
+					</ComboBox>
+					<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
+					<DateRangeSelection
+						dateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/StartDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
+						secondDateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/EndDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
+						editable="false"/>
+				</f:SimpleForm>
 			</core:ExtensionPoint>
 			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|After"/>
 		</content>
 		<beginButton>
-			<Button text="{i18n>xbtn.delete}" press="onPressDeleteAssignment" visible="true"/>
+			<Button text="{i18n>xbtn.delete}" press="onPressDeleteAssignment" visible="{= ${ganttPlanningModel>/tempData/popover/isEditable}}"/>
 		</beginButton>
 		<endButton>
-			<Button type="Emphasized" text="{i18n>xbtn.ok}" press="onPressChangeAssignment"/>
+			<Button type="Emphasized" text="{i18n>xbtn.ok}" press="onPressChangeAssignment" visible="{= ${ganttPlanningModel>/tempData/popover/isEditable}}"/>
 		</endButton>
 	</ResponsivePopover>
 </core:FragmentDefinition>

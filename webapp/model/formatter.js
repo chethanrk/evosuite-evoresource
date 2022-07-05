@@ -386,6 +386,12 @@ sap.ui.define([
 				return true;
 			}
 			return false;
+		},
+		setShapePopoverEditable:function(bEditable){
+			if(bEditable === undefined){
+				return true;
+			}
+			return bEditable;
 		}
 	};
 

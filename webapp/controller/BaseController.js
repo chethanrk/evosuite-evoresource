@@ -251,7 +251,8 @@ sap.ui.define([
 						Every: "",
 						Days: [],
 						On: 0,
-						RepeatEndDate: new Date()
+						RepeatEndDate: new Date(),
+						isEditable:true
 					},
 					oDraggedData = this.getView().getModel("viewModel").getProperty("/draggedData"),
 					nodeType;

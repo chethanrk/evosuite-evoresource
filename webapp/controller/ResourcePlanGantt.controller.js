@@ -242,7 +242,8 @@ sap.ui.define([
 				sEndTime: sEndTime,
 				oResourceObject: oRowData,
 				bDragged: false,
-				isNew: isNew
+				isNew: isNew,
+				isEditable:true
 			};
 
 			this.openShapeChangePopover(mParams.shape, oPopoverData);
@@ -302,9 +303,18 @@ sap.ui.define([
 			if (!oStartTime || !oEndTime || this._isDatePast(oStartTime) || this._isDatePast(oEndTime)) {
 				return;
 			}
+			
+			
+			
 			sGuid = oShapeInfo.shapeId;
 			aFoundData = this._getChildrenDataByKey("Guid", sGuid, null);
 			sOldDataPath = this._getChildDataByKey("Guid", sGuid, null);
+			
+			//validate if of Shift HR_SHIFT_FLAG is true
+			if(sOldDataPath.oData.NODE_TYPE === "SHIFT" && sOldDataPath.oData.HR_SHIFT_FLAG){
+				return;
+			}
+			
 			oOldData = deepClone(sOldDataPath.oData);
 			if (aFoundData) {
 				aFoundData.forEach(function (sPath) {
@@ -834,6 +844,10 @@ sap.ui.define([
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
 				oAssignData.minDate = new Date();
+				oAssignData.isEditable = true;
+				if(oTargetControl.sParentAggregationName === "shapes3"){
+					oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
+				}
 
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
@@ -1066,7 +1080,7 @@ sap.ui.define([
 				this._oPlanningPopover.close();
 			}
 
-			if (bAssignmentCheck) {
+			if (oPopoverData.NODE_TYPE !== "SHIFT" && bAssignmentCheck) {
 				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 			} else {
 				this._changeAssignment(oPopoverData);
@@ -1107,7 +1121,7 @@ sap.ui.define([
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
-			if (bAssignmentCheck) {
+			if (oAssignItem.NODE_TYPE !== "SHIFT" && bAssignmentCheck) {
 				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 			} else {
 				this._deleteAssignment(oAssignItem, sChangedContext);
@@ -1124,7 +1138,13 @@ sap.ui.define([
 		_deleteAssignment: function (oAssignmentData, sChangedContext) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			var callbackFn = function (oItem, oData, idx) {
-				var aAssignments = oItem.GanttHierarchyToResourceAssign ? oItem.GanttHierarchyToResourceAssign.results : [];
+				var aAssignments;
+				if(oData.NODE_TYPE === "RES_GROUP"){
+					aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.result ? oItem.GanttHierarchyToResourceAssign.results : []) : [];
+				}else if(oData.NODE_TYPE === "SHIFT"){
+					aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
+				}
+				
 				aAssignments.forEach(function (oAssignItemData, index) {
 					if (oAssignItemData.Guid === oData.Guid) {
 						this._markAsPlanningDelete(oAssignItemData);
