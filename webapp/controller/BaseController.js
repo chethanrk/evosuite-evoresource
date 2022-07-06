@@ -287,7 +287,7 @@ sap.ui.define([
 						var isCreatable = property["sap:creatable"];
 						// if (typeof isCreatable === "undefined" || isCreatable === true) {
 						obj[property.name] = "";
-						if (oRowData[property.name]) {
+						if (oRowData.hasOwnProperty(property.name)) {
 							obj[property.name] = oRowData[property.name];
 						}
 						// }
@@ -445,7 +445,8 @@ sap.ui.define([
 
 						aProperty.forEach(function (property) {
 							obj[property.name] = "";
-							if (oRowData[property.name]) {
+							// if (oRowData[property.name]) {
+							if (oRowData.hasOwnProperty(property.name)) {
 								obj[property.name] = oRowData[property.name];
 
 								// added formatter to convert the date to UTC before backend call

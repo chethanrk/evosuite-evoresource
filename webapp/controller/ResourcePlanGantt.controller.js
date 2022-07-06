@@ -522,15 +522,27 @@ sap.ui.define([
 			}
 
 			if (oData.isNew) {
-				this.oPlanningModel.setProperty("/tempData/popover/GroupId", oSelContext.getProperty("GroupId"));
-				this.oPlanningModel.setProperty("/tempData/popover/ScheduleId", oSelContext.getProperty("ScheduleId"));
+				// this.oPlanningModel.setProperty("/tempData/popover/GroupId", oSelContext.getProperty("GroupId"));
+				// this.oPlanningModel.setProperty("/tempData/popover/ScheduleId", oSelContext.getProperty("ScheduleId"));
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("ScheduleIdDesc"));
-				this.oPlanningModel.setProperty("/tempData/popover/ScheduleIdDesc", oSelContext.getProperty("ScheduleIdDesc"));
-				this.oPlanningModel.setProperty("/tempData/popover/TemplateId", oSelContext.getProperty("TemplateId"));
-				this.oPlanningModel.setProperty("/tempData/popover/TemplateDesc", oSelContext.getProperty("TemplateDesc"));
-				this.oPlanningModel.setProperty("/tempData/popover/ToTime", oSelContext.getProperty("ToTime"));
-				this.oPlanningModel.setProperty("/tempData/popover/FromTime", oSelContext.getProperty("FromTime"));
-				this.oPlanningModel.setProperty("/tempData/popover/SHIFT_COLOR", oSelContext.getProperty("SHIFT_COLOR"));
+				// this.oPlanningModel.setProperty("/tempData/popover/ScheduleIdDesc", oSelContext.getProperty("ScheduleIdDesc"));
+				// this.oPlanningModel.setProperty("/tempData/popover/TemplateId", oSelContext.getProperty("TemplateId"));
+				// this.oPlanningModel.setProperty("/tempData/popover/TemplateDesc", oSelContext.getProperty("TemplateDesc"));
+				// this.oPlanningModel.setProperty("/tempData/popover/ToTime", oSelContext.getProperty("ToTime"));
+				// this.oPlanningModel.setProperty("/tempData/popover/FromTime", oSelContext.getProperty("FromTime"));
+				// this.oPlanningModel.setProperty("/tempData/popover/SHIFT_COLOR", oSelContext.getProperty("SHIFT_COLOR"));
+
+				var shiftData = oSelContext.getObject(),
+					copyProperty = ['GroupId', 'ScheduleId', 'ScheduleIdDesc', 'TemplateId', 'TemplateDesc', 'ToTime', 'FromTime', 'SHIFT_COLOR',
+						'HR_SHIFT_FLAG', 'INCLUDE_FREE_DAY', 'DEFAULT_TEMPLATE', 'INCLUDE_PUBLIC_HOLIDAY', 'AVAILABILITY_TYPE'
+					];
+
+				for (var prop in shiftData) {
+					if (copyProperty.indexOf(prop) !== -1) {
+						oData[prop] = shiftData[prop];
+					}
+
+				}
 
 				this._removeAssignmentShape(oData, true);
 				//add different resource group if it is not exist
