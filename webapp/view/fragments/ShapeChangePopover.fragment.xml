@@ -28,7 +28,7 @@
 							selectedKey="{parts:[{path:'ganttPlanningModel>/tempData/popover/ScheduleId'},{path:'ganttPlanningModel>/tempData/popover/TemplateId'}],formatter:'.formatter.getShiftKey'}"
 							change="onChangeShift" visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}">
 							<core:ListItem key="{parts:[{path:'viewModel>ScheduleId'},{path:'viewModel>TemplateId'}],formatter:'.formatter.getShiftKey'}"
-								text="{viewModel>ScheduleIdDesc}" additionalText="{viewModel>ScheduleId}"/>
+								text="{viewModel>TemplateDesc}" additionalText="{viewModel>TemplateId}"/>
 						</ComboBox>
 						<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
 						<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"

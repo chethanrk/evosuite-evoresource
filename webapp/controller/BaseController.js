@@ -3,8 +3,9 @@ sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"com/evorait/evosuite/evoresource/model/formatter",
 	"sap/ui/core/Fragment",
-	"com/evorait/evosuite/evoresource/model/Constants"
-], function (Controller, Formatter, Fragment, Constants) {
+	"com/evorait/evosuite/evoresource/model/Constants",
+	"sap/base/util/deepClone",
+], function (Controller, Formatter, Fragment, Constants, deepClone) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoresource.controller.BaseController", {
@@ -696,6 +697,26 @@ sap.ui.define([
 			return aResourceAssignment;
 		},
 
+		_getResourceShiftByKey: function (sResourceGuid) {
+			var sPath = "/data/children",
+				oModel = this.getModel("ganttPlanningModel"),
+				aChildren = oModel.getProperty(sPath),
+				aResourceSelectedShift = [],
+				aAllShifts = [];
+			for (var i = 0; i < aChildren.length; i++) {
+				if (aChildren[i].ResourceGuid === sResourceGuid) {
+					aAllShifts = aChildren[i].GanttHierarchyToShift ? (aChildren[i].GanttHierarchyToShift.results ? aChildren[i].GanttHierarchyToShift.results : []) : [];
+					for(var j=0;j<aAllShifts.length;j++){
+						if(!aAllShifts[j].isNew){
+							aResourceSelectedShift.push(deepClone(aAllShifts[j]));
+						}
+					}
+					
+				}
+			}
+			return aResourceSelectedShift;
+		},
+
 		/**
 		 * validate duplicate resouce group in same time
 		 */
@@ -726,14 +747,23 @@ sap.ui.define([
 		 * Validate the duplicate assigmnents to compare with other assignments
 		 */
 		_validateDuplicateAsigment: function () {
-			var oData = this.oPlanningModel.getProperty("/tempData/popover");
+			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
+				aAssigments = [],
+				nodeType = oData.NODE_TYPE,
+				nodeTypeText;
 
 			//get groups assigned to the selected resource
-			var aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
+			if(nodeType === "RES_GROUP"){
+				aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
+				nodeTypeText = this.getResourceBundle().getText("xtxt.group");
+			}else if(nodeType === "SHIFT"){
+				aAssigments = this._getResourceShiftByKey(oData.ResourceGuid);
+				nodeTypeText = this.getResourceBundle().getText("xtxt.shift");
+			}
 
 			//validation for the existing assigments
 			if (!this._checkDuplicateAsigment(oData, aAssigments)) {
-				this.showMessageToast(this.getResourceBundle().getText("msg.errorduplicateresource"));
+				this.showMessageToast(this.getResourceBundle().getText("msg.errorduplicateresource",nodeTypeText));
 				//reset if other assigmnt exist
 				this._resetChanges();
 				return true;
