@@ -1163,10 +1163,22 @@ sap.ui.define([
 								oAssignItemData.RESOURCE_GROUP_COLOR = sChangedContext.getProperty("ResourceGroupColor");
 								oAssignItemData.DESCRIPTION = sChangedContext.getProperty("ResourceGroupDesc");
 							} else if (oAssignItemData.NODE_TYPE === "SHIFT") {
-								oAssignItemData.SHIFT_COLOR = sChangedContext.getProperty("SHIFT_COLOR");
+								// oAssignItemData.SHIFT_COLOR = sChangedContext.getProperty("SHIFT_COLOR");
 								oAssignItemData.DESCRIPTION = sChangedContext.getProperty("TemplateDesc");
 								oAssignItemData.PARENT_NODE_ID = oAssignItemData.NodeId;
 								oAssignItemData.ResourceGuid = oAssignItemData.ParentNodeId;
+								var shiftData = sChangedContext.getObject(),
+									copyProperty = ['GroupId', 'ScheduleId', 'ScheduleIdDesc', 'TemplateId', 'TemplateDesc', 'ToTime', 'FromTime',
+										'SHIFT_COLOR',
+										'HR_SHIFT_FLAG', 'INCLUDE_FREE_DAY', 'DEFAULT_TEMPLATE', 'INCLUDE_PUBLIC_HOLIDAY', 'AVAILABILITY_TYPE'
+									];
+
+								for (var prop in shiftData) {
+									if (copyProperty.indexOf(prop) !== -1) {
+										oAssignItemData[prop] = shiftData[prop];
+									}
+
+								}
 							}
 
 							this._addSingleChildToParent(oAssignItemData, true);
