@@ -452,7 +452,7 @@ sap.ui.define([
 
 								// added formatter to convert the date to UTC before backend call
 								if (property.name === "StartDate" && oRowData[property.name]) {
-									obj[property.name] = Formatter.convertToUTCDate(obj[property.name]);
+									obj[property.name] = Formatter.convertToUTCDate(oRowData[property.name]);
 								}
 								/**
 								 * Bellow piece of code is written because of enddate with UTC for the multiple days are not wotking properly
