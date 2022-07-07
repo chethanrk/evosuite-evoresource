@@ -1164,7 +1164,7 @@ sap.ui.define([
 								oAssignItemData.DESCRIPTION = sChangedContext.getProperty("ResourceGroupDesc");
 							} else if (oAssignItemData.NODE_TYPE === "SHIFT") {
 								oAssignItemData.SHIFT_COLOR = sChangedContext.getProperty("SHIFT_COLOR");
-								oAssignItemData.DESCRIPTION = sChangedContext.getProperty("ScheduleIdDesc");
+								oAssignItemData.DESCRIPTION = sChangedContext.getProperty("TemplateDesc");
 								oAssignItemData.PARENT_NODE_ID = oAssignItemData.NodeId;
 								oAssignItemData.ResourceGuid = oAssignItemData.ParentNodeId;
 							}
