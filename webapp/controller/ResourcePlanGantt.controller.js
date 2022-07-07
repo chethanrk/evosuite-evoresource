@@ -524,7 +524,7 @@ sap.ui.define([
 			if (oData.isNew) {
 				// this.oPlanningModel.setProperty("/tempData/popover/GroupId", oSelContext.getProperty("GroupId"));
 				// this.oPlanningModel.setProperty("/tempData/popover/ScheduleId", oSelContext.getProperty("ScheduleId"));
-				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("ScheduleIdDesc"));
+				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("TemplateDesc"));
 				// this.oPlanningModel.setProperty("/tempData/popover/ScheduleIdDesc", oSelContext.getProperty("ScheduleIdDesc"));
 				// this.oPlanningModel.setProperty("/tempData/popover/TemplateId", oSelContext.getProperty("TemplateId"));
 				// this.oPlanningModel.setProperty("/tempData/popover/TemplateDesc", oSelContext.getProperty("TemplateDesc"));

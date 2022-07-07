@@ -314,7 +314,7 @@ sap.ui.define([
 						obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
 						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
 					} else if (nodeType === "SHIFT") {
-						obj.DESCRIPTION = oRowData.ScheduleIdDesc || oRowData.Description;
+						obj.DESCRIPTION = oRowData.TemplateDesc || oRowData.Description;
 						obj.RESOURCE_GROUP_COLOR = oRowData.SHIFT_COLOR;
 					}
 					resolve(obj);
@@ -461,8 +461,8 @@ sap.ui.define([
 								 * Remove bellow code once we get valid loigc to send UTC date for multiple days selection
 								 */
 								if (property.name === "EndDate" && oRowData[property.name]) {
-									obj[property.name] = Formatter.convertToUTCDate(obj[property.name]);
 									obj[property.name] = new Date(oRowData[property.name].getTime() - 1000);
+									obj[property.name] = Formatter.convertToUTCDate(obj[property.name]);
 								}
 							}
 						});
@@ -492,7 +492,14 @@ sap.ui.define([
 					};
 				aDeleteData.forEach(function (oAssignment) {
 					var entitySet = oEntitySetList[oAssignment.NODE_TYPE];
-					this.getModel().remove("/" + entitySet + "('" + oAssignment.Guid + "')", param);
+					if (oAssignment.NODE_TYPE === "RES_GROUP") {
+						this.getModel().remove("/" + entitySet + "('" + oAssignment.Guid + "')", param);
+					} else if (oAssignment.NODE_TYPE === "SHIFT") {
+						this.getModel().remove("/" + entitySet + "(Guid='" + oAssignment.Guid + "',TemplateId='" + oAssignment.TemplateId +
+							"',ScheduleId='" + oAssignment.ScheduleId + "')",
+							param);
+					}
+
 				}.bind(this));
 				resolve(aDeleteData);
 			}.bind(this));
@@ -705,13 +712,14 @@ sap.ui.define([
 				aAllShifts = [];
 			for (var i = 0; i < aChildren.length; i++) {
 				if (aChildren[i].ResourceGuid === sResourceGuid) {
-					aAllShifts = aChildren[i].GanttHierarchyToShift ? (aChildren[i].GanttHierarchyToShift.results ? aChildren[i].GanttHierarchyToShift.results : []) : [];
-					for(var j=0;j<aAllShifts.length;j++){
-						if(!aAllShifts[j].isNew){
+					aAllShifts = aChildren[i].GanttHierarchyToShift ? (aChildren[i].GanttHierarchyToShift.results ? aChildren[i].GanttHierarchyToShift
+						.results : []) : [];
+					for (var j = 0; j < aAllShifts.length; j++) {
+						if (!aAllShifts[j].isNew) {
 							aResourceSelectedShift.push(deepClone(aAllShifts[j]));
 						}
 					}
-					
+
 				}
 			}
 			return aResourceSelectedShift;
@@ -753,17 +761,17 @@ sap.ui.define([
 				nodeTypeText;
 
 			//get groups assigned to the selected resource
-			if(nodeType === "RES_GROUP"){
+			if (nodeType === "RES_GROUP") {
 				aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
 				nodeTypeText = this.getResourceBundle().getText("xtxt.group");
-			}else if(nodeType === "SHIFT"){
+			} else if (nodeType === "SHIFT") {
 				aAssigments = this._getResourceShiftByKey(oData.ResourceGuid);
 				nodeTypeText = this.getResourceBundle().getText("xtxt.shift");
 			}
 
 			//validation for the existing assigments
 			if (!this._checkDuplicateAsigment(oData, aAssigments)) {
-				this.showMessageToast(this.getResourceBundle().getText("msg.errorduplicateresource",nodeTypeText));
+				this.showMessageToast(this.getResourceBundle().getText("msg.errorduplicateresource", nodeTypeText));
 				//reset if other assigmnt exist
 				this._resetChanges();
 				return true;
