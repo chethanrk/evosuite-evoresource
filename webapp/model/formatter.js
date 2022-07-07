@@ -10,6 +10,8 @@ sap.ui.define([
 	var oViewMapping = {
 		DAY: {
 			timeLine: "OneDay",
+			beginDate: moment().startOf("isoWeek").toDate(),
+			endDate: moment().endOf("isoWeek").toDate(),
 			bgDifferenceFn: function (oStartDate, oEndDate) {
 				return oEndDate.diff(oStartDate, "days");
 			},
@@ -32,6 +34,8 @@ sap.ui.define([
 		},
 		WEEK: {
 			timeLine: "OneWeek",
+			beginDate: moment().startOf("month").toDate(),
+			endDate: moment().endOf("month").toDate(),
 			bgDifferenceFn: function (oStartDate, oEndDate) {
 				return oEndDate.diff(oStartDate, 'weeks');
 			},
@@ -58,6 +62,8 @@ sap.ui.define([
 		},
 		MONTH: {
 			timeLine: "OneMonth",
+			beginDate: moment().startOf("month").subtract(1, "months").toDate(),
+			endDate: moment().endOf("month").add(2, "months").endOf("month").toDate(),
 			bgDifferenceFn: function (oStartDate, oEndDate) {
 				return oEndDate.diff(oStartDate, 'months');
 			},
@@ -377,6 +383,35 @@ sap.ui.define([
 				return true;
 			}
 			return false;
+		},
+
+		/**
+		 * Get default dates for selected mode
+		 */
+		getDefaultDates: function (sSelectkey, userModel) {
+			switch (sSelectkey) {
+			case "DAY":
+				return this.getDatesfromModel(userModel, "DAILYVIEW", sSelectkey);
+			case "WEEK":
+				return this.getDatesfromModel(userModel, "WEEKLYVIEW", sSelectkey);
+			case "MONTH":
+				return this.getDatesfromModel(userModel, "MONTHLYVIEW", sSelectkey);
+			default:
+				return {
+					"StartDate": userModel.getProperty("/DEFAULT_GANTT_START_DATE"),
+					"EndDate": userModel.getProperty("/DEFAULT_GANTT_END_DATE")
+				};
+			}
+		},
+
+		getDatesfromModel: function (userModel, dateParams, sSelectKey) {
+			var sStartDate, sEndDate;
+			sStartDate = userModel.getProperty("/DEFAULT_" + dateParams + "_STARTDATE") || oViewMapping[sSelectKey].beginDate;
+			sEndDate = userModel.getProperty("/DEFAULT_" + dateParams + "_ENDDATE") || oViewMapping[sSelectKey].endDate;
+			return {
+				"StartDate": sStartDate,
+				"EndDate": sEndDate
+			};
 		}
 	};
 
