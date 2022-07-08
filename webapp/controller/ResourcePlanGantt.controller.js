@@ -1306,6 +1306,15 @@ sap.ui.define([
 			} else {
 				this._oGanttFilterDialog.open();
 			}
+		},
+		
+		/**
+		 * Called when Filter button in clicked
+		 * @param {object} oEvent - event of the filter button
+		 * 
+		 */
+		onFilterGantt:function(oEvent){
+			this._oGanttFilterDialog.close();
 		}
 	});
 });

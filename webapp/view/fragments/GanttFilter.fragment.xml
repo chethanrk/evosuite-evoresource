@@ -10,7 +10,7 @@
 			</FlexBox>
 		</content>
 		<endButton>
-			<Button text = "{i18n>xbtn.ok}" />
+			<Button text = "{i18n>xbtn.ok}" press="onFilterGantt"/>
 		</endButton>
 	</Dialog>
 </core:FragmentDefinition>
