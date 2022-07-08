@@ -233,7 +233,7 @@ sap.ui.define([
 		onShapePress: function (oEvent) {
 			var mParams = oEvent.getParameters(),
 				oShape = mParams.shape,
-				isNew = oShape['sParentAggregationName'] === 'shape1',
+				isNew,
 				oRowContext,
 				sStartTime,
 				sEndTime,
@@ -243,6 +243,7 @@ sap.ui.define([
 			if (!mParams || !oShape) {
 				return;
 			}
+			isNew = oShape['sParentAggregationName'] === 'shape1';
 			oRowContext = mParams.rowSettings.getParent().getBindingContext("ganttPlanningModel");
 			sStartTime = oShape.getTime();
 			sEndTime = oShape.getEndTime();
