@@ -384,15 +384,35 @@ sap.ui.define([
 			}
 			return false;
 		},
+		
+		/**
+		 * Creates key combination of ScheduleId and TemplateId
+		 * @param {string} sScheduleId - ScheduleId of Shift
+		 * @param {string} sTemplateId - TemplateId of Shift
+		 * 
+		 */
 		getShiftKey:function(sScheduleId,sTemplateId){
 			return sScheduleId + sTemplateId;
 		},
+		
+		/**
+		 * Sets assignment tye combo editable based on parameter
+		 * @param {boolean} bIsNew - isNew parameter of shape
+		 * @param {boolean} bIsTemporary - isTemporary parameter of shape
+		 * 
+		 */
 		setAssignmentTypeEditable:function(bIsNew,bIsTemporary){
 			if(bIsNew && bIsTemporary){
 				return true;
 			}
 			return false;
 		},
+		
+		/**
+		 * Sets shape popover editable based on parameter
+		 * @param {boolean} bEditable - isEditable parameter of shape
+		 * 
+		 */
 		setShapePopoverEditable:function(bEditable){
 			if(bEditable === undefined){
 				return true;
