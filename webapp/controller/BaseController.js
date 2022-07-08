@@ -266,11 +266,8 @@ sap.ui.define([
 				}
 				//collect all assignment properties who allowed for create
 				this.getModel().getMetaModel().loaded().then(function () {
-					var oEntitySetList = {
-						"RES_GROUP": "ResourceAssignmentSet",
-						"SHIFT": "ShiftSet"
-					};
 					var oMetaModel = this.getModel().getMetaModel(),
+						oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet"),
 						oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[nodeType]),
 						// oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
 						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
@@ -423,11 +420,7 @@ sap.ui.define([
 		_preparePayload: function (mParameters) {
 			return new Promise(function (resolve) {
 				var aChangedData = this.oPlanningModel.getProperty("/changedData"),
-					oEntitySetList = {
-						"RESOURCE": "ResourceAssignmentSet",
-						"RES_GROUP": "ResourceAssignmentSet",
-						"SHIFT": "ShiftSet"
-					};
+					oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet");
 				this.getModel().setDeferredGroups(["batchSave"]);
 				aChangedData.forEach(function (sPath) {
 					var oFoundData = this._getChildDataByKey("Guid", sPath, null),
@@ -485,11 +478,7 @@ sap.ui.define([
 				var param = {
 						groupId: "batchDelete"
 					},
-					oEntitySetList = {
-						"RESOURCE": "ResourceAssignmentSet",
-						"RES_GROUP": "ResourceAssignmentSet",
-						"SHIFT": "ShiftSet"
-					};
+					oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet");
 				aDeleteData.forEach(function (oAssignment) {
 					var entitySet = oEntitySetList[oAssignment.NODE_TYPE];
 					if (oAssignment.NODE_TYPE === "RES_GROUP") {

@@ -57,5 +57,9 @@
 		"class": "",
 		"isGroup": "X",
 		"groupProperty": "TimeAllocationType"
-	}]
+	}],
+	"EntitySet": {
+		"RES_GROUP": "ResourceAssignmentSet",
+		"SHIFT": "ShiftSet"
+	}
 }
