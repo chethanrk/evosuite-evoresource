@@ -1307,14 +1307,28 @@ sap.ui.define([
 				this._oGanttFilterDialog.open();
 			}
 		},
-		
+
 		/**
-		 * Called when Filter button in clicked
+		 * Called when OK is pressed on Filter Dialog
 		 * @param {object} oEvent - event of the filter button
 		 * 
 		 */
-		onFilterGantt:function(oEvent){
+		onFilterGantt: function (oEvent) {
 			this._oGanttFilterDialog.close();
+		},
+
+		/**
+		 * Called when option get select in Filter dialog
+		 * @param {object} oEvent - event of the filter button
+		 * 
+		 */
+		onGanttEnableType: function (oEvent) {
+			var oUserModel = this.getModel("user"),
+				bCheckState = oEvent.getParameter('selected'),
+				oSource = oEvent.getSource(),
+				sPath = oSource.getBindingInfo("selected").binding.getPath();
+
+			oUserModel.setProperty(sPath, bCheckState);
 		}
 	});
 });

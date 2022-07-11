@@ -2,11 +2,11 @@
 	<Dialog title="{i18n>xtit.settings}" contentWidth="20%" resizable="true" type="Message">
 		<content>
 			<FlexBox direction="Column">
-				<CheckBox text="{i18n>xlbl.showBlocker}" selected="{user>/ENABLE_SHOW_BLOCKER}"/>
-				<CheckBox text="{i18n>xlbl.showAvailibility}" selected="{user>/ENABLE_SHOW_AVAILABILITY}" />
-				<CheckBox text="{i18n>xlbl.showAbsences}" selected="{user>/ENABLE_SHOW_ABSENCE}" />
-				<CheckBox text="{i18n>xlbl.showShift}" selected="{user>/ENABLE_SHOW_SHIFT}" />
-				<CheckBox text="{i18n>xlbl.showGroup}" selected="{user>/ENABLE_SHOW_GROUP}" />
+				<CheckBox text="{i18n>xlbl.showBlocker}" selected="{user>/ENABLE_SHOW_BLOCKER}" select="onGanttEnableType"/>
+				<CheckBox text="{i18n>xlbl.showAvailibility}" selected="{user>/ENABLE_SHOW_AVAILABILITY}" select="onGanttEnableType"/>
+				<CheckBox text="{i18n>xlbl.showAbsences}" selected="{user>/ENABLE_SHOW_ABSENCE}" select="onGanttEnableType"/>
+				<CheckBox text="{i18n>xlbl.showShift}" selected="{user>/ENABLE_SHOW_SHIFT}" select="onGanttEnableType"/>
+				<CheckBox text="{i18n>xlbl.showGroup}" selected="{user>/ENABLE_SHOW_GROUP}" select="onGanttEnableType"/>
 			</FlexBox>
 		</content>
 		<endButton>
