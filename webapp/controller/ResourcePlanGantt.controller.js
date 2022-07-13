@@ -1474,6 +1474,54 @@ sap.ui.define([
 			this._setBackgroudShapes(this._sGanttViewMode);
 			this._previousView = sKey;
 			this._setNewHorizon(newDateRange.StartDate, newDateRange.EndDate);
+		},
+
+		/**
+		 * Called when Filter button in clicked
+		 * @param {object} oEvent - event of the filter button
+		 * 
+		 */
+		onPressFilter: function (oEvent) {
+			if (!this._oGanttFilterDialog) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoresource.view.fragments.GanttFilter",
+					controller: this
+				}).then(function (dFilterDialog) {
+					this._oGanttFilterDialog = dFilterDialog;
+					this.getView().addDependent(this._oGanttFilterDialog);
+					this._oGanttFilterDialog.open();
+					//after popover gets opened check popover data for resource group color
+					this._oGanttFilterDialog.attachAfterOpen(function (oEvent) {}.bind(this));
+
+					//after popover gets closed remove popover data
+					this._oGanttFilterDialog.attachAfterClose(function (oEvent) {}.bind(this));
+				}.bind(this));
+			} else {
+				this._oGanttFilterDialog.open();
+			}
+		},
+
+		/**
+		 * Called when OK is pressed on Filter Dialog
+		 * @param {object} oEvent - event of the filter button
+		 * 
+		 */
+		onFilterGantt: function (oEvent) {
+			this._oGanttFilterDialog.close();
+		},
+
+		/**
+		 * Called when option get select in Filter dialog
+		 * @param {object} oEvent - event of the filter button
+		 * 
+		 */
+		onGanttEnableType: function (oEvent) {
+			var oUserModel = this.getModel("user"),
+				bCheckState = oEvent.getParameter('selected'),
+				oSource = oEvent.getSource(),
+				sPath = oSource.getBindingInfo("selected").binding.getPath();
+
+			oUserModel.setProperty(sPath, bCheckState);
 		}
 	});
 });
