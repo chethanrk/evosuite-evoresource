@@ -22,7 +22,7 @@
 							<gnt2:GanttChartContainer id="idResourcePlanGanttChartContainer" enableCursorLine="false" enableTimeScrollSync="false">
 								<gnt2:toolbar>
 									<gnt2:ContainerToolbar class="gantt-containerToolbar" alignCustomContentToRight="true" showTimeZoomControl="true" zoomControlType="None"
-										showLegendButton="false">
+										showLegendButton="false" showSettingButton="false">
 										<gnt2:content>
 											<tnt:InfoLabel text="{i18n>xtxt.unsavedChanges}" colorScheme="1" displayOnly="true" visible="{ganttPlanningModel>/hasChanges}"/>
 											<ToolbarSpacer/>
@@ -33,6 +33,7 @@
 												enabled="{ganttPlanningModel>/hasChanges}"/>
 											<Text text="|"/>
 											<Button id="idResourcePlanBtnToday" text="{i18n>xbtn.today}" press="onPressToday"/>
+											<Button id="idResourcePlanBtnSetting" icon="sap-icon://filter" press="onPressFilter"/>
 											<core:ExtensionPoint name="GanttExtP|ResourcePlanGantt|GanttResourceHierarchySet|ContainerToolbar|After"/>
 										</gnt2:content>
 									</gnt2:ContainerToolbar>
@@ -40,7 +41,7 @@
 								<gnt2:GanttChartWithTable id="idResourcePlanGanttChartTable" shapeSelectionMode="Single" shapeDoubleClick="onShapePress"
 									ghostAlignment="Start" adhocLineLayer="Bottom" nowLineInUTC="false" shapeMouseEnter="onShapeMouseEnter" shapeDrop="onShapeDrop"
 									shapeResize="onShapeResize" shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}"
-									visibleHorizonUpdate="onVisibleHorizonUpdate">
+									visibleHorizonUpdate="onVisibleHorizonUpdate" dragOrientation="Horizontal">
 									<gnt2:axisTimeStrategy>
 										<axistime:StepwiseZoomStrategy id="idResourcePlanGanttZoom" zoomLevels="3">
 											<axistime:totalHorizon>
