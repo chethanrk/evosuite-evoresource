@@ -448,7 +448,7 @@ sap.ui.define([
 								obj[property.name] = oRowData[property.name];
 
 								// added formatter to convert the date to UTC before backend call
-								if (property.name === "StartDate" && oRowData[property.name]) {
+								if ((property.name === "StartDate" || property.name === "EffectiveStartDate") && oRowData[property.name]) {
 									obj[property.name] = Formatter.convertToUTCDate(oRowData[property.name]);
 								}
 								/**
@@ -457,7 +457,7 @@ sap.ui.define([
 								 * Removed 1 more second from the enddate before send it to backend
 								 * Remove bellow code once we get valid loigc to send UTC date for multiple days selection
 								 */
-								if (property.name === "EndDate" && oRowData[property.name]) {
+								if ((property.name === "EndDate" || property.name === "EffectiveEndDate") && oRowData[property.name]) {
 									obj[property.name] = new Date(oRowData[property.name].getTime() - 1000);
 									obj[property.name] = Formatter.convertToUTCDate(obj[property.name]);
 								}
@@ -489,7 +489,7 @@ sap.ui.define([
 						this.getModel().remove("/" + entitySet + "('" + oAssignment.Guid + "')", param);
 					} else if (oAssignment.NODE_TYPE === "SHIFT") {
 						this.getModel().remove("/" + entitySet + "(Guid='" + oAssignment.Guid + "',TemplateId='" + oAssignment.TemplateId +
-							"',ScheduleId='" + oAssignment.ScheduleId + "')",
+							"')",
 							param);
 					}
 

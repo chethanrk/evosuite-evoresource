@@ -335,6 +335,8 @@ sap.ui.define([
 					oAssignment = this.getModel("ganttPlanningModel").getProperty(sPath);
 					oAssignment.StartDate = oStartTime;
 					oAssignment.EndDate = oEndTime;
+					oAssignment.EffectiveStartDate = oStartTime;
+					oAssignment.EffectiveEndDate = oEndTime;
 					oAssignment.isChanging = true;
 				}.bind(this));
 			}
