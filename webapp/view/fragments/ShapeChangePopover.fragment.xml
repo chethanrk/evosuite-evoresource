@@ -24,11 +24,9 @@
 							<core:ListItem key="{viewModel>ResourceGroupGuid}" text="{viewModel>ResourceGroupDesc}" additionalText="{viewModel>ResourceGroupUnitId}"/>
 						</ComboBox>
 						<ComboBox id="idShift" required="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}" showSecondaryValues="true" name="Shift"
-							fieldGroupIds="changeShapeInput" items="{ path: 'viewModel>/Shifts'}"
-							selectedKey="{parts:[{path:'ganttPlanningModel>/tempData/popover/ScheduleId'},{path:'ganttPlanningModel>/tempData/popover/TemplateId'}],formatter:'.formatter.getShiftKey'}"
+							fieldGroupIds="changeShapeInput" items="{ path: 'viewModel>/Shifts'}" selectedKey="{ganttPlanningModel>/tempData/popover/TemplateId}"
 							change="onChangeShift" visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}">
-							<core:ListItem key="{parts:[{path:'viewModel>ScheduleId'},{path:'viewModel>TemplateId'}],formatter:'.formatter.getShiftKey'}"
-								text="{viewModel>TemplateDesc}" additionalText="{viewModel>TemplateId}"/>
+							<core:ListItem key="{viewModel>TemplateId}" text="{viewModel>TemplateDesc}" additionalText="{viewModel>TemplateId}"/>
 						</ComboBox>
 						<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
 						<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"
@@ -90,10 +88,10 @@
 						<core:ListItem key="{viewModel>ResourceGroupGuid}" text="{viewModel>ResourceGroupDesc}" additionalText="{viewModel>ResourceGroupUnitId}"/>
 					</ComboBox>
 					<ComboBox items="{ path: 'viewModel>/Shifts'}"
-						selectedKey="{parts:[{path:'ganttPlanningModel>/tempData/popover/ScheduleId'},{path:'ganttPlanningModel>/tempData/popover/TemplateId'}],formatter:'.formatter.getShiftKey'}"
+						selectedKey="{ganttPlanningModel>/tempData/popover/TemplateId}"
 						visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}" editable="false">
-						<core:ListItem key="{parts:[{path:'viewModel>ScheduleId'},{path:'viewModel>TemplateId'}],formatter:'.formatter.getShiftKey'}"
-							text="{viewModel>ScheduleIdDesc}" additionalText="{viewModel>ScheduleId}"/>
+						<core:ListItem key="{viewModel>TemplateId}"
+							text="{viewModel>TemplateDesc}" additionalText="{viewModel>TemplateId}"/>
 					</ComboBox>
 					<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
 					<DateRangeSelection
@@ -108,7 +106,8 @@
 			<Button text="{i18n>xbtn.delete}" press="onPressDeleteAssignment" visible="{= ${ganttPlanningModel>/tempData/popover/isEditable}}"/>
 		</beginButton>
 		<endButton>
-			<Button type="Emphasized" text="{i18n>xbtn.ok}" press="onPressChangeAssignment" visible="{= ${ganttPlanningModel>/tempData/popover/isEditable}}"/>
+			<Button type="Emphasized" text="{i18n>xbtn.ok}" press="onPressChangeAssignment"
+				visible="{= ${ganttPlanningModel>/tempData/popover/isEditable}}"/>
 		</endButton>
 	</ResponsivePopover>
 </core:FragmentDefinition>
