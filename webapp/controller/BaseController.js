@@ -302,6 +302,7 @@ sap.ui.define([
 					obj.PARENT_NODE_ID = oRowData.NodeId;
 					// obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
 					obj.bDragged = bDragged;
+					obj.ParentNodeId = oRowData.ResourceGuid;
 
 					if (nodeType === "RESOURCE") {
 						obj.NodeId = oRowData.NodeId;
@@ -401,6 +402,7 @@ sap.ui.define([
 			};
 			this._preparePayload(mParameters).then(function (oData) {
 				if (oData.length > 0) {
+					this.getModel().setRefreshAfterChange(false); //avoid GET request for every after POST request
 					this.getModel().submitChanges(mParameters);
 				} else {
 					if (oSuccessCallback) {

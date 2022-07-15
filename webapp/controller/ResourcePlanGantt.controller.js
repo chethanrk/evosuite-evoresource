@@ -250,7 +250,7 @@ sap.ui.define([
 			oRowData = oRowContext.getObject();
 			if (oRowData.NodeType !== "RESOURCE") {
 				oParentData = this._getParentResource(oRowData.ParentNodeId);
-				oRowData.TIME_ZONE = oParentData.TIME_ZONE;
+				oRowData.USER_TIMEZONE = oParentData.TIME_ZONE;
 			}
 			oPopoverData = {
 				Guid: new Date().getTime(),
