@@ -293,6 +293,8 @@ sap.ui.define([
 					obj.RepeatEndDate = oEndTime;
 					obj.StartDate = oStartTime;
 					obj.EndDate = oEndTime;
+					obj.EffectiveStartDate = oStartTime;
+					obj.EffectiveEndDate = oEndTime;
 					obj.NODE_TYPE = nodeType;
 					obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
 					obj.ResourceGuid = oRowData.ResourceGuid;

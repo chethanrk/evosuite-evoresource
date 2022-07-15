@@ -399,11 +399,11 @@ sap.ui.define([
 				sEndTime = oDroppedTarget.getEndTime(),
 				oPopoverData,
 				oParentData,
-				aIgnoreProperty = ["__metadata", "NodeId", "TIME_ZONE"];
+				aIgnoreProperty = ["__metadata", "NodeId", "USER_TIMEZONE"];
 
 			if (oObject.NodeType !== "RESOURCE") {
 				oParentData = this._getParentResource(oObject.ParentNodeId);
-				oObject.TIME_ZONE = oParentData.TIME_ZONE;
+				oObject.USER_TIMEZONE = oParentData.TIME_ZONE;
 			}
 
 			oObject = this.copyObjectData(oObject, oDraggedObject.data, aIgnoreProperty);
@@ -549,7 +549,7 @@ sap.ui.define([
 				// this.oPlanningModel.setProperty("/tempData/popover/SHIFT_COLOR", oSelContext.getProperty("SHIFT_COLOR"));
 
 				var shiftData = oSelContext.getObject(),
-					copyProperty = ['GroupId', 'ScheduleId', 'ScheduleIdDesc', 'TemplateId', 'TemplateDesc', 'ToTime', 'FromTime', 'SHIFT_COLOR',
+					copyProperty = ['GroupId', 'ScheduleId', 'ScheduleIdDesc', 'TemplateId', 'TemplateDesc', 'PlannedWorkEndTime', 'PlannedWorkStartTime', 'SHIFT_COLOR',
 						'HR_SHIFT_FLAG', 'INCLUDE_FREE_DAY', 'DEFAULT_TEMPLATE', 'INCLUDE_PUBLIC_HOLIDAY', 'AVAILABILITY_TYPE'
 					];
 
@@ -581,6 +581,9 @@ sap.ui.define([
 			var oDateRange = oEvent.getSource();
 			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oDateRange.getDateValue());
 			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oDateRange.getSecondDateValue());
+			
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oDateRange.getDateValue());
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oDateRange.getSecondDateValue());
 
 			//validate for the overlapping
 			if (this._validateDuplicateAsigment()) {
@@ -845,7 +848,7 @@ sap.ui.define([
 				oResourceObject = oPopoverData["oResourceObject"],
 				bDragged = oPopoverData["bDragged"],
 				oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
-				oChildData;
+				oChildData,oAssignData;
 
 			if (oTargetControl.sParentAggregationName === "shapes1") {
 				//its background shape
@@ -862,17 +865,27 @@ sap.ui.define([
 					}
 
 				}.bind(this));
-			} else if ((oTargetControl.sParentAggregationName === "shapes2" || oTargetControl.sParentAggregationName === "shapes3") && oContext) {
+			} else if (oTargetControl.sParentAggregationName === "shapes2" && oContext) {
 				//its a assignment
-				var oAssignData = oContext.getObject();
+				oAssignData = oContext.getObject();
 				this._setShapePopoverPosition(oAssignData);
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
 				oAssignData.minDate = new Date();
 				oAssignData.isEditable = true;
-				if (oTargetControl.sParentAggregationName === "shapes3") {
-					oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
-				}
+				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
+				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
+			} else if (oTargetControl.sParentAggregationName === "shapes3" && oContext) {
+				//its a assignment
+				oAssignData = oContext.getObject();
+				this._setShapePopoverPosition(oAssignData);
+				//popover data adjustment with repeat mode
+				oAssignData.Repeat = "NEVER";
+				oAssignData.minDate = new Date();
+				oAssignData.isEditable = true;
+				oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
+				 oAssignData.StartDate = oAssignData.EffectiveStartDate;
+				oAssignData.EndDate = oAssignData.EffectiveEndDate;
 
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));

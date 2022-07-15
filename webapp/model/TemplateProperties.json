@@ -35,7 +35,7 @@
 		"enableAutoBinding": true,
 		"entitySet": "ShiftSet",
 		"tableBindingPath": "",
-		"requestAtLeastFields": "TemplateId,TemplateDesc,GroupId,ScheduleId,ScheduleIdDesc,FromTime,ToTime",
+		"requestAtLeastFields": "",
 		"class": "",
 		"isGroup": "",
 		"groupProperty": ""
