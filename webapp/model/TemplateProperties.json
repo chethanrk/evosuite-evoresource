@@ -35,7 +35,7 @@
 		"enableAutoBinding": true,
 		"entitySet": "ShiftSet",
 		"tableBindingPath": "",
-		"requestAtLeastFields": "TemplateId,TemplateDesc,GroupId,ScheduleId,ScheduleIdDesc,FromTime,ToTime",
+		"requestAtLeastFields": "",
 		"class": "",
 		"isGroup": "",
 		"groupProperty": ""
@@ -57,5 +57,9 @@
 		"class": "",
 		"isGroup": "X",
 		"groupProperty": "TimeAllocationType"
-	}]
+	}],
+	"EntitySet": {
+		"RES_GROUP": "ResourceAssignmentSet",
+		"SHIFT": "ShiftSet"
+	}
 }
