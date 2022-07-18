@@ -3,8 +3,9 @@ sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"com/evorait/evosuite/evoresource/model/formatter",
 	"sap/ui/core/Fragment",
-	"com/evorait/evosuite/evoresource/model/Constants"
-], function (Controller, Formatter, Fragment, Constants) {
+	"com/evorait/evosuite/evoresource/model/Constants",
+	"sap/base/util/deepClone",
+], function (Controller, Formatter, Fragment, Constants, deepClone) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoresource.controller.BaseController", {
@@ -243,44 +244,73 @@ sap.ui.define([
 		createNewTempAssignment: function (oStartTime, oEndTime, oRowData, bDragged) {
 			return new Promise(function (resolve) {
 				var obj = {
-					minDate: new Date(),
-					isTemporary: true,
-					isNew: true,
-					Guid: new Date().getTime(),
-					Repeat: "NEVER",
-					Every: "",
-					Days: [],
-					On: 0,
-					RepeatEndDate: new Date()
-				};
+						minDate: new Date(),
+						isTemporary: true,
+						isNew: true,
+						Guid: new Date().getTime(),
+						Repeat: "NEVER",
+						Every: "",
+						Days: [],
+						On: 0,
+						RepeatEndDate: new Date(),
+						isEditable: true
+					},
+					oDraggedData = this.getView().getModel("viewModel").getProperty("/draggedData"),
+					nodeType;
+
+				if (bDragged) nodeType = oDraggedData.data.NodeType;
+				else {
+					if (oRowData.NodeType) nodeType = oRowData.NodeType;
+					else if (oRowData.NODE_TYPE) nodeType = oRowData.NODE_TYPE;
+				}
 				//collect all assignment properties who allowed for create
 				this.getModel().getMetaModel().loaded().then(function () {
-					if (oRowData.NodeType === "RESOURCE" || oRowData.NodeType === "RES_GROUP") {
-						// create assignment only if NodeType is "Resource"-Parent or "Resource Group"
-						var oMetaModel = this.getModel().getMetaModel(),
-							oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
-							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-							aProperty = oEntityType ? oEntityType.property : [];
+					var oMetaModel = this.getModel().getMetaModel(),
+						oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet"),
+						oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[nodeType]),
+						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+						aProperty = oEntityType ? oEntityType.property : [];
 
-						aProperty.forEach(function (property) {
-							var isCreatable = property["sap:creatable"];
-							if (typeof isCreatable === "undefined" || isCreatable === true) {
-								obj[property.name] = "";
-								if (oRowData[property.name]) {
-									obj[property.name] = oRowData[property.name];
-								}
-							}
-						});
-                        obj.RepeatEndDate = oEndTime;
-						obj.StartDate = oStartTime;
-						obj.EndDate = oEndTime;
-						obj.NODE_TYPE = "GROUP";
-						obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
-						obj.ResourceGuid = oRowData.ResourceGuid;
+					if (aProperty.length === 0) {
+						for (var key in oEntitySetList) {
+							oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[key]);
+							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null;
+							aProperty = aProperty.concat(oEntityType ? oEntityType.property : [])
+						}
+					}
+
+					aProperty.forEach(function (property) {
+						var isCreatable = property["sap:creatable"];
+						obj[property.name] = "";
+						if (oRowData.hasOwnProperty(property.name)) {
+							obj[property.name] = oRowData[property.name];
+						}
+					});
+					obj.RepeatEndDate = oEndTime;
+					obj.StartDate = oStartTime;
+					obj.EndDate = oEndTime;
+					obj.EffectiveStartDate = oStartTime;
+					obj.EffectiveEndDate = oEndTime;
+					obj.NODE_TYPE = nodeType;
+					obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
+					obj.ResourceGuid = oRowData.ResourceGuid;
+					obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
+					obj.PARENT_NODE_ID = oRowData.NodeId;
+					obj.bDragged = bDragged;
+					obj.ParentNodeId = oRowData.ResourceGuid;
+
+					if (nodeType === "RESOURCE") {
+						obj.NodeId = oRowData.NodeId;
+						obj.TIME_ZONE = oRowData.TIME_ZONE;
 						obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
-						obj.PARENT_NODE_ID = oRowData.NodeId;
 						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
-						obj.bDragged = bDragged;
+					}
+					if (nodeType === "RES_GROUP") {
+						obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
+						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
+					} else if (nodeType === "SHIFT") {
+						obj.DESCRIPTION = oRowData.TemplateDesc || oRowData.Description;
+						obj.RESOURCE_GROUP_COLOR = oRowData.SHIFT_COLOR;
 					}
 					resolve(obj);
 				}.bind(this));
@@ -367,6 +397,7 @@ sap.ui.define([
 			};
 			this._preparePayload(mParameters).then(function (oData) {
 				if (oData.length > 0) {
+					this.getModel().setRefreshAfterChange(false); //avoid GET request for every after POST request
 					this.getModel().submitChanges(mParameters);
 				} else {
 					if (oSuccessCallback) {
@@ -387,7 +418,8 @@ sap.ui.define([
 		 */
 		_preparePayload: function (mParameters) {
 			return new Promise(function (resolve) {
-				var aChangedData = this.oPlanningModel.getProperty("/changedData");
+				var aChangedData = this.oPlanningModel.getProperty("/changedData"),
+					oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet");
 				this.getModel().setDeferredGroups(["batchSave"]);
 				aChangedData.forEach(function (sPath) {
 					var oFoundData = this._getChildDataByKey("Guid", sPath, null),
@@ -395,22 +427,23 @@ sap.ui.define([
 						singleentry = {
 							groupId: "batchSave"
 						},
-						obj = {};
+						obj = {},
+						entitySet = oEntitySetList[oRowData.NODE_TYPE];
 					//collect all assignment properties who allowed for create
 					this.getModel().getMetaModel().loaded().then(function () {
 						var oMetaModel = this.getModel().getMetaModel(),
-							oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
+							oEntitySet = oMetaModel.getODataEntitySet(entitySet),
 							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
 							aProperty = oEntityType ? oEntityType.property : [];
 
 						aProperty.forEach(function (property) {
 							obj[property.name] = "";
-							if (oRowData[property.name]) {
+							if (oRowData.hasOwnProperty(property.name)) {
 								obj[property.name] = oRowData[property.name];
 
 								// added formatter to convert the date to UTC before backend call
-								if (property.name === "StartDate" && oRowData[property.name]) {
-									obj[property.name] = Formatter.convertToUTCDate(obj[property.name]);
+								if ((property.name === "StartDate" || property.name === "EffectiveStartDate") && oRowData[property.name]) {
+									obj[property.name] = Formatter.convertToUTCDate(oRowData[property.name]);
 								}
 								/**
 								 * Bellow piece of code is written because of enddate with UTC for the multiple days are not wotking properly
@@ -418,14 +451,14 @@ sap.ui.define([
 								 * Removed 1 more second from the enddate before send it to backend
 								 * Remove bellow code once we get valid loigc to send UTC date for multiple days selection
 								 */
-								if (property.name === "EndDate" && oRowData[property.name]) {
-									obj[property.name] = Formatter.convertToUTCDate(obj[property.name]);
+								if ((property.name === "EndDate" || property.name === "EffectiveEndDate") && oRowData[property.name]) {
 									obj[property.name] = new Date(oRowData[property.name].getTime() - 1000);
+									obj[property.name] = Formatter.convertToUTCDate(obj[property.name]);
 								}
 							}
 						});
 						singleentry.properties = obj;
-						this.getModel().createEntry("/ResourceAssignmentSet", singleentry);
+						this.getModel().createEntry("/" + entitySet, singleentry);
 					}.bind(this));
 				}.bind(this));
 				resolve(aChangedData);
@@ -441,10 +474,19 @@ sap.ui.define([
 			return new Promise(function (resolve) {
 				var aDeleteData = this.oPlanningModel.getProperty("/deletedData");
 				var param = {
-					groupId: "batchDelete"
-				};
-				aDeleteData.forEach(function (sPath) {
-					this.getModel().remove("/ResourceAssignmentSet('" + sPath + "')", param);
+						groupId: "batchDelete"
+					},
+					oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet");
+				aDeleteData.forEach(function (oAssignment) {
+					var entitySet = oEntitySetList[oAssignment.NODE_TYPE];
+					if (oAssignment.NODE_TYPE === "RES_GROUP") {
+						this.getModel().remove("/" + entitySet + "('" + oAssignment.Guid + "')", param);
+					} else if (oAssignment.NODE_TYPE === "SHIFT") {
+						this.getModel().remove("/" + entitySet + "(Guid='" + oAssignment.Guid + "',TemplateId='" + oAssignment.TemplateId +
+							"')",
+							param);
+					}
+
 				}.bind(this));
 				resolve(aDeleteData);
 			}.bind(this));
@@ -516,9 +558,32 @@ sap.ui.define([
 						sPath: sPath,
 						oData: aChildren[i]
 					};
-				} else if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results.length > 0) {
+				} else if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results && aChildren[i].GanttHierarchyToResourceAssign
+					.results.length > 0) {
 					//search in assignments
 					sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/GanttHierarchyToResourceAssign/results");
+					if (sNewObj) {
+						return sNewObj;
+					} else if (aChildren[i].children && aChildren[i].children.length > 0) {
+						//search in other children
+						sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/children");
+						if (sNewObj) {
+							return sNewObj;
+						}
+					}
+				}
+			}
+			for (var i = 0; i < aChildren.length; i++) {
+				if (aChildren[i][sProperty] === sValue) {
+					sPath += "/" + i;
+					return {
+						sPath: sPath,
+						oData: aChildren[i]
+					};
+				} else if (aChildren[i].GanttHierarchyToShift && aChildren[i].GanttHierarchyToShift.results && aChildren[i].GanttHierarchyToShift.results
+					.length > 0) {
+					//search in assignments
+					sNewObj = this._getChildDataByKey(sProperty, sValue, sPath + "/" + i + "/GanttHierarchyToShift/results");
 					if (sNewObj) {
 						return sNewObj;
 					} else if (aChildren[i].children && aChildren[i].children.length > 0) {
@@ -549,7 +614,8 @@ sap.ui.define([
 				aInnerAssignments = [],
 				newSpath = sPath;
 			for (var i = 0; i < aChildren.length; i++) {
-				if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results.length > 0) {
+				if (aChildren[i].GanttHierarchyToResourceAssign && aChildren[i].GanttHierarchyToResourceAssign.results && aChildren[i].GanttHierarchyToResourceAssign
+					.results.length > 0) {
 					aAssignments = aChildren[i].GanttHierarchyToResourceAssign.results;
 					for (var j = 0; j < aAssignments.length; j++) {
 
@@ -561,12 +627,40 @@ sap.ui.define([
 
 					aInnerChildren = aChildren[i].children;
 					for (var k = 0; k < aInnerChildren.length; k++) {
-						if (aInnerChildren[k].GanttHierarchyToResourceAssign && aInnerChildren[k].GanttHierarchyToResourceAssign.results.length > 0) {
+						if (aInnerChildren[k].GanttHierarchyToResourceAssign && aInnerChildren[k].GanttHierarchyToResourceAssign.results &&
+							aInnerChildren[k].GanttHierarchyToResourceAssign.results.length > 0) {
 							aInnerAssignments = aInnerChildren[k].GanttHierarchyToResourceAssign.results;
 							for (var l = 0; l < aInnerAssignments.length; l++) {
 
 								if (aInnerAssignments[l][sProperty] === sValue) {
 									newSpath = sPath + "/" + i + "/children/" + k + "/GanttHierarchyToResourceAssign/results/" + l;
+									aAllMatchedData.push(newSpath);
+								}
+							}
+						}
+					}
+				}
+
+				if (aChildren[i].GanttHierarchyToShift && aChildren[i].GanttHierarchyToShift.results && aChildren[i].GanttHierarchyToShift.results
+					.length > 0) {
+					aAssignments = aChildren[i].GanttHierarchyToShift.results;
+					for (var j = 0; j < aAssignments.length; j++) {
+
+						if (aAssignments[j][sProperty] === sValue) {
+							newSpath = sPath + "/" + i + "/GanttHierarchyToShift/results/" + j;
+							aAllMatchedData.push(newSpath);
+						}
+					}
+
+					aInnerChildren = aChildren[i].children;
+					for (var k = 0; k < aInnerChildren.length; k++) {
+						if (aInnerChildren[k].GanttHierarchyToShift && aInnerChildren[k].GanttHierarchyToShift.results && aInnerChildren[k].GanttHierarchyToShift
+							.results.length > 0) {
+							aInnerAssignments = aInnerChildren[k].GanttHierarchyToShift.results;
+							for (var l = 0; l < aInnerAssignments.length; l++) {
+
+								if (aInnerAssignments[l][sProperty] === sValue) {
+									newSpath = sPath + "/" + i + "/children/" + k + "/GanttHierarchyToShift/results/" + l;
 									aAllMatchedData.push(newSpath);
 								}
 							}
@@ -595,6 +689,31 @@ sap.ui.define([
 				}
 			}
 			return aResourceAssignment;
+		},
+		
+		/**
+		 * Return all shift matching resource guid
+		 * @param {string} sResourceGuid - Resource Guid
+		 */
+		_getResourceShiftByKey: function (sResourceGuid) {
+			var sPath = "/data/children",
+				oModel = this.getModel("ganttPlanningModel"),
+				aChildren = oModel.getProperty(sPath),
+				aResourceSelectedShift = [],
+				aAllShifts = [];
+			for (var i = 0; i < aChildren.length; i++) {
+				if (aChildren[i].ResourceGuid === sResourceGuid) {
+					aAllShifts = aChildren[i].GanttHierarchyToShift ? (aChildren[i].GanttHierarchyToShift.results ? aChildren[i].GanttHierarchyToShift
+						.results : []) : [];
+					for (var j = 0; j < aAllShifts.length; j++) {
+						if (!aAllShifts[j].isNew) {
+							aResourceSelectedShift.push(deepClone(aAllShifts[j]));
+						}
+					}
+
+				}
+			}
+			return aResourceSelectedShift;
 		},
 
 		/**
@@ -627,14 +746,23 @@ sap.ui.define([
 		 * Validate the duplicate assigmnents to compare with other assignments
 		 */
 		_validateDuplicateAsigment: function () {
-			var oData = this.oPlanningModel.getProperty("/tempData/popover");
+			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
+				aAssigments = [],
+				nodeType = oData.NODE_TYPE,
+				nodeTypeText;
 
 			//get groups assigned to the selected resource
-			var aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
+			if (nodeType === "RES_GROUP") {
+				aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
+				nodeTypeText = this.getResourceBundle().getText("xtxt.group");
+			} else if (nodeType === "SHIFT") {
+				aAssigments = this._getResourceShiftByKey(oData.ResourceGuid);
+				nodeTypeText = this.getResourceBundle().getText("xtxt.shift");
+			}
 
 			//validation for the existing assigments
 			if (!this._checkDuplicateAsigment(oData, aAssigments)) {
-				this.showMessageToast(this.getResourceBundle().getText("msg.errorduplicateresource"));
+				this.showMessageToast(this.getResourceBundle().getText("msg.errorduplicateresource", nodeTypeText));
 				//reset if other assigmnt exist
 				this._resetChanges();
 				return true;
@@ -928,5 +1056,17 @@ sap.ui.define([
 			var isDatePast = moment(oDate).isBefore(moment().startOf('day').toDate());
 			return isDatePast;
 		},
+		
+		/**
+		 * Fetch resource based on node id
+		 * @param {string} sNodeId - NodeId of Resource
+		 */
+		_getParentResource: function (sNodeId) {
+			var aChildren = this.oPlanningModel.getProperty("/data/children");
+
+			return aChildren.find(function (oResource, idx) {
+				return oResource.NodeId === sNodeId;
+			}.bind(this));
+		}
 	});
 });

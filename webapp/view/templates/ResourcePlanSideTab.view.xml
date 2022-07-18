@@ -65,7 +65,7 @@
 																				</ColumnListItem>
 																			</items>
 																			<dragDropConfig>
-																				<dnd:DragInfo groupName="resourceGroup" sourceAggregation="items" dragStart="onResourceGroupDragStart" dragEnd="onResourceGroupDragEnd"/>
+																				<dnd:DragInfo groupName="{path:'contentTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" sourceAggregation="items" dragStart="onResourceGroupDragStart" dragEnd="onResourceGroupDragEnd"/>
 																			</dragDropConfig>
 																		</Table>
 																		<smartTable:customData>
