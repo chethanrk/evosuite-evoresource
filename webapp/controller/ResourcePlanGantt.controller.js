@@ -1119,8 +1119,10 @@ sap.ui.define([
 			var oParams = {
 					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
-					EndTimestamp: oAssignItem.EndDate,
-					StartTimestamp: oAssignItem.StartDate
+					EndTimestamp:formatter.convertToUTCDate(oAssignItem.EndDate),
+					StartTimestamp:formatter.convertToUTCDate(oAssignItem.StartDate),
+					EndTimestampUtc: oAssignItem.EndDate,
+					StartTimestampUtc: oAssignItem.StartDate
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel"),
@@ -1169,8 +1171,10 @@ sap.ui.define([
 			var oParams = {
 					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
-					EndTimestamp: formatter.convertFromUTCDate(oAssignItem.EndDate),
-					StartTimestamp: formatter.convertFromUTCDate(oAssignItem.StartDate)
+					EndTimestamp: oAssignItem.EndDate,
+					StartTimestamp: oAssignItem.StartDate,
+					StartTimestampUtc:formatter.convertFromUTCDate(oAssignItem.StartDate),
+					EndTimestampUtc:formatter.convertFromUTCDate(oAssignItem.EndDate)
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel"),
