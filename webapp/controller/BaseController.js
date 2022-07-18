@@ -257,7 +257,6 @@ sap.ui.define([
 					},
 					oDraggedData = this.getView().getModel("viewModel").getProperty("/draggedData"),
 					nodeType;
-				// nodeType = bDragged ? oDraggedData.data.NodeType : oRowData.NodeType;
 
 				if (bDragged) nodeType = oDraggedData.data.NodeType;
 				else {
@@ -269,7 +268,6 @@ sap.ui.define([
 					var oMetaModel = this.getModel().getMetaModel(),
 						oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet"),
 						oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[nodeType]),
-						// oEntitySet = oMetaModel.getODataEntitySet("ResourceAssignmentSet"),
 						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
 						aProperty = oEntityType ? oEntityType.property : [];
 
@@ -283,12 +281,10 @@ sap.ui.define([
 
 					aProperty.forEach(function (property) {
 						var isCreatable = property["sap:creatable"];
-						// if (typeof isCreatable === "undefined" || isCreatable === true) {
 						obj[property.name] = "";
 						if (oRowData.hasOwnProperty(property.name)) {
 							obj[property.name] = oRowData[property.name];
 						}
-						// }
 					});
 					obj.RepeatEndDate = oEndTime;
 					obj.StartDate = oStartTime;
@@ -300,7 +296,6 @@ sap.ui.define([
 					obj.ResourceGuid = oRowData.ResourceGuid;
 					obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
 					obj.PARENT_NODE_ID = oRowData.NodeId;
-					// obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
 					obj.bDragged = bDragged;
 					obj.ParentNodeId = oRowData.ResourceGuid;
 
@@ -443,7 +438,6 @@ sap.ui.define([
 
 						aProperty.forEach(function (property) {
 							obj[property.name] = "";
-							// if (oRowData[property.name]) {
 							if (oRowData.hasOwnProperty(property.name)) {
 								obj[property.name] = oRowData[property.name];
 

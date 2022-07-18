@@ -540,15 +540,7 @@ sap.ui.define([
 			}
 
 			if (oData.isNew) {
-				// this.oPlanningModel.setProperty("/tempData/popover/GroupId", oSelContext.getProperty("GroupId"));
-				// this.oPlanningModel.setProperty("/tempData/popover/ScheduleId", oSelContext.getProperty("ScheduleId"));
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("TemplateDesc"));
-				// this.oPlanningModel.setProperty("/tempData/popover/ScheduleIdDesc", oSelContext.getProperty("ScheduleIdDesc"));
-				// this.oPlanningModel.setProperty("/tempData/popover/TemplateId", oSelContext.getProperty("TemplateId"));
-				// this.oPlanningModel.setProperty("/tempData/popover/TemplateDesc", oSelContext.getProperty("TemplateDesc"));
-				// this.oPlanningModel.setProperty("/tempData/popover/ToTime", oSelContext.getProperty("ToTime"));
-				// this.oPlanningModel.setProperty("/tempData/popover/FromTime", oSelContext.getProperty("FromTime"));
-				// this.oPlanningModel.setProperty("/tempData/popover/SHIFT_COLOR", oSelContext.getProperty("SHIFT_COLOR"));
 
 				var shiftData = oSelContext.getObject(),
 					copyProperty = ['GroupId', 'ScheduleId', 'ScheduleIdDesc', 'TemplateId', 'TemplateDesc', 'PlannedWorkEndTime', 'PlannedWorkStartTime', 'SHIFT_COLOR',
@@ -1194,7 +1186,6 @@ sap.ui.define([
 								oAssignItemData.RESOURCE_GROUP_COLOR = sChangedContext.getProperty("ResourceGroupColor");
 								oAssignItemData.DESCRIPTION = sChangedContext.getProperty("ResourceGroupDesc");
 							} else if (oAssignItemData.NODE_TYPE === "SHIFT") {
-								// oAssignItemData.SHIFT_COLOR = sChangedContext.getProperty("SHIFT_COLOR");
 								oAssignItemData.DESCRIPTION = sChangedContext.getProperty("TemplateDesc");
 								oAssignItemData.PARENT_NODE_ID = oAssignItemData.NodeId;
 								oAssignItemData.ResourceGuid = oAssignItemData.ParentNodeId;
