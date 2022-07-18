@@ -65,7 +65,7 @@ sap.ui.define([
 
 			MessageBox.error(
 				this._sErrorText, {
-					details: sMessage.replace(/\n/g, "<br/>"),
+					details: typeof (sMessage) === "string" ? sMessage.replace(/\n/g, "<br/>") : sMessage,
 					styleClass: this._oComponent.getContentDensityClass(),
 					actions: [MessageBox.Action.CLOSE],
 					onClose: function () {
