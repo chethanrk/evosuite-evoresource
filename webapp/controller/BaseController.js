@@ -690,7 +690,11 @@ sap.ui.define([
 			}
 			return aResourceAssignment;
 		},
-
+		
+		/**
+		 * Return all shift matching resource guid
+		 * @param {string} sResourceGuid - Resource Guid
+		 */
 		_getResourceShiftByKey: function (sResourceGuid) {
 			var sPath = "/data/children",
 				oModel = this.getModel("ganttPlanningModel"),
@@ -1052,7 +1056,11 @@ sap.ui.define([
 			var isDatePast = moment(oDate).isBefore(moment().startOf('day').toDate());
 			return isDatePast;
 		},
-
+		
+		/**
+		 * Fetch resource based on node id
+		 * @param {string} sNodeId - NodeId of Resource
+		 */
 		_getParentResource: function (sNodeId) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 

@@ -526,7 +526,12 @@ sap.ui.define([
 				this._oPlanningPopover.close();
 			}
 		},
-
+		
+		/**
+		 * On change shift
+		 * update the shift data based on selection
+		 * @param {object} oEvent
+		 */
 		onChangeShift: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				oSelectedItem = oSource.getSelectedItem(),
@@ -650,6 +655,30 @@ sap.ui.define([
 			if (oSource.getSelectedKeys() && oSource.getSelectedKeys().length) {
 				oSource.setValueState("None");
 			}
+		},
+		
+		/**
+		 * change event for the assignment type selection combobox
+		 * Based on the selection shape is getting create and pushed into json
+		 * @param {object} oEvent
+		 */
+		onChangeAssignmentType: function (oEvent) {
+			var newData = this.oPlanningModel.getProperty("/tempData/popover"),
+				oldData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
+				shapeDescription;
+			if (newData.NODE_TYPE === "RES_GROUP") {
+				shapeDescription = newData["ResourceGroupDesc"] || this.getResourceBundle().getText("xtit.group");
+				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", shapeDescription);
+			} else if (newData.NODE_TYPE === "SHIFT") {
+				shapeDescription = newData["ScheduleIdDesc"] || this.getResourceBundle().getText("xtit.shift");
+				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", shapeDescription);
+			}
+			this._removeAssignmentShape(oldData, true);
+			this.createNewTempAssignment(newData.StartDate, newData.EndDate, newData, false).then(function (oData) {
+				this._addSingleChildToParent(newData);
+			}.bind(this));
+
+			this.oPlanningModel.setProperty("/tempData/oldPopoverData", deepClone(newData));
 		},
 
 		/* =========================================================== */
@@ -941,7 +970,11 @@ sap.ui.define([
 			}
 			return false;
 		},
-
+		
+		/**
+		 * Checks if shift is already exist under Resource
+		 * @param {object} aResourceData - Resource data where need to check for shift
+		 */
 		_checkIfShiftExist: function (aResourceData) {
 			if (aResourceData && aResourceData.children) {
 				return aResourceData.children.some(function (oChild) {
@@ -1448,24 +1481,6 @@ sap.ui.define([
 			if (moment(newData.StartDate).isSameOrAfter(oData.StartDate) && moment(newData.StartDate).isSameOrBefore(moment(oData.RepeatEndDate))) {
 				this._validateAndAddNewAssignment(newData, oData);
 			}
-		},
-		onChangeAssignmentType: function (oEvent) {
-			var newData = this.oPlanningModel.getProperty("/tempData/popover"),
-				oldData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
-				shapeDescription;
-			if (newData.NODE_TYPE === "RES_GROUP") {
-				shapeDescription = newData["ResourceGroupDesc"] || this.getResourceBundle().getText("xtit.group");
-				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", shapeDescription);
-			} else if (newData.NODE_TYPE === "SHIFT") {
-				shapeDescription = newData["ScheduleIdDesc"] || this.getResourceBundle().getText("xtit.shift");
-				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", shapeDescription);
-			}
-			this._removeAssignmentShape(oldData, true);
-			this.createNewTempAssignment(newData.StartDate, newData.EndDate, newData, false).then(function (oData) {
-				this._addSingleChildToParent(newData);
-			}.bind(this));
-
-			this.oPlanningModel.setProperty("/tempData/oldPopoverData", deepClone(newData));
 		},
 
 		/**
