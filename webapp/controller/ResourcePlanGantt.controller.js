@@ -526,7 +526,7 @@ sap.ui.define([
 				this._oPlanningPopover.close();
 			}
 		},
-		
+
 		/**
 		 * On change shift
 		 * update the shift data based on selection
@@ -548,7 +548,8 @@ sap.ui.define([
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("TemplateDesc"));
 
 				var shiftData = oSelContext.getObject(),
-					copyProperty = ['GroupId', 'ScheduleId', 'ScheduleIdDesc', 'TemplateId', 'TemplateDesc', 'PlannedWorkEndTime', 'PlannedWorkStartTime', 'SHIFT_COLOR',
+					copyProperty = ['GroupId', 'ScheduleId', 'ScheduleIdDesc', 'TemplateId', 'TemplateDesc', 'PlannedWorkEndTime',
+						'PlannedWorkStartTime', 'SHIFT_COLOR',
 						'HR_SHIFT_FLAG', 'INCLUDE_FREE_DAY', 'DEFAULT_TEMPLATE', 'INCLUDE_PUBLIC_HOLIDAY', 'AVAILABILITY_TYPE'
 					];
 
@@ -580,7 +581,7 @@ sap.ui.define([
 			var oDateRange = oEvent.getSource();
 			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oDateRange.getDateValue());
 			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oDateRange.getSecondDateValue());
-			
+
 			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oDateRange.getDateValue());
 			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oDateRange.getSecondDateValue());
 
@@ -656,7 +657,7 @@ sap.ui.define([
 				oSource.setValueState("None");
 			}
 		},
-		
+
 		/**
 		 * change event for the assignment type selection combobox
 		 * Based on the selection shape is getting create and pushed into json
@@ -871,7 +872,7 @@ sap.ui.define([
 				oResourceObject = oPopoverData["oResourceObject"],
 				bDragged = oPopoverData["bDragged"],
 				oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
-				oChildData,oAssignData;
+				oChildData, oAssignData;
 
 			if (oTargetControl.sParentAggregationName === "shapes1") {
 				//its background shape
@@ -907,7 +908,7 @@ sap.ui.define([
 				oAssignData.minDate = new Date();
 				oAssignData.isEditable = true;
 				oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
-				 oAssignData.StartDate = oAssignData.EffectiveStartDate;
+				oAssignData.StartDate = oAssignData.EffectiveStartDate;
 				oAssignData.EndDate = oAssignData.EffectiveEndDate;
 
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
@@ -970,7 +971,7 @@ sap.ui.define([
 			}
 			return false;
 		},
-		
+
 		/**
 		 * Checks if shift is already exist under Resource
 		 * @param {object} aResourceData - Resource data where need to check for shift
@@ -1119,8 +1120,8 @@ sap.ui.define([
 			var oParams = {
 					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
-					EndTimestamp:formatter.convertToUTCDate(oAssignItem.EndDate),
-					StartTimestamp:formatter.convertToUTCDate(oAssignItem.StartDate),
+					EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),
+					StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate),
 					EndTimestampUtc: oAssignItem.EndDate,
 					StartTimestampUtc: oAssignItem.StartDate
 				},
@@ -1173,8 +1174,8 @@ sap.ui.define([
 					ObjectId: oAssignItem.NODE_ID,
 					EndTimestamp: oAssignItem.EndDate,
 					StartTimestamp: oAssignItem.StartDate,
-					StartTimestampUtc:formatter.convertFromUTCDate(oAssignItem.StartDate),
-					EndTimestampUtc:formatter.convertFromUTCDate(oAssignItem.EndDate)
+					StartTimestampUtc: formatter.convertFromUTCDate(oAssignItem.StartDate),
+					EndTimestampUtc: formatter.convertFromUTCDate(oAssignItem.EndDate)
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel"),
@@ -1185,6 +1186,13 @@ sap.ui.define([
 					oDemandModel.setProperty("/data", oDemandData.results);
 					this.openDemandDialog();
 				} else {
+					if (oAssignItem.NODE_TYPE === "RES_GROUP") {
+						oAssignItem.StartDate = formatter.convertFromUTCDate(oAssignItem.StartDate);
+						oAssignItem.EndDate = formatter.convertFromUTCDate(oAssignItem.EndDate);
+					} else if (oAssignItem.NODE_TYPE === "SHIFT") {
+						oAssignItem.EffectiveStartDate = formatter.convertFromUTCDate(oAssignItem.EffectiveStartDate);
+						oAssignItem.EffectiveEndDate = formatter.convertFromUTCDate(oAssignItem.EffectiveEndDate);
+					}
 					this._deleteAssignment(oAssignItem, sChangedContext);
 
 				}
@@ -1193,6 +1201,13 @@ sap.ui.define([
 			if (oAssignItem.NODE_TYPE !== "SHIFT" && bAssignmentCheck) {
 				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 			} else {
+				if (oAssignItem.NODE_TYPE === "RES_GROUP") {
+					oAssignItem.StartDate = formatter.convertFromUTCDate(oAssignItem.StartDate);
+					oAssignItem.EndDate = formatter.convertFromUTCDate(oAssignItem.EndDate);
+				} else if (oAssignItem.NODE_TYPE === "SHIFT") {
+					oAssignItem.EffectiveStartDate = formatter.convertFromUTCDate(oAssignItem.EffectiveStartDate);
+					oAssignItem.EffectiveEndDate = formatter.convertFromUTCDate(oAssignItem.EffectiveEndDate);
+				}
 				this._deleteAssignment(oAssignItem, sChangedContext);
 			}
 
