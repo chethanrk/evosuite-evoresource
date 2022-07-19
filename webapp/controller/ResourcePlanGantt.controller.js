@@ -578,12 +578,14 @@ sap.ui.define([
 		 * @param {object} oEvent
 		 */
 		onChangeDate: function (oEvent) {
-			var oDateRange = oEvent.getSource();
-			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oDateRange.getDateValue());
-			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oDateRange.getSecondDateValue());
+			var oDateRange = oEvent.getSource(),
+				oStartDate = oDateRange.getDateValue(),
+				oEndDate = oDateRange.getSecondDateValue();
+			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
 
-			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oDateRange.getDateValue());
-			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oDateRange.getSecondDateValue());
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
 
 			//validate for the overlapping
 			if (this._validateDuplicateAsigment()) {

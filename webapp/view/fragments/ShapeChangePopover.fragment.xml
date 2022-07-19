@@ -30,8 +30,8 @@
 						</ComboBox>
 						<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
 						<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"
-							dateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/StartDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
-							secondDateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/EndDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
+							dateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/StartDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
+							secondDateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/EndDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
 							minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}"/>
 						<Label text="{i18n>xfld.Repeat}"/>
 						<Select id="idRepeatMode" forceSelection="true" change="onChangeRepeatMode" selectedKey="{ganttPlanningModel>/tempData/popover/Repeat}"
@@ -95,8 +95,8 @@
 					</ComboBox>
 					<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
 					<DateRangeSelection
-						dateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/StartDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
-						secondDateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/EndDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
+						dateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/StartDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
+						secondDateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/EndDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
 						editable="false"/>
 				</f:SimpleForm>
 			</core:ExtensionPoint>
