@@ -549,7 +549,7 @@ sap.ui.define([
 			if (oData.isNew) {
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("TemplateDesc"));
 				shiftData = oSelContext.getObject();
-				oData = this._mergeObject(oData,shiftData);
+				oData = this.mergeObject(oData, shiftData);
 				this._removeAssignmentShape(oData, true);
 				//add different resource group if it is not exist
 				this._addSingleChildToParent(oData);
@@ -1214,11 +1214,11 @@ sap.ui.define([
 		_deleteAssignment: function (oAssignmentData, sChangedContext) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			var callbackFn = function (oItem, oData, idx) {
-				var aAssignments,shiftData;
-					if (oData.NODE_TYPE === "RES_GROUP") {
-						aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
-							.results : []) : [];
-					} else
+				var aAssignments, shiftData;
+				if (oData.NODE_TYPE === "RES_GROUP") {
+					aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
+						.results : []) : [];
+				} else
 				if (oData.NODE_TYPE === "SHIFT") {
 					aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
 				}
@@ -1235,7 +1235,7 @@ sap.ui.define([
 								oAssignItemData.PARENT_NODE_ID = oAssignItemData.NodeId;
 								oAssignItemData.ResourceGuid = oAssignItemData.ParentNodeId;
 								shiftData = sChangedContext.getObject();
-								oAssignItemData = this._mergeObject(oAssignItemData,shiftData);
+								oAssignItemData = this.mergeObject(oAssignItemData, shiftData);
 							}
 
 							this._addSingleChildToParent(oAssignItemData, true);

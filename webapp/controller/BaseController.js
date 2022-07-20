@@ -84,6 +84,10 @@ sap.ui.define([
 				openApp2AppPopover: {
 					public: true,
 					final: true
+				},
+				mergeObject:{
+					public: true,
+					final: true
 				}
 
 			}
@@ -406,6 +410,21 @@ sap.ui.define([
 					}
 				}
 			}.bind(this));
+		},
+			/**
+		 * Merge source object to destination object to source.
+		 * Deletes all emply,null and undefined value from destination object
+		 *  @param {object} destination - Destination object
+		 * @param {object} source - Source object
+		 */
+		mergeObject: function (destination, source) {
+			for (var prop in source) {
+				if (source[prop] === null || source[prop] === undefined || source[prop] === "") {
+					delete source[prop];
+				}
+			}
+			
+			return merge(destination, source);
 		},
 
 		/* =========================================================== */
@@ -1068,22 +1087,6 @@ sap.ui.define([
 			return aChildren.find(function (oResource, idx) {
 				return oResource.NodeId === sNodeId;
 			}.bind(this));
-		},
-		
-		/**
-		 * Merge source object to destination object to source.
-		 * Deletes all emply,null and undefined value from destination object
-		 *  @param {object} destination - Destination object
-		 * @param {object} source - Source object
-		 */
-		_mergeObject: function (destination, source) {
-			for (var prop in source) {
-				if (source[prop] === null || source[prop] === undefined || source[prop] === "") {
-					delete source[prop];
-				}
-			}
-			
-			return merge(destination, source);
 		}
 	});
 });
