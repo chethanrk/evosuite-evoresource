@@ -11,8 +11,9 @@ sap.ui.define([
 	"sap/ui/model/FilterOperator",
 	"sap/m/MessageBox",
 	"sap/gantt/misc/Utility",
+	"sap/base/util/merge"
 ], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Fragment, Filter, FilterOperator,
-	MessageBox, Utility) {
+	MessageBox, Utility, merge) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanGantt", {
@@ -526,7 +527,7 @@ sap.ui.define([
 				this._oPlanningPopover.close();
 			}
 		},
-		
+
 		/**
 		 * On change shift
 		 * update the shift data based on selection
@@ -536,7 +537,8 @@ sap.ui.define([
 			var oSource = oEvent.getSource(),
 				oSelectedItem = oSource.getSelectedItem(),
 				oSelContext = oSelectedItem.getBindingContext("viewModel"),
-				oData = this.oPlanningModel.getProperty("/tempData/popover");
+				oData = this.oPlanningModel.getProperty("/tempData/popover"),
+				shiftData;
 
 			oSource.setValueState(sap.ui.core.ValueState.None);
 			//validate duplicate assignments
@@ -546,19 +548,8 @@ sap.ui.define([
 
 			if (oData.isNew) {
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("TemplateDesc"));
-
-				var shiftData = oSelContext.getObject(),
-					copyProperty = ['GroupId', 'ScheduleId', 'ScheduleIdDesc', 'TemplateId', 'TemplateDesc', 'PlannedWorkEndTime', 'PlannedWorkStartTime', 'SHIFT_COLOR',
-						'HR_SHIFT_FLAG', 'INCLUDE_FREE_DAY', 'DEFAULT_TEMPLATE', 'INCLUDE_PUBLIC_HOLIDAY', 'AVAILABILITY_TYPE'
-					];
-
-				for (var prop in shiftData) {
-					if (copyProperty.indexOf(prop) !== -1) {
-						oData[prop] = shiftData[prop];
-					}
-
-				}
-
+				shiftData = oSelContext.getObject();
+				oData = this.mergeObject(oData, shiftData);
 				this._removeAssignmentShape(oData, true);
 				//add different resource group if it is not exist
 				this._addSingleChildToParent(oData);
@@ -577,12 +568,14 @@ sap.ui.define([
 		 * @param {object} oEvent
 		 */
 		onChangeDate: function (oEvent) {
-			var oDateRange = oEvent.getSource();
-			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oDateRange.getDateValue());
-			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oDateRange.getSecondDateValue());
-			
-			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oDateRange.getDateValue());
-			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oDateRange.getSecondDateValue());
+			var oDateRange = oEvent.getSource(),
+				oStartDate = oDateRange.getDateValue(),
+				oEndDate = oDateRange.getSecondDateValue();
+			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
+
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
 
 			//validate for the overlapping
 			if (this._validateDuplicateAsigment()) {
@@ -656,7 +649,7 @@ sap.ui.define([
 				oSource.setValueState("None");
 			}
 		},
-		
+
 		/**
 		 * change event for the assignment type selection combobox
 		 * Based on the selection shape is getting create and pushed into json
@@ -871,7 +864,7 @@ sap.ui.define([
 				oResourceObject = oPopoverData["oResourceObject"],
 				bDragged = oPopoverData["bDragged"],
 				oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
-				oChildData,oAssignData;
+				oChildData, oAssignData;
 
 			if (oTargetControl.sParentAggregationName === "shapes1") {
 				//its background shape
@@ -907,7 +900,7 @@ sap.ui.define([
 				oAssignData.minDate = new Date();
 				oAssignData.isEditable = true;
 				oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
-				 oAssignData.StartDate = oAssignData.EffectiveStartDate;
+				oAssignData.StartDate = oAssignData.EffectiveStartDate;
 				oAssignData.EndDate = oAssignData.EffectiveEndDate;
 
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
@@ -970,7 +963,7 @@ sap.ui.define([
 			}
 			return false;
 		},
-		
+
 		/**
 		 * Checks if shift is already exist under Resource
 		 * @param {object} aResourceData - Resource data where need to check for shift
@@ -1119,8 +1112,8 @@ sap.ui.define([
 			var oParams = {
 					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
-					EndTimestamp:formatter.convertToUTCDate(oAssignItem.EndDate),
-					StartTimestamp:formatter.convertToUTCDate(oAssignItem.StartDate),
+					EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),
+					StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate),
 					EndTimestampUtc: oAssignItem.EndDate,
 					StartTimestampUtc: oAssignItem.StartDate
 				},
@@ -1173,8 +1166,8 @@ sap.ui.define([
 					ObjectId: oAssignItem.NODE_ID,
 					EndTimestamp: oAssignItem.EndDate,
 					StartTimestamp: oAssignItem.StartDate,
-					StartTimestampUtc:formatter.convertFromUTCDate(oAssignItem.StartDate),
-					EndTimestampUtc:formatter.convertFromUTCDate(oAssignItem.EndDate)
+					StartTimestampUtc: formatter.convertFromUTCDate(oAssignItem.StartDate),
+					EndTimestampUtc: formatter.convertFromUTCDate(oAssignItem.EndDate)
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel"),
@@ -1185,6 +1178,13 @@ sap.ui.define([
 					oDemandModel.setProperty("/data", oDemandData.results);
 					this.openDemandDialog();
 				} else {
+					if (oAssignItem.NODE_TYPE === "RES_GROUP") {
+						oAssignItem.StartDate = formatter.convertFromUTCDate(oAssignItem.StartDate);
+						oAssignItem.EndDate = formatter.convertFromUTCDate(oAssignItem.EndDate);
+					} else if (oAssignItem.NODE_TYPE === "SHIFT") {
+						oAssignItem.EffectiveStartDate = formatter.convertFromUTCDate(oAssignItem.EffectiveStartDate);
+						oAssignItem.EffectiveEndDate = formatter.convertFromUTCDate(oAssignItem.EffectiveEndDate);
+					}
 					this._deleteAssignment(oAssignItem, sChangedContext);
 
 				}
@@ -1193,6 +1193,13 @@ sap.ui.define([
 			if (oAssignItem.NODE_TYPE !== "SHIFT" && bAssignmentCheck) {
 				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 			} else {
+				if (oAssignItem.NODE_TYPE === "RES_GROUP") {
+					oAssignItem.StartDate = formatter.convertFromUTCDate(oAssignItem.StartDate);
+					oAssignItem.EndDate = formatter.convertFromUTCDate(oAssignItem.EndDate);
+				} else if (oAssignItem.NODE_TYPE === "SHIFT") {
+					oAssignItem.EffectiveStartDate = formatter.convertFromUTCDate(oAssignItem.EffectiveStartDate);
+					oAssignItem.EffectiveEndDate = formatter.convertFromUTCDate(oAssignItem.EffectiveEndDate);
+				}
 				this._deleteAssignment(oAssignItem, sChangedContext);
 			}
 
@@ -1207,11 +1214,12 @@ sap.ui.define([
 		_deleteAssignment: function (oAssignmentData, sChangedContext) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			var callbackFn = function (oItem, oData, idx) {
-				var aAssignments;
+				var aAssignments, shiftData;
 				if (oData.NODE_TYPE === "RES_GROUP") {
 					aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
 						.results : []) : [];
-				} else if (oData.NODE_TYPE === "SHIFT") {
+				} else
+				if (oData.NODE_TYPE === "SHIFT") {
 					aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
 				}
 
@@ -1226,18 +1234,8 @@ sap.ui.define([
 								oAssignItemData.DESCRIPTION = sChangedContext.getProperty("TemplateDesc");
 								oAssignItemData.PARENT_NODE_ID = oAssignItemData.NodeId;
 								oAssignItemData.ResourceGuid = oAssignItemData.ParentNodeId;
-								var shiftData = sChangedContext.getObject(),
-									copyProperty = ['GroupId', 'ScheduleId', 'ScheduleIdDesc', 'TemplateId', 'TemplateDesc', 'ToTime', 'FromTime',
-										'SHIFT_COLOR',
-										'HR_SHIFT_FLAG', 'INCLUDE_FREE_DAY', 'DEFAULT_TEMPLATE', 'INCLUDE_PUBLIC_HOLIDAY', 'AVAILABILITY_TYPE'
-									];
-
-								for (var prop in shiftData) {
-									if (copyProperty.indexOf(prop) !== -1) {
-										oAssignItemData[prop] = shiftData[prop];
-									}
-
-								}
+								shiftData = sChangedContext.getObject();
+								oAssignItemData = this.mergeObject(oAssignItemData, shiftData);
 							}
 
 							this._addSingleChildToParent(oAssignItemData, true);
