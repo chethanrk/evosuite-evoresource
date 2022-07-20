@@ -5,7 +5,8 @@ sap.ui.define([
 	"sap/ui/core/Fragment",
 	"com/evorait/evosuite/evoresource/model/Constants",
 	"sap/base/util/deepClone",
-], function (Controller, Formatter, Fragment, Constants, deepClone) {
+	"sap/base/util/merge"
+], function (Controller, Formatter, Fragment, Constants, deepClone,merge) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoresource.controller.BaseController", {
@@ -690,7 +691,7 @@ sap.ui.define([
 			}
 			return aResourceAssignment;
 		},
-		
+
 		/**
 		 * Return all shift matching resource guid
 		 * @param {string} sResourceGuid - Resource Guid
@@ -1056,7 +1057,7 @@ sap.ui.define([
 			var isDatePast = moment(oDate).isBefore(moment().startOf('day').toDate());
 			return isDatePast;
 		},
-		
+
 		/**
 		 * Fetch resource based on node id
 		 * @param {string} sNodeId - NodeId of Resource
@@ -1067,6 +1068,22 @@ sap.ui.define([
 			return aChildren.find(function (oResource, idx) {
 				return oResource.NodeId === sNodeId;
 			}.bind(this));
+		},
+		
+		/**
+		 * Merge source object to destination object to source.
+		 * Deletes all emply,null and undefined value from destination object
+		 *  @param {object} destination - Destination object
+		 * @param {object} source - Source object
+		 */
+		_mergeObject: function (destination, source) {
+			for (var prop in source) {
+				if (source[prop] === null || source[prop] === undefined || source[prop] === "") {
+					delete source[prop];
+				}
+			}
+			
+			return merge(destination, source);
 		}
 	});
 });

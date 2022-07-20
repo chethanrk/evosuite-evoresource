@@ -549,12 +549,7 @@ sap.ui.define([
 			if (oData.isNew) {
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("TemplateDesc"));
 				shiftData = oSelContext.getObject();
-				for (var prop in shiftData) {
-					if (shiftData[prop] === null || shiftData[prop] === undefined || shiftData[prop] === "") {
-						delete shiftData[prop];
-					}
-				}
-				merge(oData, shiftData);
+				oData = this._mergeObject(oData,shiftData);
 				this._removeAssignmentShape(oData, true);
 				//add different resource group if it is not exist
 				this._addSingleChildToParent(oData);
@@ -1240,12 +1235,7 @@ sap.ui.define([
 								oAssignItemData.PARENT_NODE_ID = oAssignItemData.NodeId;
 								oAssignItemData.ResourceGuid = oAssignItemData.ParentNodeId;
 								shiftData = sChangedContext.getObject();
-								for (var prop in shiftData) {
-									if (shiftData[prop] === null || shiftData[prop] === undefined || shiftData[prop] === "") {
-										delete shiftData[prop];
-									}
-								}
-								merge(oData, shiftData);
+								oAssignItemData = this._mergeObject(oAssignItemData,shiftData);
 							}
 
 							this._addSingleChildToParent(oAssignItemData, true);
