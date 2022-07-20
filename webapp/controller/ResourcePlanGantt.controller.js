@@ -11,8 +11,9 @@ sap.ui.define([
 	"sap/ui/model/FilterOperator",
 	"sap/m/MessageBox",
 	"sap/gantt/misc/Utility",
+	"sap/base/util/merge"
 ], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Fragment, Filter, FilterOperator,
-	MessageBox, Utility) {
+	MessageBox, Utility, merge) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanGantt", {
@@ -536,7 +537,8 @@ sap.ui.define([
 			var oSource = oEvent.getSource(),
 				oSelectedItem = oSource.getSelectedItem(),
 				oSelContext = oSelectedItem.getBindingContext("viewModel"),
-				oData = this.oPlanningModel.getProperty("/tempData/popover");
+				oData = this.oPlanningModel.getProperty("/tempData/popover"),
+				shiftData;
 
 			oSource.setValueState(sap.ui.core.ValueState.None);
 			//validate duplicate assignments
@@ -546,20 +548,13 @@ sap.ui.define([
 
 			if (oData.isNew) {
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("TemplateDesc"));
-
-				var shiftData = oSelContext.getObject(),
-					copyProperty = ['GroupId', 'ScheduleId', 'ScheduleIdDesc', 'TemplateId', 'TemplateDesc', 'PlannedWorkEndTime',
-						'PlannedWorkStartTime', 'SHIFT_COLOR',
-						'HR_SHIFT_FLAG', 'INCLUDE_FREE_DAY', 'DEFAULT_TEMPLATE', 'INCLUDE_PUBLIC_HOLIDAY', 'AVAILABILITY_TYPE'
-					];
-
+				shiftData = oSelContext.getObject();
 				for (var prop in shiftData) {
-					if (copyProperty.indexOf(prop) !== -1) {
-						oData[prop] = shiftData[prop];
+					if (shiftData[prop] === null || shiftData[prop] === undefined || shiftData[prop] === "") {
+						delete shiftData[prop];
 					}
-
 				}
-
+				merge(oData, shiftData);
 				this._removeAssignmentShape(oData, true);
 				//add different resource group if it is not exist
 				this._addSingleChildToParent(oData);
@@ -1224,11 +1219,12 @@ sap.ui.define([
 		_deleteAssignment: function (oAssignmentData, sChangedContext) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			var callbackFn = function (oItem, oData, idx) {
-				var aAssignments;
-				if (oData.NODE_TYPE === "RES_GROUP") {
-					aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
-						.results : []) : [];
-				} else if (oData.NODE_TYPE === "SHIFT") {
+				var aAssignments,shiftData;
+					if (oData.NODE_TYPE === "RES_GROUP") {
+						aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
+							.results : []) : [];
+					} else
+				if (oData.NODE_TYPE === "SHIFT") {
 					aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
 				}
 
@@ -1243,18 +1239,13 @@ sap.ui.define([
 								oAssignItemData.DESCRIPTION = sChangedContext.getProperty("TemplateDesc");
 								oAssignItemData.PARENT_NODE_ID = oAssignItemData.NodeId;
 								oAssignItemData.ResourceGuid = oAssignItemData.ParentNodeId;
-								var shiftData = sChangedContext.getObject(),
-									copyProperty = ['GroupId', 'ScheduleId', 'ScheduleIdDesc', 'TemplateId', 'TemplateDesc', 'ToTime', 'FromTime',
-										'SHIFT_COLOR',
-										'HR_SHIFT_FLAG', 'INCLUDE_FREE_DAY', 'DEFAULT_TEMPLATE', 'INCLUDE_PUBLIC_HOLIDAY', 'AVAILABILITY_TYPE'
-									];
-
+								shiftData = sChangedContext.getObject();
 								for (var prop in shiftData) {
-									if (copyProperty.indexOf(prop) !== -1) {
-										oAssignItemData[prop] = shiftData[prop];
+									if (shiftData[prop] === null || shiftData[prop] === undefined || shiftData[prop] === "") {
+										delete shiftData[prop];
 									}
-
 								}
+								merge(oData, shiftData);
 							}
 
 							this._addSingleChildToParent(oAssignItemData, true);
