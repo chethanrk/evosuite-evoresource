@@ -1404,38 +1404,51 @@ sap.ui.define([
 		_repeatAssignments: function (oData) {
 			var newData, iEvery = 0,
 				dayCounter = 0,
-				oStartDate = moment(oData.StartDate);
+				oDateProp = {
+					startDateProp: null,
+					endDateProp: null
+				},
+				oStartDate;
+
+			if (oData.NODE_TYPE === "RES_GROUP") {
+				oDateProp.startDateProp = "StartDate";
+				oDateProp.endDateProp = "EndDate";
+			} else if (oData.NODE_TYPE === "SHIFT") {
+				oDateProp.startDateProp = "EffectiveStartDate";
+				oDateProp.endDateProp = "EffectiveEndDate";
+			}
+			oStartDate = moment(oData[oDateProp.startDateProp]);
 
 			do {
 				if (oData.Repeat === "DAY") {
 					newData = deepClone(oData);
-					newData.StartDate = oStartDate.add(iEvery, 'days').toDate();
+					newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'days').toDate();
 
-					this._validateAndPrepareNewAssignment(newData, oData, dayCounter);
-					oStartDate = moment(newData.StartDate);
+					this._validateAndPrepareNewAssignment(newData, oData, dayCounter,null,oDateProp);
+					oStartDate = moment(newData[oDateProp.startDateProp]);
 
 				} else if (oData.Repeat === "WEEK") {
 					var week = oStartDate;
 					for (var d = 0; d < oData.Days.length; d++) {
 						newData = deepClone(oData);
-						newData.StartDate = moment(week).day(oData.Days[d]).toDate();
+						newData[oDateProp.startDateProp] = moment(week).day(oData.Days[d]).toDate();
 
-						this._validateAndPrepareNewAssignment(newData, oData, dayCounter, d);
+						this._validateAndPrepareNewAssignment(newData, oData, dayCounter, d, oDateProp);
 					}
 					oStartDate = moment(oStartDate.add(iEvery, 'weeks').startOf('weeks').toDate());
 
 				} else if (oData.Repeat === "MONTH") {
 					newData = deepClone(oData);
 					if (oData.On === 0) {
-						newData.StartDate = oStartDate.add(iEvery, 'months').toDate();
+						newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'months').toDate();
 					} else if (oData.On === 1) {
-						var oStrDate = moment(oData.StartDate),
+						var oStrDate = moment(oData[oDateProp.startDateProp]),
 							iDay = oStrDate.day();
-						newData.StartDate = oStartDate.add(iEvery, 'months').day(iDay).toDate();
+						newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'months').day(iDay).toDate();
 					}
 
-					this._validateAndPrepareNewAssignment(newData, oData, dayCounter);
-					oStartDate = moment(newData.StartDate);
+					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, null, oDateProp);
+					oStartDate = moment(newData[oDateProp.startDateProp]);
 				}
 
 				dayCounter++;
@@ -1473,14 +1486,14 @@ sap.ui.define([
 		 * @param iCounter - integer indicator
 		 * @param iDayIndex - integer days loop index
 		 */
-		_validateAndPrepareNewAssignment: function (newData, oData, iCounter, iDayIndex) {
+		_validateAndPrepareNewAssignment: function (newData, oData, iCounter, iDayIndex, oDateProp) {
 			newData.Guid = newData.Guid + iCounter;
 			if (iDayIndex) {
 				newData.Guid = newData.Guid + iCounter + iDayIndex;
 			}
-			newData.EndDate = moment(newData.StartDate).endOf('day').toDate();
+			newData[oDateProp.endDateProp] = moment(newData[oDateProp.startDateProp]).endOf('day').toDate();
 
-			if (moment(newData.StartDate).isSameOrAfter(oData.StartDate) && moment(newData.StartDate).isSameOrBefore(moment(oData.RepeatEndDate))) {
+			if (moment(newData[oDateProp.startDateProp]).isSameOrAfter(oData[oDateProp.startDateProp]) && moment(newData[oDateProp.startDateProp] ).isSameOrBefore(moment(oData.RepeatEndDate))) {
 				this._validateAndAddNewAssignment(newData, oData);
 			}
 		},
