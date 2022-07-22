@@ -690,7 +690,7 @@ sap.ui.define([
 			}
 			return aResourceAssignment;
 		},
-		
+        
 		/**
 		 * Return all shift matching resource guid
 		 * @param {string} sResourceGuid - Resource Guid
@@ -891,25 +891,19 @@ sap.ui.define([
 					name: "com.evorait.evosuite.evoresource.view.fragments.DemandList",
 					controller: this
 				}).then(function (oDialog) {
-					if (!this._oDemandDialogIsOpen) {
-						this._oDemandDialog = oDialog;
-						this.getView().addDependent(this._oDemandDialog);
+					this._oDemandDialog = oDialog;
+					this.getView().addDependent(this._oDemandDialog);
+					this._oDemandDialog.open();
+					this._oDemandDialog.attachAfterOpen(function () {
+						var oTable = sap.ui.getCore().byId("idFragDemandListTable");
+						oTable.removeSelections();
+					}.bind(this));
 
-						this._oDemandDialog.open();
-						this._oDemandDialogIsOpen = true;
-						this._oDemandDialog.attachAfterOpen(function () {}.bind(this));
-
-						this._oDemandDialog.attachAfterClose(function () {
-							this._oDemandDialogIsOpen = false;
-						}.bind(this));
-					}
+					this._oDemandDialog.attachAfterClose(function (oEvent) {}.bind(this));
 
 				}.bind(this));
 			} else {
-				if (!this._oDemandDialogIsOpen) {
-					this._oDemandDialog.open();
-					this._oDemandDialogIsOpen = true;
-				}
+				this._oDemandDialog.open();
 			}
 		},
 		/**
@@ -1056,7 +1050,7 @@ sap.ui.define([
 			var isDatePast = moment(oDate).isBefore(moment().startOf('day').toDate());
 			return isDatePast;
 		},
-		
+
 		/**
 		 * Fetch resource based on node id
 		 * @param {string} sNodeId - NodeId of Resource
