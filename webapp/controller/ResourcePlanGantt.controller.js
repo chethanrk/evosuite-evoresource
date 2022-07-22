@@ -18,559 +18,548 @@ sap.ui.define([
 
 	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanGantt", {
 
-			metadata: {
-				// extension can declare the public methods
-				// in general methods that start with "_" are private
-				methods: {
-					onChangeTimeMode: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.After
-					},
-					onInitializedSmartVariant: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Before
-					},
-					onVisibleHorizonUpdate: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.After
-					},
-					onSearch: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Before
-					},
-					onShapePress: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.After
-					},
-					onPressSave: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Before
-					},
-					onPressCancel: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.After
-					},
-					onPressChangeAssignment: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Before
-					},
-					onPressDeleteAssignment: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Before
-					},
-					onResourceGroupDrop: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Before
-					},
-					openShapeChangePopover: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Before
-					},
-					onChangeResourceGroup: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Before
-					},
-					onChangeDate: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.After
-					},
-					onPressToday: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Before
-					},
-					onClickExpandCollapse: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Before
-					},
-					onShowDemandPress: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Before
-					},
-					onShapeDrop: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Before
-					},
-					onShapeResize: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Before
-					},
-					changeShapeDate: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Before
-					},
-					onChangeDaySelection: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Instead
-					},
-					onEveryLiveChange: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Instead
-					},
-					onChangeRepeatMode: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Instead
-					},
-					onDemandSelectionChange: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Instead
-					},
-					onDemandUnassign: {
-						public: true,
-						final: false,
-						overrideExecution: OverrideExecution.Instead
-					}
+		metadata: {
+			// extension can declare the public methods
+			// in general methods that start with "_" are private
+			methods: {
+				onChangeTimeMode: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onInitializedSmartVariant: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onVisibleHorizonUpdate: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onSearch: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onShapePress: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onPressSave: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onPressCancel: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onPressChangeAssignment: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onPressDeleteAssignment: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onResourceGroupDrop: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				openShapeChangePopover: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onChangeResourceGroup: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onChangeDate: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onPressToday: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onClickExpandCollapse: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onShowDemandPress: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onShapeDrop: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onShapeResize: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				changeShapeDate: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
+				},
+				onChangeDaySelection: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onEveryLiveChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onChangeRepeatMode: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onDemandSelectionChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onDemandUnassign: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
-			},
+			}
+		},
 
-			oOriginData: null,
-			oPlanningModel: null,
-			_defaultView: "DAY",
-			_treeTable: null,
-			_previousView: "DAY",
+		oOriginData: null,
+		oPlanningModel: null,
+		_defaultView: "DAY",
+		_treeTable: null,
+		_previousView: "DAY",
 
-			/**
-			 * Called when a controller is instantiated and its View controls (if available) are already created.
-			 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
-			 * @memberOf com.evorait.evosuite.evoresource.controller.ResourcePlanningMain
-			 */
-			onInit: function () {
-				this._treeTable = this.getView().byId("idResourcePlanGanttTreeTable");
-				this.oZoomStrategy = this.getView().byId("idResourcePlanGanttZoom");
-				this.oZoomStrategy.setTimeLineOptions(formatter.getTimeLineOptions());
-				this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(this._defaultView));
-				this._sGanttViewMode = formatter.getViewMapping(this._defaultView);
+		/**
+		 * Called when a controller is instantiated and its View controls (if available) are already created.
+		 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
+		 * @memberOf com.evorait.evosuite.evoresource.controller.ResourcePlanningMain
+		 */
+		onInit: function () {
+			this._treeTable = this.getView().byId("idResourcePlanGanttTreeTable");
+			this.oZoomStrategy = this.getView().byId("idResourcePlanGanttZoom");
+			this.oZoomStrategy.setTimeLineOptions(formatter.getTimeLineOptions());
+			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(this._defaultView));
+			this._sGanttViewMode = formatter.getViewMapping(this._defaultView);
 
-				//idPageResourcePlanningWrapper
-				this._initialisePlanningModel();
+			//idPageResourcePlanningWrapper
+			this._initialisePlanningModel();
 
-				this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
-					this._setNewHorizon(oResult.DEFAULT_DAILYVIEW_STARTDATE, oResult.DEFAULT_DAILYVIEW_ENDDATE);
-				}.bind(this));
-			},
+			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
+				this._setNewHorizon(oResult.DEFAULT_DAILYVIEW_STARTDATE, oResult.DEFAULT_DAILYVIEW_ENDDATE);
+			}.bind(this));
+		},
 
-			/* =========================================================== */
-			/* Events                                                      */
-			/* =========================================================== */
+		/* =========================================================== */
+		/* Events                                                      */
+		/* =========================================================== */
 
-			/**
-			 * Set new time line options for Gantt time horizon
-			 * @param {object} oEvent - change event of filter view mode
-			 */
-			onChangeTimeMode: function (oEvent) {
-				var mParam = oEvent.getParameters(),
-					sKey = mParam.selectedItem.getKey(),
-					bChanges = this.oPlanningModel.getProperty("/hasChanges"),
-					oSource = oEvent.getSource();
-				if (bChanges) {
-					var sTitle = this.getResourceBundle().getText("tit.confirmChange"),
-						sMsg = this.getResourceBundle().getText("msg.modeChange");
-					var successcallback = function () {
-						this._loadGanttData();
-						this._setDateFilter(sKey);
-					};
-					var cancelcallback = function () {
-						oSource.setSelectedKey(this._previousView);
-					};
-					this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
-				} else {
+		/**
+		 * Set new time line options for Gantt time horizon
+		 * @param {object} oEvent - change event of filter view mode
+		 */
+		onChangeTimeMode: function (oEvent) {
+			var mParam = oEvent.getParameters(),
+				sKey = mParam.selectedItem.getKey(),
+				bChanges = this.oPlanningModel.getProperty("/hasChanges"),
+				oSource = oEvent.getSource();
+			if (bChanges) {
+				var sTitle = this.getResourceBundle().getText("tit.confirmChange"),
+					sMsg = this.getResourceBundle().getText("msg.modeChange");
+				var successcallback = function () {
+					this._loadGanttData();
 					this._setDateFilter(sKey);
-					this._previousView = sKey;
-				}
-			},
-
-			/**
-			 * When filterbar was initialized then get all filters and send backend request
-			 * @param {object} oEvent - change event of filterbar
-			 */
-			onInitializedSmartVariant: function (oEvent) {
-				this._loadGanttData();
-			},
-
-			/**
-			 * When user srolls horizontal inside gantt chart 
-			 * save visible start and end date
-			 * @param {object} oEvent - event when gantt chart visible view changes
-			 */
-			onVisibleHorizonUpdate: function (oEvent) {
-				var mParams = oEvent.getParameters(),
-					sStartTime = mParams.currentVisibleHorizon.getStartTime(),
-					sEndTime = mParams.currentVisibleHorizon.getEndTime();
-
-				this._visibileStartDate = moment(sStartTime, "YYYYMMDDHHmmss");
-				this._visibileEndDate = moment(sEndTime, "YYYYMMDDHHmmss");
-			},
-
-			/**
-			 * When Go button in filterbar was pressed then get all filters and send backend request
-			 * @param {object} oEvent - change event of filterbar
-			 */
-			onSearch: function () {
-				var oDateRangePicker = this.getView().byId("idFilterGanttPlanningDateRange"),
-					oStartDate = oDateRangePicker.getDateValue(),
-					oEndDate = oDateRangePicker.getSecondDateValue();
-
-				this._setNewHorizon(oStartDate, oEndDate);
-				this._loadGanttData();
-			},
-
-			/**
-			 * when shape was double pressed show popover with details of assignment
-			 * or create new temporary assignment
-			 * @param {object} oEvent - when shape in Gantt was selected
-			 */
-			onShapePress: function (oEvent) {
-				var mParams = oEvent.getParameters(),
-					oShape = mParams.shape,
-					isNew,
-					oRowContext,
-					sStartTime,
-					sEndTime,
-					oRowData,
-					oPopoverData,
-					oParentData;
-				if (!mParams || !oShape) {
-					return;
-				}
-				isNew = oShape['sParentAggregationName'] === 'shape1';
-				oRowContext = mParams.rowSettings.getParent().getBindingContext("ganttPlanningModel");
-				sStartTime = oShape.getTime();
-				sEndTime = oShape.getEndTime();
-				oRowData = oRowContext.getObject();
-				if (oRowData.NodeType !== "RESOURCE") {
-					oParentData = this._getParentResource(oRowData.ParentNodeId);
-					oRowData.USER_TIMEZONE = oParentData.TIME_ZONE;
-				}
-				oPopoverData = {
-					Guid: new Date().getTime(),
-					sStartTime: sStartTime,
-					sEndTime: sEndTime,
-					oResourceObject: oRowData,
-					bDragged: false,
-					isNew: isNew,
-					isEditable: true
 				};
+				var cancelcallback = function () {
+					oSource.setSelectedKey(this._previousView);
+				};
+				this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
+			} else {
+				this._setDateFilter(sKey);
+				this._previousView = sKey;
+			}
+		},
 
-				this.openShapeChangePopover(mParams.shape, oPopoverData);
-			},
+		/**
+		 * When filterbar was initialized then get all filters and send backend request
+		 * @param {object} oEvent - change event of filterbar
+		 */
+		onInitializedSmartVariant: function (oEvent) {
+			this._loadGanttData();
+		},
 
-			/**
-			 * called when shape was dropped
-			 * Calling 'changeShapeDate' function with shape detail
-			 * @param {object} oEvent - when shape in Gantt was dropped
-			 */
-			onShapeDrop: function (oEvent) {
-				this.changeShapeDate(oEvent);
-			},
-			/**
-			 * called when shape was resized
-			 * Calling 'changeShapeDate' function with shape detail
-			 * @param {object} oEvent - when shape in Gantt was resized
-			 */
-			onShapeResize: function (oEvent) {
-				this.changeShapeDate(oEvent);
-			},
-			/**
-			 * Called after shape is dropped or resized
-			 * This method will change the start and end date of assignment according to dropped or resized date.
-			 * This method will validate if the date is valid and do backend validation. If validation fails reset the assignemnt to previoud date.
-			 * @param {object} oEvent - when shape in Gantt was /dropped/resized
-			 */
-			changeShapeDate: function (oEvent) {
-				var sShapeId,
-					oShapeInfo,
-					oTargetShape,
-					oStartTime,
-					oEndTime,
-					sGuid,
-					aFoundData = [],
-					sOldDataPath,
-					oOldData = [],
-					oAssignment = {},
-					oDraggedShapeDates,
-					dateDifference;
+		/**
+		 * When user srolls horizontal inside gantt chart 
+		 * save visible start and end date
+		 * @param {object} oEvent - event when gantt chart visible view changes
+		 */
+		onVisibleHorizonUpdate: function (oEvent) {
+			var mParams = oEvent.getParameters(),
+				sStartTime = mParams.currentVisibleHorizon.getStartTime(),
+				sEndTime = mParams.currentVisibleHorizon.getEndTime();
 
-				if (oEvent.getId() === 'shapeDrop') {
-					sShapeId = oEvent.getParameter("lastDraggedShapeUid");
-					oShapeInfo = Utility.parseUid(sShapeId);
-					oTargetShape = oEvent.getParameter("targetShape");
-					oDraggedShapeDates = oEvent.getParameter("draggedShapeDates")[sShapeId];
-					dateDifference = moment(oDraggedShapeDates["endTime"]).diff(oDraggedShapeDates["time"]);
-					oStartTime = oTargetShape ? oTargetShape.getProperty("time") : null;
-					oEndTime = oStartTime ? new Date(moment(oStartTime).add(dateDifference)) : null;
-				} else if (oEvent.getId() === 'shapeResize') {
-					sShapeId = oEvent.getParameter("shapeUid");
-					oShapeInfo = Utility.parseUid(sShapeId);
-					oStartTime = moment(oEvent.getParameter("newTime")[0]).startOf('day').toDate();
-					oEndTime = moment(oEvent.getParameter("newTime")[1]).endOf('day').toDate();
-				}
-				//validate if date is past
-				if (!oStartTime || !oEndTime || this._isDatePast(oStartTime) || this._isDatePast(oEndTime)) {
-					return;
-				}
+			this._visibileStartDate = moment(sStartTime, "YYYYMMDDHHmmss");
+			this._visibileEndDate = moment(sEndTime, "YYYYMMDDHHmmss");
+		},
 
-				sGuid = oShapeInfo.shapeId;
-				aFoundData = this._getChildrenDataByKey("Guid", sGuid, null);
-				sOldDataPath = this._getChildDataByKey("Guid", sGuid, null);
+		/**
+		 * When Go button in filterbar was pressed then get all filters and send backend request
+		 * @param {object} oEvent - change event of filterbar
+		 */
+		onSearch: function () {
+			var oDateRangePicker = this.getView().byId("idFilterGanttPlanningDateRange"),
+				oStartDate = oDateRangePicker.getDateValue(),
+				oEndDate = oDateRangePicker.getSecondDateValue();
 
-				//validate if of Shift HR_SHIFT_FLAG is true
-				if (sOldDataPath.oData.NODE_TYPE === "SHIFT" && sOldDataPath.oData.HR_SHIFT_FLAG) {
-					return;
-				}
+			this._setNewHorizon(oStartDate, oEndDate);
+			this._loadGanttData();
+		},
 
-				oOldData = deepClone(sOldDataPath.oData);
-				if (aFoundData) {
-					aFoundData.forEach(function (sPath) {
-						oAssignment = this.getModel("ganttPlanningModel").getProperty(sPath);
-						oAssignment.StartDate = oStartTime;
-						oAssignment.EndDate = oEndTime;
-						oAssignment.EffectiveStartDate = oStartTime;
-						oAssignment.EffectiveEndDate = oEndTime;
-						oAssignment.isChanging = true;
-					}.bind(this));
-				}
-				this.getModel("ganttPlanningModel").refresh();
+		/**
+		 * when shape was double pressed show popover with details of assignment
+		 * or create new temporary assignment
+		 * @param {object} oEvent - when shape in Gantt was selected
+		 */
+		onShapePress: function (oEvent) {
+			var mParams = oEvent.getParameters(),
+				oShape = mParams.shape,
+				isNew,
+				oRowContext,
+				sStartTime,
+				sEndTime,
+				oRowData,
+				oPopoverData,
+				oParentData;
+			if (!mParams || !oShape) {
+				return;
+			}
+			isNew = oShape['sParentAggregationName'] === 'shape1';
+			oRowContext = mParams.rowSettings.getParent().getBindingContext("ganttPlanningModel");
+			sStartTime = oShape.getTime();
+			sEndTime = oShape.getEndTime();
+			oRowData = oRowContext.getObject();
+			if (oRowData.NodeType !== "RESOURCE") {
+				oParentData = this._getParentResource(oRowData.ParentNodeId);
+				oRowData.USER_TIMEZONE = oParentData.TIME_ZONE;
+			}
+			oPopoverData = {
+				Guid: new Date().getTime(),
+				sStartTime: sStartTime,
+				sEndTime: sEndTime,
+				oResourceObject: oRowData,
+				bDragged: false,
+				isNew: isNew,
+				isEditable: true
+			};
 
-				this.oPlanningModel.setProperty("/tempData/popover", oAssignment);
-				this.oPlanningModel.setProperty("/tempData/oldPopoverData", oOldData);
-				this._validateAssignment();
-			},
-			/**
-			 * Called to open ShapeChangePopover
-			 * @param {object} oTargetControl - Control where popover should open
-			 * @param {object} oPopoverData - Data to be displayed in Popover
-			 */
-			openShapeChangePopover: function (oTargetControl, oPopoverData) {
-				if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getTime())) {
-					// create popover
-					if (!this._oPlanningPopover) {
-						Fragment.load({
-							name: "com.evorait.evosuite.evoresource.view.fragments.ShapeChangePopover",
-							controller: this
-						}).then(function (pPopover) {
-							this._oPlanningPopover = pPopover;
-							this.getView().addDependent(this._oPlanningPopover);
-							this._oPlanningPopover.openBy(oTargetControl);
-							this._setPopoverData(oTargetControl, oPopoverData);
+			this.openShapeChangePopover(mParams.shape, oPopoverData);
+		},
 
-							//after popover gets opened check popover data for resource group color
-							this._oPlanningPopover.attachAfterOpen(function () {
-								var oData = this.oPlanningModel.getProperty("/tempData/popover");
-								this._addResourceGroupColor(oData);
-								this._validateForOpenPopover(oData);
-							}.bind(this));
+		/**
+		 * called when shape was dropped
+		 * Calling 'changeShapeDate' function with shape detail
+		 * @param {object} oEvent - when shape in Gantt was dropped
+		 */
+		onShapeDrop: function (oEvent) {
+			this.changeShapeDate(oEvent);
+		},
+		/**
+		 * called when shape was resized
+		 * Calling 'changeShapeDate' function with shape detail
+		 * @param {object} oEvent - when shape in Gantt was resized
+		 */
+		onShapeResize: function (oEvent) {
+			this.changeShapeDate(oEvent);
+		},
+		/**
+		 * Called after shape is dropped or resized
+		 * This method will change the start and end date of assignment according to dropped or resized date.
+		 * This method will validate if the date is valid and do backend validation. If validation fails reset the assignemnt to previoud date.
+		 * @param {object} oEvent - when shape in Gantt was /dropped/resized
+		 */
+		changeShapeDate: function (oEvent) {
+			var sShapeId,
+				oShapeInfo,
+				oTargetShape,
+				oStartTime,
+				oEndTime,
+				sGuid,
+				aFoundData = [],
+				sOldDataPath,
+				oOldData = [],
+				oAssignment = {},
+				oDraggedShapeDates,
+				dateDifference;
 
-							//after popover gets closed remove popover data
-							this._oPlanningPopover.attachAfterClose(function (oEvent) {
-								this._afterPopoverClose(oEvent);
-							}.bind(this));
-						}.bind(this));
-					} else {
+			if (oEvent.getId() === 'shapeDrop') {
+				sShapeId = oEvent.getParameter("lastDraggedShapeUid");
+				oShapeInfo = Utility.parseUid(sShapeId);
+				oTargetShape = oEvent.getParameter("targetShape");
+				oDraggedShapeDates = oEvent.getParameter("draggedShapeDates")[sShapeId];
+				dateDifference = moment(oDraggedShapeDates["endTime"]).diff(oDraggedShapeDates["time"]);
+				oStartTime = oTargetShape ? oTargetShape.getProperty("time") : null;
+				oEndTime = oStartTime ? new Date(moment(oStartTime).add(dateDifference)) : null;
+			} else if (oEvent.getId() === 'shapeResize') {
+				sShapeId = oEvent.getParameter("shapeUid");
+				oShapeInfo = Utility.parseUid(sShapeId);
+				oStartTime = moment(oEvent.getParameter("newTime")[0]).startOf('day').toDate();
+				oEndTime = moment(oEvent.getParameter("newTime")[1]).endOf('day').toDate();
+			}
+			//validate if date is past
+			if (!oStartTime || !oEndTime || this._isDatePast(oStartTime) || this._isDatePast(oEndTime)) {
+				return;
+			}
+
+			sGuid = oShapeInfo.shapeId;
+			aFoundData = this._getChildrenDataByKey("Guid", sGuid, null);
+			sOldDataPath = this._getChildDataByKey("Guid", sGuid, null);
+
+			//validate if of Shift HR_SHIFT_FLAG is true
+			if (sOldDataPath.oData.NODE_TYPE === "SHIFT" && sOldDataPath.oData.HR_SHIFT_FLAG) {
+				return;
+			}
+
+			oOldData = deepClone(sOldDataPath.oData);
+			if (aFoundData) {
+				aFoundData.forEach(function (sPath) {
+					oAssignment = this.getModel("ganttPlanningModel").getProperty(sPath);
+					oAssignment.StartDate = oStartTime;
+					oAssignment.EndDate = oEndTime;
+					oAssignment.EffectiveStartDate = oStartTime;
+					oAssignment.EffectiveEndDate = oEndTime;
+					oAssignment.isChanging = true;
+				}.bind(this));
+			}
+			this.getModel("ganttPlanningModel").refresh();
+
+			this.oPlanningModel.setProperty("/tempData/popover", oAssignment);
+			this.oPlanningModel.setProperty("/tempData/oldPopoverData", oOldData);
+			this._validateAssignment();
+		},
+		/**
+		 * Called to open ShapeChangePopover
+		 * @param {object} oTargetControl - Control where popover should open
+		 * @param {object} oPopoverData - Data to be displayed in Popover
+		 */
+		openShapeChangePopover: function (oTargetControl, oPopoverData) {
+			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getTime())) {
+				// create popover
+				if (!this._oPlanningPopover) {
+					Fragment.load({
+						name: "com.evorait.evosuite.evoresource.view.fragments.ShapeChangePopover",
+						controller: this
+					}).then(function (pPopover) {
+						this._oPlanningPopover = pPopover;
+						this.getView().addDependent(this._oPlanningPopover);
 						this._oPlanningPopover.openBy(oTargetControl);
 						this._setPopoverData(oTargetControl, oPopoverData);
-					}
+
+						//after popover gets opened check popover data for resource group color
+						this._oPlanningPopover.attachAfterOpen(function () {
+							var oData = this.oPlanningModel.getProperty("/tempData/popover");
+							this._addResourceGroupColor(oData);
+							this._validateForOpenPopover(oData);
+						}.bind(this));
+
+						//after popover gets closed remove popover data
+						this._oPlanningPopover.attachAfterClose(function (oEvent) {
+							this._afterPopoverClose(oEvent);
+						}.bind(this));
+					}.bind(this));
 				} else {
-					this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
+					this._oPlanningPopover.openBy(oTargetControl);
+					this._setPopoverData(oTargetControl, oPopoverData);
 				}
-			},
+			} else {
+				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
+			}
+		},
 
-			/**
-			 * Called when Resource drop is dropped in Gantt
-			 * @param {object} oEvent
-			 */
-			onResourceGroupDrop: function (oEvent) {
-				//ondrop of the the resourcegroup
-				var oDroppedControl = oEvent.getParameter("droppedControl"),
-					oContext = oDroppedControl.getBindingContext("ganttPlanningModel"),
-					oObject = deepClone(oContext.getObject()),
-					oDraggedObject = this.getView().getModel("viewModel").getProperty("/draggedData"),
-					oBrowserEvent = oEvent.getParameter("browserEvent"),
-					oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id),
-					sStartTime = oDroppedTarget.getTime(),
-					sEndTime = oDroppedTarget.getEndTime(),
-					oPopoverData,
-					oParentData,
-					aIgnoreProperty = ["__metadata", "NodeId", "USER_TIMEZONE"];
+		/**
+		 * Called when Resource drop is dropped in Gantt
+		 * @param {object} oEvent
+		 */
+		onResourceGroupDrop: function (oEvent) {
+			//ondrop of the the resourcegroup
+			var oDroppedControl = oEvent.getParameter("droppedControl"),
+				oContext = oDroppedControl.getBindingContext("ganttPlanningModel"),
+				oObject = deepClone(oContext.getObject()),
+				oDraggedObject = this.getView().getModel("viewModel").getProperty("/draggedData"),
+				oBrowserEvent = oEvent.getParameter("browserEvent"),
+				oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id),
+				sStartTime = oDroppedTarget.getTime(),
+				sEndTime = oDroppedTarget.getEndTime(),
+				oPopoverData,
+				oParentData,
+				aIgnoreProperty = ["__metadata", "NodeId", "USER_TIMEZONE"];
 
-				if (oObject.NodeType !== "RESOURCE") {
-					oParentData = this._getParentResource(oObject.ParentNodeId);
-					oObject.USER_TIMEZONE = oParentData.TIME_ZONE;
-				}
+			if (oObject.NodeType !== "RESOURCE") {
+				oParentData = this._getParentResource(oObject.ParentNodeId);
+				oObject.USER_TIMEZONE = oParentData.TIME_ZONE;
+			}
 
-				oObject = this.copyObjectData(oObject, oDraggedObject.data, aIgnoreProperty);
-				oPopoverData = {
-					Guid: new Date().getTime(),
-					sStartTime: sStartTime,
-					sEndTime: sEndTime,
-					oResourceObject: oObject,
-					bDragged: true
-				};
-				this.openShapeChangePopover(oDroppedTarget, oPopoverData);
-			},
-			/**
-			 * Button event press save Gantt changes
-			 * @param {object} oEvent
-			 */
-			onPressSave: function (oEvent) {
-				this.getModel().setDeferredGroups(["batchDelete"]);
-				var mParam = {
-					urlParameters: null,
-					groupId: "batchDelete",
-					success: this._deleteSuccess.bind(this),
-					error: this._deleteFailed.bind(this)
-				};
-				this._prepareDeleteData(mParam).then(function (oData) {
-					if (oData.length > 0) {
-						this.getModel().submitChanges(mParam);
-					} else {
-						this.saveChanges(this._saveSuccess.bind(this), this._saveFailed.bind(this));
-					}
-				}.bind(this));
-			},
-
-			/**
-			 * Button event to cancel all Gantt changes
-			 * User has to confirm reset of changes
-			 * @param {object} oEvent
-			 */
-			onPressCancel: function (oEvent) {
-				var sTitle = this.getResourceBundle().getText("tit.confirmCancel"),
-					sMsg = this.getResourceBundle().getText("msg.confirmCancel");
-
-				var successFn = function () {
-					this._loadGanttData();
-				};
-				this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
-			},
-
-			/**
-			 * Change of shape assignment
-			 * check if group or date range was changed
-			 * when it was changed send validation request
-			 * @param {object} oEvent - event of OK button press
-			 */
-			onPressChangeAssignment: function (oEvent) {
-				var oSimpleformFileds = this.getView().getControlsByFieldGroupId("changeShapeInput");
-				var oValidation = this.validateForm(oSimpleformFileds);
-
-				if (oValidation && oValidation.state === "success") {
-					this._validateAssignment();
-				}
-			},
-
-			/**
-			 * delete a shape inside Gantt
-			 * user needs confirm deletion and when its not freshly created assignment 
-			 * a validation request is send to backend
-			 * @param {object} oEvent - event of delete button press
-			 */
-			onPressDeleteAssignment: function (oEvent) {
-				var oData = this.oPlanningModel.getProperty("/tempData/popover"),
-					sTitle = this.getResourceBundle().getText("tit.confirmDelete"),
-					sMsg = this.getResourceBundle().getText("msg.comfirmDeleteMessage");
-				var successcallback = function () {
-					this._removeAssignmentShape(oData, true);
-					this._oPlanningPopover.close();
-				};
-				var cancelcallback = function () {};
-				if (oData.isNew) {
-					this._removeAssignmentShape(oData, true);
-					this._oPlanningPopover.close();
+			oObject = this.copyObjectData(oObject, oDraggedObject.data, aIgnoreProperty);
+			oPopoverData = {
+				Guid: new Date().getTime(),
+				sStartTime: sStartTime,
+				sEndTime: sEndTime,
+				oResourceObject: oObject,
+				bDragged: true
+			};
+			this.openShapeChangePopover(oDroppedTarget, oPopoverData);
+		},
+		/**
+		 * Button event press save Gantt changes
+		 * @param {object} oEvent
+		 */
+		onPressSave: function (oEvent) {
+			this.getModel().setDeferredGroups(["batchDelete"]);
+			var mParam = {
+				urlParameters: null,
+				groupId: "batchDelete",
+				success: this._deleteSuccess.bind(this),
+				error: this._deleteFailed.bind(this)
+			};
+			this._prepareDeleteData(mParam).then(function (oData) {
+				if (oData.length > 0) {
+					this.getModel().submitChanges(mParam);
 				} else {
-					this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
+					this.saveChanges(this._saveSuccess.bind(this), this._saveFailed.bind(this));
 				}
-			},
+			}.bind(this));
+		},
 
-			/**
-			 * On change resource group
-			 * set the color code to shape
-			 * @param {object} oEvent
-			 */
-			onChangeResourceGroup: function (oEvent) {
-				var oSource = oEvent.getSource(),
-					oSelectedItem = oSource.getSelectedItem(),
-					oSelContext = oSelectedItem.getBindingContext("viewModel"),
-					oData = this.oPlanningModel.getProperty("/tempData/popover");
+		/**
+		 * Button event to cancel all Gantt changes
+		 * User has to confirm reset of changes
+		 * @param {object} oEvent
+		 */
+		onPressCancel: function (oEvent) {
+			var sTitle = this.getResourceBundle().getText("tit.confirmCancel"),
+				sMsg = this.getResourceBundle().getText("msg.confirmCancel");
 
-				oSource.setValueState(sap.ui.core.ValueState.None);
-				//validate duplicate assignments
-				if (this._validateDuplicateAsigment()) {
-					return;
-				}
+			var successFn = function () {
+				this._loadGanttData();
+			};
+			this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
+		},
 
-				if (oData.isNew) {
-					this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", oSelContext.getProperty("ResourceGroupColor"));
-					this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("ResourceGroupDesc"));
-					this.oPlanningModel.setProperty("/tempData/popover/ResourceGroupDesc", oSelContext.getProperty("ResourceGroupDesc"));
+		/**
+		 * Change of shape assignment
+		 * check if group or date range was changed
+		 * when it was changed send validation request
+		 * @param {object} oEvent - event of OK button press
+		 */
+		onPressChangeAssignment: function (oEvent) {
+			var oSimpleformFileds = this.getView().getControlsByFieldGroupId("changeShapeInput");
+			var oValidation = this.validateForm(oSimpleformFileds);
 
-					this._removeAssignmentShape(oData, true);
-					//add different resource group if it is not exist
-					this._addSingleChildToParent(oData);
+			if (oValidation && oValidation.state === "success") {
+				this._validateAssignment();
+			}
+		},
 
-					if (!oData.isTemporary) {
-						this._oPlanningPopover.close();
-					}
-				} else {
-					this._removeAssignmentShape(oData, true, oSelContext);
+		/**
+		 * delete a shape inside Gantt
+		 * user needs confirm deletion and when its not freshly created assignment 
+		 * a validation request is send to backend
+		 * @param {object} oEvent - event of delete button press
+		 */
+		onPressDeleteAssignment: function (oEvent) {
+			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
+				sTitle = this.getResourceBundle().getText("tit.confirmDelete"),
+				sMsg = this.getResourceBundle().getText("msg.comfirmDeleteMessage");
+			var successcallback = function () {
+				this._removeAssignmentShape(oData, true);
+				this._oPlanningPopover.close();
+			};
+			var cancelcallback = function () {};
+			if (oData.isNew) {
+				this._removeAssignmentShape(oData, true);
+				this._oPlanningPopover.close();
+			} else {
+				this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
+			}
+		},
+
+		/**
+		 * On change resource group
+		 * set the color code to shape
+		 * @param {object} oEvent
+		 */
+		onChangeResourceGroup: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oSelectedItem = oSource.getSelectedItem(),
+				oSelContext = oSelectedItem.getBindingContext("viewModel"),
+				oData = this.oPlanningModel.getProperty("/tempData/popover");
+
+			oSource.setValueState(sap.ui.core.ValueState.None);
+			//validate duplicate assignments
+			if (this._validateDuplicateAsigment()) {
+				return;
+			}
+
+			if (oData.isNew) {
+				this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", oSelContext.getProperty("ResourceGroupColor"));
+				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("ResourceGroupDesc"));
+				this.oPlanningModel.setProperty("/tempData/popover/ResourceGroupDesc", oSelContext.getProperty("ResourceGroupDesc"));
+
+				this._removeAssignmentShape(oData, true);
+				//add different resource group if it is not exist
+				this._addSingleChildToParent(oData);
+
+				if (!oData.isTemporary) {
 					this._oPlanningPopover.close();
 				}
-			},
+			} else {
+				this._removeAssignmentShape(oData, true, oSelContext);
+				this._oPlanningPopover.close();
+			}
+		},
 
-			/**
-			 * On change shift
-			 * update the shift data based on selection
-			 * @param {object} oEvent
-			 */
-			onChangeShift: function (oEvent) {
-				var oSource = oEvent.getSource(),
-					oSelectedItem = oSource.getSelectedItem(),
-					oSelContext = oSelectedItem.getBindingContext("viewModel"),
-					oData = this.oPlanningModel.getProperty("/tempData/popover"),
-					shiftData;
+		/**
+		 * On change shift
+		 * update the shift data based on selection
+		 * @param {object} oEvent
+		 */
+		onChangeShift: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oSelectedItem = oSource.getSelectedItem(),
+				oSelContext = oSelectedItem.getBindingContext("viewModel"),
+				oData = this.oPlanningModel.getProperty("/tempData/popover"),
+				shiftData;
 
-				oSource.setValueState(sap.ui.core.ValueState.None);
-				//validate duplicate assignments
-				if (this._validateDuplicateAsigment()) {
-					return;
-				}
+			oSource.setValueState(sap.ui.core.ValueState.None);
+			//validate duplicate assignments
+			if (this._validateDuplicateAsigment()) {
+				return;
+			}
 
-				if (oData.isNew) {
-					this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("TemplateDesc"));
-					var shiftData = oSelContext.getObject(),
-						copyProperty = ['GroupId', 'ScheduleId', 'ScheduleIdDesc', 'TemplateId', 'TemplateDesc', 'PlannedWorkEndTime',
-							'PlannedWorkStartTime', 'SHIFT_COLOR',
-							'HR_SHIFT_FLAG', 'INCLUDE_FREE_DAY', 'DEFAULT_TEMPLATE', 'INCLUDE_PUBLIC_HOLIDAY', 'AVAILABILITY_TYPE'
-						];
-
-					for (var prop in shiftData) {
-						if (copyProperty.indexOf(prop) !== -1) {
-							oData[prop] = shiftData[prop];
-						}
-
-					}
-					shiftData);
+			if (oData.isNew) {
+				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("TemplateDesc"));
+				shiftData = oSelContext.getObject();
+				oData = this.mergeObject(oData, shiftData);
 				this._removeAssignmentShape(oData, true);
 				//add different resource group if it is not exist
 				this._addSingleChildToParent(oData);
