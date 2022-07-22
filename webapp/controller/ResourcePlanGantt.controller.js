@@ -196,7 +196,7 @@ sap.ui.define([
 		 * @param {object} oEvent - change event of filterbar
 		 */
 		onInitializedSmartVariant: function (oEvent) {
-			//this._loadGanttData();
+			this._loadGanttData();
 		},
 
 		/**
@@ -686,24 +686,11 @@ sap.ui.define([
 			this._initialisePlanningModel();
 			this._getResourceData(0)
 				.then(this._getResourceData.bind(this))
-				.then(function (level) {
+				.then(function () {
 					//backup original data
 					this.oOriginData = deepClone(this.oPlanningModel.getProperty("/"));
 					this._setBackgroudShapes(this._sGanttViewMode);
-
-					this._removeResourceShifts();
-
 				}.bind(this));
-		},
-
-		_removeResourceShifts: function () {
-			var aChildern = this.oPlanningModel.getProperty("/data/children");
-
-			aChildern.forEach(function (oItem) {
-				oItem.GanttHierarchyToShift.results = [];
-			});
-
-			this.oPlanningModel.refresh();
 		},
 
 		/**
@@ -827,7 +814,6 @@ sap.ui.define([
 		 * @param {boolean} isNewChange - flag if it needs marked as change or remove from changes
 		 */
 		_markAsPlanningChange: function (oData, isNewChange) {
-			this._removeResourceShifts();
 			var oFoundData = this._getChildDataByKey("Guid", oData.Guid, null),
 				aChanges = this.oPlanningModel.getProperty("/changedData"),
 				aDeleteData = this.oPlanningModel.getProperty("/deletedData");
@@ -852,7 +838,6 @@ sap.ui.define([
 		 * @param {object} oData - object what has changed
 		 **/
 		_markAsPlanningDelete: function (oData) {
-			this._removeResourceShifts();
 			var oFoundData = this._getChildDataByKey("Guid", oData.Guid, null),
 				aChanges = this.oPlanningModel.getProperty("/changedData"),
 				aDeleteData = this.oPlanningModel.getProperty("/deletedData");
