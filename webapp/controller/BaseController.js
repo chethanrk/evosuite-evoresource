@@ -567,6 +567,7 @@ sap.ui.define([
 		 * @returns Object - {sPath, oData}
 		 */
 		_getChildDataByKey: function (sProperty, sValue, sPath) {
+			debugger;
 			sPath = sPath || "/data/children";
 			var aChildren = this.getModel("ganttPlanningModel").getProperty(sPath),
 				sNewObj = null;
