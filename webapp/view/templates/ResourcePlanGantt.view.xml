@@ -19,7 +19,7 @@
 					</f:header>
 					<f:content>
 						<template:with path="tempProps>/ganttConfigs/" var="ganttConfigs">
-							<gnt2:GanttChartContainer id="idResourcePlanGanttChartContainer" enableCursorLine="false" enableTimeScrollSync="false">
+							<gnt2:GanttChartContainer id="idResourcePlanGanttChartContainer" enableCursorLine="true" enableTimeScrollSync="false">
 								<gnt2:toolbar>
 									<gnt2:ContainerToolbar class="gantt-containerToolbar" alignCustomContentToRight="true" showTimeZoomControl="true" zoomControlType="None"
 										showLegendButton="false" showSettingButton="false">
