@@ -1506,11 +1506,12 @@ sap.ui.define([
 		 */
 		_setDateFilter: function (sKey) {
 			var newDateRange = formatter.getDefaultDates(sKey, this.getModel("user"));
+			this._setNewHorizon(newDateRange.StartDate, newDateRange.EndDate);
 			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
 			this._sGanttViewMode = formatter.getViewMapping(sKey);
 			this._setBackgroudShapes(this._sGanttViewMode);
 			this._previousView = sKey;
-			this._setNewHorizon(newDateRange.StartDate, newDateRange.EndDate);
+			
 		},
 
 		/**
