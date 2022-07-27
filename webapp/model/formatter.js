@@ -461,6 +461,16 @@ sap.ui.define([
 				"StartDate": sStartDate,
 				"EndDate": sEndDate
 			};
+		},
+
+		/**
+		 * Unassign button visibility
+		 */
+		unAssignButtonVisibility: function (bAllowAssign, bMarked) {
+			if (bAllowAssign && !bMarked) {
+				return true;
+			}
+			return false;
 		}
 	};
 

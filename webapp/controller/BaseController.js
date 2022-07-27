@@ -5,8 +5,9 @@ sap.ui.define([
 	"sap/ui/core/Fragment",
 	"com/evorait/evosuite/evoresource/model/Constants",
 	"sap/base/util/deepClone",
-	"sap/base/util/merge"
-], function (Controller, Formatter, Fragment, Constants, deepClone, merge) {
+	"sap/base/util/merge",
+	"sap/m/MessageBox"
+], function (Controller, Formatter, Fragment, Constants, deepClone, merge, MessageBox) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoresource.controller.BaseController", {
@@ -46,6 +47,10 @@ sap.ui.define([
 					final: true
 				},
 				showMessageToast: {
+					public: true,
+					final: true
+				},
+				showInfoMessageBox: {
 					public: true,
 					final: true
 				},
@@ -239,6 +244,16 @@ sap.ui.define([
 		},
 
 		/**
+		 * show message box with a text inside with default parameters
+		 * @param {string} sMsg - test for message toast
+		 */
+		showInfoMessageBox: function (sMsg) {
+			MessageBox.information(sMsg, {
+				styleClass: this.getOwnerComponent().getContentDensityClass()
+			});
+		},
+
+		/**
 		 * when background shape was pressed create temporary assignment
 		 * for shape popover input fields and visibility inside Gantt chart
 		 * 
@@ -258,7 +273,8 @@ sap.ui.define([
 						Days: [],
 						On: 0,
 						RepeatEndDate: new Date(),
-						isEditable: true
+						isEditable: true,
+						isRestChanges: true
 					},
 					oDraggedData = this.getView().getModel("viewModel").getProperty("/draggedData"),
 					nodeType;
@@ -902,36 +918,7 @@ sap.ui.define([
 			}
 			return source;
 		},
-		/**
-		 * Method to call open Demand Dialog
-		 */
-		openDemandDialog: function () {
-			if (!this._oDemandDialog) {
-				Fragment.load({
-					name: "com.evorait.evosuite.evoresource.view.fragments.DemandList",
-					controller: this
-				}).then(function (oDialog) {
-					this._oDemandDialog = oDialog;
-					this.getView().addDependent(this._oDemandDialog);
-					this._oDemandDialog.open();
-					this._oDemandDialog.attachAfterOpen(function () {
-						var oTable = sap.ui.getCore().byId("idFragDemandListTable");
-						oTable.removeSelections();
-					}.bind(this));
 
-					this._oDemandDialog.attachAfterClose(function (oEvent) {}.bind(this));
-
-				}.bind(this));
-			} else {
-				this._oDemandDialog.open();
-			}
-		},
-		/**
-		 * To Demand Dialog close
-		 */
-		onDemandDialogClose: function (oEvent) {
-			this._oDemandDialog.close();
-		},
 		/**
 		 * Method to call Function Import
 		 * @param oParams {object} parameter to be passed to function import

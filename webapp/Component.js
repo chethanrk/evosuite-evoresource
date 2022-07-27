@@ -55,7 +55,8 @@ sap.ui.define([
 					popoverPlacement: sap.m.PlacementType.HorizontalPreferredRight
 				},
 				draggedData: null,
-				launchMode: Constants.LAUNCH_MODE.BSP
+				launchMode: Constants.LAUNCH_MODE.BSP,
+				enableProcced: false
 			}), "viewModel");
 
 			this.setModel(models.createHelperModel(), "ganttPlanningModel");

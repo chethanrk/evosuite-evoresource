@@ -9,7 +9,6 @@ sap.ui.define([
 	"sap/ui/core/Fragment",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	"sap/m/MessageBox",
 	"sap/gantt/misc/Utility",
 	"sap/base/util/merge"
 ], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Fragment, Filter, FilterOperator,
@@ -51,6 +50,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Before
+				},
+				deleteSaveFunction: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				},
 				onPressCancel: {
 					public: true,
@@ -132,12 +136,17 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				onDemandSelectionChange: {
+				onDemandProcced: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				onDemandUnassign: {
+				openDemandDialog: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onDemandDialogClose: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
@@ -150,6 +159,7 @@ sap.ui.define([
 		_defaultView: "DAY",
 		_treeTable: null,
 		_previousView: "DAY",
+		groupShiftContext: null,
 
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
@@ -434,6 +444,40 @@ sap.ui.define([
 		 * @param {object} oEvent
 		 */
 		onPressSave: function (oEvent) {
+			var aUassignData = this.oPlanningModel.getProperty("/unAssignData"),
+				sFunctionName = "DeleteDemandAssignment",
+				aPromises = [];
+
+			if (aUassignData && aUassignData.length) {
+				aUassignData.forEach(function (Guid) {
+					aPromises.push(
+						new Promise(function (resolve, reject) {
+							var oParams = {
+								AssignmentGUID: Guid
+							};
+							var successCallback = function () {
+								resolve();
+							}.bind(this);
+
+							this.callFunctionImport(oParams, sFunctionName, "POST", successCallback);
+						}.bind(this))
+					);
+				}.bind(this));
+				Promise.all(aPromises).then(
+					// aData - array of each oData by the success callbacks
+					function () {
+						this.deleteSaveFunction();
+					}.bind(this)
+				);
+			} else {
+				this.deleteSaveFunction();
+			}
+		},
+
+		/**
+		 * Delete functionality and create functionality
+		 */
+		deleteSaveFunction: function () {
 			this.getModel().setDeferredGroups(["batchDelete"]);
 			var mParam = {
 				urlParameters: null,
@@ -511,8 +555,9 @@ sap.ui.define([
 		onChangeResourceGroup: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				oSelectedItem = oSource.getSelectedItem(),
-				oSelContext = oSelectedItem.getBindingContext("viewModel"),
 				oData = this.oPlanningModel.getProperty("/tempData/popover");
+
+			this.groupShiftContext = oSelectedItem.getBindingContext("viewModel");
 
 			oSource.setValueState(sap.ui.core.ValueState.None);
 			//validate duplicate assignments
@@ -521,9 +566,9 @@ sap.ui.define([
 			}
 
 			if (oData.isNew) {
-				this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", oSelContext.getProperty("ResourceGroupColor"));
-				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("ResourceGroupDesc"));
-				this.oPlanningModel.setProperty("/tempData/popover/ResourceGroupDesc", oSelContext.getProperty("ResourceGroupDesc"));
+				this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", this.groupShiftContext.getProperty("ResourceGroupColor"));
+				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ResourceGroupDesc"));
+				this.oPlanningModel.setProperty("/tempData/popover/ResourceGroupDesc", this.groupShiftContext.getProperty("ResourceGroupDesc"));
 
 				this._removeAssignmentShape(oData, true);
 				//add different resource group if it is not exist
@@ -533,7 +578,7 @@ sap.ui.define([
 					this._oPlanningPopover.close();
 				}
 			} else {
-				this._removeAssignmentShape(oData, true, oSelContext);
+				this._removeAssignmentShape(oData, true);
 				this._oPlanningPopover.close();
 			}
 		},
@@ -593,6 +638,7 @@ sap.ui.define([
 			}
 			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", true);
 			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
+			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
 		},
 
 		/**
@@ -671,49 +717,149 @@ sap.ui.define([
 				shapeDescription;
 			if (newData.NODE_TYPE === "RES_GROUP") {
 				shapeDescription = newData["ResourceGroupDesc"] || this.getResourceBundle().getText("xtit.group");
-				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", shapeDescription);
 			} else if (newData.NODE_TYPE === "SHIFT") {
 				shapeDescription = newData["ScheduleIdDesc"] || this.getResourceBundle().getText("xtit.shift");
-				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", shapeDescription);
 			}
+			this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", shapeDescription);
 			this._removeAssignmentShape(oldData, true);
 			this.createNewTempAssignment(newData.StartDate, newData.EndDate, newData, false).then(function (oData) {
 				this._addSingleChildToParent(newData);
 			}.bind(this));
-
 			this.oPlanningModel.setProperty("/tempData/oldPopoverData", deepClone(newData));
 		},
 
 		/**
-		 * Called when selection change in the demand list fragment
-		 * Validated the selected item with AllowUnassign indicator
-		 * This function will avoid the selection of the non-assigned items 
+		 * Called when Filter button in clicked
+		 * @param {object} oEvent - event of the filter button
+		 * 
 		 */
-		onDemandSelectionChange: function (oEvent) {
-			if (oEvent.getParameter("selectAll") || oEvent.getParameter("selected")) {
-				var aListItems = oEvent.getParameter("listItems");
-				aListItems.forEach(function (oLineItem) {
-					var oLineContext = oLineItem.getBindingContext("demandModel");
-					if (!oLineContext.getProperty("AllowUnassign")) {
-						oLineItem.setSelected(false);
-					}
-				});
+		onPressFilter: function (oEvent) {
+			if (!this._oGanttFilterDialog) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoresource.view.fragments.GanttFilter",
+					controller: this
+				}).then(function (dFilterDialog) {
+					this._oGanttFilterDialog = dFilterDialog;
+					this.getView().addDependent(this._oGanttFilterDialog);
+					this._oGanttFilterDialog.open();
+					//after popover gets opened check popover data for resource group color
+					this._oGanttFilterDialog.attachAfterOpen(function (oEvent) {}.bind(this));
+
+					//after popover gets closed remove popover data
+					this._oGanttFilterDialog.attachAfterClose(function (oEvent) {}.bind(this));
+				}.bind(this));
+			} else {
+				this._oGanttFilterDialog.open();
 			}
 		},
 
 		/**
-		 * Called when clicks o the unassign button in the demand list fragmrnt 
-		 * Validates the selection
+		 * Called when OK is pressed on Filter Dialog
+		 * @param {object} oEvent - event of the filter button
+		 * 
 		 */
-		onDemandUnassign: function (oEvent) {
-			var oTable = sap.ui.getCore().byId("idFragDemandListTable"),
-				aSelectedItems = oTable.getSelectedItems();
+		onFilterGantt: function (oEvent) {
+			this._oGanttFilterDialog.close();
+		},
 
-			if (aSelectedItems.length === 0) {
-				this.showMessageToast("Select atleast one assignement");
-				return;
+		/**
+		 * Called when option get select in Filter dialog
+		 * @param {object} oEvent - event of the filter button
+		 * 
+		 */
+		onGanttEnableType: function (oEvent) {
+			var oUserModel = this.getModel("user"),
+				bCheckState = oEvent.getParameter('selected'),
+				oSource = oEvent.getSource(),
+				sPath = oSource.getBindingInfo("selected").binding.getPath();
+
+			oUserModel.setProperty(sPath, bCheckState);
+		},
+
+		/**
+		 * Method to call open Demand Dialog
+		 */
+		openDemandDialog: function () {
+			if (!this._oDemandDialog) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoresource.view.fragments.DemandList",
+					controller: this
+				}).then(function (oDialog) {
+					this._oDemandDialog = oDialog;
+					this.getView().addDependent(this._oDemandDialog);
+					this._oDemandDialog.open();
+					this._oDemandDialog.attachAfterOpen(function () {
+						var oTable = sap.ui.getCore().byId("idFragDemandListTable");
+						oTable.removeSelections();
+						var oAssignments = this.getModel("demandModel").getProperty("/data"),
+							bVisibile = true;
+						oAssignments.forEach(function (oItem) {
+							if (!oItem.AllowUnassign && bVisibile) {
+								bVisibile = false;
+							}
+						});
+						this.getModel("viewModel").setProperty("/enableProcced", bVisibile);
+					}.bind(this));
+
+					this._oDemandDialog.attachAfterClose(function (oEvent) {}.bind(this));
+
+				}.bind(this));
+			} else {
+				this._oDemandDialog.open();
 			}
-			debugger;
+		},
+
+		/**
+		 * To Demand Dialog close
+		 * reset the data if it is triggered from change assignment
+		 * Reset the popover change default variables
+		 */
+		onDemandDialogClose: function (oEvent) {
+			var oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
+				oFoundData = this._getChildrenDataByKey("Guid", oPopoverData.Guid, null),
+				oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
+
+			for (var i = 0; i < oFoundData.length; i++) {
+				this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
+			}
+
+			this._afterPopoverClose();
+			this._oDemandDialog.close();
+		},
+
+		/**
+		 * Called when all assignemnts are unassgned in the demand list
+		 * Confirm dialog will open with option
+		 * Prepare Unassign local data
+		 * procced further to remove/change assignment functionality
+		 */
+		onDemandProcced: function () {
+			var sTitle = this.getResourceBundle().getText("tit.confirmChange"),
+				sMsg = this.getResourceBundle().getText("msg.confirmMessage");
+			var sType = this.getModel("demandModel").getProperty("/Type"),
+				oData = this.oPlanningModel.getProperty("/tempData/popover");
+			var successcallback = function () {
+				//Prepare unassign data
+				var aDemandData = this.getModel("demandModel").getProperty("/data"),
+					aMarkedUnassign = this.oPlanningModel.getProperty("/unAssignData");
+
+				aDemandData.forEach(function (oItem) {
+					if (aMarkedUnassign.indexOf(oItem.Guid) < 0) {
+						aMarkedUnassign.push(oItem.Guid);
+					}
+				});
+
+				this._oDemandDialog.close();
+
+				//Handle further ations
+				if (sType === "Change") {
+					this._changeAssignment(oData);
+				} else if (sType === "Delete") {
+					this._manageDates(oData, this.groupShiftContext);
+				}
+			};
+			var cancelcallback = function () {};
+			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
 		},
 
 		/* =========================================================== */
@@ -1116,9 +1262,8 @@ sap.ui.define([
 		 * remove freshly created shape from gantt chart
 		 * @param {object} oAssignData - object of assignment based on entityType of assignment 
 		 * @param removeNew boolena value to ensure remove new assignment
-		 * @param {sChangedContext} - changed context of group
 		 */
-		_removeAssignmentShape: function (oAssignData, removeNew, sChangedContext) {
+		_removeAssignmentShape: function (oAssignData, removeNew) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			if (!oAssignData.isTemporary && !removeNew) {
 				return;
@@ -1143,7 +1288,7 @@ sap.ui.define([
 				aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
 				this.oPlanningModel.setProperty("/data/children", aChildren);
 			} else {
-				this._validateForDelete(oAssignData, sChangedContext);
+				this._validateForDelete(oAssignData);
 			}
 
 		},
@@ -1151,6 +1296,7 @@ sap.ui.define([
 		 * Validation of assignment on change
 		 */
 		_validateForChange: function (oAssignItem) {
+			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
 			var oParams = {
 					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
@@ -1161,17 +1307,14 @@ sap.ui.define([
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel"),
-				oFoundData = this._getChildrenDataByKey("Guid", oAssignItem.Guid, null),
 				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
-				oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
 				bAssignmentCheck = this.getView().getModel("user").getProperty("/ENABLE_ASSIGNMENT_CHECK");
 
 			var callbackfunction = function (oData) {
 				if (oData.results.length > 0) {
-					oDemandModel.setProperty("/data", oData.results);
-					for (var i = 0; i < oFoundData.length; i++) {
-						this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
-					}
+					this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", false);
+					oDemandModel.setProperty("/data", this._checkMarkedUnassigned(oData.results));
+					oDemandModel.setProperty("/Type", "Change");
 					this.openDemandDialog();
 				} else {
 					this._changeAssignment(oPopoverData);
@@ -1202,7 +1345,8 @@ sap.ui.define([
 		/**
 		 * list if demands who are assigned to this time frame
 		 */
-		_validateForDelete: function (oAssignItem, sChangedContext) {
+		_validateForDelete: function (oAssignItem) {
+			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
 			var oParams = {
 					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
@@ -1217,44 +1361,43 @@ sap.ui.define([
 
 			var callbackfunction = function (oDemandData) {
 				if (oDemandData.results.length > 0) {
-					console.log(oDemandData.results);
-					oDemandModel.setProperty("/data", oDemandData.results);
+					this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", false);
+					oDemandModel.setProperty("/Type", "Delete");
+					oDemandModel.setProperty("/data", this._checkMarkedUnassigned(oDemandData.results));
 					this.openDemandDialog();
 				} else {
-					if (oAssignItem.NODE_TYPE === "RES_GROUP") {
-						oAssignItem.StartDate = formatter.convertFromUTCDate(oAssignItem.StartDate);
-						oAssignItem.EndDate = formatter.convertFromUTCDate(oAssignItem.EndDate);
-					} else if (oAssignItem.NODE_TYPE === "SHIFT") {
-						oAssignItem.EffectiveStartDate = formatter.convertFromUTCDate(oAssignItem.EffectiveStartDate);
-						oAssignItem.EffectiveEndDate = formatter.convertFromUTCDate(oAssignItem.EffectiveEndDate);
-					}
-					this._deleteAssignment(oAssignItem, sChangedContext);
-
+					this._manageDates(oAssignItem);
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
 			if (oAssignItem.NODE_TYPE !== "SHIFT" && bAssignmentCheck) {
 				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 			} else {
-				if (oAssignItem.NODE_TYPE === "RES_GROUP") {
-					oAssignItem.StartDate = formatter.convertFromUTCDate(oAssignItem.StartDate);
-					oAssignItem.EndDate = formatter.convertFromUTCDate(oAssignItem.EndDate);
-				} else if (oAssignItem.NODE_TYPE === "SHIFT") {
-					oAssignItem.EffectiveStartDate = formatter.convertFromUTCDate(oAssignItem.EffectiveStartDate);
-					oAssignItem.EffectiveEndDate = formatter.convertFromUTCDate(oAssignItem.EffectiveEndDate);
-				}
-				this._deleteAssignment(oAssignItem, sChangedContext);
+				this._manageDates(oAssignItem);
 			}
+		},
 
+		/**
+		 * Manage Dates according to node type
+		 * @{param} oAssignItem - assignment
+		 */
+		_manageDates: function (oAssignItem) {
+			if (oAssignItem.NODE_TYPE === "RES_GROUP") {
+				oAssignItem.StartDate = formatter.convertFromUTCDate(oAssignItem.StartDate);
+				oAssignItem.EndDate = formatter.convertFromUTCDate(oAssignItem.EndDate);
+			} else if (oAssignItem.NODE_TYPE === "SHIFT") {
+				oAssignItem.EffectiveStartDate = formatter.convertFromUTCDate(oAssignItem.EffectiveStartDate);
+				oAssignItem.EffectiveEndDate = formatter.convertFromUTCDate(oAssignItem.EffectiveEndDate);
+			}
+			this._deleteAssignment(oAssignItem);
 		},
 
 		/**
 		 * Method will get call after validation is done, if validation pass, data will get delete from gantt.
 		 * @param {object} oAssignmentData - deleted data
-		 * @param {object} sChangedContext - context of changed group
 		 * 
 		 */
-		_deleteAssignment: function (oAssignmentData, sChangedContext) {
+		_deleteAssignment: function (oAssignmentData) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			var callbackFn = function (oItem, oData, idx) {
 				var aAssignments, shiftData;
@@ -1269,15 +1412,15 @@ sap.ui.define([
 				aAssignments.forEach(function (oAssignItemData, index) {
 					if (oAssignItemData.Guid === oData.Guid) {
 						this._markAsPlanningDelete(oAssignItemData);
-						if (sChangedContext) {
+						if (this.groupShiftContext) {
 							if (oAssignItemData.NODE_TYPE === "RES_GROUP") {
-								oAssignItemData.RESOURCE_GROUP_COLOR = sChangedContext.getProperty("ResourceGroupColor");
-								oAssignItemData.DESCRIPTION = sChangedContext.getProperty("ResourceGroupDesc");
+								oAssignItemData.RESOURCE_GROUP_COLOR = this.groupShiftContext.getProperty("ResourceGroupColor");
+								oAssignItemData.DESCRIPTION = this.groupShiftContext.getProperty("ResourceGroupDesc");
 							} else if (oAssignItemData.NODE_TYPE === "SHIFT") {
-								oAssignItemData.DESCRIPTION = sChangedContext.getProperty("TemplateDesc");
+								oAssignItemData.DESCRIPTION = this.groupShiftContext.getProperty("TemplateDesc");
 								oAssignItemData.PARENT_NODE_ID = oAssignItemData.NodeId;
 								oAssignItemData.ResourceGuid = oAssignItemData.ParentNodeId;
-								shiftData = sChangedContext.getObject();
+								shiftData = this.groupShiftContext.getObject();
 								oAssignItemData = this.mergeObject(oAssignItemData, shiftData);
 							}
 
@@ -1339,6 +1482,7 @@ sap.ui.define([
 					this.oPlanningModel.setProperty("/tempData/popover/isTemporary", false);
 					//validate whether changes are happend or not
 					if (this._setChangeIndicator(oData)) {
+						this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", false);
 						this._validateForChange(oData);
 					}
 				}
@@ -1375,7 +1519,8 @@ sap.ui.define([
 				tempData: {},
 				changedData: [],
 				hasChanges: false,
-				deletedData: []
+				deletedData: [],
+				unAssignData: []
 			};
 			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
 			this.oPlanningModel.setData(deepClone(this.oOriginData));
@@ -1424,19 +1569,21 @@ sap.ui.define([
 		_afterPopoverClose: function (oEvent) {
 			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
-			if (!oData.isNew && oData.isTemporary && oOldAssignmentData && oOldAssignmentData.Guid) {
-				var oFoundData = this._getChildrenDataByKey("Guid", oData.Guid, null);
-				if (oFoundData && oFoundData.length === 2) {
-					for (var i = 0; i < oFoundData.length; i++) {
-						this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
+			if (oData.isRestChanges) {
+				if (!oData.isNew && oData.isTemporary && oOldAssignmentData && oOldAssignmentData.Guid) {
+					var oFoundData = this._getChildrenDataByKey("Guid", oData.Guid, null);
+					if (oFoundData && oFoundData.length === 2) {
+						for (var i = 0; i < oFoundData.length; i++) {
+							this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
+						}
+						this.oPlanningModel.setProperty("/tempData/popover/isTemporary", false);
 					}
-					this.oPlanningModel.setProperty("/tempData/popover/isTemporary", false);
 				}
+				this._removeAssignmentShape(oData);
+				this.oPlanningModel.setProperty("/tempData/popover", {});
+				this.oPlanningModel.setProperty("/tempData/oldPopoverData", {});
+				this.reValidateForm(this.getView().getControlsByFieldGroupId("changeShapeInput"));
 			}
-			this._removeAssignmentShape(oData);
-			this.oPlanningModel.setProperty("/tempData/popover", {});
-			this.oPlanningModel.setProperty("/tempData/oldPopoverData", {});
-			this.reValidateForm(this.getView().getControlsByFieldGroupId("changeShapeInput"));
 		},
 
 		/**
@@ -1557,51 +1704,20 @@ sap.ui.define([
 		},
 
 		/**
-		 * Called when Filter button in clicked
-		 * @param {object} oEvent - event of the filter button
-		 * 
+		 * Validate marked unassigned assignments
+		 * @{param] oResults - function import return assignments
 		 */
-		onPressFilter: function (oEvent) {
-			if (!this._oGanttFilterDialog) {
-				Fragment.load({
-					name: "com.evorait.evosuite.evoresource.view.fragments.GanttFilter",
-					controller: this
-				}).then(function (dFilterDialog) {
-					this._oGanttFilterDialog = dFilterDialog;
-					this.getView().addDependent(this._oGanttFilterDialog);
-					this._oGanttFilterDialog.open();
-					//after popover gets opened check popover data for resource group color
-					this._oGanttFilterDialog.attachAfterOpen(function (oEvent) {}.bind(this));
+		_checkMarkedUnassigned: function (oResults) {
+			var aMarkedUnassign = this.oPlanningModel.getProperty("/unAssignData");
+			oResults.forEach(function (oItem) {
+				if (aMarkedUnassign && aMarkedUnassign.indexOf(oItem.Guid) < 0) {
+					oItem.MarkedUnassign = false;
+				} else {
+					oItem.MarkedUnassign = true;
+				}
 
-					//after popover gets closed remove popover data
-					this._oGanttFilterDialog.attachAfterClose(function (oEvent) {}.bind(this));
-				}.bind(this));
-			} else {
-				this._oGanttFilterDialog.open();
-			}
-		},
-
-		/**
-		 * Called when OK is pressed on Filter Dialog
-		 * @param {object} oEvent - event of the filter button
-		 * 
-		 */
-		onFilterGantt: function (oEvent) {
-			this._oGanttFilterDialog.close();
-		},
-
-		/**
-		 * Called when option get select in Filter dialog
-		 * @param {object} oEvent - event of the filter button
-		 * 
-		 */
-		onGanttEnableType: function (oEvent) {
-			var oUserModel = this.getModel("user"),
-				bCheckState = oEvent.getParameter('selected'),
-				oSource = oEvent.getSource(),
-				sPath = oSource.getBindingInfo("selected").binding.getPath();
-
-			oUserModel.setProperty(sPath, bCheckState);
+			}.bind(this));
+			return oResults;
 		}
 	});
 });
