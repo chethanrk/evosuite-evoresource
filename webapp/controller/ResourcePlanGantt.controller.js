@@ -166,32 +166,6 @@ sap.ui.define([
 		/* =========================================================== */
 
 		/**
-		 * Set new time line options for Gantt time horizon
-		 * @param {object} oEvent - change event of filter view mode
-		 */
-		onChangeTimeMode: function (oEvent) {
-			var mParam = oEvent.getParameters(),
-				sKey = mParam.selectedItem.getKey(),
-				bChanges = this.oPlanningModel.getProperty("/hasChanges"),
-				oSource = oEvent.getSource();
-			if (bChanges) {
-				var sTitle = this.getResourceBundle().getText("tit.confirmChange"),
-					sMsg = this.getResourceBundle().getText("msg.modeChange");
-				var successcallback = function () {
-					this._loadGanttData();
-					this._setDateFilter(sKey);
-				};
-				var cancelcallback = function () {
-					oSource.setSelectedKey(this._previousView);
-				};
-				this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
-			} else {
-				this._setDateFilter(sKey);
-				this._previousView = sKey;
-			}
-		},
-
-		/**
 		 * When filterbar was initialized then get all filters and send backend request
 		 * @param {object} oEvent - change event of filterbar
 		 */
@@ -220,10 +194,36 @@ sap.ui.define([
 		onSearch: function () {
 			var oDateRangePicker = this.getView().byId("idFilterGanttPlanningDateRange"),
 				oStartDate = oDateRangePicker.getDateValue(),
-				oEndDate = oDateRangePicker.getSecondDateValue();
+				oEndDate = oDateRangePicker.getSecondDateValue(),
+				oModeSource = this.getView().byId("idFilterGanttPlanningMode"),
+				bChanges = this.oPlanningModel.getProperty("/hasChanges"),
+				sKey = oModeSource.getSelectedItem().getProperty("key");
 
-			this._setNewHorizon(oStartDate, oEndDate);
-			this._loadGanttData();
+			if (bChanges) {
+				var sTitle = this.getResourceBundle().getText("tit.confirm"),
+					sMsg = this.getResourceBundle().getText("msg.ganttReload");
+				var successcallback = function () {
+					this._loadGanttData();
+					if(this._previousView !== sKey){
+						this._setDateFilter(sKey);
+					}else{
+						this._setNewHorizon(oStartDate, oEndDate);
+					}
+					
+				};
+				var cancelcallback = function () {
+					oModeSource.setSelectedKey(this._previousView);
+				};
+				this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
+			} else {
+				if(this._previousView !== sKey){
+					this._setDateFilter(sKey);
+				}else{
+					this._setNewHorizon(oStartDate, oEndDate);
+				}
+				this._loadGanttData();
+				this._previousView = sKey;
+			}
 		},
 
 		/**
@@ -1424,7 +1424,7 @@ sap.ui.define([
 					newData = deepClone(oData);
 					newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'days').toDate();
 
-					this._validateAndPrepareNewAssignment(newData, oData, dayCounter,null,oDateProp);
+					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, null, oDateProp);
 					oStartDate = moment(newData[oDateProp.startDateProp]);
 
 				} else if (oData.Repeat === "WEEK") {
@@ -1493,7 +1493,8 @@ sap.ui.define([
 			}
 			newData[oDateProp.endDateProp] = moment(newData[oDateProp.startDateProp]).endOf('day').toDate();
 
-			if (moment(newData[oDateProp.startDateProp]).isSameOrAfter(oData[oDateProp.startDateProp]) && moment(newData[oDateProp.startDateProp] ).isSameOrBefore(moment(oData.RepeatEndDate))) {
+			if (moment(newData[oDateProp.startDateProp]).isSameOrAfter(oData[oDateProp.startDateProp]) && moment(newData[oDateProp.startDateProp])
+				.isSameOrBefore(moment(oData.RepeatEndDate))) {
 				this._validateAndAddNewAssignment(newData, oData);
 			}
 		},
@@ -1510,7 +1511,7 @@ sap.ui.define([
 			this._sGanttViewMode = formatter.getViewMapping(sKey);
 			this._setBackgroudShapes(this._sGanttViewMode);
 			this._previousView = sKey;
-			
+
 		},
 
 		/**
