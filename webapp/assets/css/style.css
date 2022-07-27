@@ -3,3 +3,7 @@
 .gantt-containerToolbar>div:first-child {
     display: none !important;
 }
+
+div.resourceGanttWithTable .sapGanttBackground .sapGanttBackgroundSVG {
+    background: #f2f2f2 !important;
+}
