@@ -92,7 +92,7 @@
 														<gnt2:BaseRectangle scheme="hiddenBackground" countInBirdEye="false"
 															time="{path: 'ganttPlanningModel>startTime', formatter:'.formatter.fnTimeConverter'}"
 															endTime="{path: 'ganttPlanningModel>endTime', formatter:'.formatter.fnTimeConverter'}" connectable="false" resizable="false"
-															selectable="true" draggable="false" showTitle="false" fill="#ffffff" fillOpacity="1" strokeOpacity="0.1" opacity="1" stroke="#000000"
+															selectable="true" draggable="false" showTitle="false" fill="#ffffff" fillOpacity="1" strokeOpacity="0.7" opacity="1" stroke="#f2f2f2"
 															strokeWidth="1" height="32" yBias="0"></gnt2:BaseRectangle>
 													</gnt2:shapes1>
 													<gnt2:shapes2>
