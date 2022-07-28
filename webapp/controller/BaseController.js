@@ -865,8 +865,8 @@ sap.ui.define([
 		},
 		/**
 		 * Creating Gantt Horizon for New Gant Layout
-		 * @param oStartDate 
-		 * @param oEndDate
+		 * @param {object} oStartDate - start date
+		 * @param {object} oEndDate - end date
 		 */
 		_createGanttHorizon: function (oStartDate, oEndDate) {
 			return new StepwiseZoomStrategy({
