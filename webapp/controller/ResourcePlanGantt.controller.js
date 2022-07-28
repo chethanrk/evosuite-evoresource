@@ -588,7 +588,9 @@ sap.ui.define([
 		 * @param {object} oEvent
 		 */
 		onPressToday: function (oEvent) {
-			this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
+			if(!this.oZoomStrategy){
+				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();	
+			}
 			this.changeGanttHorizonViewAt(this.getModel("viewModel"), this.oZoomStrategy.getZoomLevel(), this.oZoomStrategy);
 		},
 
@@ -778,7 +780,10 @@ sap.ui.define([
 		 * @param {object} oViewMapping - from formatter.js view mapping with functions
 		 */
 		_setBackgroudShapes: function (oViewMapping) {
-			var oTimeHorizon = this._ganttChart.getAxisTimeStrategy().getAggregation("totalHorizon"),
+			if(!this.oZoomStrategy){
+				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
+			}
+			var oTimeHorizon = this.oZoomStrategy.getAggregation("totalHorizon"),
 				sStartTime = oTimeHorizon.getStartTime(),
 				sEndTime = oTimeHorizon.getEndTime(),
 				aChildren = this.oPlanningModel.getProperty("/data/children");
@@ -1505,7 +1510,9 @@ sap.ui.define([
 		 */
 		_setDateFilter: function (sKey) {
 			var newDateRange = formatter.getDefaultDates(sKey, this.getModel("user"));
-			this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
+			if(!this.oZoomStrategy){
+				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();	
+			}
 			this._setNewHorizon(newDateRange.StartDate, newDateRange.EndDate);
 			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
 			this._sGanttViewMode = formatter.getViewMapping(sKey);
