@@ -149,9 +149,6 @@ sap.ui.define([
 		onInit: function () {
 			this._ganttChart = this.getView().byId("idResourcePlanGanttChartTable");
 			this._treeTable = this.getView().byId("idResourcePlanGanttTreeTable");
-			this.oZoomStrategy = this.getView().byId("idResourcePlanGanttZoom");
-			this.oZoomStrategy.setTimeLineOptions(formatter.getTimeLineOptions());
-			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(this._defaultView));
 			this._sGanttViewMode = formatter.getViewMapping(this._defaultView);
 
 			//idPageResourcePlanningWrapper
@@ -1508,6 +1505,7 @@ sap.ui.define([
 		 */
 		_setDateFilter: function (sKey) {
 			var newDateRange = formatter.getDefaultDates(sKey, this.getModel("user"));
+			this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
 			this._setNewHorizon(newDateRange.StartDate, newDateRange.EndDate);
 			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
 			this._sGanttViewMode = formatter.getViewMapping(sKey);
