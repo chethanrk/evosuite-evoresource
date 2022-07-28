@@ -858,10 +858,25 @@ sap.ui.define([
 				oEndDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
 			}
 
-			this.oZoomStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
-				startTime: oStartDate,
-				endTime: oEndDate
-			}));
+			this._ganttChart.setAxisTimeStrategy(this._createGanttHorizon(oStartDate,oEndDate));
+		},
+		/**
+		 * Creating Gantt Horizon for New Gant Layout
+		 * @param oStartDate 
+		 * @param oEndDate
+		 */
+		_createGanttHorizon: function (oStartDate, oEndDate) {
+			return new sap.gantt.axistime.StepwiseZoomStrategy({
+				visibleHorizon: new sap.gantt.config.TimeHorizon({
+					startTime: oStartDate,
+					endTime:oEndDate
+				}),
+				totalHorizon: new sap.gantt.config.TimeHorizon({
+					startTime: oStartDate,
+					endTime: oEndDate
+				})
+			});
+
 		},
 
 		/**

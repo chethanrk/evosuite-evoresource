@@ -147,6 +147,7 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoresource.controller.ResourcePlanningMain
 		 */
 		onInit: function () {
+			this._ganttChart = this.getView().byId("idResourcePlanGanttChartTable");
 			this._treeTable = this.getView().byId("idResourcePlanGanttTreeTable");
 			this.oZoomStrategy = this.getView().byId("idResourcePlanGanttZoom");
 			this.oZoomStrategy.setTimeLineOptions(formatter.getTimeLineOptions());
@@ -590,6 +591,7 @@ sap.ui.define([
 		 * @param {object} oEvent
 		 */
 		onPressToday: function (oEvent) {
+			this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
 			this.changeGanttHorizonViewAt(this.getModel("viewModel"), this.oZoomStrategy.getZoomLevel(), this.oZoomStrategy);
 		},
 
@@ -779,7 +781,7 @@ sap.ui.define([
 		 * @param {object} oViewMapping - from formatter.js view mapping with functions
 		 */
 		_setBackgroudShapes: function (oViewMapping) {
-			var oTimeHorizon = this.oZoomStrategy.getTotalHorizon(),
+			var oTimeHorizon = this._ganttChart.getAxisTimeStrategy().getAggregation("totalHorizon"),
 				sStartTime = oTimeHorizon.getStartTime(),
 				sEndTime = oTimeHorizon.getEndTime(),
 				aChildren = this.oPlanningModel.getProperty("/data/children");
