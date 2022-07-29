@@ -147,10 +147,8 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoresource.controller.ResourcePlanningMain
 		 */
 		onInit: function () {
+			this._ganttChart = this.getView().byId("idResourcePlanGanttChartTable");
 			this._treeTable = this.getView().byId("idResourcePlanGanttTreeTable");
-			this.oZoomStrategy = this.getView().byId("idResourcePlanGanttZoom");
-			this.oZoomStrategy.setTimeLineOptions(formatter.getTimeLineOptions());
-			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(this._defaultView));
 			this._sGanttViewMode = formatter.getViewMapping(this._defaultView);
 
 			//idPageResourcePlanningWrapper
@@ -164,32 +162,6 @@ sap.ui.define([
 		/* =========================================================== */
 		/* Events                                                      */
 		/* =========================================================== */
-
-		/**
-		 * Set new time line options for Gantt time horizon
-		 * @param {object} oEvent - change event of filter view mode
-		 */
-		onChangeTimeMode: function (oEvent) {
-			var mParam = oEvent.getParameters(),
-				sKey = mParam.selectedItem.getKey(),
-				bChanges = this.oPlanningModel.getProperty("/hasChanges"),
-				oSource = oEvent.getSource();
-			if (bChanges) {
-				var sTitle = this.getResourceBundle().getText("tit.confirmChange"),
-					sMsg = this.getResourceBundle().getText("msg.modeChange");
-				var successcallback = function () {
-					this._loadGanttData();
-					this._setDateFilter(sKey);
-				};
-				var cancelcallback = function () {
-					oSource.setSelectedKey(this._previousView);
-				};
-				this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
-			} else {
-				this._setDateFilter(sKey);
-				this._previousView = sKey;
-			}
-		},
 
 		/**
 		 * When filterbar was initialized then get all filters and send backend request
@@ -220,10 +192,36 @@ sap.ui.define([
 		onSearch: function () {
 			var oDateRangePicker = this.getView().byId("idFilterGanttPlanningDateRange"),
 				oStartDate = oDateRangePicker.getDateValue(),
-				oEndDate = oDateRangePicker.getSecondDateValue();
+				oEndDate = oDateRangePicker.getSecondDateValue(),
+				oModeSource = this.getView().byId("idFilterGanttPlanningMode"),
+				bChanges = this.oPlanningModel.getProperty("/hasChanges"),
+				sKey = oModeSource.getSelectedItem().getProperty("key");
 
-			this._setNewHorizon(oStartDate, oEndDate);
-			this._loadGanttData();
+			if (bChanges) {
+				var sTitle = this.getResourceBundle().getText("tit.confirm"),
+					sMsg = this.getResourceBundle().getText("msg.ganttReload");
+				var successcallback = function () {
+					this._loadGanttData();
+					if(this._previousView !== sKey){
+						this._setDateFilter(sKey);
+					}else{
+						this._setNewHorizon(oStartDate, oEndDate);
+					}
+					
+				};
+				var cancelcallback = function () {
+					oModeSource.setSelectedKey(this._previousView);
+				};
+				this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
+			} else {
+				if(this._previousView !== sKey){
+					this._setDateFilter(sKey);
+				}else{
+					this._setNewHorizon(oStartDate, oEndDate);
+				}
+				this._loadGanttData();
+				this._previousView = sKey;
+			}
 		},
 
 		/**
@@ -590,6 +588,9 @@ sap.ui.define([
 		 * @param {object} oEvent
 		 */
 		onPressToday: function (oEvent) {
+			if(!this.oZoomStrategy){
+				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();	
+			}
 			this.changeGanttHorizonViewAt(this.getModel("viewModel"), this.oZoomStrategy.getZoomLevel(), this.oZoomStrategy);
 		},
 
@@ -779,7 +780,10 @@ sap.ui.define([
 		 * @param {object} oViewMapping - from formatter.js view mapping with functions
 		 */
 		_setBackgroudShapes: function (oViewMapping) {
-			var oTimeHorizon = this.oZoomStrategy.getTotalHorizon(),
+			if(!this.oZoomStrategy){
+				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
+			}
+			var oTimeHorizon = this.oZoomStrategy.getAggregation("totalHorizon"),
 				sStartTime = oTimeHorizon.getStartTime(),
 				sEndTime = oTimeHorizon.getEndTime(),
 				aChildren = this.oPlanningModel.getProperty("/data/children");
@@ -1506,12 +1510,15 @@ sap.ui.define([
 		 */
 		_setDateFilter: function (sKey) {
 			var newDateRange = formatter.getDefaultDates(sKey, this.getModel("user"));
+			if(!this.oZoomStrategy){
+				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();	
+			}
 			this._setNewHorizon(newDateRange.StartDate, newDateRange.EndDate);
 			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
 			this._sGanttViewMode = formatter.getViewMapping(sKey);
 			this._setBackgroudShapes(this._sGanttViewMode);
 			this._previousView = sKey;
-			
+
 		},
 
 		/**
