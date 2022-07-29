@@ -131,6 +131,16 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				updateNewDataFromGanttFilterBar:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				resetGanttFilterBarToPreviousData:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -151,6 +161,7 @@ sap.ui.define([
 			this._treeTable = this.getView().byId("idResourcePlanGanttTreeTable");
 			this._smartFilterBar = this.getView().byId("idPageResourcePlanningSmartFilterBar");
 			this._dateRangeFilter = this.getView().byId("idFilterGanttPlanningDateRange");
+			this._viewModeFilter = this.getView().byId("idFilterGanttPlanningMode");
 			this._sGanttViewMode = formatter.getViewMapping(this._defaultView);
 
 			//idPageResourcePlanningWrapper
@@ -171,11 +182,7 @@ sap.ui.define([
 		 */
 		onInitializedSmartVariant: function (oEvent) {
 			this._loadGanttData();
-			this._previousGanttFilter = this._smartFilterBar.getFilterData();
-			this._previousDateRange = {
-				startDate: this._dateRangeFilter.getProperty("dateValue"),
-				endDate: this._dateRangeFilter.getProperty("secondDateValue")
-			};
+			this.updateNewDataFromGanttFilterBar();
 		},
 
 		/**
@@ -200,7 +207,7 @@ sap.ui.define([
 			var oDateRangePicker = this.getView().byId("idFilterGanttPlanningDateRange"),
 				oStartDate = oDateRangePicker.getDateValue(),
 				oEndDate = oDateRangePicker.getSecondDateValue(),
-				oModeSource = this.getView().byId("idFilterGanttPlanningMode"),
+				oModeSource = this._viewModeFilter,
 				bChanges = this.oPlanningModel.getProperty("/hasChanges"),
 				sKey = oModeSource.getSelectedItem().getProperty("key");
 
@@ -209,7 +216,7 @@ sap.ui.define([
 					sMsg = this.getResourceBundle().getText("msg.ganttReload");
 				var successcallback = function () {
 					this._loadGanttData();
-					this._previousGanttFilter = this._smartFilterBar.getFilterData();
+					this.updateNewDataFromGanttFilterBar();
 					if (this._previousView !== sKey) {
 						this._setDateFilter(sKey);
 					} else {
@@ -218,10 +225,7 @@ sap.ui.define([
 
 				};
 				var cancelcallback = function () {
-					this._smartFilterBar.setFilterData(this._previousGanttFilter, true);
-					oModeSource.setSelectedKey(this._previousView);
-					this._dateRangeFilter.setProperty("dateValue",this._previousDateRange["startDate"]);
-					this._dateRangeFilter.setProperty("secondDateValue",this._previousDateRange["endDate"]);
+					this.resetGanttFilterBarToPreviousData();
 				};
 				this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
 			} else {
@@ -231,12 +235,7 @@ sap.ui.define([
 					this._setNewHorizon(oStartDate, oEndDate);
 				}
 				this._loadGanttData();
-				this._previousView = sKey;
-				this._previousDateRange = {
-					startDate: this._dateRangeFilter.getProperty("dateValue"),
-					endDate: this._dateRangeFilter.getProperty("secondDateValue")
-				}
-				this._previousGanttFilter = this._smartFilterBar.getFilterData();
+				this.updateNewDataFromGanttFilterBar();
 			}
 
 		},
@@ -690,6 +689,27 @@ sap.ui.define([
 			}.bind(this));
 
 			this.oPlanningModel.setProperty("/tempData/oldPopoverData", deepClone(newData));
+		},
+		/**
+		 * Update global variables with the filter value
+		 * These values can be used to reset the filter bar with previous value
+		 */
+		updateNewDataFromGanttFilterBar: function () {
+			this._previousView = this._viewModeFilter.getSelectedItem().getProperty("key");
+			this._previousDateRange = {
+				startDate: this._dateRangeFilter.getProperty("dateValue"),
+				endDate: this._dateRangeFilter.getProperty("secondDateValue")
+			};
+			this._previousGanttFilter = this._smartFilterBar.getFilterData();
+		},
+		/**
+		 * Reset the filter bar with the previous value stored in global variable
+		 */
+		resetGanttFilterBarToPreviousData: function () {
+			this._smartFilterBar.setFilterData(this._previousGanttFilter, true);
+			this._viewModeFilter.setSelectedKey(this._previousView);
+			this._dateRangeFilter.setDateValue(this._previousDateRange["startDate"]);
+			this._dateRangeFilter.setSecondDateValue(this._previousDateRange["endDate"]);
 		},
 
 		/* =========================================================== */
