@@ -149,6 +149,8 @@ sap.ui.define([
 		onInit: function () {
 			this._ganttChart = this.getView().byId("idResourcePlanGanttChartTable");
 			this._treeTable = this.getView().byId("idResourcePlanGanttTreeTable");
+			this._smartFilterBar = this.getView().byId("idPageResourcePlanningSmartFilterBar");
+			this._dateRangeFilter = this.getView().byId("idFilterGanttPlanningDateRange");
 			this._sGanttViewMode = formatter.getViewMapping(this._defaultView);
 
 			//idPageResourcePlanningWrapper
@@ -169,6 +171,11 @@ sap.ui.define([
 		 */
 		onInitializedSmartVariant: function (oEvent) {
 			this._loadGanttData();
+			this._previousGanttFilter = this._smartFilterBar.getFilterData();
+			this._previousDateRange = {
+				startDate: this._dateRangeFilter.getProperty("dateValue"),
+				endDate: this._dateRangeFilter.getProperty("secondDateValue")
+			};
 		},
 
 		/**
@@ -202,26 +209,36 @@ sap.ui.define([
 					sMsg = this.getResourceBundle().getText("msg.ganttReload");
 				var successcallback = function () {
 					this._loadGanttData();
-					if(this._previousView !== sKey){
+					this._previousGanttFilter = this._smartFilterBar.getFilterData();
+					if (this._previousView !== sKey) {
 						this._setDateFilter(sKey);
-					}else{
+					} else {
 						this._setNewHorizon(oStartDate, oEndDate);
 					}
-					
+
 				};
 				var cancelcallback = function () {
+					this._smartFilterBar.setFilterData(this._previousGanttFilter, true);
 					oModeSource.setSelectedKey(this._previousView);
+					this._dateRangeFilter.setProperty("dateValue",this._previousDateRange["startDate"]);
+					this._dateRangeFilter.setProperty("secondDateValue",this._previousDateRange["endDate"]);
 				};
 				this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
 			} else {
-				if(this._previousView !== sKey){
+				if (this._previousView !== sKey) {
 					this._setDateFilter(sKey);
-				}else{
+				} else {
 					this._setNewHorizon(oStartDate, oEndDate);
 				}
 				this._loadGanttData();
 				this._previousView = sKey;
+				this._previousDateRange = {
+					startDate: this._dateRangeFilter.getProperty("dateValue"),
+					endDate: this._dateRangeFilter.getProperty("secondDateValue")
+				}
+				this._previousGanttFilter = this._smartFilterBar.getFilterData();
 			}
+
 		},
 
 		/**
@@ -588,8 +605,8 @@ sap.ui.define([
 		 * @param {object} oEvent
 		 */
 		onPressToday: function (oEvent) {
-			if(!this.oZoomStrategy){
-				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();	
+			if (!this.oZoomStrategy) {
+				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
 			}
 			this.changeGanttHorizonViewAt(this.getModel("viewModel"), this.oZoomStrategy.getZoomLevel(), this.oZoomStrategy);
 		},
@@ -702,7 +719,7 @@ sap.ui.define([
 		 */
 		_getResourceData: function (iLevel) {
 			return new Promise(function (resolve) {
-				var oFilterBar = this.getView().byId("idPageResourcePlanningSmartFilterBar"),
+				var oFilterBar = this._smartFilterBar,
 					oDateRangePicker = this.getView().byId("idFilterGanttPlanningDateRange"),
 					aFilters = oFilterBar.getFilters(),
 					sUri = "/GanttResourceHierarchySet",
@@ -780,7 +797,7 @@ sap.ui.define([
 		 * @param {object} oViewMapping - from formatter.js view mapping with functions
 		 */
 		_setBackgroudShapes: function (oViewMapping) {
-			if(!this.oZoomStrategy){
+			if (!this.oZoomStrategy) {
 				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
 			}
 			var oTimeHorizon = this.oZoomStrategy.getAggregation("totalHorizon"),
@@ -1510,8 +1527,8 @@ sap.ui.define([
 		 */
 		_setDateFilter: function (sKey) {
 			var newDateRange = formatter.getDefaultDates(sKey, this.getModel("user"));
-			if(!this.oZoomStrategy){
-				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();	
+			if (!this.oZoomStrategy) {
+				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
 			}
 			this._setNewHorizon(newDateRange.StartDate, newDateRange.EndDate);
 			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
