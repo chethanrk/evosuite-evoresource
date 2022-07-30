@@ -568,7 +568,7 @@ sap.ui.define([
 		onChangeDate: function (oEvent) {
 			var oDateRange = oEvent.getSource(),
 				oStartDate = oDateRange.getDateValue(),
-				oEndDate = oDateRange.getSecondDateValue();
+				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999,"milliseconds").toDate();
 			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
 
