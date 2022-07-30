@@ -312,7 +312,7 @@ sap.ui.define([
 				sShapeId = oEvent.getParameter("shapeUid");
 				oShapeInfo = Utility.parseUid(sShapeId);
 				oStartTime = moment(oEvent.getParameter("newTime")[0]).startOf('day').toDate();
-				oEndTime = moment(oEvent.getParameter("newTime")[1]).endOf('day').toDate();
+				oEndTime = moment(oEvent.getParameter("newTime")[1]).endOf('day').subtract(999,'milliseconds').toDate();
 			}
 			//validate if date is past
 			if (!oStartTime || !oEndTime || this._isDatePast(oStartTime) || this._isDatePast(oEndTime)) {
