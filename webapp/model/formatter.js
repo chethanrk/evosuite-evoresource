@@ -202,6 +202,10 @@ sap.ui.define([
 		convertString2Date: function (sDate) {
 			return moment(sDate.substr(0, 4) + "-" + sDate.substring(4, 6) + "-" + sDate.substring(6, 8));
 		},
+		
+		convertDate2String:function(sDate){
+			return moment(sDate).format("YYYYMMDD000000");
+		},
 
 		/**
 		 * to get utc date object
