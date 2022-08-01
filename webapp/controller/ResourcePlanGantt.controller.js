@@ -136,12 +136,22 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				onDemandProcced: {
+				updateNewDataFromGanttFilterBar:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+                onDemandProcced: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				openDemandDialog: {
+				resetGanttFilterBarToPreviousData:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+                openDemandDialog: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
@@ -150,7 +160,7 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
-				}
+				},
 			}
 		},
 
@@ -167,10 +177,11 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoresource.controller.ResourcePlanningMain
 		 */
 		onInit: function () {
+			this._ganttChart = this.getView().byId("idResourcePlanGanttChartTable");
 			this._treeTable = this.getView().byId("idResourcePlanGanttTreeTable");
-			this.oZoomStrategy = this.getView().byId("idResourcePlanGanttZoom");
-			this.oZoomStrategy.setTimeLineOptions(formatter.getTimeLineOptions());
-			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(this._defaultView));
+			this._smartFilterBar = this.getView().byId("idPageResourcePlanningSmartFilterBar");
+			this._dateRangeFilter = this.getView().byId("idFilterGanttPlanningDateRange");
+			this._viewModeFilter = this.getView().byId("idFilterGanttPlanningMode");
 			this._sGanttViewMode = formatter.getViewMapping(this._defaultView);
 
 			//idPageResourcePlanningWrapper
@@ -186,37 +197,12 @@ sap.ui.define([
 		/* =========================================================== */
 
 		/**
-		 * Set new time line options for Gantt time horizon
-		 * @param {object} oEvent - change event of filter view mode
-		 */
-		onChangeTimeMode: function (oEvent) {
-			var mParam = oEvent.getParameters(),
-				sKey = mParam.selectedItem.getKey(),
-				bChanges = this.oPlanningModel.getProperty("/hasChanges"),
-				oSource = oEvent.getSource();
-			if (bChanges) {
-				var sTitle = this.getResourceBundle().getText("tit.confirmChange"),
-					sMsg = this.getResourceBundle().getText("msg.modeChange");
-				var successcallback = function () {
-					this._loadGanttData();
-					this._setDateFilter(sKey);
-				};
-				var cancelcallback = function () {
-					oSource.setSelectedKey(this._previousView);
-				};
-				this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
-			} else {
-				this._setDateFilter(sKey);
-				this._previousView = sKey;
-			}
-		},
-
-		/**
 		 * When filterbar was initialized then get all filters and send backend request
 		 * @param {object} oEvent - change event of filterbar
 		 */
 		onInitializedSmartVariant: function (oEvent) {
 			this._loadGanttData();
+			this.updateNewDataFromGanttFilterBar();
 		},
 
 		/**
@@ -240,10 +226,38 @@ sap.ui.define([
 		onSearch: function () {
 			var oDateRangePicker = this.getView().byId("idFilterGanttPlanningDateRange"),
 				oStartDate = oDateRangePicker.getDateValue(),
-				oEndDate = oDateRangePicker.getSecondDateValue();
+				oEndDate = oDateRangePicker.getSecondDateValue(),
+				oModeSource = this._viewModeFilter,
+				bChanges = this.oPlanningModel.getProperty("/hasChanges"),
+				sKey = oModeSource.getSelectedItem().getProperty("key");
 
-			this._setNewHorizon(oStartDate, oEndDate);
-			this._loadGanttData();
+			if (bChanges) {
+				var sTitle = this.getResourceBundle().getText("tit.confirm"),
+					sMsg = this.getResourceBundle().getText("msg.ganttReload");
+				var successcallback = function () {
+					this._loadGanttData();
+					this.updateNewDataFromGanttFilterBar();
+					if (this._previousView !== sKey) {
+						this._setDateFilter(sKey);
+					} else {
+						this._setNewHorizon(oStartDate, oEndDate);
+					}
+
+				};
+				var cancelcallback = function () {
+					this.resetGanttFilterBarToPreviousData();
+				};
+				this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
+			} else {
+				if (this._previousView !== sKey) {
+					this._setDateFilter(sKey);
+				} else {
+					this._setNewHorizon(oStartDate, oEndDate);
+				}
+				this._loadGanttData();
+				this.updateNewDataFromGanttFilterBar();
+			}
+
 		},
 
 		/**
@@ -646,6 +660,9 @@ sap.ui.define([
 		 * @param {object} oEvent
 		 */
 		onPressToday: function (oEvent) {
+			if (!this.oZoomStrategy) {
+				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
+			}
 			this.changeGanttHorizonViewAt(this.getModel("viewModel"), this.oZoomStrategy.getZoomLevel(), this.oZoomStrategy);
 		},
 
@@ -726,6 +743,27 @@ sap.ui.define([
 				this._addSingleChildToParent(newData);
 			}.bind(this));
 			this.oPlanningModel.setProperty("/tempData/oldPopoverData", deepClone(newData));
+		},
+		/**
+		 * Update global variables with the filter value
+		 * These values can be used to reset the filter bar with previous value
+		 */
+		updateNewDataFromGanttFilterBar: function () {
+			this._previousView = this._viewModeFilter.getSelectedItem().getProperty("key");
+			this._previousDateRange = {
+				startDate: this._dateRangeFilter.getProperty("dateValue"),
+				endDate: this._dateRangeFilter.getProperty("secondDateValue")
+			};
+			this._previousGanttFilter = this._smartFilterBar.getFilterData();
+		},
+		/**
+		 * Reset the filter bar with the previous value stored in global variable
+		 */
+		resetGanttFilterBarToPreviousData: function () {
+			this._smartFilterBar.setFilterData(this._previousGanttFilter, true);
+			this._viewModeFilter.setSelectedKey(this._previousView);
+			this._dateRangeFilter.setDateValue(this._previousDateRange["startDate"]);
+			this._dateRangeFilter.setSecondDateValue(this._previousDateRange["endDate"]);
 		},
 
 		/**
@@ -889,7 +927,7 @@ sap.ui.define([
 		 */
 		_getResourceData: function (iLevel) {
 			return new Promise(function (resolve) {
-				var oFilterBar = this.getView().byId("idPageResourcePlanningSmartFilterBar"),
+				var oFilterBar = this._smartFilterBar,
 					oDateRangePicker = this.getView().byId("idFilterGanttPlanningDateRange"),
 					aFilters = oFilterBar.getFilters(),
 					sUri = "/GanttResourceHierarchySet",
@@ -967,7 +1005,10 @@ sap.ui.define([
 		 * @param {object} oViewMapping - from formatter.js view mapping with functions
 		 */
 		_setBackgroudShapes: function (oViewMapping) {
-			var oTimeHorizon = this.oZoomStrategy.getTotalHorizon(),
+			if (!this.oZoomStrategy) {
+				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
+			}
+			var oTimeHorizon = this.oZoomStrategy.getAggregation("totalHorizon"),
 				sStartTime = oTimeHorizon.getStartTime(),
 				sEndTime = oTimeHorizon.getEndTime(),
 				aChildren = this.oPlanningModel.getProperty("/data/children");
@@ -1696,12 +1737,15 @@ sap.ui.define([
 		 */
 		_setDateFilter: function (sKey) {
 			var newDateRange = formatter.getDefaultDates(sKey, this.getModel("user"));
+			if (!this.oZoomStrategy) {
+				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
+			}
 			this._setNewHorizon(newDateRange.StartDate, newDateRange.EndDate);
 			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
 			this._sGanttViewMode = formatter.getViewMapping(sKey);
 			this._setBackgroudShapes(this._sGanttViewMode);
 			this._previousView = sKey;
-			
+
 		},
 
 		/**

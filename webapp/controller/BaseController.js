@@ -6,8 +6,10 @@ sap.ui.define([
 	"com/evorait/evosuite/evoresource/model/Constants",
 	"sap/base/util/deepClone",
 	"sap/base/util/merge",
-	"sap/m/MessageBox"
-], function (Controller, Formatter, Fragment, Constants, deepClone, merge, MessageBox) {
+	"sap/gantt/axistime/StepwiseZoomStrategy",
+	"sap/gantt/config/TimeHorizon",
+    "sap/m/MessageBox"
+], function (Controller, Formatter, Fragment, Constants, deepClone,merge,StepwiseZoomStrategy,TimeHorizon,MessageBox) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoresource.controller.BaseController", {
@@ -873,11 +875,27 @@ sap.ui.define([
 			} else {
 				oEndDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
 			}
+			this.oZoomStrategy = this._createGanttHorizon(oStartDate,oEndDate);
+			this.oZoomStrategy.setTimeLineOption(Formatter.getTimeLineOptions(this._previousView));
+			this._ganttChart.setAxisTimeStrategy(this.oZoomStrategy);
+		},
+		/**
+		 * Creating Gantt Horizon for New Gant Layout
+		 * @param {object} oStartDate - start date
+		 * @param {object} oEndDate - end date
+		 */
+		_createGanttHorizon: function (oStartDate, oEndDate) {
+			return new StepwiseZoomStrategy({
+				visibleHorizon: new TimeHorizon({
+					startTime: oStartDate,
+					endTime:oEndDate
+				}),
+				totalHorizon: new TimeHorizon({
+					startTime: oStartDate,
+					endTime: oEndDate
+				})
+			});
 
-			this.oZoomStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
-				startTime: oStartDate,
-				endTime: oEndDate
-			}));
 		},
 
 		/**
