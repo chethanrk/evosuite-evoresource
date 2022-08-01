@@ -8,8 +8,8 @@ sap.ui.define([
 	"sap/base/util/merge",
 	"sap/gantt/axistime/StepwiseZoomStrategy",
 	"sap/gantt/config/TimeHorizon",
-    "sap/m/MessageBox"
-], function (Controller, Formatter, Fragment, Constants, deepClone,merge,StepwiseZoomStrategy,TimeHorizon,MessageBox) {
+	"sap/m/MessageBox"
+], function (Controller, Formatter, Fragment, Constants, deepClone, merge, StepwiseZoomStrategy, TimeHorizon, MessageBox) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoresource.controller.BaseController", {
@@ -875,7 +875,7 @@ sap.ui.define([
 			} else {
 				oEndDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
 			}
-			this.oZoomStrategy = this._createGanttHorizon(oStartDate,oEndDate);
+			this.oZoomStrategy = this._createGanttHorizon(oStartDate, oEndDate);
 			this.oZoomStrategy.setTimeLineOption(Formatter.getTimeLineOptions(this._previousView));
 			this._ganttChart.setAxisTimeStrategy(this.oZoomStrategy);
 		},
@@ -888,7 +888,7 @@ sap.ui.define([
 			return new StepwiseZoomStrategy({
 				visibleHorizon: new TimeHorizon({
 					startTime: oStartDate,
-					endTime:oEndDate
+					endTime: oEndDate
 				}),
 				totalHorizon: new TimeHorizon({
 					startTime: oStartDate,
@@ -956,7 +956,7 @@ sap.ui.define([
 				success: function (oData, oResponse) {
 					//Handle Success
 					oViewModel.setProperty("/busy", false);
-					fCallback(oData);
+					fCallback(oData, oResponse);
 				}.bind(this),
 				error: function (oError) {
 					//Handle Error

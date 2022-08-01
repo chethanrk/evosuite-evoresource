@@ -136,22 +136,22 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				updateNewDataFromGanttFilterBar:{
+				updateNewDataFromGanttFilterBar: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
 				},
-                onDemandProcced: {
+				onDemandProcced: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				resetGanttFilterBarToPreviousData:{
+				resetGanttFilterBarToPreviousData: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
 				},
-                openDemandDialog: {
+				openDemandDialog: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
@@ -469,17 +469,21 @@ sap.ui.define([
 							var oParams = {
 								AssignmentGUID: Guid
 							};
-							var successCallback = function () {
-								resolve();
+							var successCallback = function (oData, oResponse) {
+								if (oResponse && oResponse.headers && oResponse.headers["sap-message"]) {
+									var sMessageBundle = JSON.parse(oResponse.headers["sap-message"]);
+									if (sMessageBundle.severity !== "error") {
+										resolve(oData, oResponse);
+									}
+								}
 							}.bind(this);
-
 							this.callFunctionImport(oParams, sFunctionName, "POST", successCallback);
 						}.bind(this))
 					);
 				}.bind(this));
 				Promise.all(aPromises).then(
 					// aData - array of each oData by the success callbacks
-					function () {
+					function (oData, oResponse) {
 						this.deleteSaveFunction();
 					}.bind(this)
 				);
@@ -1072,12 +1076,24 @@ sap.ui.define([
 				aDeleteData = this.oPlanningModel.getProperty("/deletedData");
 
 			//object change needs added to "/changedData" array by GUID
-
-			if (oFoundData && oFoundData.oData && aDeleteData.indexOf(oFoundData.oData.Guid) < 0) {
+			if (oFoundData && oFoundData.oData && this._allowDeleteEntry(aDeleteData, oFoundData.oData.Guid)) {
 				aDeleteData.push(oFoundData.oData);
 			}
 
 			this.oPlanningModel.setProperty("/hasChanges", (aChanges.length > 0 || aDeleteData.length > 0));
+		},
+
+		/**
+		 * Validate the duplicate entry before prepare delete data preparation
+		 */
+		_allowDeleteEntry: function (aDeleteData, Guid) {
+			var bValidate = true;
+			aDeleteData.forEach(function (oItem) {
+				if (oItem.Guid === Guid && bValidate) {
+					bValidate = false;
+				}
+			});
+			return bValidate;
 		},
 
 		/**

@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:form="sap.ui.layout.form">
-	<Dialog title="{i18n>xtit.demands}" resizable="true" draggable="true" contentWidth="60%">
+	<Dialog title="{i18n>xtit.demandAssignments}" resizable="true" draggable="true" contentWidth="50%">
 		<Table id="idFragDemandListTable" items="{ path: 'demandModel>/data' }">
 			<infoToolbar>
 				<OverflowToolbar design="Info" active="true" visible="{= ${viewModel>/enableProcced} === true ? false : true}">
@@ -19,7 +19,7 @@
 				<Column demandPopin="true">
 					<Text text="{i18n>lbl.status}"/>
 				</Column>
-				<Column demandPopin="true" hAlign="Right">
+				<Column demandPopin="true" hAlign="Right" width="6rem">
 					<Text text=""/>
 				</Column>
 			</columns>
