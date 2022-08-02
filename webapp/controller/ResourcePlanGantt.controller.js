@@ -341,7 +341,7 @@ sap.ui.define([
 				oStartTime = moment(oEvent.getParameter("newTime")[0]).startOf('day').toDate();
 				oEndTime = moment(oEvent.getParameter("newTime")[1]).endOf('day').subtract(999, 'milliseconds').toDate();
 			}
-			//validate if date is past
+			//validate if date valid
 			if (!this.validateUIDate(oStartTime, oEndTime, oOldStartTime, oOldEndTime)) {
 				return;
 			}
