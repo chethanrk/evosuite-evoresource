@@ -132,12 +132,17 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				updateNewDataFromGanttFilterBar:{
+				updateNewDataFromGanttFilterBar: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
 				},
-				resetGanttFilterBarToPreviousData:{
+				resetGanttFilterBarToPreviousData: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				validateUIDate: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
@@ -308,6 +313,8 @@ sap.ui.define([
 				oTargetShape,
 				oStartTime,
 				oEndTime,
+				oOldStartTime,
+				oOldEndTime,
 				sGuid,
 				aFoundData = [],
 				sOldDataPath,
@@ -322,16 +329,20 @@ sap.ui.define([
 				oTargetShape = oEvent.getParameter("targetShape");
 				oDraggedShapeDates = oEvent.getParameter("draggedShapeDates")[sShapeId];
 				dateDifference = moment(oDraggedShapeDates["endTime"]).diff(oDraggedShapeDates["time"]);
+				oOldStartTime = oDraggedShapeDates["time"];
+				oOldEndTime = oDraggedShapeDates["endTime"];
 				oStartTime = oTargetShape ? oTargetShape.getProperty("time") : null;
 				oEndTime = oStartTime ? new Date(moment(oStartTime).add(dateDifference)) : null;
 			} else if (oEvent.getId() === 'shapeResize') {
 				sShapeId = oEvent.getParameter("shapeUid");
 				oShapeInfo = Utility.parseUid(sShapeId);
+				oOldStartTime = moment(oEvent.getParameter("oldTime")[0]).startOf('day').toDate();;
+				oOldEndTime = moment(oEvent.getParameter("oldTime")[1]).endOf('day').subtract(999, 'milliseconds').toDate();;
 				oStartTime = moment(oEvent.getParameter("newTime")[0]).startOf('day').toDate();
-				oEndTime = moment(oEvent.getParameter("newTime")[1]).endOf('day').subtract(999,'milliseconds').toDate();
+				oEndTime = moment(oEvent.getParameter("newTime")[1]).endOf('day').subtract(999, 'milliseconds').toDate();
 			}
-			//validate if date is past
-			if (!oStartTime || !oEndTime || this._isDatePast(oStartTime) || this._isDatePast(oEndTime)) {
+			//validate if date valid
+			if (!this.validateUIDate(oStartTime, oEndTime, oOldStartTime, oOldEndTime)) {
 				return;
 			}
 
@@ -367,7 +378,7 @@ sap.ui.define([
 		 * @param {object} oPopoverData - Data to be displayed in Popover
 		 */
 		openShapeChangePopover: function (oTargetControl, oPopoverData) {
-			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getTime())) {
+			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getEndTime())) {
 				// create popover
 				if (!this._oPlanningPopover) {
 					Fragment.load({
@@ -584,7 +595,7 @@ sap.ui.define([
 		onChangeDate: function (oEvent) {
 			var oDateRange = oEvent.getSource(),
 				oStartDate = oDateRange.getDateValue(),
-				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999,"milliseconds").toDate();
+				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate();
 			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
 
@@ -712,6 +723,47 @@ sap.ui.define([
 			this._dateRangeFilter.setSecondDateValue(this._previousDateRange["endDate"]);
 		},
 
+		/**
+		 * Validates date in the UI with multiple condition
+		 * @param {object} oStartTime - changed start date of assignment
+		 * @param {object} oEndTime - changed end date of assignment
+		 * @param {object} oOldStartTime - old start date of assignment
+		 * @param {object} oOldEndTime - old end date of assignment		 * 
+		 */
+		validateUIDate: function (oStartTime, oEndTime, oOldStartTime, oOldEndTime) {
+			var bValidated = true;
+			if (!oStartTime || !oEndTime) { //check if date object valid
+				bValidated = false;
+			}
+			if (this._isDatePast(oOldStartTime) && this._isDatePast(oOldEndTime)) { //check if assignment start and end date is past
+				bValidated = false;
+			}
+			if (!this._isDateSame(oOldStartTime, oStartTime)) { //check if start date changed
+				if (this._isDatePast(oStartTime)) { // check start date is past
+					bValidated = false;
+				}
+				if (this._isStartDateBeyondFilterDateRange(oStartTime)) {
+					bValidated = false;
+				}
+
+			}
+			if (!this._isDateSame(oOldEndTime, oEndTime)) { //check if end date changed
+				if (this._isDatePast(oEndTime)) { //check if end date is past
+					bValidated = false;
+				}
+				if (this._isEndDateBeyondFilterDateRange(oEndTime)) { //check end date is beyond filter range
+					bValidated = false;
+				}
+			}
+			if (this._isDatePast(oOldStartTime)) { //check if old end date is past
+				if (!this._isDateSame(oOldStartTime, oStartTime)) { //check if end date changed
+					bValidated = false;
+				}
+			}
+
+			return bValidated;
+		},
+
 		/* =========================================================== */
 		/* internal methods                                            */
 		/* =========================================================== */
@@ -821,7 +873,8 @@ sap.ui.define([
 				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
 			}
 			var oTimeHorizon = this.oZoomStrategy.getAggregation("totalHorizon"),
-				sStartTime = oTimeHorizon.getStartTime(),
+				sToday = new Date().setHours(0, 0, 0, 0),
+				sStartTime = formatter.convertDate2String(new Date(sToday)),
 				sEndTime = oTimeHorizon.getEndTime(),
 				aChildren = this.oPlanningModel.getProperty("/data/children");
 
@@ -929,6 +982,7 @@ sap.ui.define([
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
 				oAssignData.minDate = new Date();
+				oAssignData.maxDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
 				oAssignData.isEditable = true;
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
@@ -939,6 +993,7 @@ sap.ui.define([
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
 				oAssignData.minDate = new Date();
+				oAssignData.maxDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
 				oAssignData.isEditable = true;
 				oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
 				oAssignData.StartDate = oAssignData.EffectiveStartDate;

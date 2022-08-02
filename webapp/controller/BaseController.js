@@ -8,7 +8,7 @@ sap.ui.define([
 	"sap/base/util/merge",
 	"sap/gantt/axistime/StepwiseZoomStrategy",
 	"sap/gantt/config/TimeHorizon"
-], function (Controller, Formatter, Fragment, Constants, deepClone,merge,StepwiseZoomStrategy,TimeHorizon) {
+], function (Controller, Formatter, Fragment, Constants, deepClone, merge, StepwiseZoomStrategy, TimeHorizon) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoresource.controller.BaseController", {
@@ -87,7 +87,7 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
-				mergeObject:{
+				mergeObject: {
 					public: true,
 					final: true
 				}
@@ -260,7 +260,8 @@ sap.ui.define([
 						Days: [],
 						On: 0,
 						RepeatEndDate: new Date(),
-						isEditable: true
+						isEditable: true,
+						maxDate: this.getModel("viewModel").getProperty("/gantt/defaultEndDate")
 					},
 					oDraggedData = this.getView().getModel("viewModel").getProperty("/draggedData"),
 					nodeType;
@@ -413,7 +414,7 @@ sap.ui.define([
 				}
 			}.bind(this));
 		},
-			/**
+		/**
 		 * Merge source object to destination object to source.
 		 * Deletes all emply,null and undefined value from destination object
 		 *  @param {object} destination - Destination object
@@ -425,7 +426,7 @@ sap.ui.define([
 					delete source[prop];
 				}
 			}
-			
+
 			return merge(destination, source);
 		},
 
@@ -859,7 +860,7 @@ sap.ui.define([
 			} else {
 				oEndDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
 			}
-			this.oZoomStrategy = this._createGanttHorizon(oStartDate,oEndDate);
+			this.oZoomStrategy = this._createGanttHorizon(oStartDate, oEndDate);
 			this.oZoomStrategy.setTimeLineOption(Formatter.getTimeLineOptions(this._previousView));
 			this._ganttChart.setAxisTimeStrategy(this.oZoomStrategy);
 		},
@@ -872,7 +873,7 @@ sap.ui.define([
 			return new StepwiseZoomStrategy({
 				visibleHorizon: new TimeHorizon({
 					startTime: oStartDate,
-					endTime:oEndDate
+					endTime: oEndDate
 				}),
 				totalHorizon: new TimeHorizon({
 					startTime: oStartDate,
@@ -1105,6 +1106,43 @@ sap.ui.define([
 			return aChildren.find(function (oResource, idx) {
 				return oResource.NodeId === sNodeId;
 			}.bind(this));
+		},
+		
+		/*
+		* Returns true filter start date is after oStartDate, else false
+		* @param {object} oStartDate - Date
+		*/
+		_isStartDateBeyondFilterDateRange: function (oStartDate) {
+
+			var startDate = this.getModel("viewModel").getProperty("/gantt/defaultStartDate"),
+				bValidate = false;
+			if (moment(startDate).startOf('day').isAfter(moment(oStartDate).startOf('day').toDate())) {
+				bValidate = true;
+			}
+			return bValidate;
+
+		},
+		
+		/*
+		* Returns true filter end date is before oEndDate, else false
+		* @param {object} oEndDate - Date
+		*/
+		_isEndDateBeyondFilterDateRange: function (oEndDate) {
+			var endDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate"),
+				bValidate = false;
+			if (moment(endDate).endOf('day').isBefore(moment(oEndDate).endOf('day').toDate())) {
+				bValidate = true;
+			}
+			return bValidate;
+		},
+		
+		/*
+		* Returns true if oDate and oSecondDate is same, else false
+		* @param {object} oDate - Date
+		* @param {object} oSecondDate - Date
+		*/
+		_isDateSame: function (oDate, oSecondDate) {
+			return moment(oDate).isSame(oSecondDate);
 		}
 	});
 });
