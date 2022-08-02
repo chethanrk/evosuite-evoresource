@@ -356,8 +356,8 @@ sap.ui.define([
 			} else if (oEvent.getId() === 'shapeResize') {
 				sShapeId = oEvent.getParameter("shapeUid");
 				oShapeInfo = Utility.parseUid(sShapeId);
-				oOldStartTime = moment(oEvent.getParameter("oldTime")[0]).startOf('day').toDate();;
-				oOldEndTime = moment(oEvent.getParameter("oldTime")[1]).endOf('day').subtract(999, 'milliseconds').toDate();;
+				oOldStartTime = moment(oEvent.getParameter("oldTime")[0]).startOf('day').toDate();
+				oOldEndTime = moment(oEvent.getParameter("oldTime")[1]).endOf('day').subtract(999, 'milliseconds').toDate();
 				oStartTime = moment(oEvent.getParameter("newTime")[0]).startOf('day').toDate();
 				oEndTime = moment(oEvent.getParameter("newTime")[1]).endOf('day').subtract(999, 'milliseconds').toDate();
 			}
