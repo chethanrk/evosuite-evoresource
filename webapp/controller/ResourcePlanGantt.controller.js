@@ -734,7 +734,7 @@ sap.ui.define([
 		 * These values can be used to reset the filter bar with previous value
 		 */
 		updateNewDataFromGanttFilterBar: function () {
-			this._previousView = this._viewModeFilter.getSelectedItem().getProperty("key");
+			this._previousView = this._viewModeFilter.getSelectedItem() ? this._viewModeFilter.getSelectedItem().getProperty("key") : "DAY";
 			this._previousDateRange = {
 				startDate: this._dateRangeFilter.getProperty("dateValue"),
 				endDate: this._dateRangeFilter.getProperty("secondDateValue")
