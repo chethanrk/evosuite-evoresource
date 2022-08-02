@@ -141,6 +141,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				validateUIDate:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -337,41 +342,8 @@ sap.ui.define([
 				oEndTime = moment(oEvent.getParameter("newTime")[1]).endOf('day').subtract(999, 'milliseconds').toDate();
 			}
 			//validate if date is past
-			// if (!oStartTime || !oEndTime || 
-			// 	(this._isDatePast(oOldStartTime) && this._isDatePast(oOldEndTime)) || 
-			// 	(this._isDateSame(oOldStartTime,oStartTime) || this._isDatePast(oStartTime)) ||
-			// 	this._isDatePast(oEndTime) || 
-			// 	(this._isDatesBeyondFilterDateRange(oStartTime,oEndTime))) {
-			// 	return;
-			// }
-
-			if (!oStartTime || !oEndTime) { //check if date object valid
+			if (!this.validateUIDate(oStartTime, oEndTime, oOldStartTime, oOldEndTime)) {
 				return;
-			}
-			if (this._isDatePast(oOldStartTime) && this._isDatePast(oOldEndTime)) { //check if assignment start and end date is past
-				return;
-			}
-			if (!this._isDateSame(oOldStartTime, oStartTime)) { //check if start date changed
-				if (this._isDatePast(oStartTime)) { // check start date is past
-					return;
-				}
-				if (this._isStartDateBeyondFilterDateRange(oStartTime)) {
-					return;
-				}
-
-			}
-			if (!this._isDateSame(oOldEndTime, oEndTime)) { //check if end date changed
-				if (this._isDatePast(oEndTime)) {
-					return;
-				}
-				if (this._isEndDateBeyondFilterDateRange(oEndTime)) {
-					return;
-				}
-			}
-			if (this._isDatePast(oOldStartTime)) {
-				if (!this._isDateSame(oOldStartTime, oStartTime)) {
-					return;
-				}
 			}
 
 			sGuid = oShapeInfo.shapeId;
@@ -750,6 +722,47 @@ sap.ui.define([
 			this._dateRangeFilter.setDateValue(this._previousDateRange["startDate"]);
 			this._dateRangeFilter.setSecondDateValue(this._previousDateRange["endDate"]);
 		},
+		
+		/**
+		 * Validates date in the UI with multiple condition
+		 * @param {object} oStartTime - changed start date of assignment
+		 * @param {object} oEndTime - changed end date of assignment
+		 * @param {object} oOldStartTime - old start date of assignment
+		 * @param {object} oOldEndTime - old end date of assignment		 * 
+		 */
+		validateUIDate: function (oStartTime, oEndTime, oOldStartTime, oOldEndTime) {
+			var bValidated = true;
+			if (!oStartTime || !oEndTime) { //check if date object valid
+				bValidated = false;
+			}
+			if (this._isDatePast(oOldStartTime) && this._isDatePast(oOldEndTime)) { //check if assignment start and end date is past
+				bValidated = false;
+			}
+			if (!this._isDateSame(oOldStartTime, oStartTime)) { //check if start date changed
+				if (this._isDatePast(oStartTime)) { // check start date is past
+					bValidated = false;
+				}
+				if (this._isStartDateBeyondFilterDateRange(oStartTime)) {
+					bValidated = false;
+				}
+
+			}
+			if (!this._isDateSame(oOldEndTime, oEndTime)) { //check if end date changed
+				if (this._isDatePast(oEndTime)) { //check if end date is past
+					bValidated = false;
+				}
+				if (this._isEndDateBeyondFilterDateRange(oEndTime)) { //check end date is beyond filter range
+					bValidated = false;
+				}
+			}
+			if (this._isDatePast(oOldStartTime)) { //check if old end date is past
+				if (!this._isDateSame(oOldStartTime, oStartTime)) { //check if end date changed
+					bValidated = false;
+				}
+			}
+			
+			return bValidated;
+		},
 
 		/* =========================================================== */
 		/* internal methods                                            */
@@ -759,7 +772,7 @@ sap.ui.define([
 		 * Load the tree data and process the data to create assignments as child nodes
 		 * 
 		 */
-		_loadGanttData: function () {
+			_loadGanttData: function () {
 			this._initialisePlanningModel();
 			this._getResourceData(0)
 				.then(this._getResourceData.bind(this))
@@ -860,8 +873,8 @@ sap.ui.define([
 				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
 			}
 			var oTimeHorizon = this.oZoomStrategy.getAggregation("totalHorizon"),
-				// sStartTime = oTimeHorizon.getStartTime(),
-				sStartTime = formatter.convertDate2String(new Date()),
+				sToday = new Date().setHours(0, 0, 0, 0),
+				sStartTime = formatter.convertDate2String(new Date(sToday)),
 				sEndTime = oTimeHorizon.getEndTime(),
 				aChildren = this.oPlanningModel.getProperty("/data/children");
 

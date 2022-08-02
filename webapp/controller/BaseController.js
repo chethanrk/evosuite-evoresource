@@ -1107,7 +1107,11 @@ sap.ui.define([
 				return oResource.NodeId === sNodeId;
 			}.bind(this));
 		},
-
+		
+		/*
+		* Returns true filter start date is after oStartDate, else false
+		* @param {object} oStartDate - Date
+		*/
 		_isStartDateBeyondFilterDateRange: function (oStartDate) {
 
 			var startDate = this.getModel("viewModel").getProperty("/gantt/defaultStartDate"),
@@ -1118,6 +1122,11 @@ sap.ui.define([
 			return bValidate;
 
 		},
+		
+		/*
+		* Returns true filter end date is before oEndDate, else false
+		* @param {object} oEndDate - Date
+		*/
 		_isEndDateBeyondFilterDateRange: function (oEndDate) {
 			var endDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate"),
 				bValidate = false;
@@ -1126,7 +1135,12 @@ sap.ui.define([
 			}
 			return bValidate;
 		},
-
+		
+		/*
+		* Returns true if oDate and oSecondDate is same, else false
+		* @param {object} oDate - Date
+		* @param {object} oSecondDate - Date
+		*/
 		_isDateSame: function (oDate, oSecondDate) {
 			return moment(oDate).isSame(oSecondDate);
 		}
