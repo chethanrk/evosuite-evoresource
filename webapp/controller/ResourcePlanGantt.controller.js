@@ -142,7 +142,7 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.After
 				},
-				validateUIDate:{
+				validateUIDate: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
@@ -722,7 +722,7 @@ sap.ui.define([
 			this._dateRangeFilter.setDateValue(this._previousDateRange["startDate"]);
 			this._dateRangeFilter.setSecondDateValue(this._previousDateRange["endDate"]);
 		},
-		
+
 		/**
 		 * Validates date in the UI with multiple condition
 		 * @param {object} oStartTime - changed start date of assignment
@@ -760,7 +760,7 @@ sap.ui.define([
 					bValidated = false;
 				}
 			}
-			
+
 			return bValidated;
 		},
 
@@ -772,7 +772,7 @@ sap.ui.define([
 		 * Load the tree data and process the data to create assignments as child nodes
 		 * 
 		 */
-			_loadGanttData: function () {
+		_loadGanttData: function () {
 			this._initialisePlanningModel();
 			this._getResourceData(0)
 				.then(this._getResourceData.bind(this))
