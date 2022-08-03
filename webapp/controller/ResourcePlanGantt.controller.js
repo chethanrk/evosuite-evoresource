@@ -793,6 +793,9 @@ sap.ui.define([
 					}
 					if (sKey === "Mode") {
 						oCustomControl.setSelectedKey(selectedValue);
+						this._previousView=selectedValue;
+						this._setDateFilter(selectedValue);
+						
 					}
 				}
 			}.bind(this));
