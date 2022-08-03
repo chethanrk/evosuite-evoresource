@@ -146,6 +146,16 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				afterVariantLoad:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				beforeVariantFetch:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -762,6 +772,55 @@ sap.ui.define([
 			}
 
 			return bValidated;
+		},
+		/*
+		 * Method called after variant is loaded
+		 * @param {object} oEvent
+		 */
+		afterVariantLoad: function (oEvent) {
+			var oSmartFilterBar = oEvent.getSource(),
+				CustomFilter = oSmartFilterBar.getControlConfiguration(),
+				oVariantData = oSmartFilterBar.getFilterData();
+			CustomFilter.forEach(function (cFilter) {
+				var sKey = cFilter.getKey(),
+					oCustomControl = oSmartFilterBar.getControlByKey(sKey);
+				if (oCustomControl) {
+					var selectedValue = oVariantData._CUSTOM[sKey];
+					if (sKey === 'StartDate') {
+						oCustomControl.setDateValue(new Date(selectedValue));
+						oCustomControl.setSecondDateValue(new Date(oVariantData._CUSTOM['EndDate']));
+					}
+					if (sKey === "Mode") {
+						oCustomControl.setSelectedKey(selectedValue);
+					}
+				}
+			}.bind(this));
+		},
+
+		/*
+		 * Method called before variant is fetched
+		 * @param {object} oEvent
+		 */
+		beforeVariantFetch: function (oEvent) {
+			var oSmartFilterBar = oEvent.getSource(),
+				CustomFilter = oSmartFilterBar.getControlConfiguration(),
+				oValues = {};
+			CustomFilter.forEach(function (cFilter) {
+				var sKey = cFilter.getKey(),
+					oCustomControl = oSmartFilterBar.getControlByKey(sKey);
+				if (oCustomControl) {
+					if (sKey === 'StartDate') {
+						oValues[sKey] = oCustomControl.getDateValue();
+						oValues['EndDate'] = oCustomControl.getSecondDateValue();
+					}
+					if (sKey === "Mode") {
+						oValues[sKey] = oCustomControl.getSelectedItem() ? oCustomControl.getSelectedItem().getKey() : "DAY";
+					}
+				}
+			}.bind(this));
+			oSmartFilterBar.setFilterData({
+				_CUSTOM: oValues
+			}, false);
 		},
 
 		/* =========================================================== */
