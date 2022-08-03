@@ -781,6 +781,7 @@ sap.ui.define([
 			var oSmartFilterBar = oEvent.getSource(),
 				CustomFilter = oSmartFilterBar.getControlConfiguration(),
 				oVariantData = oSmartFilterBar.getFilterData();
+				this.isVariantChanged=true;
 			CustomFilter.forEach(function (cFilter) {
 				var sKey = cFilter.getKey(),
 					oCustomControl = oSmartFilterBar.getControlByKey(sKey);
@@ -1660,7 +1661,17 @@ sap.ui.define([
 		 * @private
 		 */
 		_setDateFilter: function (sKey) {
-			var newDateRange = formatter.getDefaultDates(sKey, this.getModel("user"));
+			var newDateRange;
+			if(this.isVariantChanged){
+				this.isVariantChanged = false;
+				newDateRange={
+					StartDate:this.getModel("viewModel").getProperty("/gantt/defaultStartDate"),
+					EndDate:this.getModel("viewModel").getProperty("/gantt/defaultEndDate")
+				};
+			}
+			else{
+				newDateRange = formatter.getDefaultDates(sKey, this.getModel("user"));
+			}
 			if (!this.oZoomStrategy) {
 				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
 			}
