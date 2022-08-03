@@ -141,7 +141,7 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.After
 				},
-				onDemandProcced: {
+				onDemandProceed: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
@@ -892,7 +892,7 @@ sap.ui.define([
 								bVisibile = false;
 							}
 						});
-						this.getModel("viewModel").setProperty("/enableProcced", bVisibile);
+						this.getModel("viewModel").setProperty("/enableProceed", bVisibile);
 					}.bind(this));
 
 					this._oDemandDialog.attachAfterClose(function (oEvent) {}.bind(this));
@@ -925,9 +925,9 @@ sap.ui.define([
 		 * Called when all assignemnts are unassgned in the demand list
 		 * Confirm dialog will open with option
 		 * Prepare Unassign local data
-		 * procced further to remove/change assignment functionality
+		 * proceed further to remove/change assignment functionality
 		 */
-		onDemandProcced: function () {
+		onDemandProceed: function () {
 			var sTitle = this.getResourceBundle().getText("tit.confirmChange"),
 				sMsg = this.getResourceBundle().getText("msg.confirmMessage");
 			var sType = this.getModel("demandModel").getProperty("/Type"),
