@@ -37,7 +37,7 @@
 			</items>
 		</Table>
 		<beginButton>
-			<Button text="{i18n>btn.procced}" press="onDemandProcced" type="Emphasized" enabled="{viewModel>/enableProcced}"/>
+			<Button text="{i18n>btn.procced}" press="onDemandProcced" type="Emphasized" enabled="{viewModel>/enableProceed}"/>
 		</beginButton>
 		<endButton>
 			<Button text="{i18n>btn.close}" press="onDemandDialogClose" type="Emphasized"/>
