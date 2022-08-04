@@ -7,8 +7,9 @@ sap.ui.define([
 	"sap/base/util/deepClone",
 	"sap/base/util/merge",
 	"sap/gantt/axistime/StepwiseZoomStrategy",
-	"sap/gantt/config/TimeHorizon"
-], function (Controller, Formatter, Fragment, Constants, deepClone, merge, StepwiseZoomStrategy, TimeHorizon) {
+	"sap/gantt/config/TimeHorizon",
+	"sap/m/MessageBox"
+], function (Controller, Formatter, Fragment, Constants, deepClone, merge, StepwiseZoomStrategy, TimeHorizon, MessageBox) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoresource.controller.BaseController", {
@@ -48,6 +49,10 @@ sap.ui.define([
 					final: true
 				},
 				showMessageToast: {
+					public: true,
+					final: true
+				},
+				showInfoMessageBox: {
 					public: true,
 					final: true
 				},
@@ -241,6 +246,16 @@ sap.ui.define([
 		},
 
 		/**
+		 * show message box with a text inside with default parameters
+		 * @param {string} sMsg - test for message toast
+		 */
+		showInfoMessageBox: function (sMsg) {
+			MessageBox.information(sMsg, {
+				styleClass: this.getOwnerComponent().getContentDensityClass()
+			});
+		},
+
+		/**
 		 * when background shape was pressed create temporary assignment
 		 * for shape popover input fields and visibility inside Gantt chart
 		 * 
@@ -261,6 +276,7 @@ sap.ui.define([
 						On: 0,
 						RepeatEndDate: new Date(),
 						isEditable: true,
+						isRestChanges:true,
 						maxDate: this.getModel("viewModel").getProperty("/gantt/defaultEndDate")
 					},
 					oDraggedData = this.getView().getModel("viewModel").getProperty("/draggedData"),
@@ -921,42 +937,7 @@ sap.ui.define([
 			}
 			return source;
 		},
-		/**
-		 * Method to call open Demand Dialog
-		 */
-		openDemandDialog: function () {
-			if (!this._oDemandDialog) {
-				Fragment.load({
-					name: "com.evorait.evosuite.evoresource.view.fragments.DemandList",
-					controller: this
-				}).then(function (oDialog) {
-					if (!this._oDemandDialogIsOpen) {
-						this._oDemandDialog = oDialog;
-						this.getView().addDependent(this._oDemandDialog);
 
-						this._oDemandDialog.open();
-						this._oDemandDialogIsOpen = true;
-						this._oDemandDialog.attachAfterOpen(function () {}.bind(this));
-
-						this._oDemandDialog.attachAfterClose(function () {
-							this._oDemandDialogIsOpen = false;
-						}.bind(this));
-					}
-
-				}.bind(this));
-			} else {
-				if (!this._oDemandDialogIsOpen) {
-					this._oDemandDialog.open();
-					this._oDemandDialogIsOpen = true;
-				}
-			}
-		},
-		/**
-		 * To Demand Dialog close
-		 */
-		onDemandDialogClose: function (oEvent) {
-			this._oDemandDialog.close();
-		},
 		/**
 		 * Method to call Function Import
 		 * @param oParams {object} parameter to be passed to function import
@@ -976,7 +957,7 @@ sap.ui.define([
 				success: function (oData, oResponse) {
 					//Handle Success
 					oViewModel.setProperty("/busy", false);
-					fCallback(oData);
+					fCallback(oData, oResponse);
 				}.bind(this),
 				error: function (oError) {
 					//Handle Error

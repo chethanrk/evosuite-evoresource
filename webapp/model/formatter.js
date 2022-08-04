@@ -258,6 +258,20 @@ sap.ui.define([
 		},
 
 		/**
+		 * format date in format yyyy-MM-dd HH-mm
+		 * @param date
+		 * @returns {string} formatted date string
+		 */
+		dateWithTime: function (date) {
+			var d = new Date(date);
+			var oDateFormat = DateFormat.getDateInstance({
+				pattern: "yyyy-MM-dd HH.MM a"
+			});
+			var dateString = oDateFormat.format(d);
+			return dateString;
+		},
+
+		/**
 		 * Darken or lighten a Hex  code color by percent
 		 * example lighten: shadeColor("#63C6FF",40)
 		 * example darken: shadeColor("#63C6FF",-40)
@@ -393,37 +407,37 @@ sap.ui.define([
 			}
 			return false;
 		},
-		
+
 		/**
 		 * Creates key combination of ScheduleId and TemplateId
 		 * @param {string} sScheduleId - ScheduleId of Shift
 		 * @param {string} sTemplateId - TemplateId of Shift
 		 * 
 		 */
-		getShiftKey:function(sScheduleId,sTemplateId){
+		getShiftKey: function (sScheduleId, sTemplateId) {
 			return sScheduleId + sTemplateId;
 		},
-		
+
 		/**
 		 * Sets assignment tye combo editable based on parameter
 		 * @param {boolean} bIsNew - isNew parameter of shape
 		 * @param {boolean} bIsTemporary - isTemporary parameter of shape
 		 * 
 		 */
-		setAssignmentTypeEditable:function(bIsNew,bIsTemporary){
-			if(bIsNew && bIsTemporary){
+		setAssignmentTypeEditable: function (bIsNew, bIsTemporary) {
+			if (bIsNew && bIsTemporary) {
 				return true;
 			}
 			return false;
 		},
-		
+
 		/**
 		 * Sets shape popover editable based on parameter
 		 * @param {boolean} bEditable - isEditable parameter of shape
 		 * 
 		 */
-		setShapePopoverEditable:function(bEditable){
-			if(bEditable === undefined){
+		setShapePopoverEditable: function (bEditable) {
+			if (bEditable === undefined) {
 				return true;
 			}
 			return bEditable;
@@ -456,6 +470,16 @@ sap.ui.define([
 				"StartDate": sStartDate,
 				"EndDate": sEndDate
 			};
+		},
+
+		/**
+		 * Unassign button visibility
+		 */
+		unAssignButtonVisibility: function (bAllowAssign, bMarked) {
+			if (bAllowAssign && !bMarked) {
+				return true;
+			}
+			return false;
 		}
 	};
 
