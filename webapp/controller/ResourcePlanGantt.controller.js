@@ -147,12 +147,12 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.After
 				},
-				afterVariantLoad:{
+				afterVariantLoad: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
 				},
-				beforeVariantFetch:{
+				beforeVariantFetch: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
@@ -780,8 +780,8 @@ sap.ui.define([
 		afterVariantLoad: function (oEvent) {
 			var oSmartFilterBar = oEvent.getSource(),
 				CustomFilter = oSmartFilterBar.getControlConfiguration(),
-				oVariantData = oSmartFilterBar.getFilterData();
-				this.isVariantChanged=true;
+				oVariantData = oSmartFilterBar.getFilterData(),
+				oViewModelGanttData = this.getModel("viewModel").getProperty("/gantt");
 			CustomFilter.forEach(function (cFilter) {
 				var sKey = cFilter.getKey(),
 					oCustomControl = oSmartFilterBar.getControlByKey(sKey);
@@ -793,12 +793,11 @@ sap.ui.define([
 					}
 					if (sKey === "Mode") {
 						oCustomControl.setSelectedKey(selectedValue);
-						this._previousView=selectedValue;
-						this._setDateFilter(selectedValue);
-						
+						this._previousView = selectedValue;
 					}
 				}
 			}.bind(this));
+			this._setDateFilter(this._previousView, oViewModelGanttData["defaultStartDate"], oViewModelGanttData["defaultEndDate"]);
 		},
 
 		/*
@@ -1663,18 +1662,16 @@ sap.ui.define([
 		 * @param sKey - selected mode
 		 * @private
 		 */
-		_setDateFilter: function (sKey) {
-			var newDateRange;
-			if(this.isVariantChanged){
-				this.isVariantChanged = false;
-				newDateRange={
-					StartDate:this.getModel("viewModel").getProperty("/gantt/defaultStartDate"),
-					EndDate:this.getModel("viewModel").getProperty("/gantt/defaultEndDate")
-				};
+		_setDateFilter: function (sKey, oStartDate, oEndDate) {
+			var newDateRange = formatter.getDefaultDates(sKey, this.getModel("user"));
+			if (oStartDate) {
+				newDateRange["StartDate"] = this.getModel("viewModel").getProperty("/gantt/defaultStartDate");
 			}
-			else{
-				newDateRange = formatter.getDefaultDates(sKey, this.getModel("user"));
+
+			if (oEndDate) {
+				newDateRange["EndDate"] = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
 			}
+
 			if (!this.oZoomStrategy) {
 				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
 			}
