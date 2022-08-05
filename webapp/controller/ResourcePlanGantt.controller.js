@@ -1873,13 +1873,11 @@ sap.ui.define([
 		_setDateFilter: function (sKey, oStartDate, oEndDate) {
 			var newDateRange = formatter.getDefaultDates(sKey, this.getModel("user"));
 			if (oStartDate) {
-				newDateRange["StartDate"] = this.getModel("viewModel").getProperty("/gantt/defaultStartDate");
+				newDateRange["StartDate"] = oStartDate;
 			}
-
 			if (oEndDate) {
-				newDateRange["EndDate"] = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
+				newDateRange["EndDate"] = oEndDate;
 			}
-
 			if (!this.oZoomStrategy) {
 				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
 			}
