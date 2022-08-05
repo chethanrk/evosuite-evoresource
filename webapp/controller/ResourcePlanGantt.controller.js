@@ -1865,7 +1865,9 @@ sap.ui.define([
 
 		/**
 		 * Set start date and end date for smart filter accroding to mode selected and change gantt view
-		 * @param sKey - selected mode
+		 * @param {string} sKey - selected mode
+		 * @param {object} oStartDate - start dae for the gantt
+		 * @param {object} oEndDate - end date for the gantt
 		 * @private
 		 */
 		_setDateFilter: function (sKey, oStartDate, oEndDate) {
