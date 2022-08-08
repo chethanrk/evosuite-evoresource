@@ -1250,6 +1250,7 @@ sap.ui.define([
 				oAssignData.minDate = new Date();
 				oAssignData.maxDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
 				oAssignData.isEditable = true;
+				oAssignData.isDeletable = this.isGroupDeletable(oAssignData);
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
 			} else if (oTargetControl.sParentAggregationName === "shapes3" && oContext) {
@@ -1262,12 +1263,28 @@ sap.ui.define([
 				oAssignData.maxDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
 				oAssignData.isEditable = true;
 				oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
+				oAssignData.isDeletable = this.isShiftDeletable(oAssignData);
 				oAssignData.StartDate = oAssignData.EffectiveStartDate;
 				oAssignData.EndDate = oAssignData.EffectiveEndDate;
 
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
 			}
+		},
+		
+		isGroupDeletable:function(oGroupData){
+			var bValidate = true;
+			if(this._isDatePast(oGroupData.StartDate)){
+				bValidate = false;
+			}
+			return bValidate;
+		},
+		isShiftDeletable:function(oGroupData){
+			var bValidate = true;
+			if(this._isDatePast(oGroupData.EffectiveStartDate)){
+				bValidate = false;
+			}
+			return bValidate;
 		},
 		/**
 		 * Add new Resource Group under Resource in Gantt

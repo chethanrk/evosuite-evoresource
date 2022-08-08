@@ -480,6 +480,18 @@ sap.ui.define([
 				return true;
 			}
 			return false;
+		},
+		
+		isPopoverDeleteButtonVisible:function(isEditable,isDeletable){
+			var bValidate = true;
+			if(!isEditable){
+				 bValidate = false;
+				 return bValidate;
+			}
+			if(!isDeletable){
+				bValidate = false;
+				 return bValidate;
+			}
 		}
 	};
 
