@@ -165,6 +165,16 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				afterVariantLoad: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				beforeVariantFetch: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -820,6 +830,58 @@ sap.ui.define([
 			}
 
 			return bValidated;
+		},
+		/*
+		 * Method called after variant is loaded
+		 * @param {object} oEvent
+		 */
+		afterVariantLoad: function (oEvent) {
+			var oSmartFilterBar = oEvent.getSource(),
+				CustomFilter = oSmartFilterBar.getControlConfiguration(),
+				oVariantData = oSmartFilterBar.getFilterData(),
+				oViewModelGanttData = this.getModel("viewModel").getProperty("/gantt");
+			CustomFilter.forEach(function (cFilter) {
+				var sKey = cFilter.getKey(),
+					oCustomControl = oSmartFilterBar.getControlByKey(sKey);
+				if (oCustomControl) {
+					var selectedValue = oVariantData._CUSTOM[sKey];
+					if (sKey === 'StartDate') {
+						oCustomControl.setDateValue(new Date(selectedValue));
+						oCustomControl.setSecondDateValue(new Date(oVariantData._CUSTOM['EndDate']));
+					}
+					if (sKey === "Mode") {
+						oCustomControl.setSelectedKey(selectedValue);
+						this._previousView = selectedValue;
+					}
+				}
+			}.bind(this));
+			this._setDateFilter(this._previousView, oViewModelGanttData["defaultStartDate"], oViewModelGanttData["defaultEndDate"]);
+		},
+
+		/*
+		 * Method called before variant is fetched
+		 * @param {object} oEvent
+		 */
+		beforeVariantFetch: function (oEvent) {
+			var oSmartFilterBar = oEvent.getSource(),
+				CustomFilter = oSmartFilterBar.getControlConfiguration(),
+				oValues = {};
+			CustomFilter.forEach(function (cFilter) {
+				var sKey = cFilter.getKey(),
+					oCustomControl = oSmartFilterBar.getControlByKey(sKey);
+				if (oCustomControl) {
+					if (sKey === 'StartDate') {
+						oValues[sKey] = oCustomControl.getDateValue();
+						oValues['EndDate'] = oCustomControl.getSecondDateValue();
+					}
+					if (sKey === "Mode") {
+						oValues[sKey] = oCustomControl.getSelectedItem() ? oCustomControl.getSelectedItem().getKey() : "DAY";
+					}
+				}
+			}.bind(this));
+			oSmartFilterBar.setFilterData({
+				_CUSTOM: oValues
+			}, false);
 		},
 
 		/**
@@ -1803,11 +1865,19 @@ sap.ui.define([
 
 		/**
 		 * Set start date and end date for smart filter accroding to mode selected and change gantt view
-		 * @param sKey - selected mode
+		 * @param {string} sKey - selected mode
+		 * @param {object} oStartDate - start dae for the gantt - default date is start date maintained in config
+		 * @param {object} oEndDate - end date for the gantt - default date is end date maintained in config
 		 * @private
 		 */
-		_setDateFilter: function (sKey) {
+		_setDateFilter: function (sKey, oStartDate, oEndDate) {
 			var newDateRange = formatter.getDefaultDates(sKey, this.getModel("user"));
+			if (oStartDate) {
+				newDateRange["StartDate"] = oStartDate;
+			}
+			if (oEndDate) {
+				newDateRange["EndDate"] = oEndDate;
+			}
 			if (!this.oZoomStrategy) {
 				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
 			}
