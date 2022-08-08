@@ -492,6 +492,20 @@ sap.ui.define([
 				bValidate = false;
 				 return bValidate;
 			}
+		},
+		isPopoverGroupChangeEnable:function(isDeletable){
+			var bValidate = true;
+			if(!isDeletable){
+				bValidate = false;
+				 return bValidate;
+			}
+		},
+		isPopoverShiftChangeEnable:function(isDeletable){
+			var bValidate = true;
+			if(!isDeletable){
+				bValidate = false;
+				 return bValidate;
+			}
 		}
 	};
 

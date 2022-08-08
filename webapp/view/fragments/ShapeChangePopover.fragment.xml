@@ -20,12 +20,14 @@
 							showSecondaryValues="true" name="ResourceGroupGuid" fieldGroupIds="changeShapeInput"
 							items="{ path: 'viewModel>/ResourceGroup', sorter: { path: 'ResourceGroupDesc' }}"
 							selectedKey="{ganttPlanningModel>/tempData/popover/ResourceGroupGuid}" change="onChangeResourceGroup"
-							visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'RES_GROUP'}">
+							visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'RES_GROUP'}"
+							editable = "{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverGroupChangeEnable'}">
 							<core:ListItem key="{viewModel>ResourceGroupGuid}" text="{viewModel>ResourceGroupDesc}" additionalText="{viewModel>ResourceGroupUnitId}"/>
 						</ComboBox>
 						<ComboBox id="idShift" required="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}" showSecondaryValues="true" name="Shift"
 							fieldGroupIds="changeShapeInput" items="{ path: 'viewModel>/Shifts'}" selectedKey="{ganttPlanningModel>/tempData/popover/TemplateId}"
-							change="onChangeShift" visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}">
+							change="onChangeShift" visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}"
+							editable = "{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverShiftChangeEnable'}">
 							<core:ListItem key="{viewModel>TemplateId}" text="{viewModel>TemplateDesc}" additionalText="{viewModel>TemplateId}"/>
 						</ComboBox>
 						<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
