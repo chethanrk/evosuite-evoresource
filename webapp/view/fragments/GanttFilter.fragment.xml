@@ -11,7 +11,7 @@
 			</FlexBox>
 		</content>
 		<endButton>
-			<Button text = "{i18n>xbtn.ok}" press="onFilterGantt"/>
+			<Button text = "{i18n>xbtn.ok}" press="onGanttFilterOK"/>
 		</endButton>
 	</Dialog>
 </core:FragmentDefinition>

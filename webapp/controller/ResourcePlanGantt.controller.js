@@ -932,6 +932,16 @@ sap.ui.define([
 			oUserModel.setProperty(sPath, bCheckState);
 		},
 
+		onGanttFilterOK: function (oEvent) {
+			var aPopupSet = this.getModel("viewModel").getProperty("/GanttSettingInformation"),
+				oganttShapeVisibility=this.getModel("viewModel").getProperty("/GanttShapeVisibility");
+			aPopupSet.forEach(function (oItem) {
+				oganttShapeVisibility[oItem.Type] = oItem.DefaultFlag;
+			});
+			this.getModel("viewModel").setProperty("/GanttShapeVisibility", oganttShapeVisibility);
+			this._oGanttFilterDialog.close();
+		},
+
 		/**
 		 * Method to call open Demand Dialog
 		 */

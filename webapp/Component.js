@@ -221,7 +221,13 @@ sap.ui.define([
 		_getGanttSettingInformation:function(){
 			this.oGanttSettingInfoProm = new Promise(function (resolve) {
 				this.readData("/ShowPopupSet", []).then(function (oData) {
-					this.getModel("viewModel").setProperty("/GanttSettingInformation", oData.results);
+					var aPopupSet = oData.results,
+						ganttShapeVisibility = {};
+					this.getModel("viewModel").setProperty("/GanttSettingInformation", aPopupSet);
+					aPopupSet.forEach(function(oItem){
+						ganttShapeVisibility[oItem.Type] = oItem.DefaultFlag;      
+					});
+					this.getModel("viewModel").setProperty("/GanttShapeVisibility", ganttShapeVisibility);
 					resolve(oData.results);
 				}.bind(this));
 			}.bind(this));
