@@ -3,11 +3,6 @@
 		<content>
 			<FlexBox direction="Column" items="{viewModel>/GanttSettingInformation}">
 				<CheckBox text="{viewModel>Description}" selected="{viewModel>DefaultFlag}" app:type="{viewModel>Type}"/>
-				<!--<CheckBox text="{i18n>xlbl.showBlocker}" selected="{user>/ENABLE_SHOW_BLOCKER}" select="onGanttEnableType"/>-->
-				<!--<CheckBox text="{i18n>xlbl.showAvailibility}" selected="{user>/ENABLE_SHOW_AVAILABILITY}" select="onGanttEnableType"/>-->
-				<!--<CheckBox text="{i18n>xlbl.showAbsences}" selected="{user>/ENABLE_SHOW_ABSENCE}" select="onGanttEnableType"/>-->
-				<!--<CheckBox text="{i18n>xlbl.showShift}" selected="{user>/ENABLE_SHOW_SHIFT}" select="onGanttEnableType"/>-->
-				<!--<CheckBox text="{i18n>xlbl.showGroup}" selected="{user>/ENABLE_SHOW_GROUP}" select="onGanttEnableType"/>-->
 			</FlexBox>
 		</content>
 		<endButton>
