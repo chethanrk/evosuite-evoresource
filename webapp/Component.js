@@ -22,7 +22,11 @@ sap.ui.define([
 				fullWidth: true
 			}
 		},
-
+		oSystemInfoProm: null,
+		oDefaultInfoProm: null,
+		oResourceGroupInfoProm: null,
+		oShiftInfoProm: null,
+		oGanttSettingInfoProm: null,
 		oTemplatePropsProm: null,
 
 		/**
@@ -77,6 +81,9 @@ sap.ui.define([
 
 			// get System Information
 			this._getSystemInformation();
+
+			//get Gantt setting information
+			this._getGanttSettingInformation();
 
 			// enable routing
 			this.getRouter().initialize();
@@ -188,10 +195,11 @@ sap.ui.define([
 			}.bind(this));
 		},
 		/**
-		 * Calls the PropertyValueDetermination 
+		 * Gets resource group data
+		 * Returns promise
 		 */
 		_getResourceGroupDetails: function () {
-			this.oDefaultInfoProm = new Promise(function (resolve) {
+			this.oResourceGroupInfoProm = new Promise(function (resolve) {
 				this.readData("/ResourceGroupSet", []).then(function (oData) {
 					this.getModel("viewModel").setProperty("/ResourceGroup", oData.results);
 					resolve(oData.results);
@@ -199,12 +207,31 @@ sap.ui.define([
 			}.bind(this));
 		},
 		/**
-		 * Calls the PropertyValueDetermination 
+		 * Gets shift data
+		 * Returns promise
 		 */
 		_getShiftDetails: function () {
-			this.oDefaultInfoProm = new Promise(function (resolve) {
+			this.oShiftInfoProm = new Promise(function (resolve) {
 				this.readData("/ShiftSet", []).then(function (oData) {
 					this.getModel("viewModel").setProperty("/Shifts", oData.results);
+					resolve(oData.results);
+				}.bind(this));
+			}.bind(this));
+		},
+		/**
+		 * Gets Gantt Setting Information
+		 * Returns promise
+		 */
+		_getGanttSettingInformation: function () {
+			this.oGanttSettingInfoProm = new Promise(function (resolve) {
+				this.readData("/ShowPopupSet", []).then(function (oData) {
+					var aPopupSet = oData.results,
+						ganttShapeVisibility = {};
+					this.getModel("viewModel").setProperty("/GanttSettingInformation", aPopupSet);
+					aPopupSet.forEach(function (oItem) {
+						ganttShapeVisibility[oItem.Type] = oItem.DefaultFlag;
+					});
+					this.getModel("viewModel").setProperty("/GanttShapeVisibility", ganttShapeVisibility);
 					resolve(oData.results);
 				}.bind(this));
 			}.bind(this));
