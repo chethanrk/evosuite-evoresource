@@ -175,6 +175,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				onGanttFilterOK: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -910,26 +915,18 @@ sap.ui.define([
 		},
 
 		/**
-		 * Called when OK is pressed on Filter Dialog
-		 * @param {object} oEvent - event of the filter button
-		 * 
+		 * Method called when OK is pressed on Setting Dialog of Gantt
+		 * Update Gantt based on Gantt Setting data selected in dialog
+		 * oParam {object} oEvent - Event
 		 */
-		onFilterGantt: function (oEvent) {
+		onGanttFilterOK: function (oEvent) {
+			var aPopupSet = this.getModel("viewModel").getProperty("/GanttSettingInformation"),
+				oganttShapeVisibility = this.getModel("viewModel").getProperty("/GanttShapeVisibility");
+			aPopupSet.forEach(function (oItem) {
+				oganttShapeVisibility[oItem.Type] = oItem.DefaultFlag;
+			});
+			this.getModel("viewModel").setProperty("/GanttShapeVisibility", oganttShapeVisibility);
 			this._oGanttFilterDialog.close();
-		},
-
-		/**
-		 * Called when option get select in Filter dialog
-		 * @param {object} oEvent - event of the filter button
-		 * 
-		 */
-		onGanttEnableType: function (oEvent) {
-			var oUserModel = this.getModel("user"),
-				bCheckState = oEvent.getParameter('selected'),
-				oSource = oEvent.getSource(),
-				sPath = oSource.getBindingInfo("selected").binding.getPath();
-
-			oUserModel.setProperty(sPath, bCheckState);
 		},
 
 		/**
