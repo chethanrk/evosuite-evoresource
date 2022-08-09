@@ -22,7 +22,11 @@ sap.ui.define([
 				fullWidth: true
 			}
 		},
-
+		oSystemInfoProm: null,
+		oDefaultInfoProm: null,
+		oResourceGroupInfoProm: null,
+		oShiftInfoProm: null,
+		oGanttSettingInfoProm: null,
 		oTemplatePropsProm: null,
 
 		/**
@@ -77,7 +81,7 @@ sap.ui.define([
 
 			// get System Information
 			this._getSystemInformation();
-			
+
 			//get Gantt setting information
 			this._getGanttSettingInformation();
 
@@ -218,14 +222,14 @@ sap.ui.define([
 		 * Gets Gantt Setting Information
 		 * Returns promise
 		 */
-		_getGanttSettingInformation:function(){
+		_getGanttSettingInformation: function () {
 			this.oGanttSettingInfoProm = new Promise(function (resolve) {
 				this.readData("/ShowPopupSet", []).then(function (oData) {
 					var aPopupSet = oData.results,
 						ganttShapeVisibility = {};
 					this.getModel("viewModel").setProperty("/GanttSettingInformation", aPopupSet);
-					aPopupSet.forEach(function(oItem){
-						ganttShapeVisibility[oItem.Type] = oItem.DefaultFlag;      
+					aPopupSet.forEach(function (oItem) {
+						ganttShapeVisibility[oItem.Type] = oItem.DefaultFlag;
 					});
 					this.getModel("viewModel").setProperty("/GanttShapeVisibility", ganttShapeVisibility);
 					resolve(oData.results);
