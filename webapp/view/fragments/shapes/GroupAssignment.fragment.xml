@@ -7,5 +7,5 @@
 		fill="{ganttPlanningModel>RESOURCE_GROUP_COLOR}"
 		stroke="{parts: ['ganttPlanningModel>RESOURCE_GROUP_COLOR',{value:'-20', model:'ganttPlanningModel'}], formatter: '.formatter.shadeColor'}"
 		strokeWidth="1" opacity="{= ${ganttPlanningModel>isTemporary} === true ? 0.5 : 1}" resizable="true" selectable="true" draggable="true"
-		rx="4" ry="4" visible="{viewModel>/GanttShapeVisibility/GROUP}"></gnt2:BaseRectangle>
+		rx="4" ry="4" visible="{viewModel>/GanttShapeVisibility/RES_GROUP}"></gnt2:BaseRectangle>
 </core:FragmentDefinition>
