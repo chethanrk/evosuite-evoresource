@@ -180,6 +180,16 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				isGroupDeletable:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				isShiftDeletable:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -1268,7 +1278,10 @@ sap.ui.define([
 				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
 			}
 		},
-		
+		/*
+		* Checks if group assignment is deletable
+		* @param {object} oGroupData - Group assignment object
+		*/
 		isGroupDeletable:function(oGroupData){
 			var bValidate = true;
 			if(this._isDatePast(oGroupData.StartDate)){
@@ -1276,9 +1289,13 @@ sap.ui.define([
 			}
 			return bValidate;
 		},
-		isShiftDeletable:function(oGroupData){
+		/*
+		* Checks if shift assignment is deletable
+		* @param {object} oShiftData - Shift assignment object
+		*/
+		isShiftDeletable:function(oShiftData){
 			var bValidate = true;
-			if(this._isDatePast(oGroupData.EffectiveStartDate)){
+			if(this._isDatePast(oShiftData.EffectiveStartDate)){
 				bValidate = false;
 			}
 			return bValidate;
