@@ -432,9 +432,8 @@ sap.ui.define([
 					}).then(function (pPopover) {
 						this._oPlanningPopover = pPopover;
 						this.getView().addDependent(this._oPlanningPopover);
-						this._setPopoverData(oTargetControl, oPopoverData);
 						this._oPlanningPopover.openBy(oTargetControl);
-						
+						this._setPopoverData(oTargetControl, oPopoverData);
 
 						//after popover gets opened check popover data for resource group color
 						this._oPlanningPopover.attachAfterOpen(function () {
@@ -449,9 +448,9 @@ sap.ui.define([
 						}.bind(this));
 					}.bind(this));
 				} else {
-					this._setPopoverData(oTargetControl, oPopoverData);
 					this._oPlanningPopover.openBy(oTargetControl);
-					
+					this._setPopoverData(oTargetControl, oPopoverData);
+
 				}
 			} else {
 				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
@@ -679,21 +678,13 @@ sap.ui.define([
 		 * @param {object} oEvent
 		 */
 		onChangeDate: function (oEvent) {
-			var sName = oEvent.getSource().getName(),
-				oDateRange = oEvent.getSource(),
-				oDate;
-			// oStartDate = oDateRange.getDateValue();
-			// oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate();
-
-			if (sName === "DateFrom") {
-				oDate = oDateRange.getDateValue();
-				this.oPlanningModel.setProperty("/tempData/popover/StartDate", oDate);
-				this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oDate);
-			} else if (sName === "DateTo") {
-				oDate =  moment(oDateRange.getDateValue()).subtract(999, "milliseconds").toDate();
-				this.oPlanningModel.setProperty("/tempData/popover/EndDate", oDate);
-				this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oDate);
-			}
+			var oDateRange = oEvent.getSource(),
+				oStartDate = oDateRange.getDateValue(),
+				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate();
+			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
 
 			//validate for the overlapping
 			if (this._validateDuplicateAsigment()) {
@@ -860,7 +851,6 @@ sap.ui.define([
 		 * @param {object} oEvent
 		 */
 		afterVariantLoad: function (oEvent) {
-			debugger;
 			var oSmartFilterBar = oEvent.getSource(),
 				CustomFilter = oSmartFilterBar.getControlConfiguration(),
 				oVariantData = oSmartFilterBar.getFilterData(),
@@ -888,7 +878,6 @@ sap.ui.define([
 		 * @param {object} oEvent
 		 */
 		beforeVariantFetch: function (oEvent) {
-			debugger;
 			var oSmartFilterBar = oEvent.getSource(),
 				CustomFilter = oSmartFilterBar.getControlConfiguration(),
 				oValues = {};
@@ -1265,9 +1254,8 @@ sap.ui.define([
 				this._setShapePopoverPosition(oAssignData);
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
-				oAssignData.minDate = this._isDatePast(oAssignData.StartDate) ? null : this.getModel("viewModel").getProperty("/gantt/defaultStartDate");
-				// oAssignData.maxDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
-				oAssignData.maxDate = null;
+				oAssignData.minDate = moment().startOf("day").toDate();
+				oAssignData.maxDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
 				oAssignData.isEditable = true;
 				oAssignData.isDeletable = this.isGroupDeletable(oAssignData);
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
@@ -1278,9 +1266,8 @@ sap.ui.define([
 				this._setShapePopoverPosition(oAssignData);
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
-				oAssignData.minDate = this._isDatePast(oAssignData.EffectiveStartDate) ? null : this.getModel("viewModel").getProperty("/gantt/defaultStartDate");
-				// oAssignData.maxDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
-				oAssignData.maxDate = null;
+				oAssignData.minDate = oAssignData.minDate = moment().startOf("day").toDate();
+				oAssignData.maxDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
 				oAssignData.isEditable = true;
 				oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
 				oAssignData.isDeletable = this.isShiftDeletable(oAssignData);
@@ -1295,7 +1282,7 @@ sap.ui.define([
 		 * Checks if group assignment is deletable
 		 * @param {object} oGroupData - Group assignment object
 		 */
-		isGroupDeletable : function (oGroupData) {
+		isGroupDeletable: function (oGroupData) {
 			var bValidate = true;
 			if (this._isDatePast(oGroupData.StartDate)) {
 				bValidate = false;
@@ -1306,7 +1293,7 @@ sap.ui.define([
 		 * Checks if shift assignment is deletable
 		 * @param {object} oShiftData - Shift assignment object
 		 */
-		isShiftDeletable : function (oShiftData) {
+		isShiftDeletable: function (oShiftData) {
 			var bValidate = true;
 			if (this._isDatePast(oShiftData.EffectiveStartDate)) {
 				bValidate = false;

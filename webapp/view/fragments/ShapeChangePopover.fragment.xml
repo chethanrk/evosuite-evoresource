@@ -30,19 +30,10 @@
 							editable="{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverShiftChangeEnable'}">
 							<core:ListItem key="{viewModel>TemplateId}" text="{viewModel>TemplateDesc}" additionalText="{viewModel>TemplateId}"/>
 						</ComboBox>
-						<!--<Label text="{i18n>xfld.popoverDateRange}" required="true"/>-->
-						<!--<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"-->
-						<!--	dateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/StartDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"-->
-						<!--	secondDateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/EndDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"-->
-						<!--	minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}" maxDate="{path:'ganttPlanningModel>/tempData/popover/maxDate'}"/>-->
-						<Label text="{i18n>xfld.popoverDateFrom}" required="true"/>
-						<DatePicker required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"
+						<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
+						<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"
 							dateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/StartDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
-							minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}" maxDate="{path:'ganttPlanningModel>/tempData/popover/maxDate'}"
-							editable="{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverShiftChangeEnable'}"/>
-						<Label text="{i18n>xfld.popoverDateTo}" required="true"/>
-						<DatePicker required="true" name="DateTo" fieldGroupIds="changeShapeInput" change="onChangeDate"
-							dateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/EndDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
+							secondDateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/EndDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
 							minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}" maxDate="{path:'ganttPlanningModel>/tempData/popover/maxDate'}"/>
 						<Label text="{i18n>xfld.Repeat}"/>
 						<Select id="idRepeatMode" forceSelection="true" change="onChangeRepeatMode" selectedKey="{ganttPlanningModel>/tempData/popover/Repeat}"
