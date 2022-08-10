@@ -481,11 +481,7 @@ sap.ui.define([
 			}
 			return false;
 		},
-		/**
-		 * Sets Shape popover button visibility
-		 * @param {boolean} isEditable
-		 * @param {boolean} isDeletable
-		 */
+		
 		isPopoverDeleteButtonVisible:function(isEditable,isDeletable){
 			var bValidate = true;
 			if(!isEditable){
@@ -497,10 +493,6 @@ sap.ui.define([
 				 return bValidate;
 			}
 		},
-		/**
-		 * Sets Group changing combo editable
-		 * @param {boolean} isDeletable
-		 */
 		isPopoverGroupChangeEnable:function(isDeletable){
 			var bValidate = true;
 			if(!isDeletable){
@@ -508,10 +500,6 @@ sap.ui.define([
 				 return bValidate;
 			}
 		},
-		/**
-		 * Sets Shift changing combo editable
-		 * @param {boolean} is Deletable
-		 */
 		isPopoverShiftChangeEnable:function(isDeletable){
 			var bValidate = true;
 			if(!isDeletable){
