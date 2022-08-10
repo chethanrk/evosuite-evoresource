@@ -21,19 +21,28 @@
 							items="{ path: 'viewModel>/ResourceGroup', sorter: { path: 'ResourceGroupDesc' }}"
 							selectedKey="{ganttPlanningModel>/tempData/popover/ResourceGroupGuid}" change="onChangeResourceGroup"
 							visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'RES_GROUP'}"
-							editable = "{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverGroupChangeEnable'}">
+							editable="{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverGroupChangeEnable'}">
 							<core:ListItem key="{viewModel>ResourceGroupGuid}" text="{viewModel>ResourceGroupDesc}" additionalText="{viewModel>ResourceGroupUnitId}"/>
 						</ComboBox>
 						<ComboBox id="idShift" required="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}" showSecondaryValues="true" name="Shift"
 							fieldGroupIds="changeShapeInput" items="{ path: 'viewModel>/Shifts'}" selectedKey="{ganttPlanningModel>/tempData/popover/TemplateId}"
 							change="onChangeShift" visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}"
-							editable = "{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverShiftChangeEnable'}">
+							editable="{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverShiftChangeEnable'}">
 							<core:ListItem key="{viewModel>TemplateId}" text="{viewModel>TemplateDesc}" additionalText="{viewModel>TemplateId}"/>
 						</ComboBox>
-						<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
-						<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"
+						<!--<Label text="{i18n>xfld.popoverDateRange}" required="true"/>-->
+						<!--<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"-->
+						<!--	dateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/StartDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"-->
+						<!--	secondDateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/EndDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"-->
+						<!--	minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}" maxDate="{path:'ganttPlanningModel>/tempData/popover/maxDate'}"/>-->
+						<Label text="{i18n>xfld.popoverDateFrom}" required="true"/>
+						<DatePicker required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"
 							dateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/StartDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
-							secondDateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/EndDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
+							minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}" maxDate="{path:'ganttPlanningModel>/tempData/popover/maxDate'}"
+							editable="{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverShiftChangeEnable'}"/>
+						<Label text="{i18n>xfld.popoverDateTo}" required="true"/>
+						<DatePicker required="true" name="DateTo" fieldGroupIds="changeShapeInput" change="onChangeDate"
+							dateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/EndDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
 							minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}" maxDate="{path:'ganttPlanningModel>/tempData/popover/maxDate'}"/>
 						<Label text="{i18n>xfld.Repeat}"/>
 						<Select id="idRepeatMode" forceSelection="true" change="onChangeRepeatMode" selectedKey="{ganttPlanningModel>/tempData/popover/Repeat}"
@@ -89,11 +98,9 @@
 						visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'RES_GROUP'}" editable="false">
 						<core:ListItem key="{viewModel>ResourceGroupGuid}" text="{viewModel>ResourceGroupDesc}" additionalText="{viewModel>ResourceGroupUnitId}"/>
 					</ComboBox>
-					<ComboBox items="{ path: 'viewModel>/Shifts'}"
-						selectedKey="{ganttPlanningModel>/tempData/popover/TemplateId}"
+					<ComboBox items="{ path: 'viewModel>/Shifts'}" selectedKey="{ganttPlanningModel>/tempData/popover/TemplateId}"
 						visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}" editable="false">
-						<core:ListItem key="{viewModel>TemplateId}"
-							text="{viewModel>TemplateDesc}" additionalText="{viewModel>TemplateId}"/>
+						<core:ListItem key="{viewModel>TemplateId}" text="{viewModel>TemplateDesc}" additionalText="{viewModel>TemplateId}"/>
 					</ComboBox>
 					<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
 					<DateRangeSelection
@@ -105,7 +112,8 @@
 			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|After"/>
 		</content>
 		<beginButton>
-			<Button text="{i18n>xbtn.delete}" press="onPressDeleteAssignment" visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/isEditable'},{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverDeleteButtonVisible'}"/>
+			<Button text="{i18n>xbtn.delete}" press="onPressDeleteAssignment"
+				visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/isEditable'},{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverDeleteButtonVisible'}"/>
 		</beginButton>
 		<endButton>
 			<Button type="Emphasized" text="{i18n>xbtn.ok}" press="onPressChangeAssignment"
