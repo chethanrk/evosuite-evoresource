@@ -190,6 +190,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				onChangeEndDate:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -701,6 +706,11 @@ sap.ui.define([
 			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
 			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
 		},
+		/**
+		 * Called when end date is changed using End Date picker
+		 * change selected date to UTC date to make display valid date on the screen
+		 * @param {object} oEvent
+		 */
 		onChangeEndDate: function (oEvent) {
 			var oDatePicker = oEvent.getSource(),
 				oEndDate = moment(oDatePicker.getDateValue()).endOf('day').subtract(999,'millisecond').toDate(),
