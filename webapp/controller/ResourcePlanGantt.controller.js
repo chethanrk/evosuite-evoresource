@@ -1266,7 +1266,7 @@ sap.ui.define([
 				this._setShapePopoverPosition(oAssignData);
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
-				oAssignData.minDate = oAssignData.minDate = moment().startOf("day").toDate();
+				oAssignData.minDate = moment().startOf("day").toDate();
 				oAssignData.maxDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
 				oAssignData.isEditable = true;
 				oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
