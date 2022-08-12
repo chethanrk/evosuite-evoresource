@@ -18,6 +18,7 @@
 		"entitySet": "ResourceGroupSet",
 		"tableBindingPath": "",
 		"requestAtLeastFields": "ResourceGroupGuid,ResourceGroupId,ResourceGroupColor,ResourceGroupUnitDesc",
+		"CustomColumn": ["ResourceGroupColor"],
 		"class": "",
 		"isGroup": "",
 		"groupProperty": ""
@@ -35,7 +36,8 @@
 		"enableAutoBinding": true,
 		"entitySet": "ShiftSet",
 		"tableBindingPath": "",
-		"requestAtLeastFields": "",
+		"requestAtLeastFields": "SHIFT_COLOR",
+		"CustomColumn": ["SHIFT_COLOR"],
 		"class": "",
 		"isGroup": "",
 		"groupProperty": ""

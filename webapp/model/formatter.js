@@ -94,7 +94,7 @@ sap.ui.define([
 			innerInterval: {
 				unit: TimeUnit.day,
 				span: 1,
-				range: 60
+				range: 90
 			},
 			largeInterval: {
 				unit: TimeUnit.week,
@@ -111,7 +111,7 @@ sap.ui.define([
 			innerInterval: {
 				unit: TimeUnit.week,
 				span: 1,
-				range: 60
+				range: 150
 			},
 			largeInterval: {
 				unit: TimeUnit.month,
@@ -128,7 +128,7 @@ sap.ui.define([
 			innerInterval: {
 				unit: TimeUnit.month,
 				span: 1,
-				range: 100
+				range: 175
 			},
 			largeInterval: {
 				unit: TimeUnit.year,

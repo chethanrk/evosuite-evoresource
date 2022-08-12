@@ -17,10 +17,7 @@ sap.ui.define([
 	return UIComponent.extend("com.evorait.evosuite.evoresource.Component", {
 
 		metadata: {
-			manifest: "json",
-			config: {
-				fullWidth: true
-			}
+			manifest: "json"
 		},
 		oSystemInfoProm: null,
 		oDefaultInfoProm: null,
@@ -54,9 +51,9 @@ sap.ui.define([
 				densityClass: this.getContentDensityClass(),
 				isSubPage: false,
 				gantt: {
-					defaultStartDate: moment().startOf("week").toDate(),
-					defaultEndDate: moment().endOf("month").add(1, "months").toDate(),
-					popoverPlacement: sap.m.PlacementType.HorizontalPreferredRight
+					defaultStartDate: moment().toDate(),
+					defaultEndDate: moment().endOf("day").toDate(),
+					popoverPlacement: sap.m.PlacementType.Auto
 				},
 				draggedData: null,
 				launchMode: Constants.LAUNCH_MODE.BSP,
