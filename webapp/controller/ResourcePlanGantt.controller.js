@@ -216,7 +216,14 @@ sap.ui.define([
 
 			//idPageResourcePlanningWrapper
 			this._initialisePlanningModel();
+		},
 
+		/**
+		 * Called when before rendering ui eleents.
+		 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
+		 * @memberOf com.evorait.evosuite.evoresource.controller.ResourcePlanningMain
+		 */
+		onBeforeRendering: function () {
 			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
 				this._setNewHorizon(oResult.DEFAULT_DAILYVIEW_STARTDATE, oResult.DEFAULT_DAILYVIEW_ENDDATE);
 			}.bind(this));
@@ -1268,7 +1275,6 @@ sap.ui.define([
 			} else if (oTargetControl.sParentAggregationName === "shapes2" && oContext) {
 				//its a assignment
 				oAssignData = oContext.getObject();
-				this._setShapePopoverPosition(oAssignData);
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
 				oAssignData.minDate = moment().startOf("day").toDate();
@@ -1280,7 +1286,6 @@ sap.ui.define([
 			} else if (oTargetControl.sParentAggregationName === "shapes3" && oContext) {
 				//its a assignment
 				oAssignData = oContext.getObject();
-				this._setShapePopoverPosition(oAssignData);
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
 				oAssignData.minDate = moment().startOf("day").toDate();
@@ -1385,24 +1390,6 @@ sap.ui.define([
 				});
 			}
 			return false;
-		},
-
-		/**
-		 * When shape is rumming out of visible gantt horizon show popup
-		 * on top or bottom else when left or right
-		 * @param {object} oAssignData - shape assignment data
-		 */
-		_setShapePopoverPosition: function (oAssignData) {
-			//this._visibileStartDate; this._visibileEndDate
-			var oStartDate = moment(oAssignData.DateFrom),
-				oEndDate = moment(oAssignData.DateTo);
-
-			if (oStartDate.isSameOrBefore(this._visibileStartDate) && oEndDate.isSameOrAfter(this._visibileEndDate)) {
-				this.getModel("viewModel").setProperty("/gantt/popoverPlacement", sap.m.PlacementType.VerticalPreferredBottom);
-			} else {
-				this.getModel("viewModel").setProperty("/gantt/popoverPlacement", sap.m.PlacementType.HorizontalPreferredRight);
-			}
-
 		},
 
 		/**
