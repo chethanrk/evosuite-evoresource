@@ -481,7 +481,12 @@ sap.ui.define([
 			}
 			return false;
 		},
-
+		/*
+		* Sets Delete button visisbility
+		* @param {boolean} isEditable
+		* @param {boolean} isDeletable
+		*
+		*/
 		isPopoverDeleteButtonVisible: function (isEditable, isDeletable) {
 			var bValidate = true;
 			if (!isEditable) {
@@ -494,6 +499,11 @@ sap.ui.define([
 			}
 			return bValidate;
 		},
+		/*
+		* Sets Group change combo box enable status
+		* @param {boolean} isDeletable
+		*
+		*/
 		isPopoverGroupChangeEnable: function (isDeletable) {
 			var bValidate = true;
 			if (!isDeletable) {
@@ -502,6 +512,11 @@ sap.ui.define([
 			}
 			return bValidate;
 		},
+		/*
+		* Sets Shift change combo box enable status
+		* @param {boolean} isDeletable
+		*
+		*/
 		isPopoverShiftChangeEnable: function (isDeletable) {
 			var bValidate = true;
 			if (!isDeletable) {
@@ -510,6 +525,11 @@ sap.ui.define([
 			}
 			return bValidate;
 		},
+		/*
+		* Sets Date Range Selection enable status
+		* @param {boolean} isDeletable
+		*
+		*/
 		isPopoverDateRangeEditable: function (isDeletable) {
 			var bValidate = true;
 			if (!isDeletable) {
@@ -518,6 +538,11 @@ sap.ui.define([
 			}
 			return bValidate;
 		},
+		/*
+		* Sets End date picker enable status
+		* @param {boolean} isDeletable
+		*
+		*/
 		isPopoverEndDatePickerVisible: function (isDeletable) {
 			var bValidate = false;
 			if (!isDeletable) {
