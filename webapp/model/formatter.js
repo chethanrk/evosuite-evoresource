@@ -510,7 +510,7 @@ sap.ui.define([
 			}
 			return bValidate;
 		},
-		isPopoverDateRangeVisible: function (isDeletable) {
+		isPopoverDateRangeEditable: function (isDeletable) {
 			var bValidate = true;
 			if (!isDeletable) {
 				bValidate = false;
