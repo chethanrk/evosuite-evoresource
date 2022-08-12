@@ -202,13 +202,13 @@ sap.ui.define([
 		convertString2Date: function (sDate) {
 			return moment(sDate.substr(0, 4) + "-" + sDate.substring(4, 6) + "-" + sDate.substring(6, 8));
 		},
-		
+
 		/**
 		 * convert a date to string
 		 * @param {object} sDate - Date object
 		 * @returns {string} - Date in format "YYYYMMDDHHMMSS"
 		 */
-		convertDate2String:function(sDate){
+		convertDate2String: function (sDate) {
 			return moment(sDate).format("YYYYMMDDHHmmss");
 		},
 
@@ -481,31 +481,50 @@ sap.ui.define([
 			}
 			return false;
 		},
-		
-		isPopoverDeleteButtonVisible:function(isEditable,isDeletable){
+
+		isPopoverDeleteButtonVisible: function (isEditable, isDeletable) {
 			var bValidate = true;
-			if(!isEditable){
-				 bValidate = false;
-				 return bValidate;
-			}
-			if(!isDeletable){
+			if (!isEditable) {
 				bValidate = false;
-				 return bValidate;
+				return bValidate;
 			}
+			if (!isDeletable) {
+				bValidate = false;
+				return bValidate;
+			}
+			return bValidate;
 		},
-		isPopoverGroupChangeEnable:function(isDeletable){
+		isPopoverGroupChangeEnable: function (isDeletable) {
 			var bValidate = true;
-			if(!isDeletable){
+			if (!isDeletable) {
 				bValidate = false;
-				 return bValidate;
+				return bValidate;
 			}
+			return bValidate;
 		},
-		isPopoverShiftChangeEnable:function(isDeletable){
+		isPopoverShiftChangeEnable: function (isDeletable) {
 			var bValidate = true;
-			if(!isDeletable){
+			if (!isDeletable) {
 				bValidate = false;
-				 return bValidate;
+				return bValidate;
 			}
+			return bValidate;
+		},
+		isPopoverDateRangeVisible: function (isDeletable) {
+			var bValidate = true;
+			if (!isDeletable) {
+				bValidate = false;
+				return bValidate;
+			}
+			return bValidate;
+		},
+		isPopoverEndDatePickerVisible: function (isDeletable) {
+			var bValidate = false;
+			if (!isDeletable) {
+				bValidate = true;
+				return bValidate;
+			}
+			return bValidate;
 		}
 	};
 

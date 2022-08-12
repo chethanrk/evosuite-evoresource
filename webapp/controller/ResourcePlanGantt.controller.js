@@ -694,6 +694,23 @@ sap.ui.define([
 			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
 			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
 		},
+		onChangeEndDate: function (oEvent) {
+			var oDatePicker = oEvent.getSource(),
+				oEndDate = moment(oDatePicker.getDateValue()).endOf('day').subtract(999,'millisecond').toDate(),
+				oStartDate = this.oPlanningModel.getProperty("/tempData/popover/StartDate");
+			oStartDate = formatter.convertFromUTCDate(oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
+			//validate for the overlapping
+			if (this._validateDuplicateAsigment()) {
+				return;
+			}
+			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", true);
+			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
+			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
+		},
 
 		/**
 		 * On click on today adjust the view of Gantt horizon
