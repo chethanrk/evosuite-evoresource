@@ -1288,7 +1288,7 @@ sap.ui.define([
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
 				oAssignData.minDate = moment().startOf("day").toDate();
-				oAssignData.maxDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
+				oAssignData.maxDate = moment(this.getModel("viewModel").getProperty("/gantt/defaultEndDate")).endOf("day").toDate();
 				oAssignData.isEditable = true;
 				oAssignData.isDeletable = this.isGroupDeletable(oAssignData);
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
@@ -1299,7 +1299,7 @@ sap.ui.define([
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
 				oAssignData.minDate = moment().startOf("day").toDate();
-				oAssignData.maxDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
+				oAssignData.maxDate = moment(this.getModel("viewModel").getProperty("/gantt/defaultEndDate")).endOf("day").toDate();
 				oAssignData.isEditable = true;
 				oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
 				oAssignData.isDeletable = this.isShiftDeletable(oAssignData);
