@@ -849,9 +849,13 @@ sap.ui.define([
 		 */
 		afterVariantLoad: function (oEvent) {
 			var oSmartFilterBar = oEvent.getSource(),
+				oSmartVariant = oSmartFilterBar.getSmartVariant(),
+				oVariantText = oSmartVariant.oVariantText,
 				CustomFilter = oSmartFilterBar.getControlConfiguration(),
 				oVariantData = oSmartFilterBar.getFilterData(),
-				oViewModelGanttData = this.getModel("viewModel").getProperty("/gantt");
+				oViewModelGanttData = this.getModel("viewModel").getProperty("/gantt"),
+				oDefaultStartDate=null,
+				oDefaultEndDate=null;
 			CustomFilter.forEach(function (cFilter) {
 				var sKey = cFilter.getKey(),
 					oCustomControl = oSmartFilterBar.getControlByKey(sKey);
@@ -867,7 +871,11 @@ sap.ui.define([
 					}
 				}
 			}.bind(this));
-			this._setDateFilter(this._previousView, oViewModelGanttData["defaultStartDate"], oViewModelGanttData["defaultEndDate"]);
+			if(!oVariantText.getProperty("text") !== "Standard"){
+				oDefaultStartDate = oViewModelGanttData["defaultStartDate"];
+				oDefaultEndDate = oViewModelGanttData["defaultEndDate"];
+			}
+			this._setDateFilter(this._previousView, oDefaultStartDate, oDefaultEndDate);
 		},
 
 		/*
