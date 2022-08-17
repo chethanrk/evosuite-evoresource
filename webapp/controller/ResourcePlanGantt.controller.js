@@ -1286,8 +1286,10 @@ sap.ui.define([
 				oAssignData = oContext.getObject();
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
-				oAssignData.minDate = moment().startOf("day").toDate();
-				oAssignData.maxDate = moment(this.getModel("viewModel").getProperty("/gantt/defaultEndDate")).endOf("day").toDate();
+				// oAssignData.minDate = moment().startOf("day").toDate();
+				// oAssignData.maxDate = moment(this.getModel("viewModel").getProperty("/gantt/defaultEndDate")).endOf("day").toDate();
+				oAssignData.minDate = this.getShapePopoverMinDate(oAssignData.StartDate);
+				oAssignData.maxDate = this.getShapePopoverMaxDate(oAssignData.EndDate);
 				oAssignData.isEditable = true;
 				oAssignData.isDeletable = this.isGroupDeletable(oAssignData);
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
@@ -1297,8 +1299,10 @@ sap.ui.define([
 				oAssignData = oContext.getObject();
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
-				oAssignData.minDate = moment().startOf("day").toDate();
-				oAssignData.maxDate = moment(this.getModel("viewModel").getProperty("/gantt/defaultEndDate")).endOf("day").toDate();
+				// oAssignData.minDate = moment().startOf("day").toDate();
+				// oAssignData.maxDate = moment(this.getModel("viewModel").getProperty("/gantt/defaultEndDate")).endOf("day").toDate();
+				oAssignData.minDate = this.getShapePopoverMinDate(oAssignData.EffectiveStartDate);
+				oAssignData.maxDate = this.getShapePopoverMaxDate(oAssignData.EffectiveEndDate);
 				oAssignData.isEditable = true;
 				oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
 				oAssignData.isDeletable = this.isShiftDeletable(oAssignData);
@@ -1308,6 +1312,20 @@ sap.ui.define([
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
 			}
+		},
+		getShapePopoverMaxDate:function(oAssignmentEndDate){
+			var oMaxDate = moment(this.getModel("viewModel").getProperty("/gantt/defaultEndDate")).endOf("day").toDate();
+			if(moment(oMaxDate).isBefore(oAssignmentEndDate)){
+				oMaxDate = moment(oAssignmentEndDate).endOf("day").toDate();
+			}
+			return oMaxDate;
+		},
+		getShapePopoverMinDate:function(oAssignmentStartDate){
+			var oMinDate = moment().startOf("day").toDate();
+			if(moment(oMinDate).isAfter(oAssignmentStartDate)){
+				oMinDate = moment(oAssignmentStartDate).startOf("day").toDate();
+			}
+			return oMinDate;
 		},
 		/*
 		 * Checks if group assignment is deletable
