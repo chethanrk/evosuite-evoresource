@@ -228,8 +228,10 @@ sap.ui.define([
 		 * @param {object} oEvent - change event of filterbar
 		 */
 		onInitializedSmartVariant: function (oEvent) {
-			this._loadGanttData();
-			this.updateNewDataFromGanttFilterBar();
+			this.getOwnerComponent().oSystemInfoProm.then(function(){
+				this._loadGanttData();
+				this.updateNewDataFromGanttFilterBar();
+			}.bind(this));
 		},
 
 		/**
@@ -871,7 +873,7 @@ sap.ui.define([
 					}
 				}
 			}.bind(this));
-			if(!oVariantText.getProperty("text") !== "Standard"){
+			if(oVariantText.getProperty("text") !== "Standard"){
 				oDefaultStartDate = oViewModelGanttData["defaultStartDate"];
 				oDefaultEndDate = oViewModelGanttData["defaultEndDate"];
 			}
