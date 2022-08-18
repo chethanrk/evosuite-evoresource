@@ -1281,9 +1281,7 @@ sap.ui.define([
 				oAssignData = oContext.getObject();
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
-				// oAssignData.minDate = moment().startOf("day").toDate();
-				// oAssignData.maxDate = moment(this.getModel("viewModel").getProperty("/gantt/defaultEndDate")).endOf("day").toDate();
-				oAssignData.minDate = this._getShapePopoverMinDate(oAssignData.StartDate);
+				oAssignData.minDate = this._getShapePopoverMinDate();
 				oAssignData.maxDate = this._getShapePopoverMaxDate(oAssignData.EndDate);
 				oAssignData.isEditable = true;
 				oAssignData.isDeletable = this.isGroupDeletable(oAssignData);
@@ -1294,9 +1292,7 @@ sap.ui.define([
 				oAssignData = oContext.getObject();
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
-				// oAssignData.minDate = moment().startOf("day").toDate();
-				// oAssignData.maxDate = moment(this.getModel("viewModel").getProperty("/gantt/defaultEndDate")).endOf("day").toDate();
-				oAssignData.minDate = this._getShapePopoverMinDate(oAssignData.EffectiveStartDate);
+				oAssignData.minDate = this._getShapePopoverMinDate();
 				oAssignData.maxDate = this._getShapePopoverMaxDate(oAssignData.EffectiveEndDate);
 				oAssignData.isEditable = true;
 				oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
@@ -1963,11 +1959,8 @@ sap.ui.define([
 		 * Compares today's date with Assignment Start Date, if today's date is after assignment start date, then min date is assignment start date, or viceversa
 		 * @param {object} oAssignmentEndDate - End Date of Assignment
 		 */
-		_getShapePopoverMinDate: function (oAssignmentStartDate) {
+		_getShapePopoverMinDate: function () {
 			var oMinDate = moment().startOf("day").toDate();
-			if (moment(oMinDate).isAfter(oAssignmentStartDate)) {
-				oMinDate = moment(oAssignmentStartDate).startOf("day").toDate();
-			}
 			return oMinDate;
 		}
 	});
