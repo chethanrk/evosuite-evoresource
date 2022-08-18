@@ -202,13 +202,13 @@ sap.ui.define([
 		convertString2Date: function (sDate) {
 			return moment(sDate.substr(0, 4) + "-" + sDate.substring(4, 6) + "-" + sDate.substring(6, 8));
 		},
-		
+
 		/**
 		 * convert a date to string
 		 * @param {object} sDate - Date object
 		 * @returns {string} - Date in format "YYYYMMDDHHMMSS"
 		 */
-		convertDate2String:function(sDate){
+		convertDate2String: function (sDate) {
 			return moment(sDate).format("YYYYMMDDHHmmss");
 		},
 
@@ -480,6 +480,76 @@ sap.ui.define([
 				return true;
 			}
 			return false;
+		},
+		/*
+		* Sets Delete button visisbility
+		* @param {boolean} isEditable
+		* @param {boolean} isDeletable
+		*
+		*/
+		isPopoverDeleteButtonVisible: function (isEditable, isDeletable) {
+			var bValidate = true;
+			if (!isEditable) {
+				bValidate = false;
+				return bValidate;
+			}
+			if (!isDeletable) {
+				bValidate = false;
+				return bValidate;
+			}
+			return bValidate;
+		},
+		/*
+		* Sets Group change combo box enable status
+		* @param {boolean} isDeletable
+		*
+		*/
+		isPopoverGroupChangeEnable: function (isDeletable) {
+			var bValidate = true;
+			if (!isDeletable) {
+				bValidate = false;
+				return bValidate;
+			}
+			return bValidate;
+		},
+		/*
+		* Sets Shift change combo box enable status
+		* @param {boolean} isDeletable
+		*
+		*/
+		isPopoverShiftChangeEnable: function (isDeletable) {
+			var bValidate = true;
+			if (!isDeletable) {
+				bValidate = false;
+				return bValidate;
+			}
+			return bValidate;
+		},
+		/*
+		* Sets Date Range Selection enable status
+		* @param {boolean} isDeletable
+		*
+		*/
+		isPopoverDateRangeEditable: function (isDeletable) {
+			var bValidate = true;
+			if (!isDeletable) {
+				bValidate = false;
+				return bValidate;
+			}
+			return bValidate;
+		},
+		/*
+		* Sets End date picker enable status
+		* @param {boolean} isDeletable
+		*
+		*/
+		isPopoverEndDatePickerVisible: function (isDeletable) {
+			var bValidate = false;
+			if (!isDeletable) {
+				bValidate = true;
+				return bValidate;
+			}
+			return bValidate;
 		}
 	};
 

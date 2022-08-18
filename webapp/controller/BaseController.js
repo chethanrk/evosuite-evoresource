@@ -276,6 +276,7 @@ sap.ui.define([
 						On: 0,
 						RepeatEndDate: new Date(),
 						isEditable: true,
+						isDeletable:true,
 						isRestChanges:true,
 						maxDate: this.getModel("viewModel").getProperty("/gantt/defaultEndDate")
 					},

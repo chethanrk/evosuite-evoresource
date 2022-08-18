@@ -180,6 +180,21 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				isGroupDeletable: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				isShiftDeletable: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onChangeEndDate: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -424,32 +439,27 @@ sap.ui.define([
 		openShapeChangePopover: function (oTargetControl, oPopoverData) {
 			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getEndTime())) {
 				// create popover
-				if (!this._oPlanningPopover) {
-					Fragment.load({
-						name: "com.evorait.evosuite.evoresource.view.fragments.ShapeChangePopover",
-						controller: this
-					}).then(function (pPopover) {
-						this._oPlanningPopover = pPopover;
-						this.getView().addDependent(this._oPlanningPopover);
-						this._oPlanningPopover.openBy(oTargetControl);
-						this._setPopoverData(oTargetControl, oPopoverData);
-
-						//after popover gets opened check popover data for resource group color
-						this._oPlanningPopover.attachAfterOpen(function () {
-							var oData = this.oPlanningModel.getProperty("/tempData/popover");
-							this._addResourceGroupColor(oData);
-							this._validateForOpenPopover(oData);
-						}.bind(this));
-
-						//after popover gets closed remove popover data
-						this._oPlanningPopover.attachAfterClose(function (oEvent) {
-							this._afterPopoverClose(oEvent);
-						}.bind(this));
-					}.bind(this));
-				} else {
-					this._oPlanningPopover.openBy(oTargetControl);
+				Fragment.load({
+					name: "com.evorait.evosuite.evoresource.view.fragments.ShapeChangePopover",
+					controller: this
+				}).then(function (pPopover) {
+					this._oPlanningPopover = pPopover;
 					this._setPopoverData(oTargetControl, oPopoverData);
-				}
+					this.getView().addDependent(this._oPlanningPopover);
+					this._oPlanningPopover.openBy(oTargetControl);
+					//after popover gets opened check popover data for resource group color
+					this._oPlanningPopover.attachAfterOpen(function () {
+						var oData = this.oPlanningModel.getProperty("/tempData/popover");
+						this._addResourceGroupColor(oData);
+						this._validateForOpenPopover(oData);
+					}.bind(this));
+
+					//after popover gets closed remove popover data
+					this._oPlanningPopover.attachAfterClose(function (oEvent) {
+						this._oPlanningPopover.destroy(true);
+						this._afterPopoverClose(oEvent);
+					}.bind(this));
+				}.bind(this));
 			} else {
 				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
 			}
@@ -680,11 +690,32 @@ sap.ui.define([
 				oStartDate = oDateRange.getDateValue(),
 				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate();
 			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
-			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
-
 			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
 
+			//validate for the overlapping
+			if (this._validateDuplicateAsigment()) {
+				return;
+			}
+			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", true);
+			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
+			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
+		},
+		/**
+		 * Called when end date is changed using End Date picker
+		 * change selected date to UTC date to make display valid date on the screen
+		 * @param {object} oEvent
+		 */
+		onChangeEndDate: function (oEvent) {
+			var oDatePicker = oEvent.getSource(),
+				oEndDate = moment(oDatePicker.getDateValue()).endOf('day').subtract(999, 'millisecond').toDate(),
+				oStartDate = this.oPlanningModel.getProperty("/tempData/popover/StartDate");
+			oStartDate = formatter.convertFromUTCDate(oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
 			//validate for the overlapping
 			if (this._validateDuplicateAsigment()) {
 				return;
@@ -1260,9 +1291,10 @@ sap.ui.define([
 				oAssignData = oContext.getObject();
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
-				oAssignData.minDate = new Date();
-				oAssignData.maxDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
+				oAssignData.minDate = this._getShapePopoverMinDate();
+				oAssignData.maxDate = this._getShapePopoverMaxDate(oAssignData.EndDate);
 				oAssignData.isEditable = true;
+				oAssignData.isDeletable = this.isGroupDeletable(oAssignData);
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
 			} else if (oTargetControl.sParentAggregationName === "shapes3" && oContext) {
@@ -1270,16 +1302,39 @@ sap.ui.define([
 				oAssignData = oContext.getObject();
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
-				oAssignData.minDate = new Date();
-				oAssignData.maxDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
+				oAssignData.minDate = this._getShapePopoverMinDate();
+				oAssignData.maxDate = this._getShapePopoverMaxDate(oAssignData.EffectiveEndDate);
 				oAssignData.isEditable = true;
 				oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
+				oAssignData.isDeletable = this.isShiftDeletable(oAssignData);
 				oAssignData.StartDate = oAssignData.EffectiveStartDate;
 				oAssignData.EndDate = oAssignData.EffectiveEndDate;
 
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
 			}
+		},
+		/*
+		 * Checks if group assignment is deletable
+		 * @param {object} oGroupData - Group assignment object
+		 */
+		isGroupDeletable: function (oGroupData) {
+			var bValidate = true;
+			if (this._isDatePast(oGroupData.StartDate)) {
+				bValidate = false;
+			}
+			return bValidate;
+		},
+		/*
+		 * Checks if shift assignment is deletable
+		 * @param {object} oShiftData - Shift assignment object
+		 */
+		isShiftDeletable: function (oShiftData) {
+			var bValidate = true;
+			if (this._isDatePast(oShiftData.EffectiveStartDate)) {
+				bValidate = false;
+			}
+			return bValidate;
 		},
 		/**
 		 * Add new Resource Group under Resource in Gantt
@@ -1464,7 +1519,6 @@ sap.ui.define([
 		 * Validation of assignment on change
 		 */
 		_validateForChange: function (oAssignItem) {
-			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
 			var oParams = {
 					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
@@ -1514,7 +1568,6 @@ sap.ui.define([
 		 * list if demands who are assigned to this time frame
 		 */
 		_validateForDelete: function (oAssignItem) {
-			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
 			var oParams = {
 					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
@@ -1898,6 +1951,25 @@ sap.ui.define([
 
 			}.bind(this));
 			return oResults;
+		},
+		/**
+		 * Compares defaultEndDate with Assignment End Date, if defaultEndDate is before assignment end date, then max date is assignment end date, or viceversa
+		 * @param {object} oAssignmentEndDate - End Date of Assignment
+		 */
+		_getShapePopoverMaxDate: function (oAssignmentEndDate) {
+			var oMaxDate = moment(this.getModel("viewModel").getProperty("/gantt/defaultEndDate")).endOf("day").toDate();
+			if (moment(oMaxDate).isBefore(oAssignmentEndDate)) {
+				oMaxDate = moment(oAssignmentEndDate).endOf("day").toDate();
+			}
+			return oMaxDate;
+		},
+		/**
+		 * Compares today's date with Assignment Start Date, if today's date is after assignment start date, then min date is assignment start date, or viceversa
+		 * 
+		 */
+		_getShapePopoverMinDate: function () {
+			var oMinDate = moment().startOf("day").toDate();
+			return oMinDate;
 		}
 	});
 });
