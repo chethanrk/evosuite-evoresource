@@ -1509,7 +1509,6 @@ sap.ui.define([
 		 * Validation of assignment on change
 		 */
 		_validateForChange: function (oAssignItem) {
-			// this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
 			var oParams = {
 					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
@@ -1559,7 +1558,6 @@ sap.ui.define([
 		 * list if demands who are assigned to this time frame
 		 */
 		_validateForDelete: function (oAssignItem) {
-			// this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
 			var oParams = {
 					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
