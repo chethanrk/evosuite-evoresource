@@ -15,6 +15,7 @@ sap.ui.define([
 		createHelperModel: function (obj) {
 			var oModel = new JSONModel(obj);
 			oModel.setDefaultBindingMode("TwoWay");
+			oModel.setSizeLimit(99999);
 			return oModel;
 		},
 
