@@ -1955,7 +1955,7 @@ sap.ui.define([
 		},
 		/**
 		 * Compares today's date with Assignment Start Date, if today's date is after assignment start date, then min date is assignment start date, or viceversa
-		 * @param {object} oAssignmentEndDate - End Date of Assignment
+		 * 
 		 */
 		_getShapePopoverMinDate: function () {
 			var oMinDate = moment().startOf("day").toDate();
