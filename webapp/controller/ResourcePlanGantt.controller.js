@@ -243,7 +243,7 @@ sap.ui.define([
 		 * @param {object} oEvent - change event of filterbar
 		 */
 		onInitializedSmartVariant: function (oEvent) {
-			this.getOwnerComponent().oSystemInfoProm.then(function(){
+			this.getOwnerComponent().oSystemInfoProm.then(function () {
 				this._loadGanttData();
 				this.updateNewDataFromGanttFilterBar();
 			}.bind(this));
@@ -439,27 +439,30 @@ sap.ui.define([
 		openShapeChangePopover: function (oTargetControl, oPopoverData) {
 			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getEndTime())) {
 				// create popover
-				Fragment.load({
-					name: "com.evorait.evosuite.evoresource.view.fragments.ShapeChangePopover",
-					controller: this
-				}).then(function (pPopover) {
-					this._oPlanningPopover = pPopover;
+				if (!this._oPlanningPopover) {
+					Fragment.load({
+						name: "com.evorait.evosuite.evoresource.view.fragments.ShapeChangePopover",
+						controller: this
+					}).then(function (pPopover) {
+						this._oPlanningPopover = pPopover;
+						this._setPopoverData(oTargetControl, oPopoverData);
+						this.getView().addDependent(this._oPlanningPopover);
+						this._oPlanningPopover.openBy(oTargetControl);
+						//after popover gets opened check popover data for resource group color
+						this._oPlanningPopover.attachAfterOpen(function () {
+							var oData = this.oPlanningModel.getProperty("/tempData/popover");
+							this._addResourceGroupColor(oData);
+							this._validateForOpenPopover(oData);
+						}.bind(this));
+						//after popover gets closed remove popover data
+						this._oPlanningPopover.attachAfterClose(function (oEvent) {
+							this._afterPopoverClose(oEvent);
+						}.bind(this));
+					}.bind(this));
+				} else {
 					this._setPopoverData(oTargetControl, oPopoverData);
-					this.getView().addDependent(this._oPlanningPopover);
 					this._oPlanningPopover.openBy(oTargetControl);
-					//after popover gets opened check popover data for resource group color
-					this._oPlanningPopover.attachAfterOpen(function () {
-						var oData = this.oPlanningModel.getProperty("/tempData/popover");
-						this._addResourceGroupColor(oData);
-						this._validateForOpenPopover(oData);
-					}.bind(this));
-
-					//after popover gets closed remove popover data
-					this._oPlanningPopover.attachAfterClose(function (oEvent) {
-						this._oPlanningPopover.destroy(true);
-						this._afterPopoverClose(oEvent);
-					}.bind(this));
-				}.bind(this));
+				}
 			} else {
 				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
 			}
@@ -887,8 +890,8 @@ sap.ui.define([
 				CustomFilter = oSmartFilterBar.getControlConfiguration(),
 				oVariantData = oSmartFilterBar.getFilterData(),
 				oViewModelGanttData = this.getModel("viewModel").getProperty("/gantt"),
-				oDefaultStartDate=null,
-				oDefaultEndDate=null;
+				oDefaultStartDate = null,
+				oDefaultEndDate = null;
 			CustomFilter.forEach(function (cFilter) {
 				var sKey = cFilter.getKey(),
 					oCustomControl = oSmartFilterBar.getControlByKey(sKey);
@@ -904,7 +907,7 @@ sap.ui.define([
 					}
 				}
 			}.bind(this));
-			if(oVariantText.getProperty("text") !== "Standard"){
+			if (oVariantText.getProperty("text") !== "Standard") {
 				oDefaultStartDate = oViewModelGanttData["defaultStartDate"];
 				oDefaultEndDate = oViewModelGanttData["defaultEndDate"];
 			}
