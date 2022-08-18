@@ -1959,6 +1959,7 @@ sap.ui.define([
 		_getShapePopoverMaxDate: function (oAssignmentEndDate) {
 			var oMaxDate = moment(this.getModel("viewModel").getProperty("/gantt/defaultEndDate")).endOf("day").toDate();
 			if (moment(oMaxDate).isBefore(oAssignmentEndDate)) {
+				oAssignmentEndDate = formatter.convertFromUTCDate(oAssignmentEndDate);
 				oMaxDate = moment(oAssignmentEndDate).endOf("day").toDate();
 			}
 			return oMaxDate;
