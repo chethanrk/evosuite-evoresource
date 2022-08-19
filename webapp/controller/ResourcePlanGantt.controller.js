@@ -229,9 +229,6 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoresource.controller.ResourcePlanningMain
 		 */
 		onBeforeRendering: function () {
-			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
-				this._setNewHorizon(oResult.DEFAULT_DAILYVIEW_STARTDATE, oResult.DEFAULT_DAILYVIEW_ENDDATE);
-			}.bind(this));
 		},
 
 		/* =========================================================== */
@@ -243,7 +240,8 @@ sap.ui.define([
 		 * @param {object} oEvent - change event of filterbar
 		 */
 		onInitializedSmartVariant: function (oEvent) {
-			this.getOwnerComponent().oSystemInfoProm.then(function () {
+			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
+				this._setNewHorizon(oResult.DEFAULT_DAILYVIEW_STARTDATE, oResult.DEFAULT_DAILYVIEW_ENDDATE);
 				this._loadGanttData();
 				this.updateNewDataFromGanttFilterBar();
 			}.bind(this));
