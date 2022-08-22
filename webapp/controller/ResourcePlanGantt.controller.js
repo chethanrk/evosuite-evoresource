@@ -435,6 +435,7 @@ sap.ui.define([
 		 * @param {object} oPopoverData - Data to be displayed in Popover
 		 */
 		openShapeChangePopover: function (oTargetControl, oPopoverData) {
+			this.groupShiftContext = null;
 			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getEndTime())) {
 				// create popover
 				if (!this._oPlanningPopover) {
@@ -1273,7 +1274,7 @@ sap.ui.define([
 				bDragged = oPopoverData["bDragged"],
 				oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
 				oChildData, oAssignData;
-
+			
 			if (oTargetControl.sParentAggregationName === "shapes1") {
 				//its background shape
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject, bDragged).then(function (oData) {
