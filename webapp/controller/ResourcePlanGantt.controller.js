@@ -658,6 +658,8 @@ sap.ui.define([
 				oSelContext = oSelectedItem.getBindingContext("viewModel"),
 				oData = this.oPlanningModel.getProperty("/tempData/popover"),
 				shiftData;
+				
+			this.groupShiftContext = oSelectedItem.getBindingContext("viewModel");
 
 			oSource.setValueState(sap.ui.core.ValueState.None);
 			//validate duplicate assignments
@@ -666,7 +668,7 @@ sap.ui.define([
 			}
 
 			if (oData.isNew) {
-				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("TemplateDesc"));
+				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("TemplateDesc"));
 				shiftData = oSelContext.getObject();
 				oData = this.mergeObject(oData, shiftData);
 				this._removeAssignmentShape(oData, true);
@@ -677,7 +679,7 @@ sap.ui.define([
 					this._oPlanningPopover.close();
 				}
 			} else {
-				this._removeAssignmentShape(oData, true, oSelContext);
+				this._removeAssignmentShape(oData, true);
 				this._oPlanningPopover.close();
 			}
 		},
