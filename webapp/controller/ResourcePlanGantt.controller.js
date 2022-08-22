@@ -1273,7 +1273,7 @@ sap.ui.define([
 				bDragged = oPopoverData["bDragged"],
 				oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
 				oChildData, oAssignData;
-
+			this.oPlanningModel.setProperty("/tempData/popover",{});
 			if (oTargetControl.sParentAggregationName === "shapes1") {
 				//its background shape
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject, bDragged).then(function (oData) {
@@ -1312,7 +1312,6 @@ sap.ui.define([
 				oAssignData.maxDate = this._getShapePopoverMaxDate(oAssignData.EffectiveEndDate);
 				oAssignData.StartDate = oAssignData.EffectiveStartDate;
 				oAssignData.EndDate = oAssignData.EffectiveEndDate;
-
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
 			}
