@@ -229,9 +229,6 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoresource.controller.ResourcePlanningMain
 		 */
 		onBeforeRendering: function () {
-			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
-				this._setNewHorizon(oResult.DEFAULT_DAILYVIEW_STARTDATE, oResult.DEFAULT_DAILYVIEW_ENDDATE);
-			}.bind(this));
 		},
 
 		/* =========================================================== */
@@ -243,8 +240,11 @@ sap.ui.define([
 		 * @param {object} oEvent - change event of filterbar
 		 */
 		onInitializedSmartVariant: function (oEvent) {
-			this._loadGanttData();
-			this.updateNewDataFromGanttFilterBar();
+			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
+				this._setNewHorizon(oResult.DEFAULT_DAILYVIEW_STARTDATE, oResult.DEFAULT_DAILYVIEW_ENDDATE);
+				this._loadGanttData();
+				this.updateNewDataFromGanttFilterBar();
+			}.bind(this));
 		},
 
 		/**
@@ -435,29 +435,33 @@ sap.ui.define([
 		 * @param {object} oPopoverData - Data to be displayed in Popover
 		 */
 		openShapeChangePopover: function (oTargetControl, oPopoverData) {
+			this.groupShiftContext = null;
 			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getEndTime())) {
 				// create popover
-				Fragment.load({
-					name: "com.evorait.evosuite.evoresource.view.fragments.ShapeChangePopover",
-					controller: this
-				}).then(function (pPopover) {
-					this._oPlanningPopover = pPopover;
+				if (!this._oPlanningPopover) {
+					Fragment.load({
+						name: "com.evorait.evosuite.evoresource.view.fragments.ShapeChangePopover",
+						controller: this
+					}).then(function (pPopover) {
+						this._oPlanningPopover = pPopover;
+						this._setPopoverData(oTargetControl, oPopoverData);
+						this.getView().addDependent(this._oPlanningPopover);
+						this._oPlanningPopover.openBy(oTargetControl);
+						//after popover gets opened check popover data for resource group color
+						this._oPlanningPopover.attachAfterOpen(function () {
+							var oData = this.oPlanningModel.getProperty("/tempData/popover");
+							this._addResourceGroupColor(oData);
+							this._validateForOpenPopover(oData);
+						}.bind(this));
+						//after popover gets closed remove popover data
+						this._oPlanningPopover.attachAfterClose(function (oEvent) {
+							this._afterPopoverClose(oEvent);
+						}.bind(this));
+					}.bind(this));
+				} else {
 					this._setPopoverData(oTargetControl, oPopoverData);
-					this.getView().addDependent(this._oPlanningPopover);
 					this._oPlanningPopover.openBy(oTargetControl);
-					//after popover gets opened check popover data for resource group color
-					this._oPlanningPopover.attachAfterOpen(function () {
-						var oData = this.oPlanningModel.getProperty("/tempData/popover");
-						this._addResourceGroupColor(oData);
-						this._validateForOpenPopover(oData);
-					}.bind(this));
-
-					//after popover gets closed remove popover data
-					this._oPlanningPopover.attachAfterClose(function (oEvent) {
-						this._oPlanningPopover.destroy(true);
-						this._afterPopoverClose(oEvent);
-					}.bind(this));
-				}.bind(this));
+				}
 			} else {
 				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
 			}
@@ -655,6 +659,8 @@ sap.ui.define([
 				oSelContext = oSelectedItem.getBindingContext("viewModel"),
 				oData = this.oPlanningModel.getProperty("/tempData/popover"),
 				shiftData;
+				
+			this.groupShiftContext = oSelectedItem.getBindingContext("viewModel");
 
 			oSource.setValueState(sap.ui.core.ValueState.None);
 			//validate duplicate assignments
@@ -663,7 +669,7 @@ sap.ui.define([
 			}
 
 			if (oData.isNew) {
-				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", oSelContext.getProperty("TemplateDesc"));
+				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("TemplateDesc"));
 				shiftData = oSelContext.getObject();
 				oData = this.mergeObject(oData, shiftData);
 				this._removeAssignmentShape(oData, true);
@@ -674,7 +680,7 @@ sap.ui.define([
 					this._oPlanningPopover.close();
 				}
 			} else {
-				this._removeAssignmentShape(oData, true, oSelContext);
+				this._removeAssignmentShape(oData, true);
 				this._oPlanningPopover.close();
 			}
 		},
@@ -880,9 +886,13 @@ sap.ui.define([
 		 */
 		afterVariantLoad: function (oEvent) {
 			var oSmartFilterBar = oEvent.getSource(),
+				oSmartVariant = oSmartFilterBar.getSmartVariant(),
+				oVariantText = oSmartVariant.oVariantText,
 				CustomFilter = oSmartFilterBar.getControlConfiguration(),
 				oVariantData = oSmartFilterBar.getFilterData(),
-				oViewModelGanttData = this.getModel("viewModel").getProperty("/gantt");
+				oViewModelGanttData = this.getModel("viewModel").getProperty("/gantt"),
+				oDefaultStartDate = null,
+				oDefaultEndDate = null;
 			CustomFilter.forEach(function (cFilter) {
 				var sKey = cFilter.getKey(),
 					oCustomControl = oSmartFilterBar.getControlByKey(sKey);
@@ -898,7 +908,11 @@ sap.ui.define([
 					}
 				}
 			}.bind(this));
-			this._setDateFilter(this._previousView, oViewModelGanttData["defaultStartDate"], oViewModelGanttData["defaultEndDate"]);
+			if (oVariantText.getProperty("text") !== "Standard") {
+				oDefaultStartDate = oViewModelGanttData["defaultStartDate"];
+				oDefaultEndDate = oViewModelGanttData["defaultEndDate"];
+			}
+			this._setDateFilter(this._previousView, oDefaultStartDate, oDefaultEndDate);
 		},
 
 		/*
@@ -1260,7 +1274,7 @@ sap.ui.define([
 				bDragged = oPopoverData["bDragged"],
 				oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
 				oChildData, oAssignData;
-
+			
 			if (oTargetControl.sParentAggregationName === "shapes1") {
 				//its background shape
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject, bDragged).then(function (oData) {
@@ -1949,6 +1963,7 @@ sap.ui.define([
 		_getShapePopoverMaxDate: function (oAssignmentEndDate) {
 			var oMaxDate = moment(this.getModel("viewModel").getProperty("/gantt/defaultEndDate")).endOf("day").toDate();
 			if (moment(oMaxDate).isBefore(oAssignmentEndDate)) {
+				oAssignmentEndDate = formatter.convertFromUTCDate(oAssignmentEndDate);
 				oMaxDate = moment(oAssignmentEndDate).endOf("day").toDate();
 			}
 			return oMaxDate;
