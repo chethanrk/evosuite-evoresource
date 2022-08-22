@@ -228,8 +228,7 @@ sap.ui.define([
 		 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
 		 * @memberOf com.evorait.evosuite.evoresource.controller.ResourcePlanningMain
 		 */
-		onBeforeRendering: function () {
-		},
+		onBeforeRendering: function () {},
 
 		/* =========================================================== */
 		/* Events                                                      */
@@ -659,7 +658,7 @@ sap.ui.define([
 				oSelContext = oSelectedItem.getBindingContext("viewModel"),
 				oData = this.oPlanningModel.getProperty("/tempData/popover"),
 				shiftData;
-				
+
 			this.groupShiftContext = oSelectedItem.getBindingContext("viewModel");
 
 			oSource.setValueState(sap.ui.core.ValueState.None);
@@ -1274,7 +1273,7 @@ sap.ui.define([
 				bDragged = oPopoverData["bDragged"],
 				oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
 				oChildData, oAssignData;
-			
+
 			if (oTargetControl.sParentAggregationName === "shapes1") {
 				//its background shape
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject, bDragged).then(function (oData) {
@@ -1295,10 +1294,10 @@ sap.ui.define([
 				oAssignData = oContext.getObject();
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
-				oAssignData.minDate = this._getShapePopoverMinDate();
-				oAssignData.maxDate = this._getShapePopoverMaxDate(oAssignData.EndDate);
 				oAssignData.isEditable = true;
 				oAssignData.isDeletable = this.isGroupDeletable(oAssignData);
+				oAssignData.minDate = this._getShapePopoverMinDate(oAssignData.isDeletable);
+				oAssignData.maxDate = this._getShapePopoverMaxDate(oAssignData.EndDate);
 				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
 			} else if (oTargetControl.sParentAggregationName === "shapes3" && oContext) {
@@ -1306,11 +1305,11 @@ sap.ui.define([
 				oAssignData = oContext.getObject();
 				//popover data adjustment with repeat mode
 				oAssignData.Repeat = "NEVER";
-				oAssignData.minDate = this._getShapePopoverMinDate();
-				oAssignData.maxDate = this._getShapePopoverMaxDate(oAssignData.EffectiveEndDate);
 				oAssignData.isEditable = true;
 				oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
 				oAssignData.isDeletable = this.isShiftDeletable(oAssignData);
+				oAssignData.minDate = this._getShapePopoverMinDate(oAssignData.isDeletable);
+				oAssignData.maxDate = this._getShapePopoverMaxDate(oAssignData.EffectiveEndDate);
 				oAssignData.StartDate = oAssignData.EffectiveStartDate;
 				oAssignData.EndDate = oAssignData.EffectiveEndDate;
 
@@ -1972,9 +1971,12 @@ sap.ui.define([
 		 * Compares today's date with Assignment Start Date, if today's date is after assignment start date, then min date is assignment start date, or viceversa
 		 * 
 		 */
-		_getShapePopoverMinDate: function () {
-			var oMinDate = moment().startOf("day").toDate();
-			return oMinDate;
+		_getShapePopoverMinDate: function (isDeletable) {
+			if (isDeletable) {
+				var oMinDate = moment().startOf("day").toDate();
+				return oMinDate;
+			}
+			return null;
 		}
 	});
 });

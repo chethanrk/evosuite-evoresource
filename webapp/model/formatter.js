@@ -550,6 +550,12 @@ sap.ui.define([
 				return bValidate;
 			}
 			return bValidate;
+		},
+		getMinDateForEndDate:function(isDeletable){
+			if(!isDeletable){
+				return moment().startOf("day").toDate();
+			}
+			return null;
 		}
 	};
 
