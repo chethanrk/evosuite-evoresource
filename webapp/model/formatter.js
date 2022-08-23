@@ -550,6 +550,17 @@ sap.ui.define([
 				return bValidate;
 			}
 			return bValidate;
+		},
+		/*
+		* Returns minimun date ifor the End Date Picker of SHapeChangePopover
+		* @param {boolean} isDeletable
+		*
+		*/
+		getMinDateForEndDate:function(isDeletable){
+			if(!isDeletable){
+				return moment().startOf("day").toDate();
+			}
+			return null;
 		}
 	};
 

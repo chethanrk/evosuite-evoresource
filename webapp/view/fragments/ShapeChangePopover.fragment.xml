@@ -39,7 +39,7 @@
 						<Label text="{i18n>xfld.popoverDateTo}" required="true"/>	
 						<DatePicker fieldGroupIds="changeShapeInput" change="onChangeEndDate"
 							dateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/EndDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
-							minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}" maxDate="{path:'ganttPlanningModel>/tempData/popover/maxDate'}"
+							minDate="{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.getMinDateForEndDate'}" maxDate="{path:'ganttPlanningModel>/tempData/popover/maxDate'}"
 							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverEndDatePickerVisible'}"/>
 						<Label text="{i18n>xfld.Repeat}"/>
 						<Select id="idRepeatMode" forceSelection="true" change="onChangeRepeatMode" selectedKey="{ganttPlanningModel>/tempData/popover/Repeat}"
