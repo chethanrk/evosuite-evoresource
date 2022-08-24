@@ -276,8 +276,8 @@ sap.ui.define([
 						On: 0,
 						RepeatEndDate: new Date(),
 						isEditable: true,
-						isDeletable:true,
-						isRestChanges:true,
+						isDeletable: true,
+						isRestChanges: true,
 						maxDate: this.getModel("viewModel").getProperty("/gantt/defaultEndDate")
 					},
 					oDraggedData = this.getView().getModel("viewModel").getProperty("/draggedData"),
@@ -735,18 +735,18 @@ sap.ui.define([
 		 * Return all shift matching resource guid
 		 * @param {string} sResourceGuid - Resource Guid
 		 */
-		_getResourceShiftByKey: function (sResourceGuid) {
+		_getResourceShiftByKey: function (sNodeId, oShiftData) {
 			var sPath = "/data/children",
 				oModel = this.getModel("ganttPlanningModel"),
 				aChildren = oModel.getProperty(sPath),
 				aResourceSelectedShift = [],
 				aAllShifts = [];
 			for (var i = 0; i < aChildren.length; i++) {
-				if (aChildren[i].ResourceGuid === sResourceGuid) {
+				if (aChildren[i].NodeId === sNodeId) {
 					aAllShifts = aChildren[i].GanttHierarchyToShift ? (aChildren[i].GanttHierarchyToShift.results ? aChildren[i].GanttHierarchyToShift
 						.results : []) : [];
 					for (var j = 0; j < aAllShifts.length; j++) {
-						if (!aAllShifts[j].isNew) {
+						if (!aAllShifts[j].isNew && oShiftData.Guid !== aAllShifts[j].Guid) {
 							aResourceSelectedShift.push(deepClone(aAllShifts[j]));
 						}
 					}
@@ -767,8 +767,14 @@ sap.ui.define([
 
 			aResourceChild.forEach(function (oAssignment) {
 				// added formatter to convert the date from UTC to local time for UI Validation
-				sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.StartDate, false);
-				sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EndDate, false);
+				if (oAssignment.NODE_TYPE === "RES_GROUP") {
+					sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.StartDate, false);
+					sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EndDate, false);
+				} else if (oAssignment.NODE_TYPE === "SHIFT") {
+					sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.EffectiveStartDate, false);
+					sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EffectiveEndDate, false);
+				}
+
 				if (moment(sStartTime).isSameOrAfter(sAssignmentStartDate) && moment(sEndTime).isSameOrBefore(sAssignmentEndDate)) {
 					bValidate = false;
 				} else if (moment(sStartTime).isBetween(moment(sAssignmentStartDate), moment(sAssignmentEndDate)) || moment(sEndTime).isBetween(
@@ -796,7 +802,7 @@ sap.ui.define([
 				aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
 				nodeTypeText = this.getResourceBundle().getText("xtxt.group");
 			} else if (nodeType === "SHIFT") {
-				aAssigments = this._getResourceShiftByKey(oData.ResourceGuid);
+				aAssigments = this._getResourceShiftByKey(oData.ParentNodeId, oData);
 				nodeTypeText = this.getResourceBundle().getText("xtxt.shift");
 			}
 
@@ -1089,11 +1095,11 @@ sap.ui.define([
 				return oResource.NodeId === sNodeId;
 			}.bind(this));
 		},
-		
+
 		/*
-		* Returns true filter start date is after oStartDate, else false
-		* @param {object} oStartDate - Date
-		*/
+		 * Returns true filter start date is after oStartDate, else false
+		 * @param {object} oStartDate - Date
+		 */
 		_isStartDateBeyondFilterDateRange: function (oStartDate) {
 
 			var startDate = this.getModel("viewModel").getProperty("/gantt/defaultStartDate"),
@@ -1104,11 +1110,11 @@ sap.ui.define([
 			return bValidate;
 
 		},
-		
+
 		/*
-		* Returns true filter end date is before oEndDate, else false
-		* @param {object} oEndDate - Date
-		*/
+		 * Returns true filter end date is before oEndDate, else false
+		 * @param {object} oEndDate - Date
+		 */
 		_isEndDateBeyondFilterDateRange: function (oEndDate) {
 			var endDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate"),
 				bValidate = false;
@@ -1117,12 +1123,12 @@ sap.ui.define([
 			}
 			return bValidate;
 		},
-		
+
 		/*
-		* Returns true if oDate and oSecondDate is same, else false
-		* @param {object} oDate - Date
-		* @param {object} oSecondDate - Date
-		*/
+		 * Returns true if oDate and oSecondDate is same, else false
+		 * @param {object} oDate - Date
+		 * @param {object} oSecondDate - Date
+		 */
 		_isDateSame: function (oDate, oSecondDate) {
 			return moment(oDate).isSame(oSecondDate);
 		}
