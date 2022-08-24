@@ -243,7 +243,9 @@ sap.ui.define([
 				oSmartVariant = oSmartFilterBar.getSmartVariant(),
 				oVariantText = oSmartVariant.oVariantText;
 			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
-				this._setNewHorizon(oResult.DEFAULT_DAILYVIEW_STARTDATE, oResult.DEFAULT_DAILYVIEW_ENDDATE);
+				if (oVariantText.getProperty("text") === "Standard") {
+					this._setNewHorizon(oResult.DEFAULT_DAILYVIEW_STARTDATE, oResult.DEFAULT_DAILYVIEW_ENDDATE);
+				}
 				this._loadGanttData();
 				this.updateNewDataFromGanttFilterBar();
 			}.bind(this));
