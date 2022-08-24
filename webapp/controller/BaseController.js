@@ -760,8 +760,7 @@ sap.ui.define([
 		 * validate duplicate resouce group in same time
 		 */
 		_checkDuplicateAsigment: function (oData, aResourceChild) {
-			var sStartTime = oData.StartDate,
-				sEndTime = oData.EndDate,
+			var sStartTime,	sEndTime,
 				bValidate = true,
 				sAssignmentStartDate, sAssignmentEndDate;
 
