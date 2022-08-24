@@ -719,7 +719,7 @@ sap.ui.define([
 			for (var i = 0; i < aChildren.length; i++) {
 				var aResourceAssign = aChildren[i].GanttHierarchyToResourceAssign;
 				if (aChildren[i][sProperty] === sValue && aResourceAssign) {
-					var iResourceCount = oPopoverData.isNew ? aResourceAssign.results.length - 1 : aResourceAssign.results.length;
+					var iResourceCount = aResourceAssign.results.length;
 					for (var j = 0; j < iResourceCount; j++) {
 						if (aResourceAssign.results[j].ResourceGroupGuid === sResourceGroupId && oPopoverData.Guid !== aResourceAssign.results[j].Guid) {
 							aResourceAssignment.push(aResourceAssign.results[j]);
@@ -746,7 +746,7 @@ sap.ui.define([
 					aAllShifts = aChildren[i].GanttHierarchyToShift ? (aChildren[i].GanttHierarchyToShift.results ? aChildren[i].GanttHierarchyToShift
 						.results : []) : [];
 					for (var j = 0; j < aAllShifts.length; j++) {
-						if (!aAllShifts[j].isNew && oShiftData.Guid !== aAllShifts[j].Guid) {
+						if (oShiftData.Guid !== aAllShifts[j].Guid) {
 							aResourceSelectedShift.push(deepClone(aAllShifts[j]));
 						}
 					}
@@ -765,14 +765,33 @@ sap.ui.define([
 				bValidate = true,
 				sAssignmentStartDate, sAssignmentEndDate;
 
+			if (oData.isNew || oData.isChanging) {
+				sStartTime = oData.StartDate;
+				sEndTime = oData.EndDate;
+			} else {
+				sStartTime = Formatter.convertFromUTCDate(oData.StartDate, false);
+				sEndTime = Formatter.convertFromUTCDate(oData.EndDate, false);
+			}
+
 			aResourceChild.forEach(function (oAssignment) {
 				// added formatter to convert the date from UTC to local time for UI Validation
 				if (oAssignment.NODE_TYPE === "RES_GROUP") {
-					sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.StartDate, false);
-					sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EndDate, false);
+					if (oAssignment.isNew || oAssignment.isChanging) {
+						sAssignmentStartDate = oAssignment.StartDate;
+						sAssignmentEndDate = oAssignment.EndDate;
+					} else {
+						sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.StartDate, false);
+						sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EndDate, false);
+					}
+
 				} else if (oAssignment.NODE_TYPE === "SHIFT") {
-					sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.EffectiveStartDate, false);
-					sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EffectiveEndDate, false);
+					if (oAssignment.isNew || oAssignment.isChanging) {
+						sAssignmentStartDate = oAssignment.EffectiveStartDate;
+						sAssignmentEndDate = oAssignment.EffectiveEndDate;
+					} else {
+						sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.EffectiveStartDate, false);
+						sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EffectiveEndDate, false);
+					}
 				}
 
 				if (moment(sStartTime).isSameOrAfter(sAssignmentStartDate) && moment(sEndTime).isSameOrBefore(sAssignmentEndDate)) {
