@@ -8,7 +8,7 @@
 					<form:content>
 						<Label text="{i18n>xfld.username}"></Label>
 						<Text text="{user>/Fullname} ({user>/Username})"></Text>
-						<Label text="{i18n>xfld.appVersion}"></Label>
+						<Label text="{i18n>xfld.evoResourceVersion}"></Label>
 						<Text text="{InformationModel>/appVersion}"></Text>
 						<Label text="{i18n>xfld.coreVersion}"></Label>
 						<Text text="{user>/CoreVersion}"></Text>
