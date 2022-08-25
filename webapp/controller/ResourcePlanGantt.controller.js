@@ -701,13 +701,13 @@ sap.ui.define([
 			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
+			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
 
 			//validate for the overlapping
 			if (this._validateDuplicateAsigment()) {
 				return;
 			}
 			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", true);
-			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
 			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
 		},
 		/**
