@@ -239,8 +239,13 @@ sap.ui.define([
 		 * @param {object} oEvent - change event of filterbar
 		 */
 		onInitializedSmartVariant: function (oEvent) {
+			var oSmartFilterBar = oEvent.getSource(),
+				oSmartVariant = oSmartFilterBar.getSmartVariant(),
+				oVariantText = oSmartVariant.oVariantText;
 			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
-				this._setNewHorizon(oResult.DEFAULT_DAILYVIEW_STARTDATE, oResult.DEFAULT_DAILYVIEW_ENDDATE);
+				if (oVariantText.getProperty("text") === "Standard") {
+					this._setNewHorizon(oResult.DEFAULT_DAILYVIEW_STARTDATE, oResult.DEFAULT_DAILYVIEW_ENDDATE);
+				}
 				this._loadGanttData();
 				this.updateNewDataFromGanttFilterBar();
 			}.bind(this));
@@ -1273,7 +1278,7 @@ sap.ui.define([
 				bDragged = oPopoverData["bDragged"],
 				oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
 				oChildData, oAssignData;
-			this.oPlanningModel.setProperty("/tempData/popover",{});
+			this.oPlanningModel.setProperty("/tempData/popover", {});
 			if (oTargetControl.sParentAggregationName === "shapes1") {
 				//its background shape
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject, bDragged).then(function (oData) {
