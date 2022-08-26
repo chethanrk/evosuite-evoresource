@@ -492,6 +492,8 @@ sap.ui.define([
 			if (oObject.NodeType !== "RESOURCE") {
 				oParentData = this._getParentResource(oObject.ParentNodeId);
 				oObject.USER_TIMEZONE = oParentData.TIME_ZONE;
+			}else{
+				oObject.ParentNodeId = oObject.NodeId;
 			}
 
 			oObject = this.copyObjectData(oObject, oDraggedObject.data, aIgnoreProperty);
