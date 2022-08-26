@@ -487,8 +487,12 @@ sap.ui.define([
 		* @param {boolean} isDeletable
 		*
 		*/
-		isPopoverDeleteButtonVisible: function (isEditable, isDeletable) {
+		isPopoverDeleteButtonVisible: function (isTemporary,isEditable, isDeletable) {
 			var bValidate = true;
+			if (isTemporary) {
+				bValidate = false;
+				return bValidate;
+			}
 			if (!isEditable) {
 				bValidate = false;
 				return bValidate;
