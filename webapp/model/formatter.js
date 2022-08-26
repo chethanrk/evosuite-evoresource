@@ -483,6 +483,7 @@ sap.ui.define([
 		},
 		/*
 		* Sets Delete button visisbility
+		* @param {boolean} isTemporary
 		* @param {boolean} isEditable
 		* @param {boolean} isDeletable
 		*
