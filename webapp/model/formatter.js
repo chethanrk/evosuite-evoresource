@@ -57,7 +57,7 @@ sap.ui.define([
 				//shape startDate is today or later or week start date or between start and end of week
 				return moment(date).isSameOrAfter(today) ||
 					moment(date).isSame(moment(today).day(1)) ||
-					moment(date).isBetween(moment(today).day(1), moment(today).day(7));
+					moment(date).isBetween(moment(today).startOf("day"), moment(today).endOf("day"));
 			}
 		},
 		MONTH: {
@@ -85,7 +85,7 @@ sap.ui.define([
 				//shape startDate is today or later or month start date or between start and end of month
 				return moment(date).isSameOrAfter(today) ||
 					moment(date).isSame(moment(today).startOf("month")) ||
-					moment(date).isBetween(moment(today).startOf("month"), moment(today).endOf("month"));
+					moment(date).isBetween(moment(today).startOf("day"), moment(today).endOf("day"));
 			}
 		}
 	};

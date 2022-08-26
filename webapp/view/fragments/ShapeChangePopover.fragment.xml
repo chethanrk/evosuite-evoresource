@@ -1,6 +1,6 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
 	<ResponsivePopover id="isPopoverChangeSHape" class="sapUiContentPadding" showHeader="false" placement="{viewModel>/gantt/popoverPlacement}"
-		contentWidth="30%" contentHeight="auto">
+		contentWidth="auto" contentHeight="auto">
 		<content>
 			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|Before"/>
 			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|Instead">
@@ -28,7 +28,7 @@
 							fieldGroupIds="changeShapeInput" items="{ path: 'viewModel>/Shifts'}" selectedKey="{ganttPlanningModel>/tempData/popover/TemplateId}"
 							change="onChangeShift" visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}"
 							editable="{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverShiftChangeEnable'}">
-							<core:ListItem key="{viewModel>TemplateId}" text="{viewModel>TemplateDesc}" additionalText="{viewModel>TemplateId}"/>
+							<core:ListItem key="{viewModel>TemplateId}" text="{viewModel>ScheduleIdDesc}" additionalText="{viewModel>TemplateDesc}"/>
 						</ComboBox>
 						<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
 						<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"
@@ -56,7 +56,7 @@
 							required="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.requiredValidate'}" fieldGroupIds="changeShapeInput"
 							liveChange="onEveryLiveChange"/>
 						<Label text="{i18n>xfld.On}" required="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.weekModeValidation'}"/>
-						<MultiComboBox maxWidth="100%" selectedKeys="{ganttPlanningModel>/tempData/popover/Days}"
+						<MultiComboBox width="20rem" selectedKeys="{ganttPlanningModel>/tempData/popover/Days}"
 							visible="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.weekModeValidation'}" fieldGroupIds="changeShapeInput"
 							required="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.weekModeValidation'}"
 							selectionChange="onChangeDaySelection">

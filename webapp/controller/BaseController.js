@@ -331,10 +331,12 @@ sap.ui.define([
 						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
 					}
 					if (nodeType === "RES_GROUP") {
+						obj.NodeId = oRowData.ParentNodeId;
 						obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
 						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
 					} else if (nodeType === "SHIFT") {
-						obj.DESCRIPTION = oRowData.TemplateDesc || oRowData.Description;
+						obj.NodeId = oRowData.ParentNodeId;
+						obj.DESCRIPTION = oRowData.ScheduleIdDesc || oRowData.Description;
 						obj.RESOURCE_GROUP_COLOR = oRowData.SHIFT_COLOR;
 					}
 					resolve(obj);
