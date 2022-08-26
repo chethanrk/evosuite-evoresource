@@ -487,7 +487,7 @@ sap.ui.define([
 				sEndTime = oDroppedTarget.getEndTime(),
 				oPopoverData,
 				oParentData,
-				aIgnoreProperty = ["__metadata", "NodeId", "USER_TIMEZONE"];
+				aIgnoreProperty = ["__metadata", "NodeId", "ParentNodeId", "USER_TIMEZONE"];
 
 			if (oObject.NodeType !== "RESOURCE") {
 				oParentData = this._getParentResource(oObject.ParentNodeId);
