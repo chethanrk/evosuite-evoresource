@@ -2,7 +2,7 @@
 	<Dialog title="{i18n>xtit.demandAssignments}" resizable="true" draggable="true" contentWidth="50%">
 		<Table id="idFragDemandListTable" items="{ path: 'demandModel>/data' }">
 			<infoToolbar>
-				<OverflowToolbar design="Info" active="true" visible="{= ${viewModel>/enableProcced} === true ? false : true}">
+				<OverflowToolbar design="Info" active="true" visible="{= ${viewModel>/enableProceed} === true ? false : true}">
 					<Label text="{i18n>tit.validationMsg}"/>
 				</OverflowToolbar>
 			</infoToolbar>
