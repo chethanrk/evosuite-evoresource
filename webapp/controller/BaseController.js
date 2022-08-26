@@ -336,7 +336,7 @@ sap.ui.define([
 						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
 					} else if (nodeType === "SHIFT") {
 						obj.NodeId = oRowData.ParentNodeId;
-						obj.DESCRIPTION = oRowData.TemplateDesc || oRowData.Description;
+						obj.DESCRIPTION = oRowData.ScheduleIdDesc || oRowData.Description;
 						obj.RESOURCE_GROUP_COLOR = oRowData.SHIFT_COLOR;
 					}
 					resolve(obj);

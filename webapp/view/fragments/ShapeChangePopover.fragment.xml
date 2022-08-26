@@ -28,7 +28,7 @@
 							fieldGroupIds="changeShapeInput" items="{ path: 'viewModel>/Shifts'}" selectedKey="{ganttPlanningModel>/tempData/popover/TemplateId}"
 							change="onChangeShift" visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}"
 							editable="{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverShiftChangeEnable'}">
-							<core:ListItem key="{viewModel>TemplateId}" text="{viewModel>TemplateDesc}" additionalText="{viewModel>TemplateId}"/>
+							<core:ListItem key="{viewModel>TemplateId}" text="{viewModel>ScheduleIdDesc}" additionalText="{viewModel>TemplateDesc}"/>
 						</ComboBox>
 						<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
 						<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"

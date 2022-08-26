@@ -673,7 +673,7 @@ sap.ui.define([
 			}
 
 			if (oData.isNew) {
-				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("TemplateDesc"));
+				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ScheduleIdDesc"));
 				shiftData = oSelContext.getObject();
 				oData = this.mergeObject(oData, shiftData);
 				this._removeAssignmentShape(oData, true);
@@ -1645,7 +1645,7 @@ sap.ui.define([
 								oAssignItemData.RESOURCE_GROUP_COLOR = this.groupShiftContext.getProperty("ResourceGroupColor");
 								oAssignItemData.DESCRIPTION = this.groupShiftContext.getProperty("ResourceGroupDesc");
 							} else if (oAssignItemData.NODE_TYPE === "SHIFT") {
-								oAssignItemData.DESCRIPTION = this.groupShiftContext.getProperty("TemplateDesc");
+								oAssignItemData.DESCRIPTION = this.groupShiftContext.getProperty("ScheduleIdDesc");
 								oAssignItemData.PARENT_NODE_ID = oAssignItemData.NodeId;
 								oAssignItemData.ResourceGuid = oAssignItemData.ParentNodeId;
 								shiftData = this.groupShiftContext.getObject();
