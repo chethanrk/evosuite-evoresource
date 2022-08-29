@@ -276,6 +276,7 @@ sap.ui.define([
 				oModeSource = this._viewModeFilter,
 				bChanges = this.oPlanningModel.getProperty("/hasChanges"),
 				sKey = oModeSource.getSelectedItem().getProperty("key");
+			this.getModel("viewModel").setProperty("/firstVisibleRow", 1);
 
 			if (bChanges) {
 				var sTitle = this.getResourceBundle().getText("tit.confirm"),
@@ -513,8 +514,9 @@ sap.ui.define([
 		onPressSave: function (oEvent) {
 			var aUassignData = this.oPlanningModel.getProperty("/unAssignData"),
 				sFunctionName = "DeleteDemandAssignment",
-				aPromises = [];
-
+				aPromises = [],
+				firstVisibleRow = this._treeTable.getFirstVisibleRow();
+			this.getModel("viewModel").setProperty("/firstVisibleRow", firstVisibleRow);
 			if (aUassignData && aUassignData.length) {
 				aUassignData.forEach(function (Guid) {
 					aPromises.push(
@@ -572,9 +574,10 @@ sap.ui.define([
 		 */
 		onPressCancel: function (oEvent) {
 			var sTitle = this.getResourceBundle().getText("tit.confirmCancel"),
-				sMsg = this.getResourceBundle().getText("msg.confirmCancel");
-
+				sMsg = this.getResourceBundle().getText("msg.confirmCancel"),
+				firstVisibleRow = this._treeTable.getFirstVisibleRow();
 			var successFn = function () {
+				this.getModel("viewModel").setProperty("/firstVisibleRow", firstVisibleRow);
 				this._loadGanttData();
 			};
 			this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
@@ -1089,6 +1092,7 @@ sap.ui.define([
 					//backup original data
 					this.oOriginData = deepClone(this.oPlanningModel.getProperty("/"));
 					this._setBackgroudShapes(this._sGanttViewMode);
+					this._treeTable.setFirstVisibleRow(this.getModel("viewModel").getProperty("/firstVisibleRow"));
 				}.bind(this));
 		},
 

@@ -53,7 +53,8 @@ sap.ui.define([
 				gantt: {
 					defaultStartDate: moment().toDate(),
 					defaultEndDate: moment().endOf("day").toDate(),
-					popoverPlacement: sap.m.PlacementType.Auto
+					popoverPlacement: sap.m.PlacementType.Auto,
+					firstVisibleRow:1
 				},
 				draggedData: null,
 				launchMode: Constants.LAUNCH_MODE.BSP,
