@@ -762,47 +762,58 @@ sap.ui.define([
 		 * validate duplicate resouce group in same time
 		 */
 		_checkDuplicateAsigment: function (oData, aResourceChild) {
-			var sStartTime,	sEndTime,
+			var sStartTime, sEndTime,
 				bValidate = true,
 				sAssignmentStartDate, sAssignmentEndDate;
-
-			if (oData.isNew || oData.isChanging) {
-				sStartTime = oData.StartDate;
-				sEndTime = oData.EndDate;
-			} else {
-				sStartTime = Formatter.convertFromUTCDate(oData.StartDate, false);
-				sEndTime = Formatter.convertFromUTCDate(oData.EndDate, false);
+			if (oData.NODE_TYPE === "RES_GROUP") {
+				if (oData.isNew || oData.isChanging) {
+					sStartTime = oData.StartDate;
+					sEndTime = oData.EndDate;
+				} else {
+					sStartTime = Formatter.convertFromUTCDate(oData.StartDate, false);
+					sEndTime = Formatter.convertFromUTCDate(oData.EndDate, false);
+				}
+			} else if (oData.NODE_TYPE === "SHIFT") {
+				if (oData.isNew || oData.isChanging) {
+					sStartTime = oData.EffectiveStartDate;
+					sEndTime = oData.EffectiveEndDate;
+				} else {
+					sStartTime = Formatter.convertFromUTCDate(oData.EffectiveStartDate, false);
+					sEndTime = Formatter.convertFromUTCDate(oData.EffectiveEndDate, false);
+				}
 			}
 
 			aResourceChild.forEach(function (oAssignment) {
 				// added formatter to convert the date from UTC to local time for UI Validation
-				if (oAssignment.NODE_TYPE === "RES_GROUP") {
-					if (oAssignment.isNew || oAssignment.isChanging) {
-						sAssignmentStartDate = oAssignment.StartDate;
-						sAssignmentEndDate = oAssignment.EndDate;
-					} else {
-						sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.StartDate, false);
-						sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EndDate, false);
+				if (oData.NODE_TYPE === oAssignment.NODE_TYPE) {
+					if (oAssignment.NODE_TYPE === "RES_GROUP") {
+						if (oAssignment.isNew || oAssignment.isChanging) {
+							sAssignmentStartDate = oAssignment.StartDate;
+							sAssignmentEndDate = oAssignment.EndDate;
+						} else {
+							sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.StartDate, false);
+							sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EndDate, false);
+						}
+
+					} else if (oAssignment.NODE_TYPE === "SHIFT") {
+						if (oAssignment.isNew || oAssignment.isChanging) {
+							sAssignmentStartDate = oAssignment.EffectiveStartDate;
+							sAssignmentEndDate = oAssignment.EffectiveEndDate;
+						} else {
+							sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.EffectiveStartDate, false);
+							sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EffectiveEndDate, false);
+						}
 					}
 
-				} else if (oAssignment.NODE_TYPE === "SHIFT") {
-					if (oAssignment.isNew || oAssignment.isChanging) {
-						sAssignmentStartDate = oAssignment.EffectiveStartDate;
-						sAssignmentEndDate = oAssignment.EffectiveEndDate;
-					} else {
-						sAssignmentStartDate = Formatter.convertFromUTCDate(oAssignment.EffectiveStartDate, false);
-						sAssignmentEndDate = Formatter.convertFromUTCDate(oAssignment.EffectiveEndDate, false);
+					if (moment(sStartTime).isSameOrAfter(sAssignmentStartDate) && moment(sEndTime).isSameOrBefore(sAssignmentEndDate)) {
+						bValidate = false;
+					} else if (moment(sStartTime).isBetween(moment(sAssignmentStartDate), moment(sAssignmentEndDate)) || moment(sEndTime).isBetween(
+							moment(sAssignmentStartDate), moment(sAssignmentEndDate))) {
+						bValidate = false;
+					} else if (moment(sAssignmentStartDate).isBetween(moment(sStartTime), moment(sEndTime)) || moment(sAssignmentEndDate).isBetween(
+							moment(sStartTime), moment(sEndTime))) {
+						bValidate = false;
 					}
-				}
-
-				if (moment(sStartTime).isSameOrAfter(sAssignmentStartDate) && moment(sEndTime).isSameOrBefore(sAssignmentEndDate)) {
-					bValidate = false;
-				} else if (moment(sStartTime).isBetween(moment(sAssignmentStartDate), moment(sAssignmentEndDate)) || moment(sEndTime).isBetween(
-						moment(sAssignmentStartDate), moment(sAssignmentEndDate))) {
-					bValidate = false;
-				} else if (moment(sAssignmentStartDate).isBetween(moment(sStartTime), moment(sEndTime)) || moment(sAssignmentEndDate).isBetween(
-						moment(sStartTime), moment(sEndTime))) {
-					bValidate = false;
 				}
 			}.bind(this));
 			return bValidate;
