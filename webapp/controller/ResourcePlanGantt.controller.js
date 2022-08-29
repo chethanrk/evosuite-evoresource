@@ -492,7 +492,7 @@ sap.ui.define([
 			if (oObject.NodeType !== "RESOURCE") {
 				oParentData = this._getParentResource(oObject.ParentNodeId);
 				oObject.USER_TIMEZONE = oParentData.TIME_ZONE;
-			}else{
+			} else {
 				oObject.ParentNodeId = oObject.NodeId;
 			}
 
@@ -1885,7 +1885,12 @@ sap.ui.define([
 		 * @param {oData} - date with popover selection
 		 */
 		_validateAndAddNewAssignment: function (data, oData) {
-			var aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
+			var aAssigments = [];
+			if (oData.NODE_TYPE === "RES_GROUP") {
+				aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
+			} else if (oData.NODE_TYPE === "SHIFT") {
+				aAssigments = this._getResourceShiftByKey(oData.ParentNodeId, oData);
+			}
 			//validation for the existing assigments
 			if (this._checkDuplicateAsigment(data, aAssigments)) {
 				this._addNewAssignmentShape(data);
