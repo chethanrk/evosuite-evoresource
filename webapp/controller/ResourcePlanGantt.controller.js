@@ -1994,7 +1994,7 @@ sap.ui.define([
 			return null;
 		},
 		/**
-		 * Sets scroll state for the Gantt		 * 
+		 * Sets scroll state for the Gantt
 		 */
 		_setGanttScrollState: function(){
 			var firstVisibleRow = this.getModel("viewModel").getProperty("/firstVisibleRow") || 1;
