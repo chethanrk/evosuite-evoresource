@@ -1092,7 +1092,7 @@ sap.ui.define([
 					//backup original data
 					this.oOriginData = deepClone(this.oPlanningModel.getProperty("/"));
 					this._setBackgroudShapes(this._sGanttViewMode);
-					this._treeTable.setFirstVisibleRow(this.getModel("viewModel").getProperty("/firstVisibleRow"));
+					this._setGanttScrollState();
 				}.bind(this));
 		},
 
@@ -1992,6 +1992,14 @@ sap.ui.define([
 				return oMinDate;
 			}
 			return null;
+		},
+		/**
+		 * Sets scroll state for the Gantt		 * 
+		 */
+		_setGanttScrollState: function(){
+			var firstVisibleRow = this.getModel("viewModel").getProperty("/firstVisibleRow") || 1;
+			this._treeTable.setFirstVisibleRow(firstVisibleRow);
+			this.getModel("viewModel").setProperty("/firstVisibleRow",1)
 		}
 	});
 });
