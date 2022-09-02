@@ -86,8 +86,8 @@
 											<table:rowActionTemplate></table:rowActionTemplate>
 											<table:rowSettingsTemplate>
 												<gnt2:GanttRowSettings rowId="{ganttPlanningModel>NodeId}" shapes1="{path: 'ganttPlanningModel>bgTasks', templateShareable:false}"
-													shapes2="{ path:'ganttPlanningModel>GanttHierarchyToResourceAssign/results', templateShareable:true }"
-													shapes3="{ path:'ganttPlanningModel>GanttHierarchyToShift/results', templateShareable:true }">
+													shapes4="{ path:'ganttPlanningModel>GanttHierarchyToShift/results', templateShareable:true }"
+													shapes5="{ path:'ganttPlanningModel>GanttHierarchyToResourceAssign/results', templateShareable:true }">
 													<gnt2:shapes1>
 														<gnt2:BaseRectangle scheme="hiddenBackground" countInBirdEye="false"
 															time="{path: 'ganttPlanningModel>startTime', formatter:'.formatter.fnTimeConverter'}"
@@ -95,12 +95,12 @@
 															selectable="true" draggable="false" showTitle="false" fill="#ffffff" fillOpacity="0.8" strokeOpacity="0.9" opacity="1" stroke="#f2f2f2"
 															strokeWidth="1" height="32" yBias="0"></gnt2:BaseRectangle>
 													</gnt2:shapes1>
-													<gnt2:shapes2>
+													<gnt2:shapes5>
 														<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.shapes.GroupAssignment" type="XML"/>
-													</gnt2:shapes2>
-													<gnt2:shapes3>
+													</gnt2:shapes5>
+													<gnt2:shapes4>
 														<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.shapes.ShiftAssignment" type="XML"/>
-													</gnt2:shapes3>
+													</gnt2:shapes4>
 												</gnt2:GanttRowSettings>
 											</table:rowSettingsTemplate>
 											<table:dragDropConfig>
