@@ -276,7 +276,7 @@ sap.ui.define([
 				oModeSource = this._viewModeFilter,
 				bChanges = this.oPlanningModel.getProperty("/hasChanges"),
 				sKey = oModeSource.getSelectedItem().getProperty("key");
-			this.getModel("viewModel").setProperty("/firstVisibleRow", 1);
+			this._getGanttScrollState(true);
 
 			if (bChanges) {
 				var sTitle = this.getResourceBundle().getText("tit.confirm"),
@@ -514,9 +514,8 @@ sap.ui.define([
 		onPressSave: function (oEvent) {
 			var aUassignData = this.oPlanningModel.getProperty("/unAssignData"),
 				sFunctionName = "DeleteDemandAssignment",
-				aPromises = [],
-				firstVisibleRow = this._treeTable.getFirstVisibleRow();
-			this.getModel("viewModel").setProperty("/firstVisibleRow", firstVisibleRow);
+				aPromises = [];
+			this._getGanttScrollState();
 			if (aUassignData && aUassignData.length) {
 				aUassignData.forEach(function (Guid) {
 					aPromises.push(
@@ -574,10 +573,9 @@ sap.ui.define([
 		 */
 		onPressCancel: function (oEvent) {
 			var sTitle = this.getResourceBundle().getText("tit.confirmCancel"),
-				sMsg = this.getResourceBundle().getText("msg.confirmCancel"),
-				firstVisibleRow = this._treeTable.getFirstVisibleRow();
+				sMsg = this.getResourceBundle().getText("msg.confirmCancel");
 			var successFn = function () {
-				this.getModel("viewModel").setProperty("/firstVisibleRow", firstVisibleRow);
+				this._getGanttScrollState();
 				this._loadGanttData();
 			};
 			this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
@@ -1994,12 +1992,25 @@ sap.ui.define([
 			return null;
 		},
 		/**
+		 * Gets scroll state for the Gantt and assign to "viewModel" -> "/gantt/firstVisibleRow"
+		 * @param {boolean} isReset - if true then set firstVisibleRow of Gantt to 1
+		 */
+		_getGanttScrollState: function (isReset) {
+			var firstVisibleRow = this._treeTable.getFirstVisibleRow();
+			if (isReset) {
+				this.getModel("viewModel").setProperty("/gantt/firstVisibleRow", 0);
+				return 0;
+			}
+			this.getModel("viewModel").setProperty("/gantt/firstVisibleRow", firstVisibleRow);
+			return firstVisibleRow;
+		},
+		/**
 		 * Sets scroll state for the Gantt
 		 */
-		_setGanttScrollState: function(){
-			var firstVisibleRow = this.getModel("viewModel").getProperty("/firstVisibleRow") || 1;
+		_setGanttScrollState: function () {
+			var firstVisibleRow = this.getModel("viewModel").getProperty("/gantt/firstVisibleRow") || 0;
 			this._treeTable.setFirstVisibleRow(firstVisibleRow);
-			this.getModel("viewModel").setProperty("/firstVisibleRow",1)
+			this.getModel("viewModel").setProperty("/gantt/firstVisibleRow", 0)
 		}
 	});
 });

@@ -54,7 +54,7 @@ sap.ui.define([
 					defaultStartDate: moment().toDate(),
 					defaultEndDate: moment().endOf("day").toDate(),
 					popoverPlacement: sap.m.PlacementType.Auto,
-					firstVisibleRow:1
+					firstVisibleRow:0
 				},
 				draggedData: null,
 				launchMode: Constants.LAUNCH_MODE.BSP,
