@@ -66,7 +66,7 @@ sap.ui.define([
 			this.setModel(models.createHelperModel(), "demandModel");
 
 			// set the message model with messages from core message manager
-			this.setModel(oCoreMessageManager.getMessageModel(), "coreMessageModel");
+			this.setModel(models.createHelperModel([]), "coreMessageModel");
 
 			this.MessageManager = new MessageManager();
 
@@ -158,6 +158,31 @@ sap.ui.define([
 					}
 				});
 			}.bind(this));
+		},
+		/**
+		 * Extract messages from a the MessageModel.
+		 */
+		createMessages: function () {
+			var aMessages = JSON.parse(JSON.stringify(this.getModel("coreMessageModel").getData())),
+				oMessageModel = oCoreMessageManager.getMessageModel(),
+				oData = oMessageModel.getData();
+
+			if (oData.length === 0) {
+				return;
+			}
+
+			for (var i = 0; i < oData.length; i++) {
+				var item = {};
+				item.id = oData[i].id;
+				item.type = oData[i].type;
+				item.title = oData[i].message;
+
+				if (!JSON.stringify(aMessages).includes(JSON.stringify(item))) {
+					aMessages.push(item);
+				}
+
+			}
+			this.getModel("coreMessageModel").setData(aMessages);
 		},
 
 		/**

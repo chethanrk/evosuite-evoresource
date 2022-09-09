@@ -4,8 +4,9 @@ sap.ui.define([
 	"sap/ui/core/mvc/OverrideExecution"
 ], function (Controller, Fragment, OverrideExecution) {
 	"use strict";
+	var oCoreMessageManager = sap.ui.getCore().getMessageManager();
 	return Controller.extend("com.evorait.evosuite.evoresource.controller.MessageManager", {
-		
+
 		metadata: {
 			methods: {
 				open: {
@@ -46,25 +47,27 @@ sap.ui.define([
 				}
 			}
 		},
-		
+
 		/**
 		 * Delete all messages from message manager model
 		 */
 		deleteAllMessages: function () {
 			if (this._showMessageManager.getModel("coreMessageModel")) {
-				this._showMessageManager.getModel("coreMessageModel").oMessageManager.removeAllMessages();
+				this._showMessageManager.getModel("coreMessageModel").setData([]);
+				oCoreMessageManager.oMessageManager.removeAllMessages();
 				this._showMessageManager.close();
 			}
 		},
-		
+
 		/* =========================================================== */
 		/* internal methods                                            */
 		/* =========================================================== */
-		
+
 		/**
 		 * Called when coreMessageModel model needs to refresh
 		 */
 		_refreshMessageModel: function () {
+			oCoreMessageManager.getMessageModel().refresh();
 			if (this._showMessageManager.getModel("coreMessageModel")) {
 				this._showMessageManager.getModel("coreMessageModel").refresh();
 			} else if (this._oCurrentView.getModel("coreMessageModel")) {
@@ -72,6 +75,6 @@ sap.ui.define([
 				this._showMessageManager.getModel("coreMessageModel").refresh();
 			}
 		}
-		
+
 	});
 });

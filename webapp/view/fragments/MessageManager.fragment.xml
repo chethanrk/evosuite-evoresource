@@ -4,7 +4,7 @@
 		<headerButton>
 			<Button icon="sap-icon://delete" press="deleteAllMessages" visible="{= ${coreMessageModel>/}.length > 0 }"/>
 		</headerButton>
-		<MessageItem type="{coreMessageModel>type}" title="{coreMessageModel>message}" description="{coreMessageModel>description}"
+		<MessageItem type="{coreMessageModel>type}" title="{coreMessageModel>title}" description="{coreMessageModel>title}"
 			activeTitle="{coreMessageModel>technical}"></MessageItem>
 	</MessagePopover>
 </core:FragmentDefinition>
