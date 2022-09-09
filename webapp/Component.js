@@ -160,7 +160,7 @@ sap.ui.define([
 			}.bind(this));
 		},
 		/**
-		 * Extract messages from a the MessageModel.
+		 * Extract messages from a the message manager and store it to "coreMessageMessage" JSON model.
 		 */
 		createMessages: function () {
 			var aMessages = JSON.parse(JSON.stringify(this.getModel("coreMessageModel").getData())),
