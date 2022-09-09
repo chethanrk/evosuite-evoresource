@@ -1543,7 +1543,7 @@ sap.ui.define([
 				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
 				bAssignmentCheck = this.getView().getModel("user").getProperty("/ENABLE_ASSIGNMENT_CHECK");
 
-			var callbackfunction = function (oData) {
+			var callbackfunction_group = function (oData) {
 				if (oData.results.length > 0) {
 					this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", false);
 					oDemandModel.setProperty("/data", this._checkMarkedUnassigned(oData.results));
@@ -1554,14 +1554,27 @@ sap.ui.define([
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
+			var callbackfunction_shift = function (oData) {
+				if (oData.isChangable === true) {
+					this._changeAssignment(oPopoverData);
+				} else {
+					var oFoundData = this._getChildrenDataByKey("Guid", oPopoverData.Guid, null),
+						oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
+
+					for (var i = 0; i < oFoundData.length; i++) {
+						this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
+					}
+				}
+			}.bind(this);
 			if (this._oPlanningPopover) {
 				this._oPlanningPopover.close();
 			}
 
-			if (oPopoverData.NODE_TYPE !== "SHIFT" && bAssignmentCheck) {
-				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
-			} else {
-				this._changeAssignment(oPopoverData);
+			if (oPopoverData.NODE_TYPE === "RES_GROUP" && bAssignmentCheck) {
+				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction_group);
+			} else if (oPopoverData.NODE_TYPE === "SHIFT") {
+				// this._changeAssignment(oPopoverData);
+				this.tempFunctionImport(oPopoverData, callbackfunction_shift);
 			}
 		},
 
@@ -1708,8 +1721,17 @@ sap.ui.define([
 
 			if (!oData.Repeat || oData.Repeat === "NEVER") {
 				if (oData.isNew) {
-					oData.isTemporary = false;
-					this._markAsPlanningChange(oData, true);
+					if (oData.NODE_TYPE === "RES_GROUP") {
+						oData.isTemporary = false;
+						this._markAsPlanningChange(oData, true);
+					} else if (oData.NODE_TYPE === "SHIFT") {
+						var callbackfunction_shift = function (oReturnData) {
+							if (oReturnData.isChangable === true) {
+								this._changeAssignment(oData);
+							}
+						}.bind(this);
+						this.tempFunctionImport(oData, callbackfunction_shift);
+					}
 				} else {
 					this.oPlanningModel.setProperty("/tempData/popover/isTemporary", false);
 					//validate whether changes are happend or not
@@ -2010,7 +2032,11 @@ sap.ui.define([
 		_setGanttScrollState: function () {
 			var firstVisibleRow = this.getModel("viewModel").getProperty("/gantt/firstVisibleRow") || 0;
 			this._treeTable.setFirstVisibleRow(firstVisibleRow);
-			this.getModel("viewModel").setProperty("/gantt/firstVisibleRow", 0)
+			this.getModel("viewModel").setProperty("/gantt/firstVisibleRow", 0);
+		},
+		tempFunctionImport: function (oData, fnCallBack) {
+			oData.isChangable = false;
+			fnCallBack(oData);
 		}
 	});
 });
