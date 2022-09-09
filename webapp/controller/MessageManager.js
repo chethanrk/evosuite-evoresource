@@ -54,7 +54,7 @@ sap.ui.define([
 		deleteAllMessages: function () {
 			if (this._showMessageManager.getModel("coreMessageModel")) {
 				this._showMessageManager.getModel("coreMessageModel").setData([]);
-				oCoreMessageManager.oMessageManager.removeAllMessages();
+				oCoreMessageManager.removeAllMessages();
 				this._showMessageManager.close();
 			}
 		},
