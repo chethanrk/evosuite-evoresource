@@ -176,6 +176,7 @@ sap.ui.define([
 				item.id = oData[i].id;
 				item.type = oData[i].type;
 				item.title = oData[i].message;
+				item.description = oData[i].description;
 
 				if (!JSON.stringify(aMessages).includes(JSON.stringify(item))) {
 					aMessages.push(item);
