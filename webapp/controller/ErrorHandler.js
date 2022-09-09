@@ -46,6 +46,12 @@ sap.ui.define([
 					this._showServiceError(oParams.response);
 				}
 			}, this);
+			this._oModel.attachRequestCompleted(function (oEvent) {
+				var oParams = oEvent.getParameters();
+				if (oParams.success) {
+					this._oComponent.createMessages();
+				}
+			}, this);
 		},
 
 		/**
