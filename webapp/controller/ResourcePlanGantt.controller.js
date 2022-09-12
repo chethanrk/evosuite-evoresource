@@ -1298,32 +1298,32 @@ sap.ui.define([
 					}
 
 				}.bind(this));
-			} else if (oTargetControl.sParentAggregationName === "shapes2" && oContext) {
-				//its a assignment
+			} else if (oContext) {
 				oAssignData = oContext.getObject();
-				//popover data adjustment with repeat mode
-				oAssignData.Repeat = "NEVER";
-				oAssignData.isEditable = true;
-				oAssignData.isDeletable = this.isGroupDeletable(oAssignData);
-				oAssignData.minDate = this._getShapePopoverMinDate(oAssignData.isDeletable);
-				oAssignData.maxDate = this._getShapePopoverMaxDate(oAssignData.EndDate);
-				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
-				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
-			} else if (oTargetControl.sParentAggregationName === "shapes3" && oContext) {
-				//its a assignment
-				oAssignData = oContext.getObject();
-				//popover data adjustment with repeat mode
-				oAssignData.Repeat = "NEVER";
-				oAssignData.isEditable = true;
-				oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
-				oAssignData.isDeletable = this.isShiftDeletable(oAssignData);
-				oAssignData.minDate = this._getShapePopoverMinDate(oAssignData.isDeletable);
-				oAssignData.maxDate = this._getShapePopoverMaxDate(oAssignData.EffectiveEndDate);
-				oAssignData.StartDate = oAssignData.EffectiveStartDate;
-				oAssignData.EndDate = oAssignData.EffectiveEndDate;
-				this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
-				this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
+				if (oAssignData.NODE_TYPE === "RES_GROUP") {
+					//popover data adjustment with repeat mode
+					oAssignData.Repeat = "NEVER";
+					oAssignData.isEditable = true;
+					oAssignData.isDeletable = this.isGroupDeletable(oAssignData);
+					oAssignData.minDate = this._getShapePopoverMinDate(oAssignData.isDeletable);
+					oAssignData.maxDate = this._getShapePopoverMaxDate(oAssignData.EndDate);
+					this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
+					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
+				} else if (oAssignData.NODE_TYPE === "SHIFT") {
+					//popover data adjustment with repeat mode
+					oAssignData.Repeat = "NEVER";
+					oAssignData.isEditable = true;
+					oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
+					oAssignData.isDeletable = this.isShiftDeletable(oAssignData);
+					oAssignData.minDate = this._getShapePopoverMinDate(oAssignData.isDeletable);
+					oAssignData.maxDate = this._getShapePopoverMaxDate(oAssignData.EffectiveEndDate);
+					oAssignData.StartDate = oAssignData.EffectiveStartDate;
+					oAssignData.EndDate = oAssignData.EffectiveEndDate;
+					this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
+					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
+				}
 			}
+
 		},
 		/*
 		 * Checks if group assignment is deletable
