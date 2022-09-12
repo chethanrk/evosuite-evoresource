@@ -1727,7 +1727,8 @@ sap.ui.define([
 					} else if (oData.NODE_TYPE === "SHIFT") {
 						var callbackfunction_shift = function (oReturnData) {
 							if (oReturnData.isChangable === true) {
-								this._changeAssignment(oData);
+								oData.isTemporary = false;
+								this._markAsPlanningChange(oData, true);
 							}
 						}.bind(this);
 						this.tempFunctionImport(oData, callbackfunction_shift);
