@@ -1721,18 +1721,8 @@ sap.ui.define([
 
 			if (!oData.Repeat || oData.Repeat === "NEVER") {
 				if (oData.isNew) {
-					if (oData.NODE_TYPE === "RES_GROUP") {
-						oData.isTemporary = false;
-						this._markAsPlanningChange(oData, true);
-					} else if (oData.NODE_TYPE === "SHIFT") {
-						var callbackfunction_shift = function (oReturnData) {
-							if (oReturnData.isChangable === true) {
-								oData.isTemporary = false;
-								this._markAsPlanningChange(oData, true);
-							}
-						}.bind(this);
-						this.tempFunctionImport(oData, callbackfunction_shift);
-					}
+					oData.isTemporary = false;
+					this._markAsPlanningChange(oData, true);
 				} else {
 					this.oPlanningModel.setProperty("/tempData/popover/isTemporary", false);
 					//validate whether changes are happend or not
