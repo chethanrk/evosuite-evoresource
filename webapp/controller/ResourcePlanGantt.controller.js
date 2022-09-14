@@ -1530,51 +1530,60 @@ sap.ui.define([
 		 * Validation of assignment on change
 		 */
 		_validateForChange: function (oAssignItem) {
-			var oParams = {
+			var oParams, sFunctionName, oDemandModel, oPopoverData, bAssignmentCheck;
+			if (oAssignItem.NODE_TYPE === "RES_GROUP") {
+				oParams = {
 					Guid: oAssignItem.Guid,
 					ObjectId: oAssignItem.NODE_ID,
 					EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),
 					StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate),
 					EndTimestampUtc: oAssignItem.EndDate,
 					StartTimestampUtc: oAssignItem.StartDate
-				},
-				sFunctionName = "ValidateResourceAssignment",
-				oDemandModel = this.getModel("demandModel"),
-				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
+				};
+				sFunctionName = "ValidateResourceAssignment";
+				oDemandModel = this.getModel("demandModel");
+				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
 				bAssignmentCheck = this.getView().getModel("user").getProperty("/ENABLE_ASSIGNMENT_CHECK");
-
-			var callbackfunction_group = function (oData) {
-				if (oData.results.length > 0) {
-					this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", false);
-					oDemandModel.setProperty("/data", this._checkMarkedUnassigned(oData.results));
-					oDemandModel.setProperty("/Type", "Change");
-					this.openDemandDialog();
-				} else {
-					this._changeAssignment(oPopoverData);
-				}
-				this.oPlanningModel.refresh();
-			}.bind(this);
-			var callbackfunction_shift = function (oData) {
-				if (oData.isChangable === true) {
-					this._changeAssignment(oPopoverData);
-				} else {
-					var oFoundData = this._getChildrenDataByKey("Guid", oPopoverData.Guid, null),
-						oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
-
-					for (var i = 0; i < oFoundData.length; i++) {
-						this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
+				var callbackfunction_group = function (oData) {
+					if (oData.results.length > 0) {
+						this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", false);
+						oDemandModel.setProperty("/data", this._checkMarkedUnassigned(oData.results));
+						oDemandModel.setProperty("/Type", "Change");
+						this.openDemandDialog();
+					} else {
+						this._changeAssignment(oPopoverData);
 					}
-				}
-			}.bind(this);
+					this.oPlanningModel.refresh();
+				}.bind(this);
+			} else if (oAssignItem.NODE_TYPE === "SHIFT") {
+				oParams = {
+					ResourceGuid: oAssignItem.ParentNodeId,
+					EndTimeStamp: formatter.convertToUTCDate(oAssignItem.EffectiveEndDate),
+					StartTimeStamp: formatter.convertToUTCDate(oAssignItem.EffectiveStartDate)
+				};
+				sFunctionName = "ValidateShiftAssignment";
+				oDemandModel = this.getModel("demandModel");
+				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
+				var callbackfunction_shift = function (oData) {
+					if (oData.isChangable === true) {
+						this._changeAssignment(oPopoverData);
+					} else {
+						var oFoundData = this._getChildrenDataByKey("Guid", oPopoverData.Guid, null),
+							oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
+						for (var i = 0; i < oFoundData.length; i++) {
+							this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
+						}
+					}
+				}.bind(this);
+			}
+
 			if (this._oPlanningPopover) {
 				this._oPlanningPopover.close();
 			}
-
 			if (oPopoverData.NODE_TYPE === "RES_GROUP" && bAssignmentCheck) {
 				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction_group);
 			} else if (oPopoverData.NODE_TYPE === "SHIFT") {
-				// this._changeAssignment(oPopoverData);
-				this.tempFunctionImport(oPopoverData, callbackfunction_shift);
+				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction_shift);
 			}
 		},
 
