@@ -205,6 +205,11 @@ sap.ui.define([
 		_treeTable: null,
 		_previousView: "DAY",
 		groupShiftContext: null,
+		_ganttChart: null,
+		_smartFilterBar: null,
+		_dateRangeFilter: null,
+		_viewModeFilter: null,
+		_sGanttViewMode: null,
 
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
