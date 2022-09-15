@@ -112,14 +112,6 @@
 							</gnt2:GanttChartContainer>
 						</template:with>
 					</f:content>
-					<!-- DynamicPage Footer -->
-					<f:footer>
-						<OverflowToolbar id="idPageResourcePlanningFooter" visible="false">
-							<core:ExtensionPoint name="PageExtP|ResourcePlanGantt|GanttResourceHierarchySet|Footer|Left"/>
-							<ToolbarSpacer/>
-							<core:ExtensionPoint name="PageExtP|ResourcePlanGantt|GanttResourceHierarchySet|Footer|Right"/>
-						</OverflowToolbar>
-					</f:footer>
 				</f:DynamicPage>
 			</template:with>
 		</template:alias>
