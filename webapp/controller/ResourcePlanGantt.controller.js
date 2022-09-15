@@ -2035,10 +2035,6 @@ sap.ui.define([
 			var firstVisibleRow = this.getModel("viewModel").getProperty("/gantt/firstVisibleRow") || 0;
 			this._treeTable.setFirstVisibleRow(firstVisibleRow);
 			this.getModel("viewModel").setProperty("/gantt/firstVisibleRow", 0);
-		},
-		tempFunctionImport: function (oData, fnCallBack) {
-			oData.isChangable = false;
-			fnCallBack(oData);
 		}
 	});
 });
