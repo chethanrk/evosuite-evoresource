@@ -1564,7 +1564,7 @@ sap.ui.define([
 			oDemandModel = this.getModel("demandModel");
 			oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
 			bAssignmentCheck = this.getView().getModel("user").getProperty("/ENABLE_ASSIGNMENT_CHECK");
-			var callbackfunction_group = function (oData) {
+			var callbackfunction = function (oData) {
 				if (oData.results.length > 0) {
 					this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", false);
 					oDemandModel.setProperty("/data", this._checkMarkedUnassigned(oData.results));
@@ -1576,7 +1576,7 @@ sap.ui.define([
 				this.oPlanningModel.refresh();
 			}.bind(this);
 			if (bAssignmentCheck) {
-				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction_group);
+				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 			} else {
 				this._changeAssignment(oPopoverData);
 			}
@@ -1594,7 +1594,7 @@ sap.ui.define([
 			};
 			sFunctionName = "ValidateShiftAssignment";
 			oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
-			var callbackfunction_shift = function (oData, oResponse) {
+			var callbackfunction = function (oData, oResponse) {
 				if (oResponse && oResponse.headers && oResponse.headers["sap-message"]) {
 					var sMessageBundle = JSON.parse(oResponse.headers["sap-message"]);
 					this.showMessageToast(sMessageBundle.message);
@@ -1607,7 +1607,7 @@ sap.ui.define([
 					this._changeAssignment(oPopoverData);
 				}
 			}.bind(this);
-			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction_shift);
+			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 
 		},
 
