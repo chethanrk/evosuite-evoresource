@@ -1596,10 +1596,10 @@ sap.ui.define([
 			oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
 			var callbackfunction = function (oData, oResponse) {
 				if (oResponse && oResponse.headers && oResponse.headers["sap-message"]) {
-					var sMessageBundle = JSON.parse(oResponse.headers["sap-message"]);
-					this.showMessageToast(sMessageBundle.message);
-					var oFoundData = this._getChildrenDataByKey("Guid", oPopoverData.Guid, null),
+					var sMessageBundle = JSON.parse(oResponse.headers["sap-message"]),
+						oFoundData = this._getChildrenDataByKey("Guid", oPopoverData.Guid, null),
 						oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
+					this.showMessageToast(sMessageBundle.message);
 					for (var i = 0; i < oFoundData.length; i++) {
 						this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
 					}
