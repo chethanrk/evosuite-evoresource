@@ -1533,66 +1533,82 @@ sap.ui.define([
 		},
 		/**
 		 * Validation of assignment on change
+		 * @param {object} oAssignItem - Assignment to be validated
 		 */
 		_validateForChange: function (oAssignItem) {
-			var oParams, sFunctionName, oDemandModel, oPopoverData, bAssignmentCheck;
 			if (oAssignItem.NODE_TYPE === "RES_GROUP") {
-				oParams = {
-					Guid: oAssignItem.Guid,
-					ObjectId: oAssignItem.NODE_ID,
-					EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),
-					StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate),
-					EndTimestampUtc: oAssignItem.EndDate,
-					StartTimestampUtc: oAssignItem.StartDate
-				};
-				sFunctionName = "ValidateResourceAssignment";
-				oDemandModel = this.getModel("demandModel");
-				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
-				bAssignmentCheck = this.getView().getModel("user").getProperty("/ENABLE_ASSIGNMENT_CHECK");
-				var callbackfunction_group = function (oData) {
-					if (oData.results.length > 0) {
-						this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", false);
-						oDemandModel.setProperty("/data", this._checkMarkedUnassigned(oData.results));
-						oDemandModel.setProperty("/Type", "Change");
-						this.openDemandDialog();
-					} else {
-						this._changeAssignment(oPopoverData);
-					}
-					this.oPlanningModel.refresh();
-				}.bind(this);
-				if (bAssignmentCheck) {
-					this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction_group);
-				} else {
-					this._changeAssignment(oPopoverData);
-				}
+				this._validateForResourceGroupChange(oAssignItem);
 			} else if (oAssignItem.NODE_TYPE === "SHIFT") {
-				oParams = {
-					ResourceGuid: oAssignItem.ParentNodeId,
-					EndTimestamp: formatter.convertToUTCDate(oAssignItem.EffectiveEndDate),
-					StartTimestamp: formatter.convertToUTCDate(oAssignItem.EffectiveStartDate)
-				};
-				sFunctionName = "ValidateShiftAssignment";
-				oDemandModel = this.getModel("demandModel");
-				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
-				var callbackfunction_shift = function (oData, oResponse) {
-					if (oResponse && oResponse.headers && oResponse.headers["sap-message"]) {
-						var sMessageBundle = JSON.parse(oResponse.headers["sap-message"]);
-						this.showMessageToast(sMessageBundle.message);
-						var oFoundData = this._getChildrenDataByKey("Guid", oPopoverData.Guid, null),
-							oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
-						for (var i = 0; i < oFoundData.length; i++) {
-							this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
-						}
-					} else {
-						this._changeAssignment(oPopoverData);
-					}
-				}.bind(this);
-				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction_shift);
+				this._validateForShiftChange(oAssignItem);
 			}
 
 			if (this._oPlanningPopover) {
 				this._oPlanningPopover.close();
 			}
+		},
+		/**
+		 * Validation of Group assignment on change
+		 * @param {object} oAssignItem - Assignment to be validated
+		 */
+		_validateForResourceGroupChange: function (oAssignItem) {
+			var oParams, sFunctionName, oDemandModel, oPopoverData, bAssignmentCheck;
+			oParams = {
+				Guid: oAssignItem.Guid,
+				ObjectId: oAssignItem.NODE_ID,
+				EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),
+				StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate),
+				EndTimestampUtc: oAssignItem.EndDate,
+				StartTimestampUtc: oAssignItem.StartDate
+			};
+			sFunctionName = "ValidateResourceAssignment";
+			oDemandModel = this.getModel("demandModel");
+			oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
+			bAssignmentCheck = this.getView().getModel("user").getProperty("/ENABLE_ASSIGNMENT_CHECK");
+			var callbackfunction_group = function (oData) {
+				if (oData.results.length > 0) {
+					this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", false);
+					oDemandModel.setProperty("/data", this._checkMarkedUnassigned(oData.results));
+					oDemandModel.setProperty("/Type", "Change");
+					this.openDemandDialog();
+				} else {
+					this._changeAssignment(oPopoverData);
+				}
+				this.oPlanningModel.refresh();
+			}.bind(this);
+			if (bAssignmentCheck) {
+				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction_group);
+			} else {
+				this._changeAssignment(oPopoverData);
+			}
+		},
+		/**
+		 * Validation of Shift assignment on change
+		 * @param {object} oAssignItem - Assignment to be validated
+		 */
+		_validateForShiftChange: function (oAssignItem) {
+			var oParams, sFunctionName, oPopoverData;
+			oParams = {
+				ResourceGuid: oAssignItem.ParentNodeId,
+				EndTimestamp: formatter.convertToUTCDate(oAssignItem.EffectiveEndDate),
+				StartTimestamp: formatter.convertToUTCDate(oAssignItem.EffectiveStartDate)
+			};
+			sFunctionName = "ValidateShiftAssignment";
+			oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
+			var callbackfunction_shift = function (oData, oResponse) {
+				if (oResponse && oResponse.headers && oResponse.headers["sap-message"]) {
+					var sMessageBundle = JSON.parse(oResponse.headers["sap-message"]);
+					this.showMessageToast(sMessageBundle.message);
+					var oFoundData = this._getChildrenDataByKey("Guid", oPopoverData.Guid, null),
+						oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
+					for (var i = 0; i < oFoundData.length; i++) {
+						this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
+					}
+				} else {
+					this._changeAssignment(oPopoverData);
+				}
+			}.bind(this);
+			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction_shift);
+
 		},
 
 		/**
