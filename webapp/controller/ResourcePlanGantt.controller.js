@@ -1555,6 +1555,11 @@ sap.ui.define([
 					}
 					this.oPlanningModel.refresh();
 				}.bind(this);
+				if (bAssignmentCheck) {
+					this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction_group);
+				} else {
+					this._changeAssignment(oPopoverData);
+				}
 			} else if (oAssignItem.NODE_TYPE === "SHIFT") {
 				oParams = {
 					ResourceGuid: oAssignItem.ParentNodeId,
@@ -1577,15 +1582,11 @@ sap.ui.define([
 						this._changeAssignment(oPopoverData);
 					}
 				}.bind(this);
+				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction_shift);
 			}
 
 			if (this._oPlanningPopover) {
 				this._oPlanningPopover.close();
-			}
-			if (oPopoverData.NODE_TYPE === "RES_GROUP" && bAssignmentCheck) {
-				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction_group);
-			} else if (oPopoverData.NODE_TYPE === "SHIFT") {
-				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction_shift);
 			}
 		},
 
