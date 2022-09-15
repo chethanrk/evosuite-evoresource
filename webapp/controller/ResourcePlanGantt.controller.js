@@ -1558,21 +1558,23 @@ sap.ui.define([
 			} else if (oAssignItem.NODE_TYPE === "SHIFT") {
 				oParams = {
 					ResourceGuid: oAssignItem.ParentNodeId,
-					EndTimeStamp: formatter.convertToUTCDate(oAssignItem.EffectiveEndDate),
-					StartTimeStamp: formatter.convertToUTCDate(oAssignItem.EffectiveStartDate)
+					EndTimestamp: formatter.convertToUTCDate(oAssignItem.EffectiveEndDate),
+					StartTimestamp: formatter.convertToUTCDate(oAssignItem.EffectiveStartDate)
 				};
 				sFunctionName = "ValidateShiftAssignment";
 				oDemandModel = this.getModel("demandModel");
 				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
-				var callbackfunction_shift = function (oData) {
-					if (oData.isChangable === true) {
-						this._changeAssignment(oPopoverData);
-					} else {
+				var callbackfunction_shift = function (oData, oResponse) {
+					if (oResponse && oResponse.headers && oResponse.headers["sap-message"]) {
+						var sMessageBundle = JSON.parse(oResponse.headers["sap-message"]);
+						this.showMessageToast(sMessageBundle.message);
 						var oFoundData = this._getChildrenDataByKey("Guid", oPopoverData.Guid, null),
 							oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
 						for (var i = 0; i < oFoundData.length; i++) {
 							this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
 						}
+					} else {
+						this._changeAssignment(oPopoverData);
 					}
 				}.bind(this);
 			}
