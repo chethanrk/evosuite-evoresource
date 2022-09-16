@@ -32,7 +32,7 @@
 												enabled="{ganttPlanningModel>/hasChanges}"/>
 											<Text text="|"/>
 											<Button id="idResourcePlanBtnToday" text="{i18n>xbtn.today}" press="onPressToday"/>
-											<Button id="idResourcePlanBtnSetting" icon="sap-icon://action-settings" type="Transparent" press="onPressFilter"/>
+											<Button id="idResourcePlanBtnSetting" icon="sap-icon://action-settings" type="Transparent" press="onPressFilter" visible="{user>/ENABLE_GANTT_SELECTION_FILTER}"/>
 											<core:ExtensionPoint name="GanttExtP|ResourcePlanGantt|GanttResourceHierarchySet|ContainerToolbar|After"/>
 										</gnt2:content>
 										<gnt2:legendContainer>
@@ -112,14 +112,6 @@
 							</gnt2:GanttChartContainer>
 						</template:with>
 					</f:content>
-					<!-- DynamicPage Footer -->
-					<f:footer>
-						<OverflowToolbar id="idPageResourcePlanningFooter" visible="false">
-							<core:ExtensionPoint name="PageExtP|ResourcePlanGantt|GanttResourceHierarchySet|Footer|Left"/>
-							<ToolbarSpacer/>
-							<core:ExtensionPoint name="PageExtP|ResourcePlanGantt|GanttResourceHierarchySet|Footer|Right"/>
-						</OverflowToolbar>
-					</f:footer>
 				</f:DynamicPage>
 			</template:with>
 		</template:alias>

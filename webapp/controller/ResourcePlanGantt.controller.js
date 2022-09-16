@@ -205,6 +205,11 @@ sap.ui.define([
 		_treeTable: null,
 		_previousView: "DAY",
 		groupShiftContext: null,
+		_ganttChart: null,
+		_smartFilterBar: null,
+		_dateRangeFilter: null,
+		_viewModeFilter: null,
+		_sGanttViewMode: null,
 
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
@@ -1528,21 +1533,37 @@ sap.ui.define([
 		},
 		/**
 		 * Validation of assignment on change
+		 * @param {object} oAssignItem - Assignment to be validated
 		 */
 		_validateForChange: function (oAssignItem) {
-			var oParams = {
-					Guid: oAssignItem.Guid,
-					ObjectId: oAssignItem.NODE_ID,
-					EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),
-					StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate),
-					EndTimestampUtc: oAssignItem.EndDate,
-					StartTimestampUtc: oAssignItem.StartDate
-				},
-				sFunctionName = "ValidateResourceAssignment",
-				oDemandModel = this.getModel("demandModel"),
-				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
-				bAssignmentCheck = this.getView().getModel("user").getProperty("/ENABLE_ASSIGNMENT_CHECK");
+			if (oAssignItem.NODE_TYPE === "RES_GROUP") {
+				this._validateForResourceGroupChange(oAssignItem);
+			} else if (oAssignItem.NODE_TYPE === "SHIFT") {
+				this._validateForShiftChange(oAssignItem);
+			}
 
+			if (this._oPlanningPopover) {
+				this._oPlanningPopover.close();
+			}
+		},
+		/**
+		 * Validation of Group assignment on change
+		 * @param {object} oAssignItem - Assignment to be validated
+		 */
+		_validateForResourceGroupChange: function (oAssignItem) {
+			var oParams, sFunctionName, oDemandModel, oPopoverData, bAssignmentCheck;
+			oParams = {
+				Guid: oAssignItem.Guid,
+				ObjectId: oAssignItem.NODE_ID,
+				EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),
+				StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate),
+				EndTimestampUtc: oAssignItem.EndDate,
+				StartTimestampUtc: oAssignItem.StartDate
+			};
+			sFunctionName = "ValidateResourceAssignment";
+			oDemandModel = this.getModel("demandModel");
+			oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
+			bAssignmentCheck = this.getView().getModel("user").getProperty("/ENABLE_ASSIGNMENT_CHECK");
 			var callbackfunction = function (oData) {
 				if (oData.results.length > 0) {
 					this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", false);
@@ -1554,15 +1575,40 @@ sap.ui.define([
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
-			if (this._oPlanningPopover) {
-				this._oPlanningPopover.close();
-			}
-
-			if (oPopoverData.NODE_TYPE !== "SHIFT" && bAssignmentCheck) {
+			if (bAssignmentCheck) {
 				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 			} else {
 				this._changeAssignment(oPopoverData);
 			}
+		},
+		/**
+		 * Validation of Shift assignment on change
+		 * @param {object} oAssignItem - Assignment to be validated
+		 */
+		_validateForShiftChange: function (oAssignItem) {
+			var oParams, sFunctionName, oPopoverData;
+			oParams = {
+				ResourceGuid: oAssignItem.ParentNodeId,
+				EndTimestamp: formatter.convertToUTCDate(oAssignItem.EffectiveEndDate),
+				StartTimestamp: formatter.convertToUTCDate(oAssignItem.EffectiveStartDate)
+			};
+			sFunctionName = "ValidateShiftAssignment";
+			oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
+			var callbackfunction = function (oData, oResponse) {
+				if (oResponse && oResponse.headers && oResponse.headers["sap-message"]) {
+					var sMessageBundle = JSON.parse(oResponse.headers["sap-message"]),
+						oFoundData = this._getChildrenDataByKey("Guid", oPopoverData.Guid, null),
+						oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
+					this.showMessageToast(sMessageBundle.message);
+					for (var i = 0; i < oFoundData.length; i++) {
+						this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
+					}
+				} else {
+					this._changeAssignment(oPopoverData);
+				}
+			}.bind(this);
+			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
+
 		},
 
 		/**
@@ -2010,7 +2056,7 @@ sap.ui.define([
 		_setGanttScrollState: function () {
 			var firstVisibleRow = this.getModel("viewModel").getProperty("/gantt/firstVisibleRow") || 0;
 			this._treeTable.setFirstVisibleRow(firstVisibleRow);
-			this.getModel("viewModel").setProperty("/gantt/firstVisibleRow", 0)
+			this.getModel("viewModel").setProperty("/gantt/firstVisibleRow", 0);
 		}
 	});
 });
