@@ -254,7 +254,6 @@ sap.ui.define([
 					oStartDate = moment(oResult.DEFAULT_DAILYVIEW_STARTDATE).startOf("day").toDate();
 					oEndDate = moment(oResult.DEFAULT_DAILYVIEW_ENDDATE).endOf("day").toDate();
 					this._setNewHorizon(oStartDate, oEndDate);
-					// this._setNewHorizon(oResult.DEFAULT_DAILYVIEW_STARTDATE, oResult.DEFAULT_DAILYVIEW_ENDDATE);
 				}
 				this._loadGanttData();
 				this.updateNewDataFromGanttFilterBar();
