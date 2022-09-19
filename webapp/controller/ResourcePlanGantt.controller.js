@@ -247,13 +247,14 @@ sap.ui.define([
 			var oSmartFilterBar = oEvent.getSource(),
 				oSmartVariant = oSmartFilterBar.getSmartVariant(),
 				oVariantText = oSmartVariant.oVariantText,
-				oStartDate=null, 
-				oEndDate=null;
+				oStartDate = null,
+				oEndDate = null;
 			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
 				if (oVariantText.getProperty("text") === "Standard") {
-					oStartDate = formatter.convertToUTCDate(moment(oResult.DEFAULT_DAILYVIEW_STARTDATE).startOf("day").toDate());
-					oEndDate = formatter.convertToUTCDate(moment(oResult.DEFAULT_DAILYVIEW_ENDDATE).endOf("day").toDate());
+					oStartDate = moment(oResult.DEFAULT_DAILYVIEW_STARTDATE).startOf("day").toDate();
+					oEndDate = moment(oResult.DEFAULT_DAILYVIEW_ENDDATE).endOf("day").toDate();
 					this._setNewHorizon(oStartDate, oEndDate);
+					// this._setNewHorizon(oResult.DEFAULT_DAILYVIEW_STARTDATE, oResult.DEFAULT_DAILYVIEW_ENDDATE);
 				}
 				this._loadGanttData();
 				this.updateNewDataFromGanttFilterBar();
@@ -280,8 +281,8 @@ sap.ui.define([
 		 */
 		onSearch: function () {
 			var oDateRangePicker = this.getView().byId("idFilterGanttPlanningDateRange"),
-				oStartDate = oDateRangePicker.getDateValue(),
-				oEndDate = oDateRangePicker.getSecondDateValue(),
+				oStartDate = moment(oDateRangePicker.getDateValue()).startOf("day").toDate(),
+				oEndDate = moment(oDateRangePicker.getSecondDateValue()).endOf("day").toDate(),
 				oModeSource = this._viewModeFilter,
 				bChanges = this.oPlanningModel.getProperty("/hasChanges"),
 				sKey = oModeSource.getSelectedItem().getProperty("key");
@@ -1117,15 +1118,17 @@ sap.ui.define([
 					sUri = "/GanttResourceHierarchySet",
 					mParams = {
 						"$expand": "GanttHierarchyToResourceAssign,GanttHierarchyToShift"
-					};
+					},
+					oStartDate = formatter.convertToUTCDate(oDateRangePicker.getDateValue()),
+					oEndDate = formatter.convertToUTCDate(oDateRangePicker.getSecondDateValue());
 
 				if (iLevel > 0) {
 					mParams = {};
 				}
 
 				aFilters.push(new Filter("HierarchyLevel", FilterOperator.EQ, iLevel));
-				aFilters.push(new Filter("StartDate", FilterOperator.GE, oDateRangePicker.getDateValue()));
-				aFilters.push(new Filter("EndDate", FilterOperator.LE, oDateRangePicker.getSecondDateValue()));
+				aFilters.push(new Filter("StartDate", FilterOperator.GE, oStartDate));
+				aFilters.push(new Filter("EndDate", FilterOperator.LE, oEndDate));
 
 				//sUri, aFilters, mUrlParams
 				this.getOwnerComponent().readData(sUri, aFilters, mParams).then(function (oResult) {
@@ -1994,7 +1997,7 @@ sap.ui.define([
 			if (!this.oZoomStrategy) {
 				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
 			}
-			this._setNewHorizon(newDateRange.StartDate, newDateRange.EndDate);
+			this._setNewHorizon(moment(newDateRange.StartDate).startOf("day").toDate(), moment(newDateRange.EndDate).endOf("day").toDate());
 			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
 			this._sGanttViewMode = formatter.getViewMapping(sKey);
 			this._setBackgroudShapes(this._sGanttViewMode);
