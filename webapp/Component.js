@@ -51,8 +51,8 @@ sap.ui.define([
 				densityClass: this.getContentDensityClass(),
 				isSubPage: false,
 				gantt: {
-					defaultStartDate: moment().toDate(),
-					defaultEndDate: moment().endOf("day").toDate(),
+					defaultStartDate: moment().startOf("day").toDate(),
+					defaultEndDate: moment().endOf("day").subtract(999, 'milliseconds').toDate(),
 					popoverPlacement: sap.m.PlacementType.Auto,
 					firstVisibleRow:0
 				},
