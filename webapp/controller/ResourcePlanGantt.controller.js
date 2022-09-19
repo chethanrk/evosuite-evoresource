@@ -246,10 +246,14 @@ sap.ui.define([
 		onInitializedSmartVariant: function (oEvent) {
 			var oSmartFilterBar = oEvent.getSource(),
 				oSmartVariant = oSmartFilterBar.getSmartVariant(),
-				oVariantText = oSmartVariant.oVariantText;
+				oVariantText = oSmartVariant.oVariantText,
+				oStartDate=null, 
+				oEndDate=null;
 			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
 				if (oVariantText.getProperty("text") === "Standard") {
-					this._setNewHorizon(oResult.DEFAULT_DAILYVIEW_STARTDATE, oResult.DEFAULT_DAILYVIEW_ENDDATE);
+					oStartDate = formatter.convertToUTCDate(moment(oResult.DEFAULT_DAILYVIEW_STARTDATE).startOf("day").toDate());
+					oEndDate = formatter.convertToUTCDate(moment(oResult.DEFAULT_DAILYVIEW_ENDDATE).endOf("day").toDate());
+					this._setNewHorizon(oStartDate, oEndDate);
 				}
 				this._loadGanttData();
 				this.updateNewDataFromGanttFilterBar();
@@ -1120,8 +1124,8 @@ sap.ui.define([
 				}
 
 				aFilters.push(new Filter("HierarchyLevel", FilterOperator.EQ, iLevel));
-				aFilters.push(new Filter("StartDate", FilterOperator.GE, formatter.date(oDateRangePicker.getDateValue())));
-				aFilters.push(new Filter("EndDate", FilterOperator.LE, formatter.date(oDateRangePicker.getSecondDateValue())));
+				aFilters.push(new Filter("StartDate", FilterOperator.GE, oDateRangePicker.getDateValue()));
+				aFilters.push(new Filter("EndDate", FilterOperator.LE, oDateRangePicker.getSecondDateValue()));
 
 				//sUri, aFilters, mUrlParams
 				this.getOwnerComponent().readData(sUri, aFilters, mParams).then(function (oResult) {
