@@ -252,7 +252,7 @@ sap.ui.define([
 			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
 				if (oVariantText.getProperty("text") === "Standard") {
 					oStartDate = moment(oResult.DEFAULT_DAILYVIEW_STARTDATE).startOf("day").toDate();
-					oEndDate = moment(oResult.DEFAULT_DAILYVIEW_ENDDATE).endOf("day").toDate();
+					oEndDate = moment(oResult.DEFAULT_DAILYVIEW_ENDDATE).endOf("day").subtract(999, 'milliseconds').toDate();
 					this._setNewHorizon(oStartDate, oEndDate);
 				}
 				this._loadGanttData();
@@ -281,7 +281,7 @@ sap.ui.define([
 		onSearch: function () {
 			var oDateRangePicker = this.getView().byId("idFilterGanttPlanningDateRange"),
 				oStartDate = moment(oDateRangePicker.getDateValue()).startOf("day").toDate(),
-				oEndDate = moment(oDateRangePicker.getSecondDateValue()).endOf("day").toDate(),
+				oEndDate = moment(oDateRangePicker.getSecondDateValue()).endOf("day").subtract(999, 'milliseconds').toDate(),
 				oModeSource = this._viewModeFilter,
 				bChanges = this.oPlanningModel.getProperty("/hasChanges"),
 				sKey = oModeSource.getSelectedItem().getProperty("key");
@@ -1996,7 +1996,7 @@ sap.ui.define([
 			if (!this.oZoomStrategy) {
 				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
 			}
-			this._setNewHorizon(moment(newDateRange.StartDate).startOf("day").toDate(), moment(newDateRange.EndDate).endOf("day").toDate());
+			this._setNewHorizon(moment(newDateRange.StartDate).startOf("day").toDate(), moment(newDateRange.EndDate).endOf("day").subtract(999, 'milliseconds').toDate());
 			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
 			this._sGanttViewMode = formatter.getViewMapping(sKey);
 			this._setBackgroudShapes(this._sGanttViewMode);
