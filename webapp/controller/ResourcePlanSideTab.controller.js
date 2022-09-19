@@ -40,10 +40,10 @@ sap.ui.define([
 				oDraggedControl = oDragSession.getDragControl(),
 				oContext = oDraggedControl.getBindingContext(),
 				sPath = oDraggedControl.getBindingContext().getPath(),
-				type = oEvent.getSource().getGroupName(),
+				type = oDraggedControl.getParent().getParent().getEntitySet(),
 				NodeType = {
-					"Groups":"RES_GROUP",
-					"Shifts":"SHIFT"
+					"ResourceGroupSet":"RES_GROUP",
+					"ShiftSet":"SHIFT"
 				}[type],
 				oObject = oContext.getObject(),
 				draggedData;
