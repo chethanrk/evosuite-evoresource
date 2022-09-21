@@ -1592,29 +1592,18 @@ sap.ui.define([
 		 * @param {object} oAssignItem - Assignment to be validated
 		 */
 		_validateForShiftChange: function (oAssignItem) {
-			var oParams, sFunctionName, oPopoverData;
-			oParams = {
-				ResourceGuid: oAssignItem.ParentNodeId,
-				EndTimestamp: formatter.convertToUTCDate(oAssignItem.EffectiveEndDate),
-				StartTimestamp: formatter.convertToUTCDate(oAssignItem.EffectiveStartDate)
-			};
-			sFunctionName = "ValidateShiftAssignment";
-			oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
-			var callbackfunction = function (oData, oResponse) {
-				if (oResponse && oResponse.headers && oResponse.headers["sap-message"]) {
-					var sMessageBundle = JSON.parse(oResponse.headers["sap-message"]),
-						oFoundData = this._getChildrenDataByKey("Guid", oPopoverData.Guid, null),
-						oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
-					this.showMessageToast(sMessageBundle.message);
-					for (var i = 0; i < oFoundData.length; i++) {
-						this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
-					}
-				} else {
-					this._changeAssignment(oPopoverData);
+			var oNodeData = this._getChildDataByKey("NodeId", oAssignItem.ParentNodeId),
+				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
+			if (this._shiftValidation(oNodeData, oAssignItem)) {
+				this._changeAssignment(oPopoverData);
+			} else {
+				var oFoundData = this._getChildrenDataByKey("Guid", oPopoverData.Guid, null),
+					oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
+				this.showMessageToast(this.getResourceBundle().getText("yMsg.shiftvalidation"));
+				for (var i = 0; i < oFoundData.length; i++) {
+					this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
 				}
-			}.bind(this);
-			this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
-
+			}
 		},
 
 		/**
@@ -1760,8 +1749,18 @@ sap.ui.define([
 
 			if (!oData.Repeat || oData.Repeat === "NEVER") {
 				if (oData.isNew) {
-					oData.isTemporary = false;
-					this._markAsPlanningChange(oData, true);
+					if (oData.NODE_TYPE === "SHIFT") {
+						var oNodeData = this._getChildDataByKey("NodeId", oData.ParentNodeId);
+						if (this._shiftValidation(oNodeData, oData)) {
+							oData.isTemporary = false;
+							this._markAsPlanningChange(oData, true);
+						} else {
+							this.showMessageToast(this.getResourceBundle().getText("yMsg.shiftvalidation"));
+						}
+					} else {
+						oData.isTemporary = false;
+						this._markAsPlanningChange(oData, true);
+					}
 				} else {
 					this.oPlanningModel.setProperty("/tempData/popover/isTemporary", false);
 					//validate whether changes are happend or not
@@ -1996,7 +1995,8 @@ sap.ui.define([
 			if (!this.oZoomStrategy) {
 				this.oZoomStrategy = this._ganttChart.getAxisTimeStrategy();
 			}
-			this._setNewHorizon(moment(newDateRange.StartDate).startOf("day").toDate(), moment(newDateRange.EndDate).endOf("day").subtract(999, 'milliseconds').toDate());
+			this._setNewHorizon(moment(newDateRange.StartDate).startOf("day").toDate(), moment(newDateRange.EndDate).endOf("day").subtract(999,
+				'milliseconds').toDate());
 			this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
 			this._sGanttViewMode = formatter.getViewMapping(sKey);
 			this._setBackgroudShapes(this._sGanttViewMode);
@@ -2063,6 +2063,35 @@ sap.ui.define([
 			var firstVisibleRow = this.getModel("viewModel").getProperty("/gantt/firstVisibleRow") || 0;
 			this._treeTable.setFirstVisibleRow(firstVisibleRow);
 			this.getModel("viewModel").setProperty("/gantt/firstVisibleRow", 0);
+		},
+
+		/**
+		 * validate shift with resource group condition
+		 * Shift should be betwwen group assignment range
+		 * @param {oNodeData} - node data
+		 * @param {oShiftData}
+		 */
+		_shiftValidation: function (oNodeData, oShiftData) {
+			var bValidStart = false,
+				bValidEnd = false;
+			if (oNodeData && oNodeData["oData"] && oNodeData["oData"].GanttHierarchyToResourceAssign) {
+				var aResourceData = oNodeData["oData"].GanttHierarchyToResourceAssign;
+				aResourceData.results.forEach(function (oResource) {
+					var oStartDate = formatter.convertFromUTCDate(oResource.StartDate),
+						oEndDate = formatter.convertFromUTCDate(oResource.EndDate);
+
+					if (!bValidStart && (moment(oShiftData.EffectiveStartDate).isSame(moment(oStartDate)) || moment(oShiftData.EffectiveStartDate).isBetween(
+							moment(oStartDate), moment(oEndDate)))) {
+						bValidStart = true;
+					}
+					if (!bValidEnd && moment(oShiftData.EffectiveEndDate).isSame(moment(oEndDate)) || moment(oShiftData.EffectiveEndDate).isBetween(
+							moment(oStartDate), moment(oEndDate))) {
+						bValidEnd = true;
+					}
+
+				}.bind(this));
+			}
+			return (bValidStart && bValidEnd);
 		}
 	});
 });
