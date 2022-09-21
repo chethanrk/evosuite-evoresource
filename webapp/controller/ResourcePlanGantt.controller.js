@@ -1752,10 +1752,8 @@ sap.ui.define([
 					if (oData.NODE_TYPE === "SHIFT") {
 						var oNodeData = this._getChildDataByKey("NodeId", oData.ParentNodeId);
 						if (this._shiftValidation(oNodeData, oData)) {
-
 							oData.isTemporary = false;
 							this._markAsPlanningChange(oData, true);
-
 						} else {
 							if (!oData.isTemporary) {
 								var oFoundData = this._getChildrenDataByKey("Guid", oData.Guid, null),
