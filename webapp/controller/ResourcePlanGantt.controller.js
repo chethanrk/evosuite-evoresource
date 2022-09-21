@@ -1752,9 +1752,18 @@ sap.ui.define([
 					if (oData.NODE_TYPE === "SHIFT") {
 						var oNodeData = this._getChildDataByKey("NodeId", oData.ParentNodeId);
 						if (this._shiftValidation(oNodeData, oData)) {
+
 							oData.isTemporary = false;
 							this._markAsPlanningChange(oData, true);
+
 						} else {
+							if (!oData.isTemporary) {
+								var oFoundData = this._getChildrenDataByKey("Guid", oData.Guid, null),
+									oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
+								for (var i = 0; i < oFoundData.length; i++) {
+									this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
+								}
+							}
 							this.showMessageToast(this.getResourceBundle().getText("yMsg.shiftvalidation"));
 						}
 					} else {
@@ -2072,26 +2081,50 @@ sap.ui.define([
 		 * @param {oShiftData}
 		 */
 		_shiftValidation: function (oNodeData, oShiftData) {
-			var bValidStart = false,
-				bValidEnd = false;
+			var bValid = true,
+				bIsMatched = true,
+				oShiftStartDate = oShiftData.EffectiveStartDate,
+				oShiftEndDate = oShiftData.EffectiveEndDate;
 			if (oNodeData && oNodeData["oData"] && oNodeData["oData"].GanttHierarchyToResourceAssign) {
 				var aResourceData = oNodeData["oData"].GanttHierarchyToResourceAssign;
-				aResourceData.results.forEach(function (oResource) {
-					var oStartDate = formatter.convertFromUTCDate(oResource.StartDate),
-						oEndDate = formatter.convertFromUTCDate(oResource.EndDate);
-
-					if (!bValidStart && (moment(oShiftData.EffectiveStartDate).isSame(moment(oStartDate)) || moment(oShiftData.EffectiveStartDate).isBetween(
-							moment(oStartDate), moment(oEndDate)))) {
-						bValidStart = true;
+				var oShiftDate = oShiftStartDate;
+				loop1: while (!moment(oShiftDate).isSameOrAfter(oShiftEndDate)) {
+					// aResourceData.results.forEach(function (oResource) {
+					loop2: for (var i = 0; i < aResourceData.results.length; i++) {
+						var oResource = aResourceData.results[i];
+						var oStartDate = formatter.convertFromUTCDate(oResource.StartDate),
+							oEndDate = formatter.convertFromUTCDate(oResource.EndDate);
+						if ((moment(oShiftDate).isSameOrAfter(moment(oStartDate)) && moment(oShiftDate).isSameOrBefore(moment(oEndDate)))) {
+							bIsMatched = true;
+							oShiftDate = moment(oShiftDate).add(1, "days").toDate();
+							break loop2;
+						} else {
+							bIsMatched = false;
+						}
 					}
-					if (!bValidEnd && moment(oShiftData.EffectiveEndDate).isSame(moment(oEndDate)) || moment(oShiftData.EffectiveEndDate).isBetween(
-							moment(oStartDate), moment(oEndDate))) {
-						bValidEnd = true;
+					if (!bIsMatched) {
+						bValid = false;
+						break loop1;
 					}
 
-				}.bind(this));
+				}
+
+				// aResourceData.results.forEach(function (oResource) {
+				// 	var oStartDate = formatter.convertFromUTCDate(oResource.StartDate),
+				// 		oEndDate = formatter.convertFromUTCDate(oResource.EndDate);
+
+				// 	if (!bValidStart && (moment(oShiftData.EffectiveStartDate).isSame(moment(oStartDate)) || moment(oShiftData.EffectiveStartDate).isBetween(
+				// 			moment(oStartDate), moment(oEndDate)))) {
+				// 		bValidStart = true;
+				// 	}
+				// 	if (!bValidEnd && moment(oShiftData.EffectiveEndDate).isSame(moment(oEndDate)) || moment(oShiftData.EffectiveEndDate).isBetween(
+				// 			moment(oStartDate), moment(oEndDate))) {
+				// 		bValidEnd = true;
+				// 	}
+
+				// }.bind(this));
 			}
-			return (bValidStart && bValidEnd);
+			return bValid;
 		}
 	});
 });
