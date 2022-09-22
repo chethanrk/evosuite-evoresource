@@ -2079,57 +2079,19 @@ sap.ui.define([
 		 * @param {oShiftData}
 		 */
 		_shiftValidation: function (oNodeData, oShiftData) {
-			var
-			/*bValid = true,
-				bIsMatched = true,*/
-				bValidStart = false,
+			var bValidStart = false,
 				bValidEnd = false;
-			/*	oShiftStartDate = oShiftData.EffectiveStartDate,
-				oShiftEndDate = oShiftData.EffectiveEndDate;*/
+
 			if (oNodeData && oNodeData["oData"] && oNodeData["oData"].GanttHierarchyToResourceAssign) {
 				var aResourceData = oNodeData["oData"].GanttHierarchyToResourceAssign;
-				/*	var oShiftDate = oShiftStartDate;*/
-				/*loop1: while (!moment(oShiftDate).isSameOrAfter(oShiftEndDate)) {
-					// aResourceData.results.forEach(function (oResource) {
-					loop2: for (var i = 0; i < aResourceData.results.length; i++) {
-						var oResource = aResourceData.results[i];
-						var oStartDate = formatter.convertFromUTCDate(oResource.StartDate),
-							oEndDate = formatter.convertFromUTCDate(oResource.EndDate);
-						if ((moment(oShiftDate).isSameOrAfter(moment(oStartDate)) && moment(oShiftDate).isSameOrBefore(moment(oEndDate)))) {
-							bIsMatched = true;
-							oShiftDate = moment(oShiftDate).add(1, "days").toDate();
-							break loop2;
-						} else {
-							bIsMatched = false;
-						}
-					}
-					if (!bIsMatched) {
-						bValid = false;
-						break loop1;
-					}
 
-				}*/
-
-				/*	aResourceData.results.forEach(function (oResource) {
-						var oStartDate = formatter.convertFromUTCDate(oResource.StartDate),
-							oEndDate = formatter.convertFromUTCDate(oResource.EndDate);
-							
-						var sDummyDate = formatter.convertFromUTCDate(oResource.EndDate);
-
-						if (!bValidStart && (moment(oShiftData.EffectiveStartDate).isSame(moment(oStartDate)) || moment(oShiftData.EffectiveStartDate).isBetween(
-								moment(oStartDate), moment(oEndDate)))) {
-							bValidStart = true;
-						}
-						if (!bValidEnd && moment(oShiftData.EffectiveEndDate).isSame(moment(oEndDate)) || moment(oShiftData.EffectiveEndDate).isBetween(
-								moment(oStartDate), moment(oEndDate))) {
-							bValidEnd = true;
-						}
-
-					}.bind(this));*/
 				var sDummyDate = null;
 				for (var i = 0; i < aResourceData.results.length; i++) {
-					var oStartDate = formatter.convertFromUTCDate(aResourceData.results[i].StartDate),
-						oEndDate = formatter.convertFromUTCDate(aResourceData.results[i].EndDate);
+
+					var oStartDate = formatter.convertFromUTCDate(aResourceData.results[i].StartDate, aResourceData.results[i].isNew, aResourceData.results[
+							i].isChanging),
+						oEndDate = formatter.convertFromUTCDate(aResourceData.results[i].EndDate, aResourceData.results[i].isNew, aResourceData.results[
+							i].isChanging);
 
 					if (!bValidStart && (moment(oShiftData.EffectiveStartDate).isSame(moment(oStartDate)) || moment(oShiftData.EffectiveStartDate).isBetween(
 							moment(oStartDate), moment(oEndDate)))) {
@@ -2138,10 +2100,15 @@ sap.ui.define([
 
 					if (!bValidEnd && moment(oShiftData.EffectiveEndDate).isSame(moment(oEndDate)) || moment(oShiftData.EffectiveEndDate).isBetween(
 							moment(oStartDate), moment(oEndDate))) {
-						if ((sDummyDate && sDummyDate.isSame(oStartDate)) || moment(oShiftData.EffectiveStartDate).isSame(moment(oStartDate))) {
+
+						if ((sDummyDate && sDummyDate.isSame(oStartDate)) || moment(oShiftData.EffectiveStartDate).isSame(moment(oStartDate)) || moment(
+								oShiftData.EffectiveStartDate).isBetween(moment(oStartDate), moment(oEndDate)) && moment(oShiftData.EffectiveEndDate).isBetween(
+								moment(oStartDate), moment(oEndDate)) || (moment(oShiftData.EffectiveStartDate).isSameOrAfter(moment(oStartDate)) &&
+								moment(oShiftData.EffectiveEndDate).isSameOrBefore(moment(oEndDate)))) {
 							bValidEnd = true;
 						}
 					}
+
 					sDummyDate = formatter.convertFromUTCDate(aResourceData.results[i].EndDate);
 					sDummyDate = moment(sDummyDate).add(1, "seconds");
 				}
