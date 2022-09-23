@@ -1593,12 +1593,14 @@ sap.ui.define([
 		 */
 		_validateForShiftChange: function (oAssignItem) {
 			var oNodeData = this._getChildDataByKey("NodeId", oAssignItem.ParentNodeId),
-				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
+				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
+				oFoundData = [],
+				oOldAssignmentData = {};
 			if (this._shiftValidation(oNodeData, oAssignItem)) {
 				this._changeAssignment(oPopoverData);
 			} else {
-				var oFoundData = this._getChildrenDataByKey("Guid", oPopoverData.Guid, null),
-					oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
+				oFoundData = this._getChildrenDataByKey("Guid", oPopoverData.Guid, null);
+				oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
 				this.showMessageToast(this.getResourceBundle().getText("yMsg.shiftvalidation"));
 				for (var i = 0; i < oFoundData.length; i++) {
 					this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
@@ -2080,39 +2082,29 @@ sap.ui.define([
 		 */
 		_shiftValidation: function (oNodeData, oShiftData) {
 			var bValidStart = false,
-				bValidEnd = false;
+				bValidEnd = false,
+				oEndDate = null,
+				oStartDate = null;
 
 			if (oNodeData && oNodeData["oData"] && oNodeData["oData"].GanttHierarchyToResourceAssign) {
 				var aResourceData = oNodeData["oData"].GanttHierarchyToResourceAssign;
 
-				var sDummyDate = null;
-				for (var i = 0; i < aResourceData.results.length; i++) {
-
-					var oStartDate = formatter.convertFromUTCDate(aResourceData.results[i].StartDate, aResourceData.results[i].isNew, aResourceData.results[
-							i].isChanging),
-						oEndDate = formatter.convertFromUTCDate(aResourceData.results[i].EndDate, aResourceData.results[i].isNew, aResourceData.results[
-							i].isChanging);
+				aResourceData.results.forEach(function (oResource) {
+					oStartDate = formatter.convertFromUTCDate(oResource.StartDate, oResource.isNew, oResource.isChanging);
+					oEndDate = formatter.convertFromUTCDate(oResource.EndDate, oResource.isNew, oResource.isChanging);
 
 					if (!bValidStart && (moment(oShiftData.EffectiveStartDate).isSame(moment(oStartDate)) || moment(oShiftData.EffectiveStartDate).isBetween(
 							moment(oStartDate), moment(oEndDate)))) {
 						bValidStart = true;
 					}
-
 					if (!bValidEnd && moment(oShiftData.EffectiveEndDate).isSame(moment(oEndDate)) || moment(oShiftData.EffectiveEndDate).isBetween(
 							moment(oStartDate), moment(oEndDate))) {
-
-						if ((sDummyDate && sDummyDate.isSame(oStartDate)) || moment(oShiftData.EffectiveStartDate).isSame(moment(oStartDate)) || moment(
-								oShiftData.EffectiveStartDate).isBetween(moment(oStartDate), moment(oEndDate)) && moment(oShiftData.EffectiveEndDate).isBetween(
-								moment(oStartDate), moment(oEndDate)) || (moment(oShiftData.EffectiveStartDate).isSameOrAfter(moment(oStartDate)) &&
-								moment(oShiftData.EffectiveEndDate).isSameOrBefore(moment(oEndDate)))) {
-							bValidEnd = true;
-						}
+						bValidEnd = true;
 					}
 
-					sDummyDate = formatter.convertFromUTCDate(aResourceData.results[i].EndDate);
-					sDummyDate = moment(sDummyDate).add(1, "seconds");
-				}
+				}.bind(this));
 			}
+
 			return (bValidStart && bValidEnd);
 		}
 	});
