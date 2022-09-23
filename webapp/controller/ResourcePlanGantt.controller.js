@@ -1592,11 +1592,10 @@ sap.ui.define([
 		 * @param {object} oAssignItem - Assignment to be validated
 		 */
 		_validateForShiftChange: function (oAssignItem) {
-			var oNodeData = this._getChildDataByKey("NodeId", oAssignItem.ParentNodeId),
-				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
+			var oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oFoundData = [],
 				oOldAssignmentData = {};
-			if (this._shiftValidation(oNodeData, oAssignItem)) {
+			if (this._shiftValidation(oAssignItem)) {
 				this._changeAssignment(oPopoverData);
 			} else {
 				oFoundData = this._getChildrenDataByKey("Guid", oPopoverData.Guid, null);
@@ -1752,8 +1751,7 @@ sap.ui.define([
 			if (!oData.Repeat || oData.Repeat === "NEVER") {
 				if (oData.isNew) {
 					if (oData.NODE_TYPE === "SHIFT") {
-						var oNodeData = this._getChildDataByKey("NodeId", oData.ParentNodeId);
-						if (this._shiftValidation(oNodeData, oData)) {
+						if (this._shiftValidation(oData)) {
 							oData.isTemporary = false;
 							this._markAsPlanningChange(oData, true);
 						} else {
@@ -1952,6 +1950,10 @@ sap.ui.define([
 				aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
 			} else if (oData.NODE_TYPE === "SHIFT") {
 				aAssigments = this._getResourceShiftByKey(oData.ParentNodeId, oData);
+				if (!this._shiftValidation(data)) {
+					this.showMessageToast(this.getResourceBundle().getText("yMsg.shiftvalidation"));
+					return;
+				}
 			}
 			//validation for the existing assigments
 			if (this._checkDuplicateAsigment(data, aAssigments)) {
@@ -2077,14 +2079,14 @@ sap.ui.define([
 		/**
 		 * validate shift with resource group condition
 		 * Shift should be betwwen group assignment range
-		 * @param {oNodeData} - node data
 		 * @param {oShiftData}
 		 */
-		_shiftValidation: function (oNodeData, oShiftData) {
+		_shiftValidation: function (oShiftData) {
 			var bValidStart = false,
 				bValidEnd = false,
 				oEndDate = null,
-				oStartDate = null;
+				oStartDate = null,
+				oNodeData = this._getChildDataByKey("NodeId", oShiftData.ParentNodeId);
 
 			if (oNodeData && oNodeData["oData"] && oNodeData["oData"].GanttHierarchyToResourceAssign) {
 				var aResourceData = oNodeData["oData"].GanttHierarchyToResourceAssign;
@@ -2092,6 +2094,10 @@ sap.ui.define([
 				aResourceData.results.forEach(function (oResource) {
 					oStartDate = formatter.convertFromUTCDate(oResource.StartDate, oResource.isNew, oResource.isChanging);
 					oEndDate = formatter.convertFromUTCDate(oResource.EndDate, oResource.isNew, oResource.isChanging);
+
+					if (oShiftData.Repeat !== "NEVER") {
+						oEndDate = moment(oEndDate).add(999, 'milliseconds').toDate();
+					}
 
 					if (!bValidStart && (moment(oShiftData.EffectiveStartDate).isSame(moment(oStartDate)) || moment(oShiftData.EffectiveStartDate).isBetween(
 							moment(oStartDate), moment(oEndDate)))) {
