@@ -2086,15 +2086,22 @@ sap.ui.define([
 				bValidEnd = false,
 				oEndDate = null,
 				oStartDate = null,
+				sDummyDate = null,
 				oNodeData = this._getChildDataByKey("NodeId", oShiftData.ParentNodeId);
 
 			if (oNodeData && oNodeData["oData"] && oNodeData["oData"].GanttHierarchyToResourceAssign) {
 				var aResourceData = oNodeData["oData"].GanttHierarchyToResourceAssign;
+				//sort array based on the date object
+				aResourceData.results.sort(function (oItem1, oItem2) {
+					return oItem1.StartDate - oItem2.StartDate;
+				});
 
-				aResourceData.results.forEach(function (oResource) {
-					oStartDate = formatter.convertFromUTCDate(oResource.StartDate, oResource.isNew, oResource.isChanging);
-					oEndDate = formatter.convertFromUTCDate(oResource.EndDate, oResource.isNew, oResource.isChanging);
-
+				for (var i = 0; i < aResourceData.results.length; i++) {
+					oStartDate = formatter.convertFromUTCDate(aResourceData.results[i].StartDate, aResourceData.results[i].isNew, aResourceData.results[
+						i].isChanging);
+					oEndDate = formatter.convertFromUTCDate(aResourceData.results[i].EndDate, aResourceData.results[i].isNew, aResourceData.results[
+						i].isChanging);
+					//add missing seconds in the enddate
 					if (oShiftData.Repeat !== "NEVER") {
 						oEndDate = moment(oEndDate).add(999, 'milliseconds').toDate();
 					}
@@ -2103,14 +2110,21 @@ sap.ui.define([
 							moment(oStartDate), moment(oEndDate)))) {
 						bValidStart = true;
 					}
+
 					if (!bValidEnd && moment(oShiftData.EffectiveEndDate).isSame(moment(oEndDate)) || moment(oShiftData.EffectiveEndDate).isBetween(
 							moment(oStartDate), moment(oEndDate))) {
-						bValidEnd = true;
+						if ((sDummyDate && sDummyDate.isSame(oStartDate)) || moment(oShiftData.EffectiveStartDate).isSame(moment(oStartDate)) || moment(
+								oShiftData.EffectiveStartDate).isBetween(moment(oStartDate), moment(oEndDate)) && moment(oShiftData.EffectiveEndDate).isBetween(
+								moment(oStartDate), moment(oEndDate)) || (moment(oShiftData.EffectiveStartDate).isSameOrAfter(moment(oStartDate)) &&
+								moment(oShiftData.EffectiveEndDate).isSameOrBefore(moment(oEndDate)))) {
+							bValidEnd = true;
+						}
 					}
-
-				}.bind(this));
+					//validate previous group validation
+					sDummyDate = oEndDate;
+					sDummyDate = moment(sDummyDate).add(1, "seconds");
+				}
 			}
-
 			return (bValidStart && bValidEnd);
 		}
 	});
