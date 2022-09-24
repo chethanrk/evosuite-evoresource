@@ -2102,7 +2102,7 @@ sap.ui.define([
 					oEndDate = formatter.convertFromUTCDate(aResourceData.results[i].EndDate, aResourceData.results[i].isNew, aResourceData.results[
 						i].isChanging);
 					//add missing seconds in the enddate
-					if (oShiftData.Repeat !== "NEVER") {
+					if (oShiftData.Repeat && oShiftData.Repeat !== "NEVER") {
 						oEndDate = moment(oEndDate).add(999, 'milliseconds').toDate();
 					}
 
