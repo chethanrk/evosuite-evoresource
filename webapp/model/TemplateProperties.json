@@ -2,5 +2,66 @@
 	"GanttConfigs": {
 		"tab": "Gantt",
 		"entitySet": "GanttResourceHierarchySetarchySet"
+	},
+	"IconTabBarTable": [{
+		"tabName": "ResourceGroupSet",
+		"lineItemQualifier": "",
+		"presentationVariantQualifier": "",
+		"header": "{i18n>xtit.groups}",
+		"tableType": "ResponsiveTable",
+		"useExportToExcel": false,
+		"useVariantManagement": false,
+		"useTablePersonalisation": false,
+		"demandPopin": true,
+		"showRowCount": true,
+		"enableAutoBinding": true,
+		"entitySet": "ResourceGroupSet",
+		"tableBindingPath": "",
+		"requestAtLeastFields": "ResourceGroupGuid,ResourceGroupId,ResourceGroupColor,ResourceGroupUnitDesc",
+		"CustomColumn": ["ResourceGroupColor"],
+		"class": "",
+		"isGroup": "",
+		"groupProperty": ""
+	}, {
+		"tabName": "ShiftSet",
+		"lineItemQualifier": "",
+		"presentationVariantQualifier": "",
+		"header": "{i18n>xtit.shifts}",
+		"tableType": "ResponsiveTable",
+		"useExportToExcel": false,
+		"useVariantManagement": false,
+		"useTablePersonalisation": false,
+		"demandPopin": true,
+		"showRowCount": true,
+		"enableAutoBinding": true,
+		"entitySet": "ShiftSet",
+		"tableBindingPath": "",
+		"requestAtLeastFields": "SHIFT_COLOR",
+		"CustomColumn": ["SHIFT_COLOR"],
+		"class": "",
+		"isGroup": "",
+		"groupProperty": ""
+	}, {
+		"tabName": "TimeAllocationSet",
+		"lineItemQualifier": "",
+		"presentationVariantQualifier": "",
+		"header": "{i18n>xtit.timeallocations}",
+		"tableType": "ResponsiveTable",
+		"useExportToExcel": false,
+		"useVariantManagement": false,
+		"useTablePersonalisation": false,
+		"demandPopin": true,
+		"showRowCount": true,
+		"enableAutoBinding": true,
+		"entitySet": "TimeAllocationSet",
+		"tableBindingPath": "",
+		"requestAtLeastFields": "TimeAllocationGuid,TimeAllocationName,TimeAllocationType",
+		"class": "",
+		"isGroup": "X",
+		"groupProperty": "TimeAllocationType"
+	}],
+	"EntitySet": {
+		"RES_GROUP": "ResourceAssignmentSet",
+		"SHIFT": "ShiftSet"
 	}
 }

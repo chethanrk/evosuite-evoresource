@@ -1,7 +1,7 @@
 sap.ui.define([
 	"com/evorait/evosuite/evoresource/controller/BaseController",
 	"sap/ui/core/mvc/OverrideExecution"
-], function (BaseController, OverrideExecution) {
+], function (BaseController, OverrideExecution, GroupHeaderListItem) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourceGroupTable", {
@@ -40,7 +40,14 @@ sap.ui.define([
 				oDraggedControl = oDragSession.getDragControl(),
 				oContext = oDraggedControl.getBindingContext(),
 				sPath = oDraggedControl.getBindingContext().getPath(),
+				type = oDraggedControl.getParent().getParent().getEntitySet(),
+				NodeType = {
+					"ResourceGroupSet":"RES_GROUP",
+					"ShiftSet":"SHIFT"
+				}[type],
 				oObject = oContext.getObject(),
+				draggedData;
+				oObject.NodeType = NodeType;
 				draggedData = {
 					sPath: sPath,
 					data: oObject
@@ -54,6 +61,32 @@ sap.ui.define([
 		 */
 		onResourceGroupDragEnd: function (oEvent) {
 
+		},
+
+		/**
+		 * Called before Smart Table got bind
+		 * @param {object} oEvent
+		 */
+		onBeforeRebindSmartTable: function (oEvent) {
+			this.setGrouperForSmartTable(oEvent);
+
+		},
+		
+		/**
+		 * Method to set grouper for the smart table
+		 * @param {object} oEvent
+		 * Checks custom data 'isGroup' is set, if yes set grouper for smart table with the property 'mParams.groupProperty'
+		 */
+		setGrouperForSmartTable: function (oEvent) {
+			var mParams = oEvent.getSource().data(),
+				mBindingParams = oEvent.getParameter("bindingParams");
+			if (mParams.isGroup === "X") {
+				mBindingParams.sorter = [new sap.ui.model.Sorter({
+					path: mParams.groupProperty,
+					descending: false,
+					group: true
+				})];
+			}
 		}
 	});
 });

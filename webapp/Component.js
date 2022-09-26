@@ -17,12 +17,13 @@ sap.ui.define([
 	return UIComponent.extend("com.evorait.evosuite.evoresource.Component", {
 
 		metadata: {
-			manifest: "json",
-			config: {
-				fullWidth: true
-			}
+			manifest: "json"
 		},
-
+		oSystemInfoProm: null,
+		oDefaultInfoProm: null,
+		oResourceGroupInfoProm: null,
+		oShiftInfoProm: null,
+		oGanttSettingInfoProm: null,
 		oTemplatePropsProm: null,
 
 		/**
@@ -50,12 +51,14 @@ sap.ui.define([
 				densityClass: this.getContentDensityClass(),
 				isSubPage: false,
 				gantt: {
-					defaultStartDate: moment().startOf("week").toDate(),
-					defaultEndDate: moment().endOf("month").add(1, "months").toDate(),
-					popoverPlacement: sap.m.PlacementType.HorizontalPreferredRight
+					defaultStartDate: moment().startOf("day").toDate(),
+					defaultEndDate: moment().endOf("day").subtract(999, 'milliseconds').toDate(),
+					popoverPlacement: sap.m.PlacementType.Auto,
+					firstVisibleRow:0
 				},
 				draggedData: null,
-				launchMode: Constants.LAUNCH_MODE.BSP
+				launchMode: Constants.LAUNCH_MODE.BSP,
+				enableProceed: false
 			}), "viewModel");
 
 			this.setModel(models.createHelperModel(), "ganttPlanningModel");
@@ -63,18 +66,22 @@ sap.ui.define([
 			this.setModel(models.createHelperModel(), "demandModel");
 
 			// set the message model with messages from core message manager
-			this.setModel(oCoreMessageManager.getMessageModel(), "coreMessageModel");
+			this.setModel(models.createHelperModel([]), "coreMessageModel");
 
 			this.MessageManager = new MessageManager();
 
 			this._getTemplateProps();
 
 			this._setApp2AppLinks();
-			
+
 			this._getResourceGroupDetails();
+			this._getShiftDetails();
 
 			// get System Information
 			this._getSystemInformation();
+
+			//get Gantt setting information
+			this._getGanttSettingInformation();
 
 			// enable routing
 			this.getRouter().initialize();
@@ -152,6 +159,32 @@ sap.ui.define([
 				});
 			}.bind(this));
 		},
+		/**
+		 * Extract messages from a the message manager and store it to "coreMessageMessage" JSON model.
+		 */
+		createMessages: function () {
+			var aMessages = JSON.parse(JSON.stringify(this.getModel("coreMessageModel").getData())),
+				oMessageModel = oCoreMessageManager.getMessageModel(),
+				oData = oMessageModel.getData();
+
+			if (oData.length === 0) {
+				return;
+			}
+
+			for (var i = 0; i < oData.length; i++) {
+				var item = {};
+				item.id = oData[i].id;
+				item.type = oData[i].type;
+				item.title = oData[i].message;
+				item.description = oData[i].description;
+
+				if (!JSON.stringify(aMessages).includes(JSON.stringify(item))) {
+					aMessages.push(item);
+				}
+
+			}
+			this.getModel("coreMessageModel").setData(aMessages);
+		},
 
 		/**
 		 * check if mobile device
@@ -186,12 +219,43 @@ sap.ui.define([
 			}.bind(this));
 		},
 		/**
-		 * Calls the PropertyValueDetermination 
+		 * Gets resource group data
+		 * Returns promise
 		 */
 		_getResourceGroupDetails: function () {
-			this.oDefaultInfoProm = new Promise(function (resolve) {
+			this.oResourceGroupInfoProm = new Promise(function (resolve) {
 				this.readData("/ResourceGroupSet", []).then(function (oData) {
 					this.getModel("viewModel").setProperty("/ResourceGroup", oData.results);
+					resolve(oData.results);
+				}.bind(this));
+			}.bind(this));
+		},
+		/**
+		 * Gets shift data
+		 * Returns promise
+		 */
+		_getShiftDetails: function () {
+			this.oShiftInfoProm = new Promise(function (resolve) {
+				this.readData("/ShiftSet", []).then(function (oData) {
+					this.getModel("viewModel").setProperty("/Shifts", oData.results);
+					resolve(oData.results);
+				}.bind(this));
+			}.bind(this));
+		},
+		/**
+		 * Gets Gantt Setting Information
+		 * Returns promise
+		 */
+		_getGanttSettingInformation: function () {
+			this.oGanttSettingInfoProm = new Promise(function (resolve) {
+				this.readData("/ShowPopupSet", []).then(function (oData) {
+					var aPopupSet = oData.results,
+						ganttShapeVisibility = {};
+					this.getModel("viewModel").setProperty("/GanttSettingInformation", aPopupSet);
+					aPopupSet.forEach(function (oItem) {
+						ganttShapeVisibility[oItem.Type] = oItem.DefaultFlag;
+					});
+					this.getModel("viewModel").setProperty("/GanttShapeVisibility", ganttShapeVisibility);
 					resolve(oData.results);
 				}.bind(this));
 			}.bind(this));

@@ -1,22 +1,25 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:form="sap.ui.layout.form">
-	<Dialog title="{i18n>xtit.demands}" resizable="true" draggable="true" contentWidth="50%">
-		<Table items="{ path: 'demandModel>/data' }">
+	<Dialog title="{i18n>xtit.demandAssignments}" resizable="true" draggable="true" contentWidth="50%">
+		<Table id="idFragDemandListTable" items="{ path: 'demandModel>/data' }">
 			<infoToolbar>
-				<OverflowToolbar design="Info" active="true">
-					<Label text="Edit/Delete operation is not possible because the bellow demands are assigned to the selected assignment"/>
+				<OverflowToolbar design="Info" active="true" visible="{= ${viewModel>/enableProceed} === true ? false : true}">
+					<Label text="{i18n>tit.validationMsg}"/>
 				</OverflowToolbar>
 			</infoToolbar>
 			<columns>
 				<Column demandPopin="true">
 					<Text text="{i18n>xtit.demands}"/>
 				</Column>
-				<Column demandPopin="true" hAlign="Right">
+				<Column demandPopin="true">
 					<Text text="{i18n>lbl.fromdate}"/>
 				</Column>
-				<Column demandPopin="true" hAlign="Right">
+				<Column demandPopin="true">
 					<Text text="{i18n>lbl.todate}"/>
 				</Column>
-				<Column demandPopin="true" hAlign="Right">
+				<Column demandPopin="true">
+					<Text text="{i18n>lbl.status}"/>
+				</Column>
+				<Column demandPopin="true" hAlign="Right" width="6rem">
 					<Text text=""/>
 				</Column>
 			</columns>
@@ -24,15 +27,20 @@
 				<ColumnListItem>
 					<cells>
 						<Text text="{demandModel>DemandDesc}"/>
-						<Text text="{path:'demandModel>DateFrom',formatter:'.formatter.date'}"/>
-						<Text text="{path:'demandModel>DateTo',formatter:'.formatter.date'}"/>
-						<Button icon="sap-icon://detail-view" tooltip="{i18n>lbl.showDemand}" press="onShowDemandPress"/>
+						<Text text="{path:'demandModel>DateFrom',formatter:'.formatter.dateWithTime'}"/>
+						<Text text="{path:'demandModel>DateTo',formatter:'.formatter.dateWithTime'}"/>
+						<Text text="{demandModel>Status}"/>
+						<Button icon="sap-icon://detail-view" tooltip="{i18n>lbl.showDemand}" press="onShowDemandPress"
+							visible="{= ${demandModel>AllowUnassign} === true ? false : true}"/>
 					</cells>
 				</ColumnListItem>
 			</items>
 		</Table>
+		<beginButton>
+			<Button text="{i18n>btn.procced}" press="onDemandProceed" type="Emphasized" enabled="{viewModel>/enableProceed}"/>
+		</beginButton>
 		<endButton>
-			<Button text="{i18n>btn.close}" press="onDemandDialogClose"/>
+			<Button text="{i18n>btn.close}" press="onDemandDialogClose" type="Emphasized"/>
 		</endButton>
 	</Dialog>
 </core:FragmentDefinition>

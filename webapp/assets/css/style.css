@@ -3,3 +3,8 @@
 .gantt-containerToolbar>div:first-child {
     display: none !important;
 }
+
+/*background color for gantt table*/
+div.resourceGanttWithTable .sapGanttBackground .sapGanttBackgroundSVG {
+    background: #f2f2f2 !important;
+}

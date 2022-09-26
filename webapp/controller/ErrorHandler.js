@@ -46,6 +46,12 @@ sap.ui.define([
 					this._showServiceError(oParams.response);
 				}
 			}, this);
+			this._oModel.attachRequestCompleted(function (oEvent) {
+				var oParams = oEvent.getParameters();
+				if (oParams.success) {
+					this._oComponent.createMessages();
+				}
+			}, this);
 		},
 
 		/**
@@ -65,7 +71,7 @@ sap.ui.define([
 
 			MessageBox.error(
 				this._sErrorText, {
-					details: sMessage.replace(/\n/g, "<br/>"),
+					details: typeof (sMessage) === "string" ? sMessage.replace(/\n/g, "<br/>") : sMessage,
 					styleClass: this._oComponent.getContentDensityClass(),
 					actions: [MessageBox.Action.CLOSE],
 					onClose: function () {

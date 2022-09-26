@@ -1,0 +1,10 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:gnt2="sap.gantt.simple">
+	<gnt2:BaseRectangle shapeId="{ganttPlanningModel>Guid}" countInBirdEye="true"
+		time="{parts:[{path:'ganttPlanningModel>EffectiveStartDate'},{path:'ganttPlanningModel>isNew'},{path:'ganttPlanningModel>isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
+		height="20"
+		endTime="{parts:[{path:'ganttPlanningModel>EffectiveEndDate'},{path:'ganttPlanningModel>isNew'},{path:'ganttPlanningModel>isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
+		title="{ganttPlanningModel>DESCRIPTION}" showTitle="true" tooltip="{ganttPlanningModel>DESCRIPTION}" fill="{ganttPlanningModel>SHIFT_COLOR}"
+		stroke="{parts: ['ganttPlanningModel>SHIFT_COLOR',{value:'-20', model:'ganttPlanningModel'}], formatter: '.formatter.shadeColor'}"
+		strokeWidth="1" opacity="{= ${ganttPlanningModel>isTemporary} === true ? 0.5 : 1}" resizable="true" selectable="true" draggable="true"
+		rx="4" ry="4" visible="{viewModel>/GanttShapeVisibility/SHIFT}"></gnt2:BaseRectangle>
+</core:FragmentDefinition>

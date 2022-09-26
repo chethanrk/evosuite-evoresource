@@ -1,29 +1,29 @@
 <edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
 	xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData" Version="1.0">
 	<edmx:Reference xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
-		Uri="https://ed1.evorait.net:50103/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMON',Version='0001',SAP__Origin='LOCAL_800')/$value">
+		Uri="https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMON',Version='0001',SAP__Origin='LOCAL')/$value">
 		<edmx:Include Namespace="com.sap.vocabularies.Common.v1"/>
 	</edmx:Reference>
 	<edmx:Reference xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
-		Uri="https://ed1.evorait.net:50103/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CORE',Version='0001',SAP__Origin='LOCAL_800')/$value">
+		Uri="https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CORE',Version='0001',SAP__Origin='LOCAL')/$value">
 		<edmx:Include Namespace="Org.OData.Core.V1"/>
 	</edmx:Reference>
 	<edmx:Reference xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
-		Uri="https://ed1.evorait.net:50103/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMUNICATION',Version='0001',SAP__Origin='LOCAL_800')/$value">
+		Uri="https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMUNICATION',Version='0001',SAP__Origin='LOCAL')/$value">
 		<edmx:Include Namespace="com.sap.vocabularies.Communication.v1"/>
 	</edmx:Reference>
 	<edmx:Reference xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
-		Uri="https://ed1.evorait.net:50103/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_TIMELINE',Version='0001',SAP__Origin='LOCAL_800')/$value">
+		Uri="https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_TIMELINE',Version='0001',SAP__Origin='LOCAL')/$value">
 		<edmx:Include Namespace="com.sap.vocabularies.Timeline.v1"/>
 	</edmx:Reference>
 	<edmx:Reference xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
-		Uri="https://ed1.evorait.net:50103/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_UI',Version='0001',SAP__Origin='LOCAL_800')/$value">
+		Uri="https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_UI',Version='0001',SAP__Origin='LOCAL')/$value">
 		<edmx:Include Namespace="com.sap.vocabularies.UI.v1"/>
 		<edmx:Include Namespace="com.sap.vocabularies.UI.v1" Alias="UI"/>
 		<edmx:Include Namespace="com.sap.vocabularies.Common.v1" Alias="COMMON"/>
 	</edmx:Reference>
 	<edmx:DataServices m:DataServiceVersion="2.0">
-		<Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="com.evorait.evoresourc" xml:lang="en" sap:schema-version="1">
+		<Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="com.evorait.evoresource" xml:lang="en" sap:schema-version="1">
 			<EntityType Name="SystemInformation" sap:content-version="1">
 				<Key>
 					<PropertyRef Name="Username"/>
@@ -38,106 +38,506 @@
 				<Property Name="Client" Type="Edm.String" Nullable="false" MaxLength="3" sap:label="Client"/>
 				<Property Name="Systemid" Type="Edm.String" Nullable="false" MaxLength="8" sap:label="SAP System ID"/>
 				<Property Name="UserProfile" Type="Edm.String" Nullable="false" MaxLength="20" sap:label="User Profile"/>
+				<Property Name="ENABLE_PLANNING_POPOVER" Type="Edm.Boolean" sap:label="Enable Plan Popover" sap:is-extension-field="true"/>
+				<Property Name="DEFAULT_GANTT_START_DATE" Type="Edm.DateTime" Precision="0" sap:label="Gantt Start Date" sap:is-extension-field="true"/>
+				<Property Name="DEFAULT_GANTT_END_DATE" Type="Edm.DateTime" Precision="0" sap:label="Gantt End Date" sap:is-extension-field="true"/>
 			</EntityType>
 			<EntityType Name="ResourceGroup" sap:content-version="1">
 				<Key>
 					<PropertyRef Name="ResourceGroupGuid"/>
 				</Key>
-				<Property Name="ResourceGroupGuid" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="Resource group GUID"/>
-				<Property Name="ResourceGroupId" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="Resource group ID"/>
-				<Property Name="ResourceGroupDesc" Type="Edm.String" Nullable="false" MaxLength="100" sap:label="Resource group desc"/>
-				<Property Name="ResourceGroupUnitId" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="Res. Group Unit ID"/>
-				<Property Name="ResourceGroupUnitDesc" Type="Edm.String" Nullable="false" MaxLength="40" sap:label="Res. Grp. unit desc."/>
-				<Property Name="Search" Type="Edm.String" Nullable="false" sap:label="String"/>
-				<Property Name="RESOURCE_GROUP_COLOR" Type="Edm.String" MaxLength="7" sap:label="Resource Group Color" sap:is-extension-field="true"/>
+				<Property Name="ResourceGroupGuid" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="Resource group GUID" sap:creatable="false"
+					sap:updatable="false" sap:filterable="false"/>
+				<Property Name="ResourceGroupId" Type="Edm.String" MaxLength="12" sap:label="Resource group ID" sap:creatable="false" sap:updatable="false"
+					sap:filterable="false"/>
+				<Property Name="ResourceGroupDesc" Type="Edm.String" MaxLength="100" sap:label="Resource group desc" sap:creatable="false"
+					sap:updatable="false"/>
+				<Property Name="ResourceGroupUnitId" Type="Edm.String" MaxLength="12" sap:label="Res. Group Unit ID" sap:creatable="false"
+					sap:updatable="false"/>
+				<Property Name="ResourceGroupUnitDesc" Type="Edm.String" MaxLength="40" sap:label="Res. Grp. unit desc." sap:creatable="false"
+					sap:updatable="false" sap:filterable="false"/>
+				<Property Name="ResourceGroupColor" Type="Edm.String" MaxLength="7" sap:label="Resource Group Color" sap:creatable="false"
+					sap:updatable="false" sap:filterable="false"/>
+			</EntityType>
+			<EntityType Name="Shift" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="TemplateId"/>
+				</Key>
+				<Property Name="TemplateId" Type="Edm.String" Nullable="false" MaxLength="4" sap:label="Template Id"/>
+				<Property Name="TemplateDesc" Type="Edm.String" Nullable="false" MaxLength="100" sap:label="Temp Description"/>
+				<Property Name="GroupId" Type="Edm.String" Nullable="false" MaxLength="4" sap:label="Group Id"/>
+				<Property Name="ScheduleId" Type="Edm.String" Nullable="false" MaxLength="4" sap:label="Schedule Id"/>
+				<Property Name="ScheduleIdDesc" Type="Edm.String" Nullable="false" MaxLength="100" sap:label="Schedule Desc"/>
+				<Property Name="FromTime" Type="Edm.Time" Nullable="false" Precision="0" sap:label="Shift Start Time"/>
+				<Property Name="ToTime" Type="Edm.Time" Nullable="false" Precision="0" sap:label="Shift End Time"/>
+			</EntityType>
+			<EntityType Name="TimeAllocation" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="TimeAllocationGuid"/>
+				</Key>
+				<Property Name="TimeAllocationGuid" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="Time Allocation GUID" sap:creatable="false"
+					sap:updatable="false" sap:filterable="false"/>
+				<Property Name="TimeAllocationName" Type="Edm.String" MaxLength="100" sap:label="Name" sap:creatable="false" sap:updatable="false"
+					sap:filterable="true"/>
+				<Property Name="TimeAllocationType" Type="Edm.String" MaxLength="100" sap:label="Type" sap:creatable="false" sap:updatable="false"
+					sap:filterable="true" sap:sortable="true"/>
 			</EntityType>
 			<EntityType Name="GanttResourceHierarchy" sap:content-version="1">
 				<Key>
 					<PropertyRef Name="NodeId"/>
 				</Key>
-				<Property Name="NodeId" Type="Edm.String" Nullable="false" MaxLength="132" sap:label="Node Id"/>
-				<Property Name="ParentNodeId" Type="Edm.String" MaxLength="132" sap:label="Parent Node Id"/>
-				<Property Name="Drillstate" Type="Edm.String" Nullable="false" MaxLength="10" sap:label="Drill State"/>
-				<Property Name="ResourceGroupGuid" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="Resource group GUID"/>
-				<Property Name="ResourceGuid" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="Resource GUID"/>
-				<Property Name="ResourceGroupUnitId" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="Res. Group Unit ID"/>
-				<Property Name="ResourceGroupId" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="Resource group ID"/>
-				<Property Name="Description" Type="Edm.String" MaxLength="100" sap:label="Resource group desc"/>
-				<Property Name="HierarchyLevel" Type="Edm.Byte" Nullable="false" sap:label="Hierarchy level"/>
-				<Property Name="NodeType" Type="Edm.String" Nullable="false" MaxLength="10" sap:label="Object type"/>
-				<Property Name="StartDate" Type="Edm.DateTime" Precision="0" sap:label="Time Stamp"/>
-				<Property Name="EndDate" Type="Edm.DateTime" Precision="0" sap:label="Time Stamp"/>
-				<Property Name="ChildCount" Type="Edm.Int32" sap:label="Child Count"/>
-				<NavigationProperty Name="AssignmentSet" Relationship="com.evorait.evoresourc.GanttHierarchyToAssignment"
-					FromRole="FromRole_GanttHierarchyToAssignment" ToRole="ToRole_GanttHierarchyToAssignment"/>
+				<Property Name="NodeId" Type="Edm.String" Nullable="false" MaxLength="132" sap:label="Node Id" sap:creatable="false" sap:updatable="false"
+					sap:filterable="false"/>
+				<Property Name="ParentNodeId" Type="Edm.String" MaxLength="132" sap:label="Parent Node Id" sap:creatable="false" sap:updatable="false"
+					sap:filterable="false"/>
+				<Property Name="Drillstate" Type="Edm.String" MaxLength="10" sap:label="Drill State" sap:creatable="false" sap:updatable="false"
+					sap:filterable="false"/>
+				<Property Name="ResourceGroupGuid" Type="Edm.String" MaxLength="32" sap:label="Resource group GUID" sap:creatable="false"
+					sap:updatable="false" sap:filterable="false"/>
+				<Property Name="ResourceGuid" Type="Edm.String" MaxLength="32" sap:label="Resource GUID" sap:creatable="false" sap:updatable="false"
+					sap:filterable="false"/>
+				<Property Name="ResourceGroupUnitId" Type="Edm.String" MaxLength="12" sap:label="Res. Group Unit ID" sap:creatable="false"
+					sap:updatable="false"/>
+				<Property Name="ResourceGroupId" Type="Edm.String" MaxLength="12" sap:label="Resource group ID" sap:creatable="false" sap:updatable="false"/>
+				<Property Name="Description" Type="Edm.String" MaxLength="100" sap:label="Resource group desc" sap:creatable="false" sap:updatable="false"
+					sap:filterable="false"/>
+				<Property Name="HierarchyLevel" Type="Edm.Byte" sap:label="Hierarchy level" sap:creatable="false" sap:updatable="false"
+					sap:filterable="false"/>
+				<Property Name="NodeType" Type="Edm.String" MaxLength="10" sap:label="Object type" sap:creatable="false" sap:updatable="false"
+					sap:filterable="false"/>
+				<Property Name="StartDate" Type="Edm.DateTime" Precision="0" sap:label="Time Stamp" sap:creatable="false" sap:updatable="false"/>
+				<Property Name="EndDate" Type="Edm.DateTime" Precision="0" sap:label="Time Stamp" sap:creatable="false" sap:updatable="false"
+					sap:filterable="false"/>
+				<Property Name="ChildCount" Type="Edm.Int32" sap:label="Child Count" sap:creatable="false" sap:updatable="false" sap:filterable="false"/>
+				<Property Name="PERNR" Type="Edm.String" MaxLength="8" sap:label="Personnel number" sap:creatable="false" sap:updatable="false"
+					sap:is-extension-field="true"/>
+				<NavigationProperty Name="GanttHierarchyToResourceAssign" Relationship="com.evorait.evoresource.GanttHierarchyToResourceAssign"
+					FromRole="FromRole_GanttHierarchyToResourceAssign" ToRole="ToRole_GanttHierarchyToResourceAssign"/>
 			</EntityType>
-			<EntityType Name="Assignment" sap:content-version="1">
+			<EntityType Name="SHViewMode" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="MODE"/>
+				</Key>
+				<Property Name="MODE" Type="Edm.String" Nullable="false" MaxLength="15" sap:label="View Mode"/>
+			</EntityType>
+			<EntityType Name="NavigationLinks" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="ApplicationId"/>
+					<PropertyRef Name="LaunchMode"/>
+				</Key>
+				<Property Name="ApplicationId" Type="Edm.String" Nullable="false" MaxLength="20" sap:label="Application Id"/>
+				<Property Name="LaunchMode" Type="Edm.String" Nullable="false" MaxLength="10" sap:label="Launch Mode"/>
+				<Property Name="Value1" Type="Edm.String" Nullable="false" MaxLength="255" sap:label="UI Hyperlink Value1"/>
+				<Property Name="Value2" Type="Edm.String" Nullable="false" MaxLength="255" sap:label="UI Hyperlink Value2"/>
+				<Property Name="ApplicationName" Type="Edm.String" Nullable="false" MaxLength="60" sap:label="Nav App description"/>
+			</EntityType>
+			<EntityType Name="SHResource" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="GUID"/>
+				</Key>
+				<Property Name="PERNR" Type="Edm.String" Nullable="false" MaxLength="8" sap:label="Personnel number"/>
+				<Property Name="LASTNAME" Type="Edm.String" Nullable="false" MaxLength="100" sap:label="Last Name"/>
+				<Property Name="FIRSTNAME" Type="Edm.String" Nullable="false" MaxLength="100" sap:label="First Name"/>
+				<Property Name="GUID" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="Resource GUID" sap:creatable="false"
+					sap:updatable="false" sap:filterable="false"/>
+			</EntityType>
+			<EntityType Name="SHResourceGroup" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="GUID"/>
+				</Key>
+				<Property Name="GUID" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="Resource group GUID" sap:creatable="false"
+					sap:updatable="false" sap:filterable="false"/>
+				<Property Name="RESOURCE_GROUP_ID" Type="Edm.String" MaxLength="12" sap:label="Resource group ID" sap:creatable="false"
+					sap:updatable="false"/>
+				<Property Name="RESOURCE_GROUP_UNIT_ID" Type="Edm.String" MaxLength="12" sap:label="Res. Group Unit ID" sap:creatable="false"
+					sap:updatable="false"/>
+				<Property Name="RESOURCE_GROUP_DESC" Type="Edm.String" MaxLength="100" sap:label="Resource group desc" sap:creatable="false"
+					sap:updatable="false"/>
+			</EntityType>
+			<EntityType Name="SHResourceGroupUnitID" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="RESOURCE_GROUP_UNIT_ID"/>
+				</Key>
+				<Property Name="RESOURCE_GROUP_UNIT_ID" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="Res. Group Unit ID"/>
+				<Property Name="RESOURCE_GROUP_UNIT_DESC" Type="Edm.String" Nullable="false" MaxLength="40" sap:label="Res. Grp. unit desc."/>
+			</EntityType>
+			<EntityType Name="ResourceAssignment" sap:content-version="1">
 				<Key>
 					<PropertyRef Name="Guid"/>
 				</Key>
-				<Property Name="AssignmentType" Type="Edm.String" Nullable="false" MaxLength="3" sap:label="Assignment Type"/>
-				<Property Name="DateFrom" Type="Edm.DateTime" Precision="0" sap:label="From Date" sap:creatable="false" sap:updatable="false"
-					sap:filterable="false"/>
-				<Property Name="Guid" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="Assignment GUID" sap:creatable="false"
-					sap:updatable="false"/>
-				<Property Name="DateTo" Type="Edm.DateTime" Precision="0" sap:label="To Date" sap:creatable="false" sap:updatable="false"
-					sap:filterable="false"/>
-				<Property Name="ObjectId" Type="Edm.String" MaxLength="132" sap:label="Node Id" sap:creatable="false" sap:updatable="false"/>
-				<Property Name="ResourceGroupGuid" Type="Edm.String" MaxLength="32" sap:label="Resource group GUID" sap:creatable="true"
-					sap:updatable="true"/>
-				<Property Name="ResourceGuid" Type="Edm.String" MaxLength="32" sap:label="Resource GUID" sap:creatable="true" sap:updatable="true"/>
-				<Property Name="LASTNAME" Type="Edm.String" MaxLength="100" sap:label="Last Name" sap:creatable="false" sap:updatable="false"
-					sap:filterable="false" sap:is-extension-field="true"/>
-				<Property Name="FIRSTNAME" Type="Edm.String" MaxLength="100" sap:label="First Name" sap:creatable="false" sap:updatable="false"
-					sap:filterable="false" sap:is-extension-field="true"/>
-				<Property Name="NODE_TYPE" Type="Edm.String" MaxLength="10" sap:label="Object type" sap:creatable="false" sap:updatable="false"
-					sap:is-extension-field="true"/>
-				<Property Name="GROUP_DESCRIPTION" Type="Edm.String" MaxLength="40" sap:label="Resource group desc." sap:creatable="false"
-					sap:updatable="false" sap:filterable="false" sap:is-extension-field="true"/>
-				<Property Name="RESOURCE_DESCRIPTION" Type="Edm.String" MaxLength="100" sap:label="Resource group desc" sap:creatable="false"
-					sap:updatable="false" sap:filterable="false" sap:is-extension-field="true"/>
+				<Property Name="Guid" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="Assignment GUID"/>
+				<Property Name="StartDate" Type="Edm.DateTime" Precision="0" sap:label="Time Stamp"/>
+				<Property Name="EndDate" Type="Edm.DateTime" Precision="0" sap:label="Time Stamp"/>
+				<Property Name="ResourceGroupGuid" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="Resource group GUID"/>
+				<Property Name="ResourceGuid" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="Resource GUID"/>
+				<Property Name="NODE_ID" Type="Edm.String" MaxLength="132" sap:label="Node Id" sap:is-extension-field="true"/>
+				<Property Name="PARENT_NODE_ID" Type="Edm.String" MaxLength="132" sap:label="Parent Node Id" sap:is-extension-field="true"/>
+				<Property Name="NODE_TYPE" Type="Edm.String" MaxLength="10" sap:label="Object type" sap:is-extension-field="true"/>
+				<Property Name="RESOURCE_GROUP_UNIT_ID" Type="Edm.String" MaxLength="12" sap:label="Res. Group Unit ID" sap:is-extension-field="true"/>
+				<Property Name="RESOURCE_GROUP_UNIT_DESC" Type="Edm.String" MaxLength="40" sap:label="Res. Grp. unit desc." sap:is-extension-field="true"/>
+				<Property Name="RESOURCE_GROUP_ID" Type="Edm.String" MaxLength="12" sap:label="Resource group ID" sap:is-extension-field="true"/>
+				<Property Name="RESOURCE_GROUP_DESC" Type="Edm.String" MaxLength="100" sap:label="Resource group desc" sap:is-extension-field="true"/>
+				<Property Name="RESOURCE_GROUP_COLOR" Type="Edm.String" MaxLength="7" sap:label="Resource Group Color" sap:is-extension-field="true"/>
+				<Property Name="DESCRIPTION" Type="Edm.String" MaxLength="100" sap:label="Resource group desc" sap:is-extension-field="true"/>
 			</EntityType>
-			<Association Name="GanttHierarchyToAssignment" sap:content-version="1">
-				<End Type="com.evorait.evoresourc.GanttResourceHierarchy" Multiplicity="1" Role="FromRole_GanttHierarchyToAssignment"/>
-				<End Type="com.evorait.evoresourc.Assignment" Multiplicity="*" Role="ToRole_GanttHierarchyToAssignment"/>
+			<ComplexType Name="ValidationResourceAssignment">
+				<Property Name="Guid" Type="Edm.String" MaxLength="32" sap:label="Assignment GUID"/>
+				<Property Name="NodeId" Type="Edm.String" MaxLength="132" sap:label="Node Id"/>
+				<Property Name="ResourceGroupGuid" Type="Edm.String" MaxLength="32" sap:label="Resource group GUID"/>
+				<Property Name="ResourceGuid" Type="Edm.String" MaxLength="32" sap:label="Resource GUID"/>
+				<Property Name="DemandGuid" Type="Edm.String" MaxLength="32" sap:label="Demand GUID"/>
+				<Property Name="DemandDesc" Type="Edm.String" MaxLength="100" sap:label="Demand description"/>
+				<Property Name="DateFrom" Type="Edm.DateTime" Precision="0" sap:label="From Date"/>
+				<Property Name="DateTo" Type="Edm.DateTime" Precision="0" sap:label="To Date"/>
+				<Property Name="Effort" Type="Edm.Decimal" Precision="7" Scale="1" sap:label="Work"/>
+				<Property Name="EffortUnit" Type="Edm.String" MaxLength="3" sap:label="Effort unit" sap:semantics="unit-of-measure"/>
+				<Property Name="PersonNumber" Type="Edm.String" MaxLength="8" sap:label="Personnel number"/>
+				<Property Name="Lastname" Type="Edm.String" MaxLength="100" sap:label="Last Name"/>
+				<Property Name="Firstname" Type="Edm.String" MaxLength="100" sap:label="First Name"/>
+				<Property Name="AssignmentType" Type="Edm.String" MaxLength="3" sap:label="Assignment Type"/>
+				<Property Name="NodeType" Type="Edm.String" MaxLength="10" sap:label="Object type"/>
+				<Property Name="Status" Type="Edm.String" MaxLength="4" sap:label="Status"/>
+				<Property Name="DemandStatusIcon" Type="Edm.String" MaxLength="255" sap:label="UI Status Icon"/>
+				<Property Name="DemandStatusColor" Type="Edm.String" MaxLength="7" sap:label="Demand Status Color"/>
+				<Property Name="AssignmentObjnr" Type="Edm.String" MaxLength="22" sap:label="Object number"/>
+				<Property Name="DemandStatus" Type="Edm.String" MaxLength="4" sap:label="Status"/>
+				<Property Name="GroupDescription" Type="Edm.String" MaxLength="40" sap:label="Resource group desc."/>
+				<Property Name="ResourceDescription" Type="Edm.String" MaxLength="100" sap:label="Resource group desc"/>
+				<Property Name="Longitude" Type="Edm.Decimal" Precision="15" Scale="12" sap:label="Geo Loc. Longitude"/>
+				<Property Name="Latitude" Type="Edm.Decimal" Precision="15" Scale="12" sap:label="Geo Loc. Latitude"/>
+				<Property Name="Orderid" Type="Edm.String" MaxLength="12" sap:label="Order ID"/>
+				<Property Name="Operationid" Type="Edm.String" MaxLength="4" sap:label="Operation"/>
+				<Property Name="Suboperationid" Type="Edm.String" MaxLength="4" sap:label="Suboperation"/>
+				<Property Name="Notification" Type="Edm.String" MaxLength="12" sap:label="Notification"/>
+				<Property Name="NotificationDesc" Type="Edm.String" MaxLength="40" sap:label="Notif Description"/>
+				<Property Name="ResAsgnStartDate" Type="Edm.DateTime" Precision="0" sap:label="Res. Asgn Start Date"/>
+				<Property Name="ResAsgnEndDate" Type="Edm.DateTime" Precision="0" sap:label="Res. Asgn End Date"/>
+				<Property Name="FixedAppointment" Type="Edm.String" MaxLength="1" sap:label="Fixed Appt. flag"/>
+				<Property Name="DemandEffort" Type="Edm.Decimal" Precision="7" Scale="1" sap:label="Work"/>
+				<Property Name="DemandEffortUnit" Type="Edm.String" MaxLength="3" sap:label="Effort unit" sap:semantics="unit-of-measure"/>
+				<Property Name="RemainingDuration" Type="Edm.Decimal" Precision="7" Scale="1" sap:label="Remaining Duration"/>
+				<Property Name="RemainingDurUnit" Type="Edm.String" MaxLength="3" sap:label="Remaining Dur Unit" sap:semantics="unit-of-measure"/>
+				<Property Name="ObjectSourceType" Type="Edm.String" MaxLength="16" sap:label="Object Source Type"/>
+			</ComplexType>
+			<Association Name="GanttHierarchyToResourceAssign" sap:content-version="1">
+				<End Type="com.evorait.evoresource.GanttResourceHierarchy" Multiplicity="1" Role="FromRole_GanttHierarchyToResourceAssign"/>
+				<End Type="com.evorait.evoresource.ResourceAssignment" Multiplicity="*" Role="ToRole_GanttHierarchyToResourceAssign"/>
 				<ReferentialConstraint>
-					<Principal Role="FromRole_GanttHierarchyToAssignment">
+					<Principal Role="FromRole_GanttHierarchyToResourceAssign">
 						<PropertyRef Name="NodeId"/>
 					</Principal>
-					<Dependent Role="ToRole_GanttHierarchyToAssignment">
-						<PropertyRef Name="ObjectId"/>
+					<Dependent Role="ToRole_GanttHierarchyToResourceAssign">
+						<PropertyRef Name="Guid"/>
 					</Dependent>
 				</ReferentialConstraint>
 			</Association>
-			<EntityContainer Name="com_evorait_evoresourc_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
-				<EntitySet Name="SystemInformationSet" EntityType="com.evorait.evoresourc.SystemInformation" sap:content-version="1"/>
-				<EntitySet Name="ResourceGroupSet" EntityType="com.evorait.evoresourc.ResourceGroup" sap:content-version="1"/>
-				<EntitySet Name="GanttResourceHierarchySet" EntityType="com.evorait.evoresourc.GanttResourceHierarchy" sap:content-version="1"/>
-				<AssociationSet Name="GanttHierarchyToAssignmentSet" Association="com.evorait.evoorderrelate.GanttHierarchyToAssignment"
+			<EntityContainer Name="com_evorait_evoresource_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
+				<EntitySet Name="SystemInformationSet" EntityType="com.evorait.evoresource.SystemInformation" sap:content-version="1"/>
+				<EntitySet Name="ResourceGroupSet" EntityType="com.evorait.evoresource.ResourceGroup" sap:content-version="1"/>
+				<EntitySet Name="ShiftSet" EntityType="com.evorait.evoresource.Shift" sap:content-version="1"/>
+				<EntitySet Name="TimeAllocationSet" EntityType="com.evorait.evoresource.TimeAllocation" sap:content-version="1"/>
+				<EntitySet Name="GanttResourceHierarchySet" EntityType="com.evorait.evoresource.GanttResourceHierarchy" sap:content-version="1"/>
+				<EntitySet Name="SHViewModeSet" EntityType="com.evorait.evoresource.SHViewMode" sap:content-version="1"/>
+				<EntitySet Name="NavigationLinksSet" EntityType="com.evorait.evoresource.NavigationLinks" sap:content-version="1"/>
+				<EntitySet Name="SHResourceSet" EntityType="com.evorait.evoresource.SHResource" sap:content-version="1"/>
+				<EntitySet Name="SHResourceGroupSet" EntityType="com.evorait.evoresource.SHResourceGroup" sap:content-version="1"/>
+				<EntitySet Name="SHResourceGroupUnitIDSet" EntityType="com.evorait.evoresource.SHResourceGroupUnitID" sap:content-version="1"/>
+				<EntitySet Name="ResourceAssignmentSet" EntityType="com.evorait.evoresource.ResourceAssignment" sap:content-version="1"/>
+				<AssociationSet Name="GanttHierarchyToResourceAssignSet" Association="com.evorait.evoresource.GanttHierarchyToResourceAssign"
 					sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
-					<End EntitySet="GanttResourceHierarchySet" Role="FromRole_GanttHierarchyToAssignment"/>
-					<End EntitySet="AssignmentSet" Role="ToRole_GanttHierarchyToAssignment"/>
+					<End EntitySet="GanttResourceHierarchySet" Role="FromRole_GanttHierarchyToResourceAssign"/>
+					<End EntitySet="ResourceAssignmentSet" Role="ToRole_GanttHierarchyToResourceAssign"/>
 				</AssociationSet>
+				<FunctionImport Name="ValidateResourceAssignment" ReturnType="Collection(com.evorait.evoresource.ValidationResourceAssignment)"
+					m:HttpMethod="POST">
+					<Parameter Name="ObjectId" Type="Edm.String" Mode="In"/>
+					<Parameter Name="EndTimestamp" Type="Edm.DateTime" Mode="In" Precision="0" Nullable="true"/>
+					<Parameter Name="StartTimestamp" Type="Edm.DateTime" Mode="In" Precision="0" Nullable="true"/>
+				</FunctionImport>
 			</EntityContainer>
-			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.GanttResourceHierarchy">
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.GanttResourceHierarchy">
+				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
+					<Collection>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="Description"/>
+							<PropertyValue Property="Position" Int="1"/>
+						</Record>
+					</Collection>
+				</Annotation>
+				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
+					<Collection>
+						<PropertyPath>PERNR</PropertyPath>
+						<PropertyPath>ResourceGroupId</PropertyPath>
+						<PropertyPath>ResourceGroupUnitId</PropertyPath>
+					</Collection>
+				</Annotation>
+				<Annotation Term="com.sap.vocabularies.UI.v1.PresentationVariant">
+					<Record Type="com.sap.vocabularies.UI.v1.PresentationVariantType">
+						<PropertyValue Property="SortOrder">
+							<Collection/>
+						</PropertyValue>
+						<PropertyValue Property="RequestAtLeast">
+							<Collection/>
+						</PropertyValue>
+					</Record>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.GanttResourceHierarchy/PERNR">
+				<Annotation Term="COMMON.ValueList">
+					<Record Type="COMMON.ValueListType">
+						<PropertyValue Property="CollectionPath" String="SHResourceSet"/>
+						<PropertyValue Property="CollectionRoot" String=""/>
+						<PropertyValue Property="SearchSupported" Bool="false"/>
+						<PropertyValue Property="Parameters">
+							<Collection>
+								<Record Type="COMMON.ValueListParameterInOut">
+									<PropertyValue Property="LocalDataProperty" PropertyPath="PERNR"/>
+									<PropertyValue Property="ValueListProperty" String="PERNR"/>
+								</Record>
+								<Record Type="COMMON.ValueListParameterDisplayOnly">
+									<PropertyValue Property="ValueListProperty" String="FIRSTNAME"/>
+								</Record>
+								<Record Type="COMMON.ValueListParameterDisplayOnly">
+									<PropertyValue Property="ValueListProperty" String="LASTNAME"/>
+								</Record>
+							</Collection>
+						</PropertyValue>
+					</Record>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.GanttResourceHierarchy/ResourceGroupId">
+				<Annotation Term="COMMON.ValueList">
+					<Record Type="COMMON.ValueListType">
+						<PropertyValue Property="CollectionPath" String="SHResourceGroupSet"/>
+						<PropertyValue Property="CollectionRoot" String=""/>
+						<PropertyValue Property="SearchSupported" Bool="false"/>
+						<PropertyValue Property="Parameters">
+							<Collection>
+								<Record Type="COMMON.ValueListParameterInOut">
+									<PropertyValue Property="LocalDataProperty" PropertyPath="ResourceGroupId"/>
+									<PropertyValue Property="ValueListProperty" String="RESOURCE_GROUP_ID"/>
+								</Record>
+								<Record Type="COMMON.ValueListParameterOut">
+									<PropertyValue Property="LocalDataProperty" PropertyPath=""/>
+									<PropertyValue Property="ValueListProperty" String="RESOURCE_GROUP_DESC"/>
+								</Record>
+								<Record Type="COMMON.ValueListParameterDisplayOnly">
+									<PropertyValue Property="ValueListProperty" String="RESOURCE_GROUP_UNIT_ID"/>
+								</Record>
+							</Collection>
+						</PropertyValue>
+					</Record>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.GanttResourceHierarchy/ResourceGroupUnitId">
+				<Annotation Term="COMMON.ValueList">
+					<Record Type="COMMON.ValueListType">
+						<PropertyValue Property="CollectionPath" String="SHResourceGroupUnitIDSet"/>
+						<PropertyValue Property="CollectionRoot" String=""/>
+						<PropertyValue Property="SearchSupported" Bool="false"/>
+						<PropertyValue Property="Parameters">
+							<Collection>
+								<Record Type="COMMON.ValueListParameterInOut">
+									<PropertyValue Property="LocalDataProperty" PropertyPath="ResourceGroupUnitId"/>
+									<PropertyValue Property="ValueListProperty" String="RESOURCE_GROUP_UNIT_ID"/>
+								</Record>
+								<Record Type="COMMON.ValueListParameterDisplayOnly">
+									<PropertyValue Property="ValueListProperty" String="RESOURCE_GROUP_UNIT_DESC"/>
+								</Record>
+							</Collection>
+						</PropertyValue>
+					</Record>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.GanttResourceHierarchy/Description">
+				<Annotation Term="com.sap.vocabularies.Common.v1.Label" String="Description"/>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.ResourceAssignment">
 				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
 					<Collection/>
 				</Annotation>
 			</Annotations>
-			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.ResourceGroup">
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.ResourceGroup">
+				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
+					<Collection>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="ResourceGroupDesc"/>
+							<PropertyValue Property="Position" Int="1"/>
+						</Record>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="ResourceGroupUnitId"/>
+							<PropertyValue Property="Position" Int="2"/>
+						</Record>
+					</Collection>
+				</Annotation>
+				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
+					<Collection>
+						<PropertyPath>ResourceGroupDesc</PropertyPath>
+						<PropertyPath>ResourceGroupUnitId</PropertyPath>
+					</Collection>
+				</Annotation>
+				<Annotation Term="com.sap.vocabularies.UI.v1.PresentationVariant">
+					<Record Type="com.sap.vocabularies.UI.v1.PresentationVariantType">
+						<PropertyValue Property="SortOrder">
+							<Collection/>
+						</PropertyValue>
+						<PropertyValue Property="RequestAtLeast">
+							<Collection/>
+						</PropertyValue>
+					</Record>
+				</Annotation>
+				<Annotation Term="UI.Facets" Qualifier="EntityTabs">
+					<Collection>
+						<Record Type="UI.ReferenceFacet">
+							<PropertyValue Property="Target" AnnotationPath="@UI.LineItem"/>
+							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Groups"/>
+							<Annotation Term="Core.Description" String="Table"/>
+							<Annotation Term="Core.LongDescription" String="ResourceGroupSet"/>
+						</Record>
+						<Record Type="UI.ReferenceFacet">
+							<PropertyValue Property="Target" AnnotationPath="@UI.LineItem"/>
+							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Shifts"/>
+							<Annotation Term="Core.Description" String="Table"/>
+							<Annotation Term="Core.LongDescription" String="ShiftSet"/>
+						</Record>
+						<Record Type="UI.ReferenceFacet">
+							<PropertyValue Property="Target" AnnotationPath="@UI.LineItem"/>
+							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Time Allocaitons"/>
+							<Annotation Term="Core.Description" String="Table"/>
+							<Annotation Term="Core.LongDescription" String="TimeAllocationSet"/>
+						</Record>
+					</Collection>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.TimeAllocation">
+				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
+					<Collection>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="ScheduleIdDesc"/>
+							<PropertyValue Property="Position" Int="1"/>
+						</Record>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="FromTime"/>
+							<PropertyValue Property="Position" Int="2"/>
+						</Record>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="ToTime"/>
+							<PropertyValue Property="Position" Int="3"/>
+						</Record>
+					</Collection>
+				</Annotation>
+				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
+					<Collection>
+						<PropertyPath>TimeAllocationName</PropertyPath>
+						<PropertyPath>TimeAllocationType</PropertyPath>
+					</Collection>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.ResourceGroup/ResourceGroupDesc">
+				<Annotation Term="COMMON.ValueList">
+					<Record Type="COMMON.ValueListType">
+						<PropertyValue Property="CollectionPath" String="SHResourceGroupSet"/>
+						<PropertyValue Property="CollectionRoot" String=""/>
+						<PropertyValue Property="SearchSupported" Bool="false"/>
+						<PropertyValue Property="Parameters">
+							<Collection>
+								<Record Type="COMMON.ValueListParameterOut">
+									<PropertyValue Property="LocalDataProperty" PropertyPath="ResourceGroupId"/>
+									<PropertyValue Property="ValueListProperty" String="RESOURCE_GROUP_ID"/>
+								</Record>
+								<Record Type="COMMON.ValueListParameterInOut">
+									<PropertyValue Property="LocalDataProperty" PropertyPath="ResourceGroupDesc"/>
+									<PropertyValue Property="ValueListProperty" String="RESOURCE_GROUP_DESC"/>
+								</Record>
+								<Record Type="COMMON.ValueListParameterDisplayOnly">
+									<PropertyValue Property="ValueListProperty" String="RESOURCE_GROUP_UNIT_ID"/>
+								</Record>
+							</Collection>
+						</PropertyValue>
+					</Record>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.ResourceGroup/ResourceGroupUnitId">
+				<Annotation Term="COMMON.ValueList">
+					<Record Type="COMMON.ValueListType">
+						<PropertyValue Property="CollectionPath" String="SHResourceGroupUnitIDSet"/>
+						<PropertyValue Property="CollectionRoot" String=""/>
+						<PropertyValue Property="SearchSupported" Bool="false"/>
+						<PropertyValue Property="Parameters">
+							<Collection>
+								<Record Type="COMMON.ValueListParameterInOut">
+									<PropertyValue Property="LocalDataProperty" PropertyPath="ResourceGroupUnitId"/>
+									<PropertyValue Property="ValueListProperty" String="RESOURCE_GROUP_UNIT_ID"/>
+								</Record>
+								<Record Type="COMMON.ValueListParameterDisplayOnly">
+									<PropertyValue Property="ValueListProperty" String="RESOURCE_GROUP_UNIT_DESC"/>
+								</Record>
+							</Collection>
+						</PropertyValue>
+					</Record>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.ResourceGroup/ResourceGroupDesc">
+				<Annotation Term="com.sap.vocabularies.Common.v1.Label" String="Resource Group"/>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.ResourceGroup/ResourceGroupUnitId">
+				<Annotation Term="com.sap.vocabularies.Common.v1.Label" String="Resource Group Unit ID"/>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.SHResource">
+				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
+					<Collection/>
+				</Annotation>
+				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
+					<Collection/>
+				</Annotation>
+				<Annotation Term="com.sap.vocabularies.UI.v1.PresentationVariant">
+					<Record Type="com.sap.vocabularies.UI.v1.PresentationVariantType">
+						<PropertyValue Property="SortOrder">
+							<Collection/>
+						</PropertyValue>
+						<PropertyValue Property="RequestAtLeast">
+							<Collection/>
+						</PropertyValue>
+					</Record>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.SHResourceGroup">
+				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
+					<Collection/>
+				</Annotation>
+				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
+					<Collection/>
+				</Annotation>
+				<Annotation Term="com.sap.vocabularies.UI.v1.PresentationVariant">
+					<Record Type="com.sap.vocabularies.UI.v1.PresentationVariantType">
+						<PropertyValue Property="SortOrder">
+							<Collection/>
+						</PropertyValue>
+						<PropertyValue Property="RequestAtLeast">
+							<Collection/>
+						</PropertyValue>
+					</Record>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.SHResourceGroupUnitID">
 				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
 					<Collection/>
 				</Annotation>
 			</Annotations>
-			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresourc.SystemInformation">
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.SHViewMode">
+				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
+					<Collection/>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoresource.SystemInformation">
 				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
 					<Collection/>
 				</Annotation>
 			</Annotations>
 			<atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="self"
-				href="https://ed1.evorait.net:50103/sap/opu/odata/EVORA/ER_MAIN_SRV/$metadata"/>
+				href="https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/$metadata"/>
 			<atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="latest-version"
-				href="https://ed1.evorait.net:50103/sap/opu/odata/EVORA/ER_MAIN_SRV/$metadata"/>
+				href="https://webidetesting3642582-ad74c0790.dispatcher.hana.ondemand.com/sap/opu/odata/EVORA/ER_MAIN_SRV/$metadata"/>
 		</Schema>
 	</edmx:DataServices>
 </edmx:Edmx>

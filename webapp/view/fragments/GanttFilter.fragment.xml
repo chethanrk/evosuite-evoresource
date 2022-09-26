@@ -1,0 +1,12 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:form="sap.ui.layout.form" xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<Dialog title="{i18n>xtit.settings}" contentWidth="20%" resizable="true" type="Message">
+		<content>
+			<FlexBox direction="Column" items="{viewModel>/GanttSettingInformation}">
+				<CheckBox text="{viewModel>Description}" selected="{viewModel>DefaultFlag}" app:type="{viewModel>Type}"/>
+			</FlexBox>
+		</content>
+		<endButton>
+			<Button text = "{i18n>xbtn.ok}" press="onGanttFilterOK"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>
