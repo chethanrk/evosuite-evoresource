@@ -220,7 +220,7 @@ sap.ui.define([
 			if (!oDate) {
 				return null;
 			}
-			var offsetMs = new Date().getTimezoneOffset() * 60 * 1000;
+			var offsetMs = new Date(oDate).getTimezoneOffset() * 60 * 1000;
 			if (isNew || isChanging) {
 				return oDate;
 			}
@@ -231,7 +231,7 @@ sap.ui.define([
 			if (!oDate) {
 				return null;
 			}
-			var offsetMs = new Date().getTimezoneOffset() * 60 * 1000;
+			var offsetMs = new Date(oDate).getTimezoneOffset() * 60 * 1000;
 			return new Date(oDate.getTime() - offsetMs);
 		},
 
