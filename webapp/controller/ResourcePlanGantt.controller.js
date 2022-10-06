@@ -41,7 +41,7 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Before
 				},
-				onShapePress: {
+				onShapeDoubleClick: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
@@ -195,6 +195,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				onShapePress:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -321,7 +326,7 @@ sap.ui.define([
 		 * or create new temporary assignment
 		 * @param {object} oEvent - when shape in Gantt was selected
 		 */
-		onShapePress: function (oEvent) {
+		onShapeDoubleClick: function (oEvent) {
 			var mParams = oEvent.getParameters(),
 				oShape = mParams.shape,
 				isNew,
@@ -1082,6 +1087,27 @@ sap.ui.define([
 			var cancelcallback = function () {};
 			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
 		},
+		/*
+		* Function calls when shape is selected
+		*/
+		onShapeSelectionChange:function(oEvent){
+			var oSource = oEvent.getSource(),
+				aSelectedShapes = oSource.getSelectedShapeUid(),
+				aFilteredShapes = [],
+				sShapePath, oShapeData;
+				
+			aSelectedShapes.forEach(function(shape,idx,aShape){
+				// filtering only assignments, no backgroundshape
+				sShapePath = Utility.parseUid(shape).shapeDataName;
+				oShapeData = this.getModel("ganttPlanningModel").getProperty(sShapePath);
+				if(oShapeData.hasOwnProperty("Guid")){
+					aFilteredShapes.push(oShapeData);
+				}
+			},this);
+			this.getModel("ganttPlanningModel").setProperty("/isShapeSelected",Boolean(aFilteredShapes.length));
+			this.getModel("ganttPlanningModel").setProperty("/multiSelectForDelete",aFilteredShapes);
+			
+		},
 
 		/* =========================================================== */
 		/* internal methods                                            */
@@ -1810,7 +1836,9 @@ sap.ui.define([
 				changedData: [],
 				hasChanges: false,
 				deletedData: [],
-				unAssignData: []
+				unAssignData: [],
+				isShapeSelected:false,
+				multiSelectForDelete: []
 			};
 			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
 			this.oPlanningModel.setData(deepClone(this.oOriginData));
