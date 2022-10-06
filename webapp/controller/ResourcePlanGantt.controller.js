@@ -196,7 +196,7 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.After
 				},
-				onShapePress:{
+				onShapeSelectionChange:{
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
