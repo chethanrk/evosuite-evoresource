@@ -1,0 +1,23 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<Dialog title="{i18n>xtit.deletingAssignmentlist}" resizable="true" draggable="true" contentWidth="50%">
+		<List items="{ganttPlanningModel>/multiSelectedDataForDelete}">
+			<items>
+				<ObjectListItem title="{path:'ganttPlanningModel>DESCRIPTION'}">
+					<attributes>
+						<ObjectAttribute title="{i18n>lbl.fromdate}"
+							text="{parts:[{path:'ganttPlanningModel>NODE_TYPE'},{path:'ganttPlanningModel>StartDate'},{path:'ganttPlanningModel>EffectiveStartDate'},{path:'ganttPlanningModel>isNew'},{path:'ganttPlanningModel>isChanging'}],formatter:'.formatter.getDeleteObjectDate'}"/>
+						<ObjectAttribute title="{i18n>lbl.todate}"
+							text="{parts:[{path:'ganttPlanningModel>NODE_TYPE'},{path:'ganttPlanningModel>EndDate'},{path:'ganttPlanningModel>EffectiveEndDate'},{path:'ganttPlanningModel>isNew'},{path:'ganttPlanningModel>isChanging'}],formatter:'.formatter.getDeleteObjectDate'}"/>
+					</attributes>
+					
+				</ObjectListItem>
+			</items>
+		</List>
+		<beginButton>
+			<Button text="{i18n>btn.deleteAll}" press="onDeleteAllAssignment" type="Emphasized"/>
+		</beginButton>
+		<endButton>
+			<Button text="{i18n>btn.close}" press="onDeleteAssignmentDialogClose" type="Emphasized"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

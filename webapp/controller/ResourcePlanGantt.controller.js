@@ -196,7 +196,17 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.After
 				},
-				onShapeSelectionChange:{
+				onShapeSelectionChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onPressDeleteMultiAssignment: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				openDeleteAssignmentListDialog: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
@@ -1088,25 +1098,64 @@ sap.ui.define([
 			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
 		},
 		/*
-		* Function calls when shape is selected
-		*/
-		onShapeSelectionChange:function(oEvent){
+		 * Function calls when shape is selected
+		 */
+		onShapeSelectionChange: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				aSelectedShapes = oSource.getSelectedShapeUid(),
 				aFilteredShapes = [],
 				sShapePath, oShapeData;
-				
-			aSelectedShapes.forEach(function(shape,idx,aShape){
+
+			aSelectedShapes.forEach(function (shape, idx, aShape) {
 				// filtering only assignments, no backgroundshape
 				sShapePath = Utility.parseUid(shape).shapeDataName;
 				oShapeData = this.getModel("ganttPlanningModel").getProperty(sShapePath);
-				if(oShapeData.hasOwnProperty("Guid")){
+				if (oShapeData.hasOwnProperty("Guid")) {
 					aFilteredShapes.push(oShapeData);
 				}
-			},this);
-			this.getModel("ganttPlanningModel").setProperty("/isShapeSelected",Boolean(aFilteredShapes.length));
-			this.getModel("ganttPlanningModel").setProperty("/multiSelectForDelete",aFilteredShapes);
+			}, this);
+			this.getModel("ganttPlanningModel").setProperty("/isShapeSelected", Boolean(aFilteredShapes.length));
+			this.getModel("ganttPlanningModel").setProperty("/multiSelectedDataForDelete", aFilteredShapes);
+
+		},
+		/*
+		 * Function calls Delete button on Gantt header pressed
+		 */
+		onPressDeleteMultiAssignment: function (oEvent) {
+			this.openDeleteAssignmentListDialog();
+		},
+		/*
+		 * Function to open Deleting assignment list dialog
+		 */
+		openDeleteAssignmentListDialog: function () {
+			if (!this._oDeleteAssignmentListDialog) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoresource.view.fragments.DeleteAssignmentList",
+					controller: this
+				}).then(function (oDialog) {
+					this._oDeleteAssignmentListDialog = oDialog;
+					this.getView().addDependent(this._oDeleteAssignmentListDialog);
+					this._oDeleteAssignmentListDialog.open();
+					this._oDeleteAssignmentListDialog.attachAfterOpen(function (oEvent) {}.bind(this));
+
+					this._oDeleteAssignmentListDialog.attachAfterClose(function (oEvent) {}.bind(this));
+
+				}.bind(this));
+			} else {
+				this._oDeleteAssignmentListDialog.open();
+			}
+		},
+		/*
+		 * Function called when "Delete All" button is pressed in Delete Assignment List Dialog
+		 */
+		onDeleteAllAssignment:function(oEvent){
 			
+		},
+		/*
+		 * Function called when "Close" button is pressed in Delete Assignment List Dialog
+		 */
+		onDeleteAssignmentDialogClose:function(oEvent){
+			this._oDeleteAssignmentListDialog.close();
 		},
 
 		/* =========================================================== */
@@ -1837,8 +1886,8 @@ sap.ui.define([
 				hasChanges: false,
 				deletedData: [],
 				unAssignData: [],
-				isShapeSelected:false,
-				multiSelectForDelete: []
+				isShapeSelected: false,
+				multiSelectedDataForDelete: []
 			};
 			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
 			this.oPlanningModel.setData(deepClone(this.oOriginData));
