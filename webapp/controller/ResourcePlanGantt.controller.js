@@ -1104,13 +1104,15 @@ sap.ui.define([
 			var oSource = oEvent.getSource(),
 				aSelectedShapes = oSource.getSelectedShapeUid(),
 				aFilteredShapes = [],
+				aFilteredGuid = [],
 				sShapePath, oShapeData;
 
 			aSelectedShapes.forEach(function (shape, idx, aShape) {
-				// filtering only assignments, no backgroundshape
+				// filtering only assignments, no backgroundshape, no duplicate GUID
 				sShapePath = Utility.parseUid(shape).shapeDataName;
 				oShapeData = this.getModel("ganttPlanningModel").getProperty(sShapePath);
-				if (oShapeData.hasOwnProperty("Guid")) {
+				if (oShapeData.hasOwnProperty("Guid") && aFilteredGuid.indexOf(oShapeData["Guid"]) === -1) {
+					aFilteredGuid.push(oShapeData["Guid"]);
 					aFilteredShapes.push(oShapeData);
 				}
 			}, this);
