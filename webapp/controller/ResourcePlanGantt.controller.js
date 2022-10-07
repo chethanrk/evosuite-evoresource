@@ -1150,13 +1150,45 @@ sap.ui.define([
 		/*
 		 * Function called when "Delete All" button is pressed in Delete Assignment List Dialog
 		 */
-		onDeleteAllAssignment:function(oEvent){
+		onDeleteAllAssignment: function (oEvent) {
+			var aChildren = this.oPlanningModel.getProperty("/data/children"),
+				aMultiDeleteList = this.getModel("ganttPlanningModel").getProperty("/multiSelectedDataForDelete");
+
+			aMultiDeleteList.forEach(function (oAssignmentData, idx) {
+				if (oAssignmentData.isNew) {
+					var callbackFn = function (oItem, oData, idx) {
+						var aAssignments = [];
+						if (oData.NODE_TYPE === "RES_GROUP" || oData.NODE_TYPE === "RESOURCE") {
+							aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
+								.results : []) : [];
+						} else if (oData.NODE_TYPE === "SHIFT") {
+							aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
+						}
+						aAssignments.forEach(function (oAssignItem, index) {
+							if (oAssignItem.Guid === oData.Guid || oAssignItem.isTemporary === true) {
+								this._markAsPlanningChange(oAssignItem, false);
+								aAssignments.splice(index, 1);
+
+							}
+						}.bind(this));
+					};
+					aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignmentData);
+					this.oPlanningModel.setProperty("/data/children", aChildren);
+				} else {
+					this._validateForMultiDelete(oAssignmentData);
+				}
+			}, this);
+			
+			this._oDeleteAssignmentListDialog.close();
+		},
+		
+		_validateForMultiDelete: function(oAssignmentData){
 			
 		},
 		/*
 		 * Function called when "Close" button is pressed in Delete Assignment List Dialog
 		 */
-		onDeleteAssignmentDialogClose:function(oEvent){
+		onDeleteAssignmentDialogClose: function (oEvent) {
 			this._oDeleteAssignmentListDialog.close();
 		},
 
