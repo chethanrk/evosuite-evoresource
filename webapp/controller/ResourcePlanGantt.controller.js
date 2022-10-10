@@ -1160,10 +1160,11 @@ sap.ui.define([
 		 */
 		onDeleteAllAssignment: function (oEvent) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children"),
-				aMultiDeleteList = this.getModel("ganttPlanningModel").getProperty("/multiSelectedDataForDelete");
-
+				aMultiDeleteList = this.getModel("ganttPlanningModel").getProperty("/multiSelectedDataForDelete"),
+				aNonNewAssignments = [];
+			//deleting selected assignment
 			aMultiDeleteList.forEach(function (oAssignmentData, idx) {
-				if (oAssignmentData.isNew) {
+				if (oAssignmentData.isNew) { // local assignment not yet saved in database
 					var callbackFn = function (oItem, oData, idx) {
 						var aAssignments = [];
 						if (oData.NODE_TYPE === "RES_GROUP" || oData.NODE_TYPE === "RESOURCE") {
@@ -1182,17 +1183,24 @@ sap.ui.define([
 					};
 					aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignmentData);
 					this.oPlanningModel.setProperty("/data/children", aChildren);
-				} else {
-					this._validateForMultiDelete(oAssignmentData);
+				} else { // assignment saved in database
+					aNonNewAssignments.push(oAssignmentData);
 				}
 			}, this);
+			if(aNonNewAssignments.length > 0){ //handling non-new assignments
+				this._validateForMultiDelete(aNonNewAssignments); //validation of non-new assignments
+			}
 			this.getModel("ganttPlanningModel").setProperty("/multiSelectedDataForDelete", []);
 			this.getModel("ganttPlanningModel").setProperty("/isShapeSelected", false);
 			this._oDeleteAssignmentListDialog.close();
 		},
 
-		_validateForMultiDelete: function (oAssignmentData) {
-
+		_validateForMultiDelete: function (aAssignmentData) {
+			// this._manageDates(oAssignmentData); // for delete
+			
+			aAssignmentData.forEach(function(oAsignment,idx){
+				this._manageDates(oAsignment);
+			}, this);
 		},
 		/*
 		 * Function called when "Close" button is pressed in Delete Assignment List Dialog
