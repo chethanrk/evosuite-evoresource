@@ -1105,14 +1105,20 @@ sap.ui.define([
 				aSelectedShapes = oSource.getSelectedShapeUid(),
 				aFilteredShapes = [],
 				aFilteredGuid = [],
-				sShapePath, oShapeData,oParentData;
+				sShapePath, oShapeData, oParentData, sParentGuid;
 
 			aSelectedShapes.forEach(function (shape, idx, aShape) {
 				// filtering only assignments, no backgroundshape, no duplicate GUID
 				sShapePath = Utility.parseUid(shape).shapeDataName;
 				oShapeData = this.getModel("ganttPlanningModel").getProperty(sShapePath);
-				if (oShapeData.hasOwnProperty("Guid") && aFilteredGuid.indexOf(oShapeData["Guid"]) === -1) {
-					oParentData = this._getParentResource(oShapeData.PARENT_NODE_ID);
+				if (
+					oShapeData.hasOwnProperty("Guid") && // checks if not background shape
+					aFilteredGuid.indexOf(oShapeData["Guid"]) === -1 && // avoid adding duplicate shape(guid)
+					((oShapeData["NODE_TYPE"] === "RES_GROUP" && this.isGroupDeletable(oShapeData)) || (oShapeData["NODE_TYPE"] === "SHIFT" && this
+						.isShiftDeletable(oShapeData))) // checks if start date is past
+				) {
+					sParentGuid = oShapeData.PARENT_NODE_ID && oShapeData.PARENT_NODE_ID.split("//")[0];
+					oParentData = this._getParentResource(sParentGuid);
 					oShapeData["ResourceName"] = oParentData["Description"];
 					aFilteredGuid.push(oShapeData["Guid"]);
 					aFilteredShapes.push(oShapeData);
@@ -1180,13 +1186,13 @@ sap.ui.define([
 					this._validateForMultiDelete(oAssignmentData);
 				}
 			}, this);
-			this.getModel("ganttPlanningModel").setProperty("/multiSelectedDataForDelete",[]);
-			this.getModel("ganttPlanningModel").setProperty("/isShapeSelected",false);
+			this.getModel("ganttPlanningModel").setProperty("/multiSelectedDataForDelete", []);
+			this.getModel("ganttPlanningModel").setProperty("/isShapeSelected", false);
 			this._oDeleteAssignmentListDialog.close();
 		},
-		
-		_validateForMultiDelete: function(oAssignmentData){
-			
+
+		_validateForMultiDelete: function (oAssignmentData) {
+
 		},
 		/*
 		 * Function called when "Close" button is pressed in Delete Assignment List Dialog
