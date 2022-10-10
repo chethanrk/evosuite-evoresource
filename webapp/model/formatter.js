@@ -569,12 +569,23 @@ sap.ui.define([
 		},
 
 		getDeleteObjectDate: function (sNodeType, sGroupDate, sShiftDesc, isNew, isChanging) {
-			var oDate = {
-				"RES_GROUP": sGroupDate,
-				"SHIFT": sShiftDesc
+			var dateFormat = sap.ui.core.format.DateFormat.getDateInstance({
+					pattern: "dd-MMM-yyyy"
+				}),
+				oDate = {
+					"RES_GROUP": sGroupDate,
+					"SHIFT": sShiftDesc
+				}[sNodeType],
+				oConvertedDate = this.formatter.convertFromUTCDate(oDate, isNew, isChanging),
+				oFormattedDate = dateFormat.format(oConvertedDate);
+
+			return oFormattedDate;
+		},
+		getAssignmentTypeText:function(sNodeType){
+			return {
+				"RES_GROUP":this.getResourceBundle('i18n').getText("xtxt.group"),
+				"SHIFT":this.getResourceBundle('i18n').getText("xtxt.shift")
 			}[sNodeType];
-			
-			return this.formatter.convertFromUTCDate(oDate,isNew,isChanging);
 		}
 	};
 

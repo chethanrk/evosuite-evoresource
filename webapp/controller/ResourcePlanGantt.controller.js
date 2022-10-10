@@ -1105,13 +1105,15 @@ sap.ui.define([
 				aSelectedShapes = oSource.getSelectedShapeUid(),
 				aFilteredShapes = [],
 				aFilteredGuid = [],
-				sShapePath, oShapeData;
+				sShapePath, oShapeData,oParentData;
 
 			aSelectedShapes.forEach(function (shape, idx, aShape) {
 				// filtering only assignments, no backgroundshape, no duplicate GUID
 				sShapePath = Utility.parseUid(shape).shapeDataName;
 				oShapeData = this.getModel("ganttPlanningModel").getProperty(sShapePath);
 				if (oShapeData.hasOwnProperty("Guid") && aFilteredGuid.indexOf(oShapeData["Guid"]) === -1) {
+					oParentData = this._getParentResource(oShapeData.PARENT_NODE_ID);
+					oShapeData["ResourceName"] = oParentData["Description"];
 					aFilteredGuid.push(oShapeData["Guid"]);
 					aFilteredShapes.push(oShapeData);
 				}
@@ -1178,7 +1180,8 @@ sap.ui.define([
 					this._validateForMultiDelete(oAssignmentData);
 				}
 			}, this);
-			
+			this.getModel("ganttPlanningModel").setProperty("/multiSelectedDataForDelete",[]);
+			this.getModel("ganttPlanningModel").setProperty("/isShapeSelected",false);
 			this._oDeleteAssignmentListDialog.close();
 		},
 		
