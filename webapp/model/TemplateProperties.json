@@ -42,6 +42,24 @@
 		"isGroup": "",
 		"groupProperty": ""
 	}, {
+		"tabName": "ResourceSet",
+		"lineItemQualifier": "",
+		"presentationVariantQualifier": "",
+		"header": "{i18n>xtit.resourceSet}",
+		"tableType": "ResponsiveTable",
+		"useExportToExcel": false,
+		"useVariantManagement": false,
+		"useTablePersonalisation": false,
+		"demandPopin": true,
+		"showRowCount": true,
+		"enableAutoBinding": true,
+		"entitySet": "ResourceSet",
+		"tableBindingPath": "",
+		"requestAtLeastFields": "Pernr,Firstname,Lastname",
+		"class": "",
+		"isGroup": "",
+		"groupProperty": ""
+	}, {
 		"tabName": "TimeAllocationSet",
 		"lineItemQualifier": "",
 		"presentationVariantQualifier": "",
