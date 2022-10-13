@@ -1182,40 +1182,47 @@ sap.ui.define([
 				Promise.all(aPromise).then(function (result) {
 					var oData = [];
 					result.forEach(function (oResult) {
+						var results = oResult.results;
+						results
 						oData = oData.concat(oResult.results);
 					}.bind(this));
-					if (oData.length > 0) { //if any demand assignment exist
-						oData = [{
+					oData = [{
 							ResourceGuid: "1111",
 							ResourceName: "Sagar",
 							GroupGuid: "AAAA",
 							DemandDesc: "Desc1",
-							Status: "Unassign"
+							Status: "Unassign",
+							AllowUnassign:true
 						}, {
 							ResourceGuid: "1111",
 							ResourceName: "Sagar",
 							GroupGuid: "AAAA",
 							DemandDesc: "Desc2",
-							Status: "Unassign"
+							Status: "Unassign",
+							AllowUnassign:true
 						}, {
 							ResourceGuid: "1111",
 							ResourceName: "Sagar",
 							GroupGuid: "BBBB",
 							DemandDesc: "Desc2",
-							Status: "Unassign"
+							Status: "Unassign",
+							AllowUnassign:true
 						}, {
 							ResourceGuid: "2222",
 							ResourceName: "Sunil",
 							GroupGuid: "AAAA",
 							DemandDesc: "Desc1",
-							Status: "Hold"
+							Status: "Hold",
+							AllowUnassign:false
 						}, {
 							ResourceGuid: "2222",
 							ResourceName: "Sunil",
 							GroupGuid: "BBBB",
 							DemandDesc: "Desc2",
-							Status: "Unassign"
+							Status: "Unassign",
+							AllowUnassign:true
 						}]; //tempdata
+					if (oData.length > 0) { //if any demand assignment exist
 						this.getModel("multiDeleteModel").setProperty("/demandList", oData);
 						this.openMultiDemandListDialog();
 					} else { //if no demand assignment exist
@@ -1229,6 +1236,22 @@ sap.ui.define([
 				this.getModel("multiDeleteModel").setProperty("/finalDeleteList",aFinalDeleteList);
 				this.openDeleteAssignmentListDialog();
 			}
+		},
+		onMultiDemandProceed:function(oEvent){
+			debugger;
+			var aDemandList = this.getModel("multiDeleteModel").getProperty("/demandList"),
+				aGroupNotToDelete = [],
+				aDeleteList = this.getModel("ganttPlanningModel").getProperty("/multiSelectedDataForDelete");
+			aDemandList.forEach(function(oDemand,idx){
+				if(oDemand.AllowUnassign === false && aGroupNotToDelete.indexOf(oDemand.GroupGuid) === -1){ //get all GroupGuid which cannot be deleted
+					aGroupNotToDelete.push(oDemand.GroupGuid);
+				}
+			}.bind(this));
+			
+			//To do - segragation of delete list into CAN DELETE and CANNOT DELETE
+		},
+		oMultinDemandDialogClose:function(oEvent){
+			this._oMultiDemandListDialog.close();
 		},
 		openMultiDemandListDialog: function () {
 			if (!this._oMultiDemandListDialog) {

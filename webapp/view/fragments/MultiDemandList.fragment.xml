@@ -1,9 +1,12 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:form="sap.ui.layout.form">
 	<Dialog title="{i18n>xtit.demandAssignments}" resizable="true" draggable="true" contentWidth="50%">
-		<Table id="idFragMultiDemandListTable" items="{ path: 'multiDemandModel>/data',sorter : [{ path : 'ResourceName', group:true  }] }">
+		<Table id="idFragMultiDemandListTable" items="{ path: 'multiDeleteModel>/demandList',sorter : [{ path : 'GroupGuid', group:true  }] }">
 			<columns>
 				<Column demandPopin="true">
-					<Text text="{i18n>xtit.demands}"/>
+					<Text text="{i18n>xtit.demandsDesc}"/>
+				</Column>
+				<Column demandPopin="true">
+					<Text text="{i18n>xtit.resourceName}"/>
 				</Column>
 				<Column demandPopin="true">
 					<Text text="{i18n>lbl.fromdate}"/>
@@ -18,10 +21,11 @@
 			<items>
 				<ColumnListItem>
 					<cells>
-						<Text text="{multiDemandModel>DemandDesc}"/>
-						<Text text="{path:'multiDemandModel>DateFrom',formatter:'.formatter.dateWithTime'}"/>
-						<Text text="{path:'multiDemandModel>DateTo',formatter:'.formatter.dateWithTime'}"/>
-						<Text text="{multiDemandModel>Status}"/>
+						<Text text="{multiDeleteModel>DemandDesc}"/>
+						<Text text="{multiDeleteModel>ResourceName}"/>
+						<Text text="{path:'multiDeleteModel>DateFrom',formatter:'.formatter.dateWithTime'}"/>
+						<Text text="{path:'multiDeleteModel>DateTo',formatter:'.formatter.dateWithTime'}"/>
+						<Text text="{multiDeleteModel>Status}"/>
 					</cells>
 				</ColumnListItem>
 			</items>
