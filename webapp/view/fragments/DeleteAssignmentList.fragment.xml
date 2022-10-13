@@ -1,21 +1,31 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
 	<Dialog title="{i18n>xtit.deletingAssignmentlist}" resizable="true" draggable="true" contentWidth="30%">
-		<List items="{ganttPlanningModel>/multiSelectedDataForDelete}">
+		<Table items="{ path: 'multiDeleteModel>/finalDeleteList',sorter : [{ path : 'ResourceName', group:true  }] }">
+			<columns>
+				<Column demandPopin="true">
+					<Text text="{i18n>lbl.description}"/>
+				</Column>
+				<Column demandPopin="true">
+					<Text text="{i18n>lbl.type}"/>
+				</Column>
+				<Column demandPopin="true">
+					<Text text="{i18n>lbl.fromdate}"/>
+				</Column>
+				<Column demandPopin="true">
+					<Text text="{i18n>lbl.todate}"/>
+				</Column>
+			</columns>
 			<items>
-				<ObjectListItem title="{path:'ganttPlanningModel>DESCRIPTION'}">
-					<firstStatus>
-						<ObjectStatus title="{i18n>lbl.type}" text="{path:'ganttPlanningModel>NODE_TYPE',formatter:'.formatter.getAssignmentTypeText'}"/>
-					</firstStatus>
-					<attributes>
-						<ObjectAttribute title="{i18n>lbl.resourceName}" text="{path:'ganttPlanningModel>ResourceName'}"/>
-						<ObjectAttribute title="{i18n>lbl.fromdate}"
-							text="{parts:[{path:'ganttPlanningModel>NODE_TYPE'},{path:'ganttPlanningModel>StartDate'},{path:'ganttPlanningModel>EffectiveStartDate'},{path:'ganttPlanningModel>isNew'},{path:'ganttPlanningModel>isChanging'}],formatter:'.formatter.getDeleteObjectDate'}"/>
-						<ObjectAttribute title="{i18n>lbl.todate}"
-							text="{parts:[{path:'ganttPlanningModel>NODE_TYPE'},{path:'ganttPlanningModel>EndDate'},{path:'ganttPlanningModel>EffectiveEndDate'},{path:'ganttPlanningModel>isNew'},{path:'ganttPlanningModel>isChanging'}],formatter:'.formatter.getDeleteObjectDate'}"/>
-					</attributes>
-				</ObjectListItem>
+				<ColumnListItem>
+					<cells>
+						<Text text="{multiDeleteModel>DESCRIPTION}"/>
+						<Text text="{path:'multiDeleteModel>NODE_TYPE',formatter:'.formatter.getAssignmentTypeText'}"/>
+						<Text text="{parts:[{path:'multiDeleteModel>NODE_TYPE'},{path:'multiDeleteModel>StartDate'},{path:'multiDeleteModel>EffectiveStartDate'},{path:'multiDeleteModel>isNew'},{path:'multiDeleteModel>isChanging'}],formatter:'.formatter.getDeleteObjectDate'}"/>
+						<Text text="{parts:[{path:'multiDeleteModel>NODE_TYPE'},{path:'multiDeleteModel>EndDate'},{path:'multiDeleteModel>EffectiveEndDate'},{path:'multiDeleteModel>isNew'},{path:'multiDeleteModel>isChanging'}],formatter:'.formatter.getDeleteObjectDate'}"/>
+					</cells>
+				</ColumnListItem>
 			</items>
-		</List>
+		</Table>
 		<beginButton>
 			<Button text="{i18n>btn.deleteAll}" press="onDeleteAllAssignment" type="Emphasized"/>
 		</beginButton>
