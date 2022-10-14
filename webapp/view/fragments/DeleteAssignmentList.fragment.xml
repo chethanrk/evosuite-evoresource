@@ -14,6 +14,9 @@
 				<Column demandPopin="true">
 					<Text text="{i18n>lbl.todate}"/>
 				</Column>
+				<Column demandPopin="true">
+					<Text text="{i18n>lbl.status}"/>
+				</Column>
 			</columns>
 			<items>
 				<ColumnListItem>
@@ -22,6 +25,7 @@
 						<Text text="{path:'multiDeleteModel>NODE_TYPE',formatter:'.formatter.getAssignmentTypeText'}"/>
 						<Text text="{parts:[{path:'multiDeleteModel>NODE_TYPE'},{path:'multiDeleteModel>StartDate'},{path:'multiDeleteModel>EffectiveStartDate'},{path:'multiDeleteModel>isNew'},{path:'multiDeleteModel>isChanging'}],formatter:'.formatter.getDeleteObjectDate'}"/>
 						<Text text="{parts:[{path:'multiDeleteModel>NODE_TYPE'},{path:'multiDeleteModel>EndDate'},{path:'multiDeleteModel>EffectiveEndDate'},{path:'multiDeleteModel>isNew'},{path:'multiDeleteModel>isChanging'}],formatter:'.formatter.getDeleteObjectDate'}"/>
+						<Text text="{path:'multiDeleteModel>isNonDeletable', formatter:'.formatter.getNonDeletableText'}"/>
 					</cells>
 				</ColumnListItem>
 			</items>

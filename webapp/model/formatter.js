@@ -586,6 +586,9 @@ sap.ui.define([
 				"RES_GROUP":this.getResourceBundle('i18n').getText("xtxt.group"),
 				"SHIFT":this.getResourceBundle('i18n').getText("xtxt.shift")
 			}[sNodeType];
+		},
+		getNonDeletableText:function(isNonDeletable){
+			return isNonDeletable ? this.getResourceBundle('i18n').getText("xtxt.nonDeletable") : this.getResourceBundle('i18n').getText("xtxt.deletable");
 		}
 	};
 
