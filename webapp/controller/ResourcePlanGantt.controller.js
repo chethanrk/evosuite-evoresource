@@ -1305,12 +1305,12 @@ sap.ui.define([
 							}
 						}
 					}, this);
-					
+
 					//Saving Unassignment in planning mode
 					aUnAssignmentList = aUnAssignmentList.concat(aTempUnassignmentList);
-					this.getModel("ganttPlanningModel").setProperty("/unAssignData",aUnAssignmentList);
-					
-					this.getModel("ganttPlanningModel").setProperty("/tempUnassignData",[])
+					this.getModel("ganttPlanningModel").setProperty("/unAssignData", aUnAssignmentList);
+
+					this.getModel("ganttPlanningModel").setProperty("/tempUnassignData", [])
 					this.getModel("ganttPlanningModel").setProperty("/multiSelectedDataForDelete", []);
 					this.getModel("ganttPlanningModel").setProperty("/isShapeSelected", false);
 					this._oDeleteAssignmentListDialog.close();
@@ -1323,6 +1323,21 @@ sap.ui.define([
 		 */
 		onDeleteAssignmentDialogClose: function (oEvent) {
 			this._oDeleteAssignmentListDialog.close();
+		},
+		getMultiDemandListGroup: function (oContext) {
+			var sKey = oContext.getProperty("NodeId"),
+				sGroupName =  oContext.getProperty("GroupDescription"),
+				sResourceName =  oContext.getProperty("ResourceDescription");
+			return {
+				key: sKey,
+				text: sResourceName + "/" + sGroupName
+			};
+		},
+		getMultiDemandListGroupHeader: function (oGroup) {
+			return new sap.m.GroupHeaderListItem({
+				title: oGroup.text,
+				upperCase: false
+			});
 		},
 
 		/* =========================================================== */
