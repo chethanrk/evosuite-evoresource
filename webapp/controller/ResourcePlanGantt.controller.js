@@ -1223,8 +1223,12 @@ sap.ui.define([
 
 				Promise.all(aPromise).then(function (result) { // promise to call validation in batch
 					var oData = [];
-					result.forEach(function (oResult) {
-						oData = oData.concat(oResult.results);
+					result.forEach(function (oResult,idx) {
+						var aDemandList = oResult.results.map(function(res){
+							res["AssignmentGuid"]=aDeleteForValidationList[idx].Guid;
+							return res;
+						}.bind(this));
+						oData = oData.concat(aDemandList);
 					}.bind(this));
 					if (oData.length > 0) { //if any demand assignment exist
 						this.getModel("multiDeleteModel").setProperty("/demandList", oData);
@@ -1254,14 +1258,14 @@ sap.ui.define([
 
 			//get all GroupGuid which cannot be deleted -- NodeId is GroupId
 			aDemandList.forEach(function (oDemand, idx) {
-				if (oDemand.AllowUnassign === false && aGroupNotToDelete.indexOf(oDemand.NodeId) === -1) {
-					aGroupNotToDelete.push(oDemand.NodeId);
+				if (oDemand.AllowUnassign === false && aGroupNotToDelete.indexOf(oDemand.AssignmentGuid) === -1) {
+					aGroupNotToDelete.push(oDemand.AssignmentGuid);
 				}
 			}.bind(this));
 
 			//Demand Unassignment
 			aDemandList.forEach(function (oDemand, idx) {
-				if (aGroupNotToDelete.indexOf(oDemand.NodeId) === -1) {
+				if (aGroupNotToDelete.indexOf(oDemand.AssignmentGuid) === -1) {
 					aUnassignmentList.push(oDemand.Guid);
 				}
 			}.bind(this));
@@ -1269,7 +1273,7 @@ sap.ui.define([
 
 			//Comparing with Group Guid and if exist in aGroupNotToDelete then make isDeletable = true for Group
 			aDeleteList.forEach(function (oGroup, idx) {
-				oGroup.isNonDeletable = (aGroupNotToDelete.indexOf(oGroup.NODE_ID) === -1) ? false : true;
+				oGroup.isNonDeletable = (aGroupNotToDelete.indexOf(oGroup.Guid) === -1) ? false : true;
 			}.bind(this));
 			this.getModel("multiDeleteModel").setProperty("/finalDeleteList", aDeleteList);
 
@@ -1401,7 +1405,7 @@ sap.ui.define([
 		 * Creates a grouper and set to MulDemandList table
 		 */
 		getMultiDemandListGroup: function (oContext) {
-			var sKey = oContext.getProperty("NodeId"),
+			var sKey = oContext.getProperty("AssignmentGuid"),
 				sGroupName = oContext.getProperty("GroupDescription"),
 				sResourceName = oContext.getProperty("ResourceDescription");
 			return {
