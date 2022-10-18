@@ -1175,6 +1175,7 @@ sap.ui.define([
 				aValidationDeleteList = [];
 
 			aDeleteAssignmentList.forEach(function (oAssignment, idx) {
+				oAssignment.isNonDeletable=false;
 				if (oAssignment.isNew) { // if isNew=true no validation required
 					aNoValidationDeleteList.push(oAssignment);
 				} else if (oAssignment.NODE_TYPE === "SHIFT") { // if type is SHIFT then no validation required
@@ -1314,7 +1315,8 @@ sap.ui.define([
 					this.getView().addDependent(this._oDeleteAssignmentListDialog);
 					this._oDeleteAssignmentListDialog.open();
 					this._oDeleteAssignmentListDialog.attachAfterOpen(function (oEvent) {
-						oMultiDeleteTable = oEvent.getSource().getContent()[0].getContent()[0];
+						oEvent.getSource().getContent()[0].setSelectedKey("deletable");
+						oMultiDeleteTable = oEvent.getSource().getContent()[0].getContent()[0].getContent()[0];
 						// on open of DeleteAssignmentList dialog, shows deletable assignment
 						aFilter = new sap.ui.model.Filter("isNonDeletable", sap.ui.model.FilterOperator.EQ, false);
 						oMultiDeleteTable.getBinding("items").filter(aFilter);
@@ -1332,7 +1334,7 @@ sap.ui.define([
 		 */
 		onDeleteListFilterSelect: function (oEvent) {
 			var oMultiDeleteTable, aFilter, bNonDeletable;
-			oMultiDeleteTable = oEvent.getSource().getContent()[0];
+			oMultiDeleteTable = oEvent.getSource().getContent()[0].getContent()[0];
 			bNonDeletable = oEvent.getParameter("key") === "deletable" ? false : true;
 			aFilter = new sap.ui.model.Filter("isNonDeletable", sap.ui.model.FilterOperator.EQ, bNonDeletable);
 			oMultiDeleteTable.getBinding("items").filter(aFilter);
@@ -1341,8 +1343,8 @@ sap.ui.define([
 		 * Function called when "Delete All" button is pressed in Delete Assignment List Dialog
 		 */
 		onDeleteAllAssignment: function (oEvent) {
-			var sTitle = this.getResourceBundle().getText("tit.confirmChange"),
-				sMsg = this.getResourceBundle().getText("msg.confirmMessage"),
+			var sTitle = this.getResourceBundle().getText("tit.multiDeleteconfirmChange"),
+				sMsg = this.getResourceBundle().getText("msg.multiDeleteconfirmChange"),
 				aTempUnassignmentList = this.getModel("ganttPlanningModel").getProperty("/tempUnassignData"),
 				aUnAssignmentList = this.getModel("ganttPlanningModel").getProperty("/unAssignData");
 			var successcallback = function () {
@@ -1392,6 +1394,7 @@ sap.ui.define([
 		 * Function called when "Close" button is pressed in Delete Assignment List Dialog
 		 */
 		onDeleteAssignmentDialogClose: function (oEvent) {
+			this.getModel("ganttPlanningModel").setProperty("/tempUnassignData", []);
 			this._oDeleteAssignmentListDialog.close();
 		},
 		/*
