@@ -1252,6 +1252,7 @@ sap.ui.define([
 		 * Function to open Deleting assignment list dialog
 		 */
 		openDeleteAssignmentListDialog: function () {
+			var oMultiDeleteTable, aFilter;
 			if (!this._oDeleteAssignmentListDialog) {
 				Fragment.load({
 					name: "com.evorait.evosuite.evoresource.view.fragments.DeleteAssignmentList",
@@ -1260,12 +1261,24 @@ sap.ui.define([
 					this._oDeleteAssignmentListDialog = oDialog;
 					this.getView().addDependent(this._oDeleteAssignmentListDialog);
 					this._oDeleteAssignmentListDialog.open();
-					this._oDeleteAssignmentListDialog.attachAfterOpen(function (oEvent) {}.bind(this));
+					this._oDeleteAssignmentListDialog.attachAfterOpen(function (oEvent) {
+						oMultiDeleteTable = oEvent.getSource().getContent()[0].getContent()[0];
+						aFilter = new sap.ui.model.Filter("isNonDeletable", sap.ui.model.FilterOperator.EQ, false);
+						oMultiDeleteTable.getBinding("items").filter(aFilter);
+					}.bind(this));
 					this._oDeleteAssignmentListDialog.attachAfterClose(function (oEvent) {}.bind(this));
 				}.bind(this));
 			} else {
 				this._oDeleteAssignmentListDialog.open();
 			}
+
+		},
+		onDeleteListFilterSelect: function (oEvent) {
+			var oMultiDeleteTable, aFilter, bNonDeletable;
+			oMultiDeleteTable = oEvent.getSource().getContent()[0];
+			bNonDeletable = oEvent.getParameter("key") === "deletable" ? false : true;
+			aFilter = new sap.ui.model.Filter("isNonDeletable", sap.ui.model.FilterOperator.EQ, bNonDeletable);
+			oMultiDeleteTable.getBinding("items").filter(aFilter);
 		},
 		/*
 		 * Function called when "Delete All" button is pressed in Delete Assignment List Dialog
@@ -1326,8 +1339,8 @@ sap.ui.define([
 		},
 		getMultiDemandListGroup: function (oContext) {
 			var sKey = oContext.getProperty("NodeId"),
-				sGroupName =  oContext.getProperty("GroupDescription"),
-				sResourceName =  oContext.getProperty("ResourceDescription");
+				sGroupName = oContext.getProperty("GroupDescription"),
+				sResourceName = oContext.getProperty("ResourceDescription");
 			return {
 				key: sKey,
 				text: sResourceName + "/" + sGroupName
