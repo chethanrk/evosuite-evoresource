@@ -210,6 +210,41 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				validateForMultiDelete: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onMultiDemandProceed: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				oMultiDemandDialogClose: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				openMultiDemandListDialog: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onDeleteListFilterSelect: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onDeleteAllAssignment: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onDeleteAssignmentDialogClose: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -1099,6 +1134,7 @@ sap.ui.define([
 		},
 		/*
 		 * Function calls when shape is selected
+		 * oParam {object} oEvent - Event
 		 */
 		onShapeSelectionChange: function (oEvent) {
 			var oSource = oEvent.getSource(),
@@ -1131,6 +1167,7 @@ sap.ui.define([
 		},
 		/*
 		 * Function calls Delete button on Gantt header pressed
+		 * oParam {object} oEvent - Event
 		 */
 		onPressDeleteMultiAssignment: function (oEvent) {
 			var aDeleteAssignmentList = this.getModel("ganttPlanningModel").getProperty("/multiSelectedDataForDelete"),
@@ -1138,9 +1175,9 @@ sap.ui.define([
 				aValidationDeleteList = [];
 
 			aDeleteAssignmentList.forEach(function (oAssignment, idx) {
-				if (oAssignment.isNew) {
+				if (oAssignment.isNew) { // if isNew=true no validation required
 					aNoValidationDeleteList.push(oAssignment);
-				} else if (oAssignment.NODE_TYPE === "SHIFT") {
+				} else if (oAssignment.NODE_TYPE === "SHIFT") { // if type is SHIFT then no validation required
 					aNoValidationDeleteList.push(oAssignment);
 				} else {
 					aValidationDeleteList.push(oAssignment);
@@ -1150,6 +1187,10 @@ sap.ui.define([
 			this.getModel("multiDeleteModel").setProperty("/deleteDataForNoValidation", aNoValidationDeleteList);
 			this.validateForMultiDelete();
 		},
+		/*
+		 * Method to validate selected assignments for delete.
+		 * Validating all group assignments in batch and consolidate the result, result will be shown in dialog
+		 */
 		validateForMultiDelete: function () {
 			var aPromise = [],
 				aDeleteForValidationList = this.getModel("multiDeleteModel").getProperty("/deleteDataForValidation"),
@@ -1179,7 +1220,7 @@ sap.ui.define([
 					aPromise.push(createPromise(oAssignmentData));
 				}, this);
 
-				Promise.all(aPromise).then(function (result) {
+				Promise.all(aPromise).then(function (result) { // promise to call validation in batch
 					var oData = [];
 					result.forEach(function (oResult) {
 						oData = oData.concat(oResult.results);
@@ -1199,6 +1240,11 @@ sap.ui.define([
 				this.openDeleteAssignmentListDialog();
 			}
 		},
+		/*
+		 * Method will be called when Proceed button is pressed inside MultiDemandList dialog
+		 * Segragate Assignment data into Deletable and Non-Deletable
+		 * Displays DeleteAssignmentList dialog
+		 */
 		onMultiDemandProceed: function (oEvent) {
 			var aDemandList = this.getModel("multiDeleteModel").getProperty("/demandList"),
 				aDeleteList = this.getModel("ganttPlanningModel").getProperty("/multiSelectedDataForDelete"),
@@ -1229,9 +1275,15 @@ sap.ui.define([
 			this._oMultiDemandListDialog.close();
 			this.openDeleteAssignmentListDialog();
 		},
+		/*
+		 * Method closed MultiDemandList dialog
+		 */
 		oMultiDemandDialogClose: function (oEvent) {
 			this._oMultiDemandListDialog.close();
 		},
+		/*
+		 * Method to open MultiDemandList dialog
+		 */
 		openMultiDemandListDialog: function () {
 			if (!this._oMultiDemandListDialog) {
 				Fragment.load({
@@ -1263,6 +1315,7 @@ sap.ui.define([
 					this._oDeleteAssignmentListDialog.open();
 					this._oDeleteAssignmentListDialog.attachAfterOpen(function (oEvent) {
 						oMultiDeleteTable = oEvent.getSource().getContent()[0].getContent()[0];
+						// on open of DeleteAssignmentList dialog, shows deletable assignment
 						aFilter = new sap.ui.model.Filter("isNonDeletable", sap.ui.model.FilterOperator.EQ, false);
 						oMultiDeleteTable.getBinding("items").filter(aFilter);
 					}.bind(this));
@@ -1273,6 +1326,10 @@ sap.ui.define([
 			}
 
 		},
+		/*
+		 * Function called when IconTab filter inside DeleteAssignmentList Dialog
+		 * Toggle betwween data deletable and non-deletable
+		 */
 		onDeleteListFilterSelect: function (oEvent) {
 			var oMultiDeleteTable, aFilter, bNonDeletable;
 			oMultiDeleteTable = oEvent.getSource().getContent()[0];
@@ -1337,6 +1394,9 @@ sap.ui.define([
 		onDeleteAssignmentDialogClose: function (oEvent) {
 			this._oDeleteAssignmentListDialog.close();
 		},
+		/*
+		 * Creates a grouper and set to MulDemandList table
+		 */
 		getMultiDemandListGroup: function (oContext) {
 			var sKey = oContext.getProperty("NodeId"),
 				sGroupName = oContext.getProperty("GroupDescription"),
@@ -1346,6 +1406,9 @@ sap.ui.define([
 				text: sResourceName + "/" + sGroupName
 			};
 		},
+		/*
+		 * Sets header for the Grouper MultiDemandList table
+		 */
 		getMultiDemandListGroupHeader: function (oGroup) {
 			return new sap.m.GroupHeaderListItem({
 				title: oGroup.text,
