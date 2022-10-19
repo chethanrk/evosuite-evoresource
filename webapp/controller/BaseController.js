@@ -282,9 +282,18 @@ sap.ui.define([
 					},
 					oDraggedData = this.getView().getModel("viewModel").getProperty("/draggedData"),
 					nodeType;
-
-				if (bDragged) nodeType = oDraggedData.data.NodeType;
-				else {
+				
+				//old
+				// if (bDragged) nodeType = oDraggedData.data.NodeType;
+				debugger
+				if (bDragged) { 
+					nodeType = oDraggedData.data.NodeType;
+					if(nodeType === undefined){
+						if(this.bAddNewResource){
+							nodeType = "RESOURCE";
+						}
+					}
+				} else {
 					if (oRowData.NodeType) nodeType = oRowData.NodeType;
 					else if (oRowData.NODE_TYPE) nodeType = oRowData.NODE_TYPE;
 				}

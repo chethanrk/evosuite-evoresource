@@ -19,11 +19,12 @@
 							<PropertyValue Property="Value" Path="Pernr"/>
 						</Record>
 						<Record Type="UI.DataField">
-							<PropertyValue Property="Value" Path="Syuname"/>
+							<PropertyValue Property="Value" Path="Firstname"/>
 						</Record>
 						<Record Type="UI.DataField">
 							<PropertyValue Property="Value" Path="Lastname"/>
 						</Record>
+					
 					</Collection>
 				</Annotation>
 			</Annotations>

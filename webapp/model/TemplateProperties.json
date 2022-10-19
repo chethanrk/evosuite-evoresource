@@ -55,7 +55,7 @@
 		"enableAutoBinding": true,
 		"entitySet": "ResourceSet",
 		"tableBindingPath": "",
-		"requestAtLeastFields": "Pernr,Firstname,Lastname",
+		"requestAtLeastFields": "ResourceGuid",
 		"class": "",
 		"isGroup": "",
 		"groupProperty": ""
@@ -80,6 +80,7 @@
 	}],
 	"EntitySet": {
 		"RES_GROUP": "ResourceAssignmentSet",
-		"SHIFT": "ShiftSet"
+		"SHIFT": "ShiftSet",
+		"RESOURCE": "ResourceSet"
 	}
 }

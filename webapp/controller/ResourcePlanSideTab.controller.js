@@ -43,7 +43,8 @@ sap.ui.define([
 				type = oDraggedControl.getParent().getParent().getEntitySet(),
 				NodeType = {
 					"ResourceGroupSet":"RES_GROUP",
-					"ShiftSet":"SHIFT"
+					"ShiftSet":"SHIFT",
+					"ResourceSet":"RESOURCE"
 				}[type],
 				oObject = oContext.getObject(),
 				draggedData;
