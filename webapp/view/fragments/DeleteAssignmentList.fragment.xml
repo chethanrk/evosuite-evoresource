@@ -42,10 +42,10 @@
 			</content>
 		</IconTabBar>
 		<beginButton>
-			<Button text="{i18n>btn.deleteAll}" press="onDeleteAllAssignment" type="Emphasized"/>
+			<Button text="{i18n>btn.continueDelete}" press="onDeleteAllAssignment" type="Emphasized"/>
 		</beginButton>
 		<endButton>
-			<Button text="{i18n>btn.close}" press="onDeleteAssignmentDialogClose" type="Emphasized"/>
+			<Button text="{i18n>btn.cancel}" press="onDeleteAssignmentDialogClose" type="Emphasized"/>
 		</endButton>
 	</Dialog>
 </core:FragmentDefinition>
