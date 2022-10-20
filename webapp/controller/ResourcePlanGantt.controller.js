@@ -459,7 +459,6 @@ sap.ui.define([
 							name: "com.evorait.evosuite.evoresource.view.fragments.ShapeChangePopover",
 							controller: this
 						}).then(function (pPopover) {
-							debugger
 							this._oPlanningPopover = pPopover;
 							this._setPopoverData(oTargetControl, oPopoverData);
 							this.getView().addDependent(this._oPlanningPopover);
@@ -517,36 +516,16 @@ sap.ui.define([
 		 **/
 
 		addNewResource: function (oTargetControl, oDraggedObj) {
-			var aChildren = this.oPlanningModel.getProperty("/data/children"),
-				sFirstName = oDraggedObj.data.Firstname,
-				sLastName = oDraggedObj.data.Lastname,
-				sPernr = oDraggedObj.data.Pernr,
-				sGUID = oDraggedObj.data.ResourceGuid,
-				obj = {};
+			return new Promise(function (resolve) {
+				var aChildren = this.oPlanningModel.getProperty("/data/children"),
+					sFirstName = oDraggedObj.data.Firstname,
+					sLastName = oDraggedObj.data.Lastname,
+					sPernr = oDraggedObj.data.Pernr,
+					sGUID = oDraggedObj.data.ResourceGuid,
+					obj = {};
 
-			// to be used in save for creating resource
-			var localGUID = new Date().getTime();
-			this.createObj = {
-				Guid: sGUID,
-				StartDate: moment().startOf("days").toDate(),
-				EndDate: moment().endOf("days").toDate(),
-				ResourceGroupGuid: "",
-				ResourceGuid: sGUID,
-				NODE_ID: sGUID,
-				PARENT_NODE_ID: sGUID,
-				NodeId: sGUID,
-				NODE_TYPE: "RESOURCE",
-				NodeType: "RESOURCE",
-				RESOURCE_GROUP_UNIT_ID: "",
-				RESOURCE_GROUP_UNIT_DESC: "",
-				RESOURCE_GROUP_ID: "",
-				RESOURCE_GROUP_DESC: "",
-				RESOURCE_GROUP_COLOR: "",
-				Description: sFirstName + " " + sLastName + " (" + sPernr + ")"
-			};
-			debugger;
-			var nodeType = "RESOURCE";
-			this.getModel().getMetaModel().loaded().then(function () {
+				var nodeType = "RES_GANT";
+				this.getModel().getMetaModel().loaded().then(function () {
 					var oMetaModel = this.getModel().getMetaModel(),
 						oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet"),
 						oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[nodeType]),
@@ -560,20 +539,28 @@ sap.ui.define([
 							aProperty = aProperty.concat(oEntityType ? oEntityType.property : []);
 						}
 					}
+					aProperty.forEach(function (property) {
+						var isCreatable = property["sap:creatable"];
+						obj[property.name] = "";
+					});
 					
-			}.bind(this));
+					obj.ChildCount = 0;
+					obj.Description = sFirstName + " " + sLastName + " (" + sPernr + ")";
+					obj.ResourceGuid = sGUID;
+					obj.StartDate = moment().startOf("days").toDate();
+					obj.EndDate = moment().endOf("days").toDate();
+					obj.PERNR = sPernr;
+					obj.NodeId = sGUID;
+					obj.NodeType = "RESOURCE";
+					obj.children = [];
+					aChildren.push(obj);
+					//refreshing the model
+					this.oPlanningModel.refresh();
 
-			//to add locally inside the array
-			// obj = {
-			// 	NodeId: localGUID,
-			// 	ResourceGuid: localGUID,
-			// 	Description: this.createObj.DESCRIPTION
-			// };
-			aChildren.push(this.createObj);
-			//refreshing the model
-			this.oPlanningModel.refresh();
-			
-			return this.createObj;
+					// return obj;
+					resolve(obj);
+				}.bind(this));
+			}.bind(this));
 		},
 
 		/**
@@ -586,6 +573,7 @@ sap.ui.define([
 			var sDraggedFrom = oEvent.getParameter("draggedControl").getBindingContext().getPath().split("(")[0];
 			this.bAddNewResource = false;
 
+			//added a new condition as the drop location is on table and not on gantt
 			if (sDraggedFrom === "/ResourceSet") {
 				this.bAddNewResource = true;
 				var oDroppedControl = oEvent.getParameter("droppedControl"),
@@ -599,7 +587,29 @@ sap.ui.define([
 					oPopoverData,
 					oParentData,
 					aIgnoreProperty = ["__metadata", "NodeId", "ParentNodeId", "USER_TIMEZONE"];
-					var oObject = this.addNewResource(oDroppedTarget, oDraggedObject);
+					this.addNewResource(oDroppedTarget, oDraggedObject).then(
+					function (oObject) {
+						if (oObject.NodeType !== "RESOURCE") {
+							oParentData = this._getParentResource(oObject.ParentNodeId);
+							oObject.USER_TIMEZONE = oParentData.TIME_ZONE;
+						} else {
+							if (sDraggedFrom !== "/ResourceSet")
+								oObject.ParentNodeId = oObject.NodeId;
+						}
+
+						if (sDraggedFrom !== "/ResourceSet")
+							oObject = this.copyObjectData(oObject, oDraggedObject.data, aIgnoreProperty);
+
+						oPopoverData = {
+							Guid: new Date().getTime().toString(),
+							sStartTime: sStartTime,
+							sEndTime: sEndTime,
+							oResourceObject: oObject,
+							bDragged: true
+						};
+						this.openShapeChangePopover(oDroppedTarget, oPopoverData, this.bAddNewResource);
+					}.bind(this));
+
 			} else {
 				//ondrop of the the resourcegroup
 				var oDroppedControl = oEvent.getParameter("droppedControl"),
@@ -613,27 +623,25 @@ sap.ui.define([
 					oPopoverData,
 					oParentData,
 					aIgnoreProperty = ["__metadata", "NodeId", "ParentNodeId", "USER_TIMEZONE"];
-			}
 
-			if (oObject.NodeType !== "RESOURCE") {
-				oParentData = this._getParentResource(oObject.ParentNodeId);
-				oObject.USER_TIMEZONE = oParentData.TIME_ZONE;
-			} else {
-				if (sDraggedFrom !== "/ResourceSet")
+				if (oObject.NodeType !== "RESOURCE") {
+					oParentData = this._getParentResource(oObject.ParentNodeId);
+					oObject.USER_TIMEZONE = oParentData.TIME_ZONE;
+				} else
 					oObject.ParentNodeId = oObject.NodeId;
+
+				oObject = this.copyObjectData(oObject, oDraggedObject.data, aIgnoreProperty);
+
+				oPopoverData = {
+					Guid: new Date().getTime(),
+					sStartTime: sStartTime,
+					sEndTime: sEndTime,
+					oResourceObject: oObject,
+					bDragged: true
+				};
+				this.openShapeChangePopover(oDroppedTarget, oPopoverData, this.bAddNewResource);
 			}
 
-			if (sDraggedFrom !== "/ResourceSet")
-				oObject = this.copyObjectData(oObject, oDraggedObject.data, aIgnoreProperty);
-			debugger
-			oPopoverData = {
-				Guid: new Date().getTime(),
-				sStartTime: sStartTime,
-				sEndTime: sEndTime,
-				oResourceObject: oObject,
-				bDragged: true
-			};
-			this.openShapeChangePopover(oDroppedTarget, oPopoverData, this.bAddNewResource);
 		},
 		/**
 		 * Button event press save Gantt changes
@@ -764,8 +772,8 @@ sap.ui.define([
 			if (this._validateDuplicateAsigment()) {
 				return;
 			}
-			
-			if (oData.isNew) { 
+
+			if (oData.isNew) {
 				this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", this.groupShiftContext.getProperty("ResourceGroupColor"));
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ResourceGroupDesc"));
 				this.oPlanningModel.setProperty("/tempData/popover/ResourceGroupDesc", this.groupShiftContext.getProperty("ResourceGroupDesc"));
@@ -1413,7 +1421,6 @@ sap.ui.define([
 				oContext = oTargetControl.getBindingContext("ganttPlanningModel"),
 				oChildData, oAssignData;
 			this.oPlanningModel.setProperty("/tempData/popover", {});
- 
 			if (oTargetControl.sParentAggregationName === "shapes1") {
 				//its background shape
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject, bDragged).then(function (oData) {
@@ -1427,30 +1434,12 @@ sap.ui.define([
 					} else {
 						this._addNewAssignmentShape(oData);
 					}
-
 				}.bind(this));
 			} else if (oTargetControl.sParentAggregationName === "rows" || oTargetControl.sParentAggregationName === "cells") {
-				//old
-				// oAssignData = oResourceObject;
-				// oAssignData.isEditable = true;
-				// oAssignData.isDeletable = true;
-				// oAssignData.isNew = true;
-				// oAssignData.NODE_TYPE = "RES_GROUP";
-				// this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
-				// this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
-				debugger
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject, bDragged).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oData));
-					if (oData && oData.NODE_TYPE !== "RESOURCE") {
-						oChildData = Object.assign(oData, {
-							bgTasks: oPopoverData.oResourceObject.bgTasks
-						});
-						this._addSingleChildToParent(oChildData);
-					} else {
-						this._addNewAssignmentShape(oData);
-					}
-
+					this._addSingleChildToParent(oData);
 				}.bind(this));
 			} else if (oContext) {
 				oAssignData = oContext.getObject();

@@ -285,13 +285,16 @@ sap.ui.define([
 				
 				//old
 				// if (bDragged) nodeType = oDraggedData.data.NodeType;
-				debugger
 				if (bDragged) { 
 					nodeType = oDraggedData.data.NodeType;
 					if(nodeType === undefined){
 						if(this.bAddNewResource){
 							nodeType = "RESOURCE";
 						}
+					}
+					//added the below condition as Guid is passing as int in POST and causing an issue
+					if(nodeType === "RESOURCE"){
+						obj.Guid = obj.Guid.toString();
 					}
 				} else {
 					if (oRowData.NodeType) nodeType = oRowData.NodeType;
