@@ -41,7 +41,7 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Before
 				},
-				onShapePress: {
+				onShapeDoubleClick: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
@@ -195,6 +195,56 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				onShapeSelectionChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onPressDeleteMultiAssignment: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				openDeleteAssignmentListDialog: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				validateForMultiDelete: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onMultiDemandProceed: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				oMultiDemandDialogClose: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				openMultiDemandListDialog: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onDeleteListFilterSelect: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onDeleteAllAssignment: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onDeleteAssignmentDialogClose: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -321,7 +371,7 @@ sap.ui.define([
 		 * or create new temporary assignment
 		 * @param {object} oEvent - when shape in Gantt was selected
 		 */
-		onShapePress: function (oEvent) {
+		onShapeDoubleClick: function (oEvent) {
 			var mParams = oEvent.getParameters(),
 				oShape = mParams.shape,
 				isNew,
@@ -1209,6 +1259,296 @@ sap.ui.define([
 			var cancelcallback = function () {};
 			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
 		},
+		/*
+		 * Function calls when shape is selected
+		 * oParam {object} oEvent - Event
+		 */
+		onShapeSelectionChange: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				aSelectedShapes = oSource.getSelectedShapeUid(),
+				aFilteredShapes = [],
+				aFilteredGuid = [],
+				sShapePath, oShapeData, oParentData, sParentGuid;
+
+			aSelectedShapes.forEach(function (shape, idx, aShape) {
+				// filtering only assignments, no backgroundshape, no duplicate GUID
+				sShapePath = Utility.parseUid(shape).shapeDataName;
+				oShapeData = this.getModel("ganttPlanningModel").getProperty(sShapePath);
+				if (
+					oShapeData.hasOwnProperty("Guid") && // checks if not background shape
+					aFilteredGuid.indexOf(oShapeData["Guid"]) === -1 && // avoid adding duplicate shape(guid)
+					((oShapeData["NODE_TYPE"] === "RES_GROUP" && this.isGroupDeletable(oShapeData)) || (oShapeData["NODE_TYPE"] === "SHIFT" && this
+						.isShiftDeletable(oShapeData))) // checks if start date is past
+				) {
+					sParentGuid = (oShapeData.PARENT_NODE_ID && oShapeData.PARENT_NODE_ID.split("//")[0]) ||
+						(oShapeData.ParentNodeId && oShapeData.ParentNodeId.split("//")[0]);
+					oParentData = this._getParentResource(sParentGuid);
+					oShapeData["ResourceName"] = oParentData["Description"];
+					aFilteredGuid.push(oShapeData["Guid"]);
+					aFilteredShapes.push(oShapeData);
+				}
+			}, this);
+			this.getModel("ganttPlanningModel").setProperty("/isShapeSelected", Boolean(aFilteredShapes.length));
+			this.getModel("ganttPlanningModel").setProperty("/multiSelectedDataForDelete", aFilteredShapes);
+
+		},
+		/*
+		 * Function calls Delete button on Gantt header pressed
+		 * oParam {object} oEvent - Event
+		 */
+		onPressDeleteMultiAssignment: function (oEvent) {
+			var aDeleteAssignmentList = this.getModel("ganttPlanningModel").getProperty("/multiSelectedDataForDelete"),
+				aNoValidationDeleteList = [],
+				aValidationDeleteList = [];
+
+			aDeleteAssignmentList.forEach(function (oAssignment, idx) {
+				oAssignment.isNonDeletable=false;
+				if (oAssignment.isNew) { // if isNew=true no validation required
+					aNoValidationDeleteList.push(oAssignment);
+				} else if (oAssignment.NODE_TYPE === "SHIFT") { // if type is SHIFT then no validation required
+					aNoValidationDeleteList.push(oAssignment);
+				} else {
+					aValidationDeleteList.push(oAssignment);
+				}
+			}, this);
+			this.getModel("multiDeleteModel").setProperty("/deleteDataForValidation", aValidationDeleteList);
+			this.getModel("multiDeleteModel").setProperty("/deleteDataForNoValidation", aNoValidationDeleteList);
+			this.validateForMultiDelete();
+		},
+		/*
+		 * Method to validate selected assignments for delete.
+		 * Validating all group assignments in batch and consolidate the result, result will be shown in dialog
+		 */
+		validateForMultiDelete: function () {
+			var aPromise = [],
+				aDeleteForValidationList = this.getModel("multiDeleteModel").getProperty("/deleteDataForValidation"),
+				aDeleteForNoValidationList = this.getModel("multiDeleteModel").getProperty("/deleteDataForNoValidation"),
+				aFinalDeleteList = [];
+
+			if (aDeleteForValidationList.length > 0) { //if any data for validation
+				var createPromise = function (oAssignmentData) {
+					return new Promise(function (resolve, reject) {
+						var oParams = {
+								Guid: oAssignmentData.Guid,
+								ObjectId: oAssignmentData.NODE_ID,
+								EndTimestamp: oAssignmentData.EndDate,
+								StartTimestamp: oAssignmentData.StartDate,
+								StartTimestampUtc: formatter.convertFromUTCDate(oAssignmentData.StartDate),
+								EndTimestampUtc: formatter.convertFromUTCDate(oAssignmentData.EndDate)
+							},
+							sFunctionName = "ValidateResourceAssignment",
+							callbackfunction = function (oData) {
+								resolve(oData);
+							};
+
+						this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
+					}.bind(this));
+				}.bind(this);
+				aDeleteForValidationList.forEach(function (oAssignmentData, idx) {
+					aPromise.push(createPromise(oAssignmentData));
+				}, this);
+
+				Promise.all(aPromise).then(function (result) { // promise to call validation in batch
+					var oData = [];
+					result.forEach(function (oResult,idx) {
+						var aDemandList = oResult.results.map(function(res){
+							res["AssignmentGuid"]=aDeleteForValidationList[idx].Guid;
+							return res;
+						}.bind(this));
+						oData = oData.concat(aDemandList);
+					}.bind(this));
+					if (oData.length > 0) { //if any demand assignment exist
+						this.getModel("multiDeleteModel").setProperty("/demandList", oData);
+						this.openMultiDemandListDialog();
+					} else { //if no demand assignment exist
+						aFinalDeleteList = aDeleteForValidationList.concat(aDeleteForNoValidationList);
+						this.getModel("multiDeleteModel").setProperty("/finalDeleteList", aFinalDeleteList);
+						this.openDeleteAssignmentListDialog();
+					}
+				}.bind(this));
+			} else { //if no data for validation
+				aFinalDeleteList = aDeleteForNoValidationList;
+				this.getModel("multiDeleteModel").setProperty("/finalDeleteList", aFinalDeleteList);
+				this.openDeleteAssignmentListDialog();
+			}
+		},
+		/*
+		 * Method will be called when Proceed button is pressed inside MultiDemandList dialog
+		 * Segragate Assignment data into Deletable and Non-Deletable
+		 * Displays DeleteAssignmentList dialog
+		 */
+		onMultiDemandProceed: function (oEvent) {
+			var aDemandList = this.getModel("multiDeleteModel").getProperty("/demandList"),
+				aDeleteList = this.getModel("ganttPlanningModel").getProperty("/multiSelectedDataForDelete"),
+				aGroupNotToDelete = [],
+				aUnassignmentList = [];
+
+			//get all GroupAssignmentGuid which cannot be deleted -- AssignmentGuid is GroupAssignmentGuid
+			aDemandList.forEach(function (oDemand, idx) {
+				if (oDemand.AllowUnassign === false && aGroupNotToDelete.indexOf(oDemand.AssignmentGuid) === -1) {
+					aGroupNotToDelete.push(oDemand.AssignmentGuid);
+				}
+			}.bind(this));
+
+			//Demand Unassignment
+			aDemandList.forEach(function (oDemand, idx) {
+				if (aGroupNotToDelete.indexOf(oDemand.AssignmentGuid) === -1) {
+					aUnassignmentList.push(oDemand.Guid);
+				}
+			}.bind(this));
+			this.getModel("ganttPlanningModel").setProperty("/tempUnassignData", aUnassignmentList);
+
+			//Comparing with Group Guid and if exist in aGroupNotToDelete then make isNonDeletable = false for Group
+			aDeleteList.forEach(function (oGroup, idx) {
+				oGroup.isNonDeletable = (aGroupNotToDelete.indexOf(oGroup.Guid) === -1) ? false : true;
+			}.bind(this));
+			this.getModel("multiDeleteModel").setProperty("/finalDeleteList", aDeleteList);
+
+			this._oMultiDemandListDialog.close();
+			this.openDeleteAssignmentListDialog();
+		},
+		/*
+		 * Method closed MultiDemandList dialog
+		 */
+		oMultiDemandDialogClose: function (oEvent) {
+			this._oMultiDemandListDialog.close();
+		},
+		/*
+		 * Method to open MultiDemandList dialog
+		 */
+		openMultiDemandListDialog: function () {
+			if (!this._oMultiDemandListDialog) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoresource.view.fragments.MultiDemandList",
+					controller: this
+				}).then(function (oDialog) {
+					this._oMultiDemandListDialog = oDialog;
+					this.getView().addDependent(this._oMultiDemandListDialog);
+					this._oMultiDemandListDialog.open();
+					this._oMultiDemandListDialog.attachAfterOpen(function (oEvent) {}.bind(this));
+					this._oMultiDemandListDialog.attachAfterClose(function (oEvent) {}.bind(this));
+				}.bind(this));
+			} else {
+				this._oMultiDemandListDialog.open();
+			}
+		},
+		/*
+		 * Function to open Deleting assignment list dialog
+		 */
+		openDeleteAssignmentListDialog: function () {
+			var oMultiDeleteTable, aFilter;
+			if (!this._oDeleteAssignmentListDialog) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoresource.view.fragments.DeleteAssignmentList",
+					controller: this
+				}).then(function (oDialog) {
+					this._oDeleteAssignmentListDialog = oDialog;
+					this.getView().addDependent(this._oDeleteAssignmentListDialog);
+					this._oDeleteAssignmentListDialog.open();
+					this._oDeleteAssignmentListDialog.attachAfterOpen(function (oEvent) {
+						oEvent.getSource().getContent()[0].setSelectedKey("deletable");
+						oMultiDeleteTable = oEvent.getSource().getContent()[0].getContent()[0].getContent()[0];
+						// on open of DeleteAssignmentList dialog, shows deletable assignment
+						aFilter = new sap.ui.model.Filter("isNonDeletable", sap.ui.model.FilterOperator.EQ, false);
+						oMultiDeleteTable.getBinding("items").filter(aFilter);
+					}.bind(this));
+					this._oDeleteAssignmentListDialog.attachAfterClose(function (oEvent) {}.bind(this));
+				}.bind(this));
+			} else {
+				this._oDeleteAssignmentListDialog.open();
+			}
+
+		},
+		/*
+		 * Function called when IconTab filter inside DeleteAssignmentList Dialog
+		 * Toggle betwween data deletable and non-deletable
+		 */
+		onDeleteListFilterSelect: function (oEvent) {
+			var oMultiDeleteTable, aFilter, bNonDeletable;
+			oMultiDeleteTable = oEvent.getSource().getContent()[0].getContent()[0];
+			bNonDeletable = oEvent.getParameter("key") === "deletable" ? false : true;
+			aFilter = new sap.ui.model.Filter("isNonDeletable", sap.ui.model.FilterOperator.EQ, bNonDeletable);
+			oMultiDeleteTable.getBinding("items").filter(aFilter);
+		},
+		/*
+		 * Function called when "Delete All" button is pressed in Delete Assignment List Dialog
+		 */
+		onDeleteAllAssignment: function (oEvent) {
+			var sTitle = this.getResourceBundle().getText("tit.multiDeleteconfirmChange"),
+				sMsg = this.getResourceBundle().getText("msg.multiDeleteconfirmChange"),
+				aTempUnassignmentList = this.getModel("ganttPlanningModel").getProperty("/tempUnassignData"),
+				aUnAssignmentList = this.getModel("ganttPlanningModel").getProperty("/unAssignData");
+			var successcallback = function () {
+					var aChildren = this.oPlanningModel.getProperty("/data/children"),
+						aFinalDeleteList = this.getModel("multiDeleteModel").getProperty("/finalDeleteList");
+					//deleting selected assignment
+					aFinalDeleteList.forEach(function (oAssignmentData, idx) {
+						if (!oAssignmentData.isNonDeletable) {
+							if (oAssignmentData.isNew) { // local assignment not yet saved in database
+								var callbackFn = function (oItem, oData, idx) {
+									var aAssignments = [];
+									if (oData.NODE_TYPE === "RES_GROUP" || oData.NODE_TYPE === "RESOURCE") {
+										aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
+											.results : []) : [];
+									} else if (oData.NODE_TYPE === "SHIFT") {
+										aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
+									}
+									aAssignments.forEach(function (oAssignItem, index) {
+										if (oAssignItem.Guid === oData.Guid || oAssignItem.isTemporary === true) {
+											this._markAsPlanningChange(oAssignItem, false);
+											aAssignments.splice(index, 1);
+
+										}
+									}.bind(this));
+								};
+								aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignmentData);
+								this.oPlanningModel.setProperty("/data/children", aChildren);
+							} else { // assignment saved in database - non new assignment - saving delete call in planning mode
+								this._manageDates(oAssignmentData);
+							}
+						}
+					}, this);
+
+					//Saving Unassignment in planning mode
+					aUnAssignmentList = aUnAssignmentList.concat(aTempUnassignmentList);
+					this.getModel("ganttPlanningModel").setProperty("/unAssignData", aUnAssignmentList);
+
+					this.getModel("ganttPlanningModel").setProperty("/tempUnassignData", [])
+					this.getModel("ganttPlanningModel").setProperty("/multiSelectedDataForDelete", []);
+					this.getModel("ganttPlanningModel").setProperty("/isShapeSelected", false);
+					this._oDeleteAssignmentListDialog.close();
+				},
+				cancelcallback = function () {};
+			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
+		},
+		/*
+		 * Function called when "Close" button is pressed in Delete Assignment List Dialog
+		 */
+		onDeleteAssignmentDialogClose: function (oEvent) {
+			this.getModel("ganttPlanningModel").setProperty("/tempUnassignData", []);
+			this._oDeleteAssignmentListDialog.close();
+		},
+		/*
+		 * Creates a grouper and set to MulDemandList table
+		 */
+		getMultiDemandListGroup: function (oContext) {
+			var sKey = oContext.getProperty("AssignmentGuid"),
+				sGroupName = oContext.getProperty("GroupDescription"),
+				sResourceName = oContext.getProperty("ResourceDescription");
+			return {
+				key: sKey,
+				text: sResourceName + "/" + sGroupName
+			};
+		},
+		/*
+		 * Sets header for the Grouper MultiDemandList table
+		 */
+		getMultiDemandListGroupHeader: function (oGroup) {
+			return new sap.m.GroupHeaderListItem({
+				title: oGroup.text,
+				upperCase: false
+			});
+		},
 
 		/* =========================================================== */
 		/* internal methods                                            */
@@ -1942,7 +2282,10 @@ sap.ui.define([
 				changedData: [],
 				hasChanges: false,
 				deletedData: [],
-				unAssignData: []
+				unAssignData: [],
+				tempUnassignData: [],
+				isShapeSelected: false,
+				multiSelectedDataForDelete: []
 			};
 			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
 			this.oPlanningModel.setData(deepClone(this.oOriginData));

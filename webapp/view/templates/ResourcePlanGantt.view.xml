@@ -28,6 +28,8 @@
 											<core:ExtensionPoint name="GanttExtP|ResourcePlanGantt|GanttResourceHierarchySet|ContainerToolbar|Before"/>
 											<Button id="idResourcePlanBtnSave" text="{i18n>xbtn.save}" icon="sap-icon://save" type="Emphasized" press="onPressSave"
 												enabled="{ganttPlanningModel>/hasChanges}"/>
+											<Button id="idResourcePlanBtnDelete" text="{i18n>xbtn.delete}" icon="sap-icon://delete" press="onPressDeleteMultiAssignment"
+												enabled="{ganttPlanningModel>/isShapeSelected}"/>
 											<Button id="idResourcePlanBtnCancel" text="{i18n>xbtn.reset}" icon="sap-icon://cancel" press="onPressCancel"
 												enabled="{ganttPlanningModel>/hasChanges}"/>
 											<Text text="|"/>
@@ -46,9 +48,9 @@
 										</gnt2:legendContainer>
 									</gnt2:ContainerToolbar>
 								</gnt2:toolbar>
-								<gnt2:GanttChartWithTable id="idResourcePlanGanttChartTable" class="resourceGanttWithTable" shapeSelectionMode="Single"
-									shapeDoubleClick="onShapePress" ghostAlignment="Start" adhocLineLayer="Bottom" nowLineInUTC="false" shapeMouseEnter="onShapeMouseEnter"
-									shapeDrop="onShapeDrop" shapeResize="onShapeResize" shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}"
+								<gnt2:GanttChartWithTable id="idResourcePlanGanttChartTable" class="resourceGanttWithTable" shapeSelectionMode="MultiWithKeyboard"
+									shapeDoubleClick="onShapeDoubleClick" shapeSelectionChange="onShapeSelectionChange" ghostAlignment="Start" adhocLineLayer="Bottom" nowLineInUTC="false" shapeMouseEnter="onShapeMouseEnter"
+									shapeDrop="onShapeDrop" shapeResize="onShapeResize" shapeSelectionSettings="{color: '#000000', strokeWidth: 1.5, strokeDasharray: '0'}"
 									visibleHorizonUpdate="onVisibleHorizonUpdate" dragOrientation="Horizontal">
 									<gnt2:table>
 										<table:TreeTable id="idResourcePlanGanttTreeTable" selectionMode="Single" visibleRowCountMode="Auto" rowActionCount="2" threshold="10"

@@ -64,6 +64,9 @@ sap.ui.define([
 			this.setModel(models.createHelperModel(), "ganttPlanningModel");
 			// Demand List Model
 			this.setModel(models.createHelperModel(), "demandModel");
+			
+			// Demand List Model
+			this.setModel(models.createHelperModel(), "multiDeleteModel");
 
 			// set the message model with messages from core message manager
 			this.setModel(models.createHelperModel([]), "coreMessageModel");
