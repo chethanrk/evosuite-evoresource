@@ -1256,7 +1256,7 @@ sap.ui.define([
 				aGroupNotToDelete = [],
 				aUnassignmentList = [];
 
-			//get all GroupGuid which cannot be deleted -- NodeId is GroupId
+			//get all GroupAssignmentGuid which cannot be deleted -- AssignmentGuid is GroupAssignmentGuid
 			aDemandList.forEach(function (oDemand, idx) {
 				if (oDemand.AllowUnassign === false && aGroupNotToDelete.indexOf(oDemand.AssignmentGuid) === -1) {
 					aGroupNotToDelete.push(oDemand.AssignmentGuid);
@@ -1271,7 +1271,7 @@ sap.ui.define([
 			}.bind(this));
 			this.getModel("ganttPlanningModel").setProperty("/tempUnassignData", aUnassignmentList);
 
-			//Comparing with Group Guid and if exist in aGroupNotToDelete then make isDeletable = true for Group
+			//Comparing with Group Guid and if exist in aGroupNotToDelete then make isNonDeletable = false for Group
 			aDeleteList.forEach(function (oGroup, idx) {
 				oGroup.isNonDeletable = (aGroupNotToDelete.indexOf(oGroup.Guid) === -1) ? false : true;
 			}.bind(this));
