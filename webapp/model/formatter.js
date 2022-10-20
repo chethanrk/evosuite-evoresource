@@ -482,13 +482,13 @@ sap.ui.define([
 			return false;
 		},
 		/*
-		* Sets Delete button visisbility
-		* @param {boolean} isTemporary
-		* @param {boolean} isEditable
-		* @param {boolean} isDeletable
-		*
-		*/
-		isPopoverDeleteButtonVisible: function (isTemporary,isEditable, isDeletable) {
+		 * Sets Delete button visisbility
+		 * @param {boolean} isTemporary
+		 * @param {boolean} isEditable
+		 * @param {boolean} isDeletable
+		 *
+		 */
+		isPopoverDeleteButtonVisible: function (isTemporary, isEditable, isDeletable) {
 			var bValidate = true;
 			if (isTemporary) {
 				bValidate = false;
@@ -505,10 +505,10 @@ sap.ui.define([
 			return bValidate;
 		},
 		/*
-		* Sets Group change combo box enable status
-		* @param {boolean} isDeletable
-		*
-		*/
+		 * Sets Group change combo box enable status
+		 * @param {boolean} isDeletable
+		 *
+		 */
 		isPopoverGroupChangeEnable: function (isDeletable) {
 			var bValidate = true;
 			if (!isDeletable) {
@@ -518,10 +518,10 @@ sap.ui.define([
 			return bValidate;
 		},
 		/*
-		* Sets Shift change combo box enable status
-		* @param {boolean} isDeletable
-		*
-		*/
+		 * Sets Shift change combo box enable status
+		 * @param {boolean} isDeletable
+		 *
+		 */
 		isPopoverShiftChangeEnable: function (isDeletable) {
 			var bValidate = true;
 			if (!isDeletable) {
@@ -531,10 +531,10 @@ sap.ui.define([
 			return bValidate;
 		},
 		/*
-		* Sets Date Range Selection enable status
-		* @param {boolean} isDeletable
-		*
-		*/
+		 * Sets Date Range Selection enable status
+		 * @param {boolean} isDeletable
+		 *
+		 */
 		isPopoverDateRangeEditable: function (isDeletable) {
 			var bValidate = true;
 			if (!isDeletable) {
@@ -544,10 +544,10 @@ sap.ui.define([
 			return bValidate;
 		},
 		/*
-		* Sets End date picker enable status
-		* @param {boolean} isDeletable
-		*
-		*/
+		 * Sets End date picker enable status
+		 * @param {boolean} isDeletable
+		 *
+		 */
 		isPopoverEndDatePickerVisible: function (isDeletable) {
 			var bValidate = false;
 			if (!isDeletable) {
@@ -557,15 +557,35 @@ sap.ui.define([
 			return bValidate;
 		},
 		/*
-		* Returns minimun date ifor the End Date Picker of SHapeChangePopover
-		* @param {boolean} isDeletable
-		*
-		*/
-		getMinDateForEndDate:function(isDeletable){
-			if(!isDeletable){
+		 * Returns minimun date ifor the End Date Picker of SHapeChangePopover
+		 * @param {boolean} isDeletable
+		 *
+		 */
+		getMinDateForEndDate: function (isDeletable) {
+			if (!isDeletable) {
 				return moment().startOf("day").toDate();
 			}
 			return null;
+		},
+
+		getDeleteObjectDate: function (sNodeType, sGroupDate, sShiftDesc, isNew, isChanging) {
+			var dateFormat = sap.ui.core.format.DateFormat.getDateInstance({
+					pattern: "dd-MMM-yyyy"
+				}),
+				oDate = {
+					"RES_GROUP": sGroupDate,
+					"SHIFT": sShiftDesc
+				}[sNodeType],
+				oConvertedDate = this.formatter.convertFromUTCDate(oDate, isNew, isChanging),
+				oFormattedDate = dateFormat.format(oConvertedDate);
+
+			return oFormattedDate;
+		},
+		getAssignmentTypeText:function(sNodeType){
+			return {
+				"RES_GROUP":this.getResourceBundle('i18n').getText("xtxt.group"),
+				"SHIFT":this.getResourceBundle('i18n').getText("xtxt.shift")
+			}[sNodeType];
 		}
 	};
 
