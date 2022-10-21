@@ -1,45 +1,106 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
 	<Dialog title="{i18n>xtit.deletingAssignmentlist}" resizable="true" draggable="true" contentWidth="30%" contentHeight="70%"
 		verticalScrolling="false" horizontalScrolling="false">
-		<IconTabBar stretchContentHeight="true" select="onDeleteListFilterSelect">
+		<IconTabBar stretchContentHeight="true">
 			<items>
-				<IconTabFilter text="Deletable" key="deletable"/>
-				<IconTabFilter text="Non-Deletable" key="nondeletable"/>
+				<IconTabFilter text="{i18n>xtxt.deletable}({= ${multiDeleteModel>/deletableList}.length})" key="deletable">
+					<ScrollContainer height="100%" width="100%" horizontal="false" vertical="true">
+						<Table items="{ path: 'multiDeleteModel>/deletableList',sorter : [{ path : 'ResourceName', group:true }]}"
+							sticky="ColumnHeaders,HeaderToolbar,InfoToolbar">
+							<columns>
+								<Column demandPopin="true">
+									<Text text="{i18n>lbl.description}"/>
+								</Column>
+								<Column demandPopin="true">
+									<Text text="{i18n>lbl.type}"/>
+								</Column>
+								<Column demandPopin="true">
+									<Text text="{i18n>lbl.fromdate}"/>
+								</Column>
+								<Column demandPopin="true">
+									<Text text="{i18n>lbl.todate}"/>
+								</Column>
+							</columns>
+							<items>
+								<ColumnListItem>
+									<cells>
+										<Text text="{multiDeleteModel>DESCRIPTION}"/>
+										<Text text="{path:'multiDeleteModel>NODE_TYPE',formatter:'.formatter.getAssignmentTypeText'}"/>
+										<Text
+											text="{parts:[{path:'multiDeleteModel>NODE_TYPE'},{path:'multiDeleteModel>StartDate'},{path:'multiDeleteModel>EffectiveStartDate'},{path:'multiDeleteModel>isNew'},{path:'multiDeleteModel>isChanging'}],formatter:'.formatter.getDeleteObjectDate'}"/>
+										<Text
+											text="{parts:[{path:'multiDeleteModel>NODE_TYPE'},{path:'multiDeleteModel>EndDate'},{path:'multiDeleteModel>EffectiveEndDate'},{path:'multiDeleteModel>isNew'},{path:'multiDeleteModel>isChanging'}],formatter:'.formatter.getDeleteObjectDate'}"/>
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
+					</ScrollContainer>
+				</IconTabFilter>
+				<IconTabFilter text="{i18n>xtxt.nonDeletable}({= ${multiDeleteModel>/nonDeletableList}.length})" key="nondeletable">
+					<ScrollContainer height="100%" width="100%" horizontal="false" vertical="true">
+						<Table items="{ path: 'multiDeleteModel>/nonDeletableList',sorter : [{ path : 'ResourceName', group:true }]}"
+							sticky="ColumnHeaders,HeaderToolbar,InfoToolbar">
+							<columns>
+								<Column demandPopin="true">
+									<Text text="{i18n>lbl.description}"/>
+								</Column>
+								<Column demandPopin="true">
+									<Text text="{i18n>lbl.type}"/>
+								</Column>
+								<Column demandPopin="true">
+									<Text text="{i18n>lbl.fromdate}"/>
+								</Column>
+								<Column demandPopin="true">
+									<Text text="{i18n>lbl.todate}"/>
+								</Column>
+							</columns>
+							<items>
+								<ColumnListItem>
+									<cells>
+										<Text text="{multiDeleteModel>DESCRIPTION}"/>
+										<Text text="{path:'multiDeleteModel>NODE_TYPE',formatter:'.formatter.getAssignmentTypeText'}"/>
+										<Text
+											text="{parts:[{path:'multiDeleteModel>NODE_TYPE'},{path:'multiDeleteModel>StartDate'},{path:'multiDeleteModel>EffectiveStartDate'},{path:'multiDeleteModel>isNew'},{path:'multiDeleteModel>isChanging'}],formatter:'.formatter.getDeleteObjectDate'}"/>
+										<Text
+											text="{parts:[{path:'multiDeleteModel>NODE_TYPE'},{path:'multiDeleteModel>EndDate'},{path:'multiDeleteModel>EffectiveEndDate'},{path:'multiDeleteModel>isNew'},{path:'multiDeleteModel>isChanging'}],formatter:'.formatter.getDeleteObjectDate'}"/>
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
+					</ScrollContainer>
+				</IconTabFilter>
+				<IconTabFilter text="{i18n>xtxt.unassigningDemands}({= ${ganttPlanningModel>/tempUnassignData}.length})" key="unassignable">
+					<ScrollContainer height="100%" width="100%" horizontal="false" vertical="true">
+						<Table items="{ path: 'multiDeleteModel>/unassignData',sorter : [{ path : 'NodeId', group:'.getMultiDemandListGroup' }],groupHeaderFactory:'.getMultiDemandListGroupHeader' }"
+							sticky="ColumnHeaders,HeaderToolbar,InfoToolbar">
+							<columns>
+								<Column demandPopin="true">
+									<Text text="{i18n>xtit.demandsDesc}"/>
+								</Column>
+								<Column demandPopin="true">
+									<Text text="{i18n>lbl.fromdate}"/>
+								</Column>
+								<Column demandPopin="true">
+									<Text text="{i18n>lbl.todate}"/>
+								</Column>
+								<Column demandPopin="true">
+									<Text text="{i18n>lbl.status}"/>
+								</Column>
+							</columns>
+							<items>
+								<ColumnListItem>
+									<cells>
+										<Text text="{multiDeleteModel>DemandDesc}"/>
+										<Text text="{path:'multiDeleteModel>DateFrom',formatter:'.formatter.dateWithTime'}"/>
+										<Text text="{path:'multiDeleteModel>DateTo',formatter:'.formatter.dateWithTime'}"/>
+										<Text text="{multiDeleteModel>Status}"/>
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
+					</ScrollContainer>
+				</IconTabFilter>
 			</items>
-			<content>
-				<ScrollContainer height="100%" width="100%" horizontal="false" vertical="true">
-					<Table
-						items="{ path: 'multiDeleteModel>/finalDeleteList',sorter : [{ path : 'ResourceName', group:true }],filters : [ { path : 'isNonDeletable', operator : 'EQ', value1 : 'false'} ] }"
-						sticky="ColumnHeaders,HeaderToolbar,InfoToolbar">
-						<columns>
-							<Column demandPopin="true">
-								<Text text="{i18n>lbl.description}"/>
-							</Column>
-							<Column demandPopin="true">
-								<Text text="{i18n>lbl.type}"/>
-							</Column>
-							<Column demandPopin="true">
-								<Text text="{i18n>lbl.fromdate}"/>
-							</Column>
-							<Column demandPopin="true">
-								<Text text="{i18n>lbl.todate}"/>
-							</Column>
-						</columns>
-						<items>
-							<ColumnListItem>
-								<cells>
-									<Text text="{multiDeleteModel>DESCRIPTION}"/>
-									<Text text="{path:'multiDeleteModel>NODE_TYPE',formatter:'.formatter.getAssignmentTypeText'}"/>
-									<Text
-										text="{parts:[{path:'multiDeleteModel>NODE_TYPE'},{path:'multiDeleteModel>StartDate'},{path:'multiDeleteModel>EffectiveStartDate'},{path:'multiDeleteModel>isNew'},{path:'multiDeleteModel>isChanging'}],formatter:'.formatter.getDeleteObjectDate'}"/>
-									<Text
-										text="{parts:[{path:'multiDeleteModel>NODE_TYPE'},{path:'multiDeleteModel>EndDate'},{path:'multiDeleteModel>EffectiveEndDate'},{path:'multiDeleteModel>isNew'},{path:'multiDeleteModel>isChanging'}],formatter:'.formatter.getDeleteObjectDate'}"/>
-								</cells>
-							</ColumnListItem>
-						</items>
-					</Table>
-				</ScrollContainer>
-			</content>
 		</IconTabBar>
 		<beginButton>
 			<Button text="{i18n>btn.continueDelete}" press="onDeleteAllAssignment" type="Emphasized"/>
