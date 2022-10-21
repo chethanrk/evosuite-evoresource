@@ -1236,14 +1236,33 @@ sap.ui.define([
 						this.openMultiDemandListDialog();
 					} else { //if no demand assignment exist
 						aFinalDeleteList = aDeleteForValidationList.concat(aDeleteForNoValidationList);
-						this.getModel("multiDeleteModel").setProperty("/finalDeleteList", aFinalDeleteList);
+						this.getModel("multiDeleteModel").setProperty("/deletableList", aFinalDeleteList);
 						this.openDeleteAssignmentListDialog();
 					}
 				}.bind(this));
 			} else { //if no data for validation
 				aFinalDeleteList = aDeleteForNoValidationList;
-				this.getModel("multiDeleteModel").setProperty("/finalDeleteList", aFinalDeleteList);
+				this.getModel("multiDeleteModel").setProperty("/deletableList", aFinalDeleteList);
 				this.openDeleteAssignmentListDialog();
+			}
+		},
+		/*
+		 * Method to open MultiDemandList dialog
+		 */
+		openMultiDemandListDialog: function () {
+			if (!this._oMultiDemandListDialog) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoresource.view.fragments.MultiDemandList",
+					controller: this
+				}).then(function (oDialog) {
+					this._oMultiDemandListDialog = oDialog;
+					this.getView().addDependent(this._oMultiDemandListDialog);
+					this._oMultiDemandListDialog.open();
+					this._oMultiDemandListDialog.attachAfterOpen(function (oEvent) {}.bind(this));
+					this._oMultiDemandListDialog.attachAfterClose(function (oEvent) {}.bind(this));
+				}.bind(this));
+			} else {
+				this._oMultiDemandListDialog.open();
 			}
 		},
 		/*
@@ -1296,26 +1315,8 @@ sap.ui.define([
 		 * Method closed MultiDemandList dialog
 		 */
 		oMultiDemandDialogClose: function (oEvent) {
+			this.getModel("multiDeleteModel").setProperty("/demandList",[]);
 			this._oMultiDemandListDialog.close();
-		},
-		/*
-		 * Method to open MultiDemandList dialog
-		 */
-		openMultiDemandListDialog: function () {
-			if (!this._oMultiDemandListDialog) {
-				Fragment.load({
-					name: "com.evorait.evosuite.evoresource.view.fragments.MultiDemandList",
-					controller: this
-				}).then(function (oDialog) {
-					this._oMultiDemandListDialog = oDialog;
-					this.getView().addDependent(this._oMultiDemandListDialog);
-					this._oMultiDemandListDialog.open();
-					this._oMultiDemandListDialog.attachAfterOpen(function (oEvent) {}.bind(this));
-					this._oMultiDemandListDialog.attachAfterClose(function (oEvent) {}.bind(this));
-				}.bind(this));
-			} else {
-				this._oMultiDemandListDialog.open();
-			}
 		},
 		/*
 		 * Function to open Deleting assignment list dialog
@@ -1337,7 +1338,6 @@ sap.ui.define([
 			} else {
 				this._oDeleteAssignmentListDialog.open();
 			}
-
 		},
 		/*
 		 * Function called when "Delete All" button is pressed in Delete Assignment List Dialog
@@ -1379,8 +1379,12 @@ sap.ui.define([
 					//Saving Unassignment in planning mode
 					aUnAssignmentList = aUnAssignmentList.concat(aTempUnassignmentList);
 					this.getModel("ganttPlanningModel").setProperty("/unAssignData", aUnAssignmentList);
+					
+					//clear all data
 					this.getModel("ganttPlanningModel").setProperty("/tempUnassignData", []);
 					this.getModel("ganttPlanningModel").setProperty("/multiSelectedDataForDelete", []);
+					this.getModel("multiDeleteModel").setProperty("/deletableList", []);
+					this.getModel("multiDeleteModel").setProperty("/nonDeletableList", []);
 					this.getModel("ganttPlanningModel").setProperty("/isShapeSelected", false);
 					this._oDeleteAssignmentListDialog.close();
 				},
@@ -1392,6 +1396,10 @@ sap.ui.define([
 		 */
 		onDeleteAssignmentDialogClose: function (oEvent) {
 			this.getModel("ganttPlanningModel").setProperty("/tempUnassignData", []);
+			this.getModel("ganttPlanningModel").setProperty("/multiSelectedDataForDelete", []);
+			this.getModel("multiDeleteModel").setProperty("/deletableList", []);
+			this.getModel("multiDeleteModel").setProperty("/nonDeletableList", []);
+			this.getModel("ganttPlanningModel").setProperty("/isShapeSelected", false);
 			this._oDeleteAssignmentListDialog.close();
 		},
 		/*
