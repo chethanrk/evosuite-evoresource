@@ -1225,11 +1225,7 @@ sap.ui.define([
 				Promise.all(aPromise).then(function (result) { // promise to call validation in batch
 					var oData = [];
 					result.forEach(function (oResult, idx) {
-						var aDemandList = oResult.results.map(function (res) {
-							res["AssignmentGuid"] = aDeleteForValidationList[idx].Guid;
-							return res;
-						}.bind(this));
-						oData = oData.concat(aDemandList);
+						oData = oData.concat(oResult.results);
 					}.bind(this));
 					if (oData.length > 0) { //if any demand assignment exist
 						this.getModel("multiDeleteModel").setProperty("/demandList", oData);
@@ -1279,16 +1275,16 @@ sap.ui.define([
 				aDeletableList = [],
 				aNonDeletableList = [];
 
-			//get all GroupAssignmentGuid which cannot be deleted -- AssignmentGuid is GroupAssignmentGuid
+			//get all GroupAssignmentGuid which cannot be deleted -- ResAssGuid is GroupAssignmentGuid
 			aDemandList.forEach(function (oDemand, idx) {
-				if (oDemand.AllowUnassign === false && aGroupNotToDelete.indexOf(oDemand.AssignmentGuid) === -1) {
-					aGroupNotToDelete.push(oDemand.AssignmentGuid);
+				if (oDemand.AllowUnassign === false && aGroupNotToDelete.indexOf(oDemand.ResAssGuid) === -1) {
+					aGroupNotToDelete.push(oDemand.ResAssGuid);
 				}
 			}.bind(this));
 
 			//Demand Unassignment
 			aDemandList.forEach(function (oDemand, idx) {
-				if (aGroupNotToDelete.indexOf(oDemand.AssignmentGuid) === -1) {
+				if (aGroupNotToDelete.indexOf(oDemand.ResAssGuid) === -1) {
 					aUnassignmentGuidList.push(oDemand.Guid);
 					aUnassignmentList.push(oDemand);
 
@@ -1415,7 +1411,7 @@ sap.ui.define([
 		 * Creates a grouper and set to MulDemandList table
 		 */
 		getMultiDemandListGroup: function (oContext) {
-			var sKey = oContext.getProperty("AssignmentGuid"),
+			var sKey = oContext.getProperty("ResAssGuid"),
 				sGroupName = oContext.getProperty("GroupDescription"),
 				sResourceName = oContext.getProperty("ResourceDescription");
 			return {
