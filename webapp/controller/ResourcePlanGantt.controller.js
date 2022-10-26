@@ -245,6 +245,16 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				closeMultiDemandDialog: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				closeDeleteAssignmentDialog: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -1303,7 +1313,7 @@ sap.ui.define([
 			}.bind(this));
 			this.getModel("multiDeleteModel").setProperty("/deletableList", aDeletableList);
 			this.getModel("multiDeleteModel").setProperty("/nonDeletableList", aNonDeletableList);
-			
+
 			this.closeMultiDemandDialog();
 			this.openDeleteAssignmentListDialog();
 		},
@@ -1314,10 +1324,10 @@ sap.ui.define([
 			this._oMultiDemandListDialog.close();
 		},
 		/*
-		* Method clears local data in json model and closes MultiDemand Dialog
-		*/
-		closeMultiDemandDialog:function(){
-			this.getModel("multiDeleteModel").setProperty("/demandList",[]);
+		 * Method clears local data in json model and closes MultiDemand Dialog
+		 */
+		closeMultiDemandDialog: function () {
+			this.getModel("multiDeleteModel").setProperty("/demandList", []);
 			this._oMultiDemandListDialog.close();
 		},
 		/*
@@ -1381,7 +1391,7 @@ sap.ui.define([
 					//Saving Unassignment in planning mode
 					aUnAssignmentList = aUnAssignmentList.concat(aTempUnassignmentList);
 					this.getModel("ganttPlanningModel").setProperty("/unAssignData", aUnAssignmentList);
-					
+
 					//closing DeleteAssignment dialog
 					this.closeDeleteAssignmentDialog();
 				},
@@ -1395,16 +1405,16 @@ sap.ui.define([
 			this.closeDeleteAssignmentDialog();
 		},
 		/*
-		* Method clears local data in json model, deselect shapes and closes DeleteAssignment Dialog
-		*/
-		closeDeleteAssignmentDialog: function(){
+		 * Method clears local data in json model, deselect shapes and closes DeleteAssignment Dialog
+		 */
+		closeDeleteAssignmentDialog: function () {
 			this.getModel("ganttPlanningModel").setProperty("/tempUnassignData", []);
 			this.getModel("ganttPlanningModel").setProperty("/multiSelectedDataForDelete", []);
 			this.getModel("multiDeleteModel").setProperty("/deletableList", []);
 			this.getModel("multiDeleteModel").setProperty("/nonDeletableList", []);
 			this.getModel("multiDeleteModel").setProperty("/unassignData", []);
 			this.getModel("ganttPlanningModel").setProperty("/isShapeSelected", false);
-			this._ganttChart.oSelection.clear(true);
+			this._ganttChart.getSelection().clear(true);
 			this._oDeleteAssignmentListDialog.close();
 		},
 		/*
