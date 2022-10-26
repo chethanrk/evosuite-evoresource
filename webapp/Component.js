@@ -71,6 +71,7 @@ sap.ui.define([
 				deleteDataForNoValidation:[],
 				demandList:[],
 				deletableList:[],
+				nonDeletableList:[],
 				unassignData:[]
 			}), "multiDeleteModel");
 
