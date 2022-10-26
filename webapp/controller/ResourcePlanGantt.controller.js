@@ -1448,6 +1448,7 @@ sap.ui.define([
 		 * 
 		 */
 		_loadGanttData: function () {
+			this.getModel("viewModel").setProperty("/gantt/busy", true);
 			this._initialisePlanningModel();
 			this._getResourceData(0)
 				.then(this._getResourceData.bind(this))
@@ -1456,6 +1457,7 @@ sap.ui.define([
 					this.oOriginData = deepClone(this.oPlanningModel.getProperty("/"));
 					this._setBackgroudShapes(this._sGanttViewMode);
 					this._setGanttScrollState();
+					this.getModel("viewModel").setProperty("/gantt/busy", false);
 				}.bind(this));
 		},
 
