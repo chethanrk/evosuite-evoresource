@@ -1307,14 +1307,20 @@ sap.ui.define([
 			}.bind(this));
 			this.getModel("multiDeleteModel").setProperty("/deletableList", aDeletableList);
 			this.getModel("multiDeleteModel").setProperty("/nonDeletableList", aNonDeletableList);
-
-			this._oMultiDemandListDialog.close();
+			
+			this.closeMultiDemandDialog();
 			this.openDeleteAssignmentListDialog();
 		},
 		/*
-		 * Method closed MultiDemandList dialog
+		 * Method called when "Close" button pressed inside Multi Demand Dialog
 		 */
 		oMultiDemandDialogClose: function (oEvent) {
+			this._oMultiDemandListDialog.close();
+		},
+		/*
+		* Method clears local data in json model and closes MultiDemand Dialog
+		*/
+		closeMultiDemandDialog:function(){
 			this.getModel("multiDeleteModel").setProperty("/demandList",[]);
 			this._oMultiDemandListDialog.close();
 		},
@@ -1380,13 +1386,8 @@ sap.ui.define([
 					aUnAssignmentList = aUnAssignmentList.concat(aTempUnassignmentList);
 					this.getModel("ganttPlanningModel").setProperty("/unAssignData", aUnAssignmentList);
 					
-					//clear all data
-					this.getModel("ganttPlanningModel").setProperty("/tempUnassignData", []);
-					this.getModel("ganttPlanningModel").setProperty("/multiSelectedDataForDelete", []);
-					this.getModel("multiDeleteModel").setProperty("/deletableList", []);
-					this.getModel("multiDeleteModel").setProperty("/nonDeletableList", []);
-					this.getModel("ganttPlanningModel").setProperty("/isShapeSelected", false);
-					this._oDeleteAssignmentListDialog.close();
+					//closing DeleteAssignment dialog
+					this.closeDeleteAssignmentDialog();
 				},
 				cancelcallback = function () {};
 			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
@@ -1395,10 +1396,17 @@ sap.ui.define([
 		 * Function called when "Close" button is pressed in Delete Assignment List Dialog
 		 */
 		onDeleteAssignmentDialogClose: function (oEvent) {
+			this.closeDeleteAssignmentDialog();
+		},
+		/*
+		* Method clears local data in json model, deselect shapes and closes DeleteAssignment Dialog
+		*/
+		closeDeleteAssignmentDialog: function(){
 			this.getModel("ganttPlanningModel").setProperty("/tempUnassignData", []);
 			this.getModel("ganttPlanningModel").setProperty("/multiSelectedDataForDelete", []);
 			this.getModel("multiDeleteModel").setProperty("/deletableList", []);
 			this.getModel("multiDeleteModel").setProperty("/nonDeletableList", []);
+			this.getModel("multiDeleteModel").setProperty("/unassignData", []);
 			this.getModel("ganttPlanningModel").setProperty("/isShapeSelected", false);
 			this._ganttChart.oSelection.clear(true);
 			this._oDeleteAssignmentListDialog.close();
