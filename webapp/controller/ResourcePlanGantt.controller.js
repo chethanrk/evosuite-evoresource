@@ -1400,6 +1400,7 @@ sap.ui.define([
 			this.getModel("multiDeleteModel").setProperty("/deletableList", []);
 			this.getModel("multiDeleteModel").setProperty("/nonDeletableList", []);
 			this.getModel("ganttPlanningModel").setProperty("/isShapeSelected", false);
+			this._ganttChart.oSelection.clear(true);
 			this._oDeleteAssignmentListDialog.close();
 		},
 		/*
