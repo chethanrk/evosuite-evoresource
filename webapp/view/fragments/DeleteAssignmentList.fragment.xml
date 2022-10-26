@@ -3,9 +3,9 @@
 		verticalScrolling="false" horizontalScrolling="false">
 		<IconTabBar stretchContentHeight="true">
 			<items>
-				<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.iconTabFilters.DeletableAssignmentList" type="XML"/>
-				<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.iconTabFilters.NonDeletableAssignmentList" type="XML"/>
-				<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.iconTabFilters.UnassignmentDemandList" type="XML"/>
+				<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.deleteSummaryTabs.DeletableAssignmentList" type="XML"/>
+				<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.deleteSummaryTabs.NonDeletableAssignmentList" type="XML"/>
+				<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.deleteSummaryTabs.UnassignmentDemandList" type="XML"/>
 			</items>
 		</IconTabBar>
 		<beginButton>
