@@ -501,35 +501,7 @@ sap.ui.define([
 		openShapeChangePopover: function (oTargetControl, oPopoverData, bAddNewResource) {
 			this.groupShiftContext = null;
 
-			if (bAddNewResource) {
-				if (oTargetControl) {
-					// create popover
-					if (!this._oPlanningPopover) {
-						Fragment.load({
-							name: "com.evorait.evosuite.evoresource.view.fragments.ShapeChangePopover",
-							controller: this
-						}).then(function (pPopover) {
-							this._oPlanningPopover = pPopover;
-							this._setPopoverData(oTargetControl, oPopoverData);
-							this.getView().addDependent(this._oPlanningPopover);
-							this._oPlanningPopover.openBy(oTargetControl);
-							//after popover gets opened check popover data for resource group color
-							this._oPlanningPopover.attachAfterOpen(function () {
-								var oData = this.oPlanningModel.getProperty("/tempData/popover");
-								this._addResourceGroupColor(oData);
-								this._validateForOpenPopover(oData);
-							}.bind(this));
-							//after popover gets closed remove popover data
-							this._oPlanningPopover.attachAfterClose(function (oEvent) {
-								this._afterPopoverClose(oEvent);
-							}.bind(this));
-						}.bind(this));
-					} else {
-						this._setPopoverData(oTargetControl, oPopoverData);
-						this._oPlanningPopover.openBy(oTargetControl);
-					}
-				}
-			} else if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getEndTime())) {
+			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getEndTime())) {
 				// create popover
 				if (!this._oPlanningPopover) {
 					Fragment.load({
@@ -554,6 +526,47 @@ sap.ui.define([
 				} else {
 					this._setPopoverData(oTargetControl, oPopoverData);
 					this._oPlanningPopover.openBy(oTargetControl);
+				}
+			} else {
+				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
+			}
+		},
+
+		/** Called to open AddNewResource Dialog
+		 * @param {object} oTargetControl - Control where popover should open
+		 * @param {object} oPopoverData - Data to be displayed in Dialog
+		 * */
+
+		openAddNewResourceDialog: function (oTargetControl, oPopoverData) {
+			this.groupShiftContext = null;
+
+			if (oTargetControl) {
+				// create popover
+				if (!this._oPlanningDialog) {
+					Fragment.load({
+						name: "com.evorait.evosuite.evoresource.view.fragments.AddNewResource",
+						controller: this
+					}).then(function (pPopover) {
+						this._oPlanningDialog = pPopover;
+						this._setPopoverData(oTargetControl, oPopoverData);
+						this.getView().addDependent(this._oPlanningDialog);
+						// this._oPlanningDialog.openBy(oTargetControl);
+						this._oPlanningDialog.open();
+						//after popover gets opened check popover data for resource group color
+						this._oPlanningDialog.attachAfterOpen(function () {
+							var oData = this.oPlanningModel.getProperty("/tempData/popover");
+							this._addResourceGroupColor1(oData);
+							this._validateForOpenPopover(oData);
+						}.bind(this));
+						//after popover gets closed remove popover data
+						this._oPlanningDialog.attachAfterClose(function (oEvent) {
+							this._afterPopoverClose(oEvent);
+						}.bind(this));
+					}.bind(this));
+				} else {
+					this._setPopoverData(oTargetControl, oPopoverData);
+					// this._oPlanningPopover.openBy(oTargetControl);
+					this._oPlanningDialog.open();
 				}
 			} else {
 				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
@@ -593,7 +606,7 @@ sap.ui.define([
 						var isCreatable = property["sap:creatable"];
 						obj[property.name] = "";
 					});
-					
+
 					obj.ChildCount = 0;
 					obj.Description = sFirstName + " " + sLastName + " (" + sPernr + ")";
 					obj.ResourceGuid = sGUID;
@@ -621,11 +634,9 @@ sap.ui.define([
 
 			//add functionality - dragged from resource tab
 			var sDraggedFrom = oEvent.getParameter("draggedControl").getBindingContext().getPath().split("(")[0];
-			this.bAddNewResource = false;
 
 			//added a new condition as the drop location is on table and not on gantt
 			if (sDraggedFrom === "/ResourceSet") {
-				this.bAddNewResource = true;
 				var oDroppedControl = oEvent.getParameter("droppedControl"),
 					oContext = oDroppedControl.getBindingContext("ganttPlanningModel"),
 					// oObject = deepClone(oContext.getObject()),
@@ -637,7 +648,7 @@ sap.ui.define([
 					oPopoverData,
 					oParentData,
 					aIgnoreProperty = ["__metadata", "NodeId", "ParentNodeId", "USER_TIMEZONE"];
-					this.addNewResource(oDroppedTarget, oDraggedObject).then(
+				this.addNewResource(oDroppedTarget, oDraggedObject).then(
 					function (oObject) {
 						if (oObject.NodeType !== "RESOURCE") {
 							oParentData = this._getParentResource(oObject.ParentNodeId);
@@ -657,7 +668,7 @@ sap.ui.define([
 							oResourceObject: oObject,
 							bDragged: true
 						};
-						this.openShapeChangePopover(oDroppedTarget, oPopoverData, this.bAddNewResource);
+						this.openAddNewResourceDialog(oDroppedTarget, oPopoverData);
 					}.bind(this));
 
 			} else {
@@ -1302,7 +1313,7 @@ sap.ui.define([
 				aValidationDeleteList = [];
 
 			aDeleteAssignmentList.forEach(function (oAssignment, idx) {
-				oAssignment.isNonDeletable=false;
+				oAssignment.isNonDeletable = false;
 				if (oAssignment.isNew) { // if isNew=true no validation required
 					aNoValidationDeleteList.push(oAssignment);
 				} else if (oAssignment.NODE_TYPE === "SHIFT") { // if type is SHIFT then no validation required
@@ -1350,9 +1361,9 @@ sap.ui.define([
 
 				Promise.all(aPromise).then(function (result) { // promise to call validation in batch
 					var oData = [];
-					result.forEach(function (oResult,idx) {
-						var aDemandList = oResult.results.map(function(res){
-							res["AssignmentGuid"]=aDeleteForValidationList[idx].Guid;
+					result.forEach(function (oResult, idx) {
+						var aDemandList = oResult.results.map(function (res) {
+							res["AssignmentGuid"] = aDeleteForValidationList[idx].Guid;
 							return res;
 						}.bind(this));
 						oData = oData.concat(aDemandList);
@@ -1780,6 +1791,7 @@ sap.ui.define([
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oData));
 					this._addSingleChildToParent(oData);
+					sap.ui.getCore().byId("idAssignSelection").setEditable(false);
 				}.bind(this));
 			} else if (oContext) {
 				oAssignData = oContext.getObject();
@@ -2205,6 +2217,20 @@ sap.ui.define([
 				}
 			}
 		},
+		/**
+		 * To update resource group color based on selected resource group- Duplicate - used for Dialog as id is different
+		 * time out is to wait to load ResourceGroupSet data
+		 */
+		_addResourceGroupColor1: function (oData) {
+			if (oData.ResourceGroupGuid && oData.isNew) {
+				var oGroupSelection = sap.ui.getCore().byId("idResourceGroupGroup1");
+				if (oGroupSelection && oGroupSelection.getSelectedItem()) {
+					var sColor = oGroupSelection.getSelectedItem().getBindingContext("viewModel").getProperty("ResourceGroupColor");
+					oData.RESOURCE_GROUP_COLOR = sColor;
+					this.oPlanningModel.refresh();
+				}
+			}
+		},
 
 		/**
 		 * Validate assigment while create/update 
@@ -2254,6 +2280,10 @@ sap.ui.define([
 			}
 			if (this._oPlanningPopover) {
 				this._oPlanningPopover.close();
+			}
+			//added for closing dialog on ok for new resource creation
+			if (this._oPlanningDialog) {
+				this._oPlanningDialog.close();
 			}
 		},
 
