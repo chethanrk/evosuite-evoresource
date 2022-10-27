@@ -51,10 +51,11 @@ sap.ui.define([
 				densityClass: this.getContentDensityClass(),
 				isSubPage: false,
 				gantt: {
+					busy: true,
 					defaultStartDate: moment().startOf("day").toDate(),
 					defaultEndDate: moment().endOf("day").subtract(999, 'milliseconds').toDate(),
 					popoverPlacement: sap.m.PlacementType.Auto,
-					firstVisibleRow:0
+					firstVisibleRow: 0
 				},
 				draggedData: null,
 				launchMode: Constants.LAUNCH_MODE.BSP,
@@ -64,9 +65,16 @@ sap.ui.define([
 			this.setModel(models.createHelperModel(), "ganttPlanningModel");
 			// Demand List Model
 			this.setModel(models.createHelperModel(), "demandModel");
-			
+
 			// Demand List Model
-			this.setModel(models.createHelperModel(), "multiDeleteModel");
+			this.setModel(models.createHelperModel({
+				deleteDataForValidation:[],
+				deleteDataForNoValidation:[],
+				demandList:[],
+				deletableList:[],
+				nonDeletableList:[],
+				unassignData:[]
+			}), "multiDeleteModel");
 
 			// set the message model with messages from core message manager
 			this.setModel(models.createHelperModel([]), "coreMessageModel");
