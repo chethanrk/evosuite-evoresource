@@ -1186,7 +1186,6 @@ sap.ui.define([
 				aValidationDeleteList = [];
 
 			aDeleteAssignmentList.forEach(function (oAssignment, idx) {
-				oAssignment.isNonDeletable = false;
 				if (oAssignment.isNew) { // if isNew=true no validation required
 					aNoValidationDeleteList.push(oAssignment);
 				} else if (oAssignment.NODE_TYPE === "SHIFT") { // if type is SHIFT then no validation required
@@ -1303,7 +1302,7 @@ sap.ui.define([
 			this.getModel("ganttPlanningModel").setProperty("/tempUnassignData", aUnassignmentGuidList);
 			this.getModel("multiDeleteModel").setProperty("/unassignData", aUnassignmentList);
 
-			//Comparing with Group Guid and if exist in aGroupNotToDelete then make isNonDeletable = false for Group
+			//Comparing with Group Guid and if exist in aGroupNotToDelete then push to "aNonDeletableList" else push to "aDeletableList"
 			aDeleteList.forEach(function (oGroup, idx) {
 				if (aGroupNotToDelete.indexOf(oGroup.Guid) === -1) {
 					aDeletableList.push(oGroup);
