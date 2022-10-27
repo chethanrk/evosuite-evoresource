@@ -498,7 +498,7 @@ sap.ui.define([
 		 * @param {object} oTargetControl - Control where popover should open
 		 * @param {object} oPopoverData - Data to be displayed in Popover
 		 */
-		openShapeChangePopover: function (oTargetControl, oPopoverData, bAddNewResource) {
+		openShapeChangePopover: function (oTargetControl, oPopoverData) {
 			this.groupShiftContext = null;
 
 			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getEndTime())) {
@@ -555,7 +555,7 @@ sap.ui.define([
 						//after popover gets opened check popover data for resource group color
 						this._oPlanningDialog.attachAfterOpen(function () {
 							var oData = this.oPlanningModel.getProperty("/tempData/popover");
-							this._addResourceGroupColor1(oData);
+							this._addResourceGroupColorDialog(oData);
 							this._validateForOpenPopover(oData);
 						}.bind(this));
 						//after popover gets closed remove popover data
@@ -573,56 +573,70 @@ sap.ui.define([
 			}
 		},
 
+		onPressCloseResourceDialog: function () {
+			if (this._oPlanningDialog) {
+				//on close of dialog, the newly added resource is deleted here
+				var children = this.oPlanningModel.getProperty("/data/children");
+				children.splice(children.length - 1, 1);
+				this.oPlanningModel.refresh();
+				this._oPlanningDialog.close();
+			}
+		},
+
 		/**
 		 *Called when new Resource is dropped onto the table
 		 *@param targetdrop, draggedObj
 		 **/
 
 		addNewResource: function (oTargetControl, oDraggedObj) {
-			return new Promise(function (resolve) {
-				var aChildren = this.oPlanningModel.getProperty("/data/children"),
-					sFirstName = oDraggedObj.data.Firstname,
-					sLastName = oDraggedObj.data.Lastname,
-					sPernr = oDraggedObj.data.Pernr,
-					sGUID = oDraggedObj.data.ResourceGuid,
-					obj = {};
+			var aChildren = this.oPlanningModel.getProperty("/data/children"),
+				sFirstName = oDraggedObj.data.Firstname,
+				sLastName = oDraggedObj.data.Lastname,
+				sPernr = oDraggedObj.data.Pernr,
+				sGUID = oDraggedObj.data.ResourceGuid,
+				obj = {};
 
-				var nodeType = "RES_GANT";
-				this.getModel().getMetaModel().loaded().then(function () {
-					var oMetaModel = this.getModel().getMetaModel(),
-						oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet"),
-						oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[nodeType]),
-						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-						aProperty = oEntityType ? oEntityType.property : [];
+			var nodeType = "RES_GANT";
+			this.getModel().getMetaModel().loaded().then(function () {
+				var oMetaModel = this.getModel().getMetaModel(),
+					oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet"),
+					oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[nodeType]),
+					oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+					aProperty = oEntityType ? oEntityType.property : [];
 
-					if (aProperty.length === 0) {
-						for (var key in oEntitySetList) {
-							oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[key]);
-							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null;
-							aProperty = aProperty.concat(oEntityType ? oEntityType.property : []);
-						}
+				if (aProperty.length === 0) {
+					for (var key in oEntitySetList) {
+						oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[key]);
+						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null;
+						aProperty = aProperty.concat(oEntityType ? oEntityType.property : []);
 					}
-					aProperty.forEach(function (property) {
-						var isCreatable = property["sap:creatable"];
-						obj[property.name] = "";
-					});
+				}
+				aProperty.forEach(function (property) {
+					var isCreatable = property["sap:creatable"];
+					obj[property.name] = "";
+				});
 
-					obj.ChildCount = 0;
-					obj.Description = sFirstName + " " + sLastName + " (" + sPernr + ")";
-					obj.ResourceGuid = sGUID;
-					obj.StartDate = moment().startOf("days").toDate();
-					obj.EndDate = moment().endOf("days").toDate();
-					obj.PERNR = sPernr;
-					obj.NodeId = sGUID;
-					obj.NodeType = "RESOURCE";
-					obj.children = [];
-					aChildren.push(obj);
-					//refreshing the model
-					this.oPlanningModel.refresh();
+				obj.ChildCount = 0;
+				obj.Description = sFirstName + " " + sLastName + " (" + sPernr + ")";
+				obj.ResourceGuid = sGUID;
+				obj.StartDate = moment().startOf("days").toDate();
+				obj.EndDate = moment().endOf("days").toDate();
+				obj.PERNR = sPernr;
+				obj.NodeId = sGUID;
+				obj.NodeType = "RESOURCE";
+				obj.children = [];
+				aChildren.push(obj);
+				//refreshing the model
+				this.oPlanningModel.refresh();
 
-					// return obj;
-					resolve(obj);
-				}.bind(this));
+				var oPopoverData = {
+					Guid: new Date().getTime().toString(),
+					sStartTime: obj.StartDate,
+					sEndTime: obj.EndDate,
+					oResourceObject: obj,
+					bDragged: true
+				};
+				this.openAddNewResourceDialog(oTargetControl, oPopoverData);
 			}.bind(this));
 		},
 
@@ -634,56 +648,27 @@ sap.ui.define([
 
 			//add functionality - dragged from resource tab
 			var sDraggedFrom = oEvent.getParameter("draggedControl").getBindingContext().getPath().split("(")[0];
+			var oDroppedControl = oEvent.getParameter("droppedControl"),
+				oContext = oDroppedControl.getBindingContext("ganttPlanningModel"),
+				oObject = deepClone(oContext.getObject()),
+				oDraggedObject = this.getView().getModel("viewModel").getProperty("/draggedData"),
+				oBrowserEvent = oEvent.getParameter("browserEvent"),
+				oDroppedTarget,
+				sStartTime, sEndTime,
+				oPopoverData,
+				oParentData,
+				aIgnoreProperty = ["__metadata", "NodeId", "ParentNodeId", "USER_TIMEZONE"];
 
 			//added a new condition as the drop location is on table and not on gantt
 			if (sDraggedFrom === "/ResourceSet") {
-				var oDroppedControl = oEvent.getParameter("droppedControl"),
-					oContext = oDroppedControl.getBindingContext("ganttPlanningModel"),
-					// oObject = deepClone(oContext.getObject()),
-					oDraggedObject = this.getView().getModel("viewModel").getProperty("/draggedData"),
-					oBrowserEvent = oEvent.getParameter("browserEvent"),
-					oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.target.parentElement.id),
-					sStartTime = moment().startOf("days").toDate(),
-					sEndTime = moment().endOf("days").toDate(),
-					oPopoverData,
-					oParentData,
-					aIgnoreProperty = ["__metadata", "NodeId", "ParentNodeId", "USER_TIMEZONE"];
-				this.addNewResource(oDroppedTarget, oDraggedObject).then(
-					function (oObject) {
-						if (oObject.NodeType !== "RESOURCE") {
-							oParentData = this._getParentResource(oObject.ParentNodeId);
-							oObject.USER_TIMEZONE = oParentData.TIME_ZONE;
-						} else {
-							if (sDraggedFrom !== "/ResourceSet")
-								oObject.ParentNodeId = oObject.NodeId;
-						}
-
-						if (sDraggedFrom !== "/ResourceSet")
-							oObject = this.copyObjectData(oObject, oDraggedObject.data, aIgnoreProperty);
-
-						oPopoverData = {
-							Guid: new Date().getTime().toString(),
-							sStartTime: sStartTime,
-							sEndTime: sEndTime,
-							oResourceObject: oObject,
-							bDragged: true
-						};
-						this.openAddNewResourceDialog(oDroppedTarget, oPopoverData);
-					}.bind(this));
-
+				oDroppedTarget = oEvent.getParameter("droppedControl");
+				this.addNewResource(oDroppedTarget, oDraggedObject);
 			} else {
+				
 				//ondrop of the the resourcegroup
-				var oDroppedControl = oEvent.getParameter("droppedControl"),
-					oContext = oDroppedControl.getBindingContext("ganttPlanningModel"),
-					oObject = deepClone(oContext.getObject()),
-					oDraggedObject = this.getView().getModel("viewModel").getProperty("/draggedData"),
-					oBrowserEvent = oEvent.getParameter("browserEvent"),
-					oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id),
-					sStartTime = oDroppedTarget.getTime(),
-					sEndTime = oDroppedTarget.getEndTime(),
-					oPopoverData,
-					oParentData,
-					aIgnoreProperty = ["__metadata", "NodeId", "ParentNodeId", "USER_TIMEZONE"];
+				oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id);
+				sStartTime = oDroppedTarget.getTime();
+				sEndTime = oDroppedTarget.getEndTime();
 
 				if (oObject.NodeType !== "RESOURCE") {
 					oParentData = this._getParentResource(oObject.ParentNodeId);
@@ -700,7 +685,7 @@ sap.ui.define([
 					oResourceObject: oObject,
 					bDragged: true
 				};
-				this.openShapeChangePopover(oDroppedTarget, oPopoverData, this.bAddNewResource);
+				this.openShapeChangePopover(oDroppedTarget, oPopoverData);
 			}
 
 		},
@@ -2221,9 +2206,9 @@ sap.ui.define([
 		 * To update resource group color based on selected resource group- Duplicate - used for Dialog as id is different
 		 * time out is to wait to load ResourceGroupSet data
 		 */
-		_addResourceGroupColor1: function (oData) {
+		_addResourceGroupColorDialog: function (oData) {
 			if (oData.ResourceGroupGuid && oData.isNew) {
-				var oGroupSelection = sap.ui.getCore().byId("idResourceGroupGroup1");
+				var oGroupSelection = sap.ui.getCore().byId("idResourceGroupGroupDialog");
 				if (oGroupSelection && oGroupSelection.getSelectedItem()) {
 					var sColor = oGroupSelection.getSelectedItem().getBindingContext("viewModel").getProperty("ResourceGroupColor");
 					oData.RESOURCE_GROUP_COLOR = sColor;
@@ -2281,8 +2266,11 @@ sap.ui.define([
 			if (this._oPlanningPopover) {
 				this._oPlanningPopover.close();
 			}
-			//added for closing dialog on ok for new resource creation
+			//added for closing dialog on ok for new resource creation and to scroll to the new added resource
 			if (this._oPlanningDialog) {
+				var iScrollTo = this.oPlanningModel.getProperty("/data/children").length - 1;
+				this.getView().getModel("viewModel").setProperty("/gantt/firstVisibleRow", iScrollTo);
+				this._treeTable.setFirstVisibleRow(iScrollTo);
 				this._oPlanningDialog.close();
 			}
 		},
