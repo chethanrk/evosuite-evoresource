@@ -306,7 +306,7 @@ sap.ui.define([
 
 					aProperty.forEach(function (property) {
 						var isCreatable = property["sap:creatable"];
-						obj[property.name] = "";
+						obj[property.name] = null;
 						if (oRowData.hasOwnProperty(property.name)) {
 							obj[property.name] = oRowData[property.name];
 						}
