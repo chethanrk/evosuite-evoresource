@@ -478,7 +478,7 @@ sap.ui.define([
 			}
 
 			sGuid = oShapeInfo.shapeId;
-			aFoundData = this._getChildrenDataByKey("Guid", sGuid, null);
+			onPressDeleteAssignment = this._getChildrenDataByKey("Guid", sGuid, null);
 			sOldDataPath = this._getChildDataByKey("Guid", sGuid, null);
 
 			//validate if of Shift HR_SHIFT_FLAG is true
@@ -1997,15 +1997,30 @@ sap.ui.define([
 					oDemandModel.setProperty("/data", this._checkMarkedUnassigned(oDemandData.results));
 					this.openDemandDialog();
 				} else {
-					this._manageDates(oAssignItem);
+					if(oAssignItem.isRepeating){ //if repeatative delete
+						this.deleteRepeatingAssignment(oAssignItem);
+					}else{
+						this._manageDates(oAssignItem);
+					}
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
 			if (oAssignItem.NODE_TYPE !== "SHIFT" && bAssignmentCheck) {
 				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 			} else {
-				this._manageDates(oAssignItem);
+				if(oAssignItem.isRepeating){ //if repeatative delete
+					this.deleteRepeatingAssignment(oAssignItem);
+				}else{
+					this._manageDates(oAssignItem);
+				}
 			}
+		},
+		/**
+		 * Delete repeatative assignment 
+		 * @{param} oAssignmentData - Assignment Information
+		 */
+		deleteRepeatingAssignment:function(oAssignmentData){
+			// TODO for repeatative delete
 		},
 
 		/**
