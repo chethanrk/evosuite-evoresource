@@ -1,0 +1,34 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<IconTabFilter text="{i18n>xtxt.unassigningDemands}({= ${ganttPlanningModel>/tempUnassignData}.length})" key="unassignable">
+		<ScrollContainer height="100%" width="100%" horizontal="false" vertical="true">
+			<Table
+				items="{ path: 'multiDeleteModel>/unassignData',sorter : [{ path : 'NodeId', group:'.getMultiDemandListGroup' }],groupHeaderFactory:'.getMultiDemandListGroupHeader' }"
+				sticky="ColumnHeaders,HeaderToolbar,InfoToolbar">
+				<columns>
+					<Column demandPopin="true">
+						<Text text="{i18n>xtit.demandsDesc}"/>
+					</Column>
+					<Column demandPopin="true">
+						<Text text="{i18n>lbl.fromdate}"/>
+					</Column>
+					<Column demandPopin="true">
+						<Text text="{i18n>lbl.todate}"/>
+					</Column>
+					<Column demandPopin="true">
+						<Text text="{i18n>lbl.status}"/>
+					</Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<cells>
+							<Text text="{multiDeleteModel>DemandDesc}"/>
+							<Text text="{path:'multiDeleteModel>DateFrom',formatter:'.formatter.dateWithTime'}"/>
+							<Text text="{path:'multiDeleteModel>DateTo',formatter:'.formatter.dateWithTime'}"/>
+							<Text text="{multiDeleteModel>Status}"/>
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</ScrollContainer>
+	</IconTabFilter>
+</core:FragmentDefinition>

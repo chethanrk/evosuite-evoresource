@@ -586,6 +586,10 @@ sap.ui.define([
 				"RES_GROUP":this.getResourceBundle('i18n').getText("xtxt.group"),
 				"SHIFT":this.getResourceBundle('i18n').getText("xtxt.shift")
 			}[sNodeType];
+		},
+		getShapeSelectable:function(oEndDate){
+			var oConvertedDate = this.formatter.convertFromUTCDate(oEndDate);
+			return !(moment(oConvertedDate).isBefore(moment().startOf('day').toDate()));
 		}
 	};
 

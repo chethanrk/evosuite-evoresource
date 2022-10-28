@@ -1,0 +1,35 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<IconTabFilter text="{i18n>xtxt.deletable}({= ${multiDeleteModel>/deletableList}.length})" key="deletable">
+		<ScrollContainer height="100%" width="100%" horizontal="false" vertical="true">
+			<Table items="{ path: 'multiDeleteModel>/deletableList',sorter : [{ path : 'ResourceName', group:true }]}"
+				sticky="ColumnHeaders,HeaderToolbar,InfoToolbar">
+				<columns>
+					<Column demandPopin="true">
+						<Text text="{i18n>lbl.description}"/>
+					</Column>
+					<Column demandPopin="true">
+						<Text text="{i18n>lbl.type}"/>
+					</Column>
+					<Column demandPopin="true">
+						<Text text="{i18n>lbl.fromdate}"/>
+					</Column>
+					<Column demandPopin="true">
+						<Text text="{i18n>lbl.todate}"/>
+					</Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<cells>
+							<Text text="{multiDeleteModel>DESCRIPTION}"/>
+							<Text text="{path:'multiDeleteModel>NODE_TYPE',formatter:'.formatter.getAssignmentTypeText'}"/>
+							<Text
+								text="{parts:[{path:'multiDeleteModel>NODE_TYPE'},{path:'multiDeleteModel>StartDate'},{path:'multiDeleteModel>EffectiveStartDate'},{path:'multiDeleteModel>isNew'},{path:'multiDeleteModel>isChanging'}],formatter:'.formatter.getDeleteObjectDate'}"/>
+							<Text
+								text="{parts:[{path:'multiDeleteModel>NODE_TYPE'},{path:'multiDeleteModel>EndDate'},{path:'multiDeleteModel>EffectiveEndDate'},{path:'multiDeleteModel>isNew'},{path:'multiDeleteModel>isChanging'}],formatter:'.formatter.getDeleteObjectDate'}"/>
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</ScrollContainer>
+	</IconTabFilter>
+</core:FragmentDefinition>
