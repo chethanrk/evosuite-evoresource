@@ -1997,9 +1997,9 @@ sap.ui.define([
 					oDemandModel.setProperty("/data", this._checkMarkedUnassigned(oDemandData.results));
 					this.openDemandDialog();
 				} else {
-					if(oAssignItem.isRepeating){ //if repeatative delete
+					if (oAssignItem.isRepeating) { //if repeatative delete
 						this.deleteRepeatingAssignment(oAssignItem);
-					}else{
+					} else {
 						this._manageDates(oAssignItem);
 					}
 				}
@@ -2008,9 +2008,9 @@ sap.ui.define([
 			if (oAssignItem.NODE_TYPE !== "SHIFT" && bAssignmentCheck) {
 				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 			} else {
-				if(oAssignItem.isRepeating){ //if repeatative delete
+				if (oAssignItem.isRepeating) { //if repeatative delete
 					this.deleteRepeatingAssignment(oAssignItem);
-				}else{
+				} else {
 					this._manageDates(oAssignItem);
 				}
 			}
@@ -2019,8 +2019,16 @@ sap.ui.define([
 		 * Delete repeatative assignment 
 		 * @{param} oAssignmentData - Assignment Information
 		 */
-		deleteRepeatingAssignment:function(oAssignmentData){
+		deleteRepeatingAssignment: function (oAssignmentData) {
 			// TODO for repeatative delete
+			var aAssignmentData = this._getChildrenDataByKey("RepeatGuid", oData.RepeatGuid, null);
+			this._manageDates(oAssignmentData); // mark planiing one assignment for delete
+			if (aAssignmentData.length) {
+				aAssignmentData.forEach(function (oAssignment, idx) {
+					// TODO remove all assignmnet from gantt matching "RepeatGuid"
+					
+				});
+			}
 		},
 
 		/**
@@ -2273,7 +2281,7 @@ sap.ui.define([
 				oDateProp.endDateProp = "EffectiveEndDate";
 			}
 			oStartDate = moment(oData[oDateProp.startDateProp]);
-			
+
 			// Only first assignment saving in planning model
 			oData.isTemporary = false;
 			this._markAsPlanningChange(oData, true);
