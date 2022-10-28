@@ -2242,7 +2242,7 @@ sap.ui.define([
 		 * @param {oData} Initial popover selection
 		 */
 		_repeatAssignments: function (oData) {
-			var newData, iEvery = 0,
+			var newData, iEvery = 1,
 				dayCounter = 0,
 				oDateProp = {
 					startDateProp: null,
@@ -2258,6 +2258,10 @@ sap.ui.define([
 				oDateProp.endDateProp = "EffectiveEndDate";
 			}
 			oStartDate = moment(oData[oDateProp.startDateProp]);
+			
+			// Only first assignment saving in planning model
+			oData.isTemporary = false;
+			this._markAsPlanningChange(oData, true);
 
 			do {
 				if (oData.Repeat === "DAY") {
@@ -2318,8 +2322,8 @@ sap.ui.define([
 			//validation for the existing assigments
 			if (this._checkDuplicateAsigment(data, aAssigments)) {
 				this._addNewAssignmentShape(data);
-				data.isTemporary = false;
-				this._markAsPlanningChange(data, true);
+				// data.isTemporary = false;
+				// this._markAsPlanningChange(data, true);
 			} else {
 				//TODO message for the overlapping
 			}
