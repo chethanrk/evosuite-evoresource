@@ -478,7 +478,7 @@ sap.ui.define([
 			}
 
 			sGuid = oShapeInfo.shapeId;
-			onPressDeleteAssignment = this._getChildrenDataByKey("Guid", sGuid, null);
+			aFoundData = this._getChildrenDataByKey("Guid", sGuid, null);
 			sOldDataPath = this._getChildDataByKey("Guid", sGuid, null);
 
 			//validate if of Shift HR_SHIFT_FLAG is true
