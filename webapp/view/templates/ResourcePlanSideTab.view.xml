@@ -58,7 +58,8 @@
 																					name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|CustomToolbar"/>
 																			</Toolbar>
 																		</smartTable:customToolbar>
-																		<Table id="idCustomTable--{path:'contentTabs>Core.LongDescription/String'}" sticky="InfoToolbar,HeaderToolbar,ColumnHeaders">
+																		<Table id="idCustomTable--{path:'contentTabs>Core.LongDescription/String'}" sticky="InfoToolbar,HeaderToolbar,ColumnHeaders"
+																			contextualWidth="{= ${contentTabs>Core.LongDescription/String} === 'ShiftSet' ? 'Auto' : 'Inherit' }">
 																			<columns>
 																				<core:ExtensionPoint
 																					name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|CustomColumn"/>
