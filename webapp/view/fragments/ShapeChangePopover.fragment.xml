@@ -80,7 +80,7 @@
 							minDate="{ganttPlanningModel>/tempData/popover/minDate}"
 							required="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.requiredValidate'}"
 							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/Repeat'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'}],formatter:'.formatter.everyAndEndDateVisibility'}"/>
-						<CheckBox text="Series"
+						<CheckBox text="Series" checked="{ganttPlanningModel>/tempData/popover/isDeleteSeries}"
 							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/isTemporary'},{path:'ganttPlanningModel>/tempData/popover/isEditable'},{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverDeleteButtonVisible'}"/>
 					</f:content>
 				</f:SimpleForm>
