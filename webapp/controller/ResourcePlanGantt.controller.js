@@ -10,9 +10,10 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/gantt/misc/Utility",
-	"sap/base/util/merge"
+	"sap/base/util/merge",
+	"sap/ui/core/Popup",
 ], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Fragment, Filter, FilterOperator,
-	Utility, merge) {
+	Utility, merge, Popup) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanGantt", {
@@ -252,6 +253,11 @@ sap.ui.define([
 					overrideExecution: OverrideExecution.After
 				},
 				closeDeleteAssignmentDialog: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onShapeContextMenu :{
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
@@ -1436,6 +1442,31 @@ sap.ui.define([
 				title: oGroup.text,
 				upperCase: false
 			});
+		},
+		/*
+		 * Function called on right click of assignment
+		 */
+		onShapeContextMenu: function(oEvent){
+			var oParams = oEvent.getParameters(),
+				oShape = oParams.shape;
+			if(oEvent.getParameter("shape").sParentAggregationName !== "shapes1"){
+				this.openShapeContextMenu(oShape);
+			}
+		},
+		
+		openShapeContextMenu: function(oShape){
+			if (!this._oShapeContextMenu) {
+					Fragment.load({
+						name: "com.evorait.evosuite.evoresource.view.fragments.ShapeContextMenu",
+						controller: this
+					}).then(function (oDialog) {
+						this._oShapeContextMenu = oDialog;
+						this.getView().addDependent(this._oShapeContextMenu);
+						this._oShapeContextMenu.open(true, oShape, Popup.Dock.BeginTop, Popup.Dock.EndBottom, oShape);
+					}.bind(this));
+				} else {
+					this._oShapeContextMenu.open(true, oShape, Popup.Dock.BeginTop, Popup.Dock.EndBottom, oShape);
+				}
 		},
 
 		/* =========================================================== */
