@@ -305,8 +305,13 @@ sap.ui.define([
 					}
 
 					aProperty.forEach(function (property) {
-						var isCreatable = property["sap:creatable"];
-						obj[property.name] = "";
+						var isCreatable = property["sap:creatable"],
+							defaultValue = {
+								"Edm.String" : "",
+								"Edm.Byte" : 0,
+								"Edm.DateTime" : null,
+							};
+						obj[property.name] = defaultValue[property.type] && null;
 						if (oRowData.hasOwnProperty(property.name)) {
 							obj[property.name] = oRowData[property.name];
 						}
