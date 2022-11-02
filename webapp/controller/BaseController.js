@@ -270,7 +270,7 @@ sap.ui.define([
 						isTemporary: true,
 						isNew: true,
 						Guid: new Date().getTime(),
-						Repeat: "NEVER",
+						SeriesRepeat: "NEVER",
 						Every: "",
 						Days: [],
 						On: 0,

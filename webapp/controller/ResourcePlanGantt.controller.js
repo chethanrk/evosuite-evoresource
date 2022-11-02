@@ -1670,7 +1670,7 @@ sap.ui.define([
 				oAssignData = oContext.getObject();
 				if (oAssignData.NODE_TYPE === "RES_GROUP") {
 					//popover data adjustment with repeat mode
-					oAssignData.Repeat = "NEVER";
+					oAssignData.SeriesRepeat = "NEVER";
 					oAssignData.isEditable = true;
 					oAssignData.isDeletable = this.isGroupDeletable(oAssignData);
 					oAssignData.minDate = this._getShapePopoverMinDate(oAssignData.isDeletable);
@@ -1679,7 +1679,7 @@ sap.ui.define([
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
 				} else if (oAssignData.NODE_TYPE === "SHIFT") {
 					//popover data adjustment with repeat mode
-					oAssignData.Repeat = "NEVER";
+					oAssignData.SeriesRepeat = "NEVER";
 					oAssignData.isEditable = true;
 					oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
 					oAssignData.isDeletable = this.isShiftDeletable(oAssignData);
@@ -2128,7 +2128,7 @@ sap.ui.define([
 				return;
 			}
 
-			if (!oData.Repeat || oData.Repeat === "NEVER") {
+			if (!oData.SeriesRepeat || oData.SeriesRepeat === "NEVER") {
 				if (oData.isNew) {
 					if (oData.NODE_TYPE === "SHIFT") {
 						if (this._shiftValidation(oData)) {
@@ -2287,14 +2287,14 @@ sap.ui.define([
 			this._markAsPlanningChange(oData, true);
 
 			do {
-				if (oData.Repeat === "DAY") {
+				if (oData.SeriesRepeat === "DAY") {
 					newData = deepClone(oData);
 					newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'days').toDate();
 
 					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, null, oDateProp);
 					oStartDate = moment(newData[oDateProp.startDateProp]);
 
-				} else if (oData.Repeat === "WEEK") {
+				} else if (oData.SeriesRepeat === "WEEK") {
 					var week = oStartDate;
 					for (var d = 0; d < oData.Days.length; d++) {
 						newData = deepClone(oData);
@@ -2304,7 +2304,7 @@ sap.ui.define([
 					}
 					oStartDate = moment(oStartDate.add(iEvery, 'weeks').startOf('weeks').toDate());
 
-				} else if (oData.Repeat === "MONTH") {
+				} else if (oData.SeriesRepeat === "MONTH") {
 					newData = deepClone(oData);
 					if (oData.On === 0) {
 						newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'months').toDate();
@@ -2489,7 +2489,7 @@ sap.ui.define([
 					oEndDate = formatter.convertFromUTCDate(aResourceData.results[i].EndDate, aResourceData.results[i].isNew, aResourceData.results[
 						i].isChanging);
 					//add missing seconds in the enddate
-					if (oShiftData.Repeat && oShiftData.Repeat !== "NEVER") {
+					if (oShiftData.SeriesRepeat && oShiftData.SeriesRepeat !== "NEVER") {
 						oEndDate = moment(oEndDate).add(999, 'milliseconds').toDate();
 					}
 

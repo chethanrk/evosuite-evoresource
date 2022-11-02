@@ -322,7 +322,7 @@ sap.ui.define([
 		 * oPopOverData popover data
 		 */
 		validateVisibilityEvery: function (oPopOverData) {
-			if (oPopOverData && oPopOverData.Repeat && oPopOverData.Repeat !== "NEVER" && oPopOverData.isNew) {
+			if (oPopOverData && oPopOverData.SeriesRepeat && oPopOverData.SeriesRepeat !== "NEVER" && oPopOverData.isNew) {
 				return true;
 			}
 			return false;
