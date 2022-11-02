@@ -311,7 +311,11 @@ sap.ui.define([
 								"Edm.Byte" : 0,
 								"Edm.DateTime" : null,
 							};
-						obj[property.name] = defaultValue[property.type] && null;
+						if(defaultValue.hasOwnProperty(property.type)){
+							obj[property.name] = defaultValue[property.type];
+						}else{
+							obj[property.name] = null;
+						}
 						if (oRowData.hasOwnProperty(property.name)) {
 							obj[property.name] = oRowData[property.name];
 						}
