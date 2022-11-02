@@ -255,6 +255,21 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				openAddNewResourceDialog: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onPressCloseResourceDialog: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				addNewResource: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -582,6 +597,10 @@ sap.ui.define([
 				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
 			}
 		},
+		
+		/** Called to close AddNewResource Dialog
+		 * deleting the added item if the user is not saving it and closing the dialog
+		 * */
 
 		onPressCloseResourceDialog: function () {
 			if (this._oPlanningDialog) {
@@ -595,7 +614,8 @@ sap.ui.define([
 
 		/**
 		 *Called when new Resource is dropped onto the table
-		 *@param targetdrop, draggedObj
+		 *@param oTargetControl - Control where popover should open
+		 *@param oDraggedObj - Dragged object from the resource table 
 		 **/
 
 		addNewResource: function (oTargetControl, oDraggedObj) {
@@ -1793,7 +1813,6 @@ sap.ui.define([
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oData));
 					this._addSingleChildToParent(oData);
-					sap.ui.getCore().byId("idAssignSelection").setEditable(false);
 				}.bind(this));
 			} else if (oContext) {
 				oAssignData = oContext.getObject();
