@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
-	<Popover id="isPopoverChangeSHape" class="sapUiContentPadding" showHeader="false" placement="{viewModel>/gantt/popoverPlacement}"
+	<ResponsivePopover id="isPopoverChangeSHape" class="sapUiContentPadding" showHeader="false" placement="{viewModel>/gantt/popoverPlacement}"
 		contentWidth="auto" contentHeight="auto">
 		<content>
 			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|Before"/>
@@ -80,6 +80,8 @@
 							minDate="{ganttPlanningModel>/tempData/popover/minDate}"
 							required="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.requiredValidate'}"
 							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/Repeat'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'}],formatter:'.formatter.everyAndEndDateVisibility'}"/>
+						<CheckBox text="Series"
+							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/isTemporary'},{path:'ganttPlanningModel>/tempData/popover/isEditable'},{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverDeleteButtonVisible'}"/>
 					</f:content>
 				</f:SimpleForm>
 				<f:SimpleForm id="idFormDisplayShape" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3"
@@ -109,20 +111,13 @@
 			</core:ExtensionPoint>
 			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|After"/>
 		</content>
-		<footer>
-			<OverflowToolbar>
-				<ToolbarSpacer/>
-				<CheckBox text="Series"
-					visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/isTemporary'},{path:'ganttPlanningModel>/tempData/popover/isEditable'},{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverDeleteButtonVisible'}"/>
-				<!--<beginButton>-->
-				<Button text="{i18n>xbtn.delete}" press="onPressDeleteAssignment"
-					visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/isTemporary'},{path:'ganttPlanningModel>/tempData/popover/isEditable'},{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverDeleteButtonVisible'}"/>
-				<!--</beginButton>-->
-				<!--<endButton>-->
-				<Button type="Emphasized" text="{i18n>xbtn.ok}" press="onPressChangeAssignment"
-					visible="{= ${ganttPlanningModel>/tempData/popover/isEditable}}"/>
-				<!--</endButton>-->
-			</OverflowToolbar>
-		</footer>
-	</Popover>
+		<beginButton>
+			<Button text="{i18n>xbtn.delete}" press="onPressDeleteAssignment"
+				visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/isTemporary'},{path:'ganttPlanningModel>/tempData/popover/isEditable'},{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverDeleteButtonVisible'}"/>
+		</beginButton>
+		<endButton>
+			<Button type="Emphasized" text="{i18n>xbtn.ok}" press="onPressChangeAssignment"
+				visible="{= ${ganttPlanningModel>/tempData/popover/isEditable}}"/>
+		</endButton>
+	</ResponsivePopover>
 </core:FragmentDefinition>
