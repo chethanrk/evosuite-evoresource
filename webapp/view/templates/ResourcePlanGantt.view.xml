@@ -29,7 +29,7 @@
 											<Button id="idResourcePlanBtnSave" text="{i18n>xbtn.save}" icon="sap-icon://save" type="Emphasized" press="onPressSave"
 												enabled="{ganttPlanningModel>/hasChanges}"/>
 											<Button id="idResourcePlanBtnDelete" text="{i18n>xbtn.delete}" icon="sap-icon://delete" press="onPressDeleteMultiAssignment"
-												enabled="{ganttPlanningModel>/isShapeSelected}"/>
+												enabled="{ganttPlanningModel>/isShapeSelected}" visible="{user>/ENABLE_MULTIPLE_DELETE_BUTTON}"/>
 											<Button id="idResourcePlanBtnCancel" text="{i18n>xbtn.reset}" icon="sap-icon://cancel" press="onPressCancel"
 												enabled="{ganttPlanningModel>/hasChanges}"/>
 											<Text text="|"/>
@@ -48,7 +48,7 @@
 										</gnt2:legendContainer>
 									</gnt2:ContainerToolbar>
 								</gnt2:toolbar>
-								<gnt2:GanttChartWithTable id="idResourcePlanGanttChartTable" class="resourceGanttWithTable" shapeSelectionMode="MultiWithKeyboard"
+								<gnt2:GanttChartWithTable id="idResourcePlanGanttChartTable" class="resourceGanttWithTable" shapeSelectionMode="{parts:[{path:'user>/ENABLE_MULTIPLE_DELETE_BUTTON'}], formatter:'.formatter.getGanttSelectionMode'}"
 									shapeDoubleClick="onShapeDoubleClick" shapeSelectionChange="onShapeSelectionChange" ghostAlignment="Start" adhocLineLayer="Bottom" nowLineInUTC="false" shapeMouseEnter="onShapeMouseEnter"
 									shapeDrop="onShapeDrop" shapeResize="onShapeResize" shapeSelectionSettings="{color: '#000000', strokeWidth: 1.5, strokeDasharray: '0'}"
 									visibleHorizonUpdate="onVisibleHorizonUpdate" dragOrientation="Horizontal" shapeContextMenu="onShapeContextMenu">
