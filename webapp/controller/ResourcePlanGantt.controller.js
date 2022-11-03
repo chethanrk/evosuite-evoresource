@@ -2321,7 +2321,7 @@ sap.ui.define([
 		 * @param {oData} Initial popover selection
 		 */
 		_repeatAssignments: function (oData) {
-			var newData, iEvery = 1,
+			var newData, iEvery = 0,
 				dayCounter = 0,
 				oDateProp = {
 					startDateProp: null,
@@ -2338,16 +2338,12 @@ sap.ui.define([
 			}
 			oStartDate = moment(oData[oDateProp.startDateProp]);
 
-			// Only first assignment saving in planning model
-			oData.isTemporary = false;
-			this._markAsPlanningChange(oData, true);
-
 			do {
 				if (oData.SeriesRepeat === "DAY") {
 					newData = deepClone(oData);
 					newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'days').toDate();
 
-					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, null, oDateProp);
+					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, null, oDateProp, iEvery);
 					oStartDate = moment(newData[oDateProp.startDateProp]);
 
 				} else if (oData.SeriesRepeat === "WEEK") {
@@ -2356,7 +2352,7 @@ sap.ui.define([
 						newData = deepClone(oData);
 						newData[oDateProp.startDateProp] = moment(week).day(oData.Days[d]).toDate();
 
-						this._validateAndPrepareNewAssignment(newData, oData, dayCounter, d, oDateProp);
+						this._validateAndPrepareNewAssignment(newData, oData, dayCounter, d, oDateProp, iEvery);
 					}
 					oStartDate = moment(oStartDate.add(iEvery, 'weeks').startOf('weeks').toDate());
 
@@ -2370,7 +2366,7 @@ sap.ui.define([
 						newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'months').day(iDay).toDate();
 					}
 
-					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, null, oDateProp);
+					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, null, oDateProp, iEvery);
 					oStartDate = moment(newData[oDateProp.startDateProp]);
 				}
 
@@ -2387,7 +2383,7 @@ sap.ui.define([
 		 * @param {data} - data to be save fot he new assignment
 		 * @param {oData} - date with popover selection
 		 */
-		_validateAndAddNewAssignment: function (data, oData) {
+		_validateAndAddNewAssignment: function (data, oData, iEvery) {
 			var aAssigments = [];
 			if (oData.NODE_TYPE === "RES_GROUP") {
 				aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
@@ -2401,8 +2397,11 @@ sap.ui.define([
 			//validation for the existing assigments
 			if (this._checkDuplicateAsigment(data, aAssigments)) {
 				this._addNewAssignmentShape(data);
-				// data.isTemporary = false;
-				// this._markAsPlanningChange(data, true);
+				data.isTemporary = false;
+				if(iEvery === 0){
+					this._markAsPlanningChange(data, true);	
+				}
+				
 			} else {
 				//TODO message for the overlapping
 			}
@@ -2418,7 +2417,7 @@ sap.ui.define([
 		 * @param iCounter - integer indicator
 		 * @param iDayIndex - integer days loop index
 		 */
-		_validateAndPrepareNewAssignment: function (newData, oData, iCounter, iDayIndex, oDateProp) {
+		_validateAndPrepareNewAssignment: function (newData, oData, iCounter, iDayIndex, oDateProp, iEvery) {
 			newData.Guid = newData.Guid + iCounter;
 			if (iDayIndex) {
 				newData.Guid = newData.Guid + iCounter + iDayIndex;
@@ -2427,7 +2426,7 @@ sap.ui.define([
 
 			if (moment(newData[oDateProp.startDateProp]).isSameOrAfter(oData[oDateProp.startDateProp]) && moment(newData[oDateProp.startDateProp])
 				.isSameOrBefore(moment(oData.RepeatEndDate))) {
-				this._validateAndAddNewAssignment(newData, oData);
+				this._validateAndAddNewAssignment(newData, oData, iEvery);
 			}
 		},
 
