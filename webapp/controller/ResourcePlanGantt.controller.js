@@ -1483,10 +1483,15 @@ sap.ui.define([
 		},
 
 		handleShapeContextMenuPress: function (oEvent) {
-			// var oTargetControl,
-			// 	oPopoverData;
-			// this._setPopoverData(oTargetControl, oPopoverData);
+			var sKey = oEvent.getParameter("item").getProperty("key"),
+				oData = this.oPlanningModel.getProperty("/tempData/popover")
+			if(sKey === "OCCURENCE"){
+				
+			}else if(sKey === "SERIES"){
+				oData.isRepeating=true;
+			}
 			this.onPressDeleteAssignment();
+			
 		},
 
 		/* =========================================================== */
