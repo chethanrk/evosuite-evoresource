@@ -257,7 +257,12 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.After
 				},
-				onShapeContextMenu :{
+				onShapeContextMenu: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				handleShapeContextMenuPress: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
@@ -1446,27 +1451,42 @@ sap.ui.define([
 		/*
 		 * Function called on right click of assignment
 		 */
-		onShapeContextMenu: function(oEvent){
+		onShapeContextMenu: function (oEvent) {
 			var oParams = oEvent.getParameters(),
-				oShape = oParams.shape;
-			if(oEvent.getParameter("shape").sParentAggregationName !== "shapes1"){
-				this.openShapeContextMenu(oShape);
+				oShape = oParams.shape,
+				oContext = oShape && oShape.getBindingContext("ganttPlanningModel"),
+				oAssignment = oContext && oContext.getObject();
+			if (oShape && oShape.sParentAggregationName !== "shapes1") {
+				this._setPopoverData(oShape, {});
+				if (oAssignment && formatter.isPopoverDeleteButtonVisible(oAssignment.isTemporary,oAssignment.isEditable,oAssignment.isDeletable)) {
+					this.openShapeContextMenu(oShape);
+				}
 			}
 		},
-		
-		openShapeContextMenu: function(oShape){
+		/*
+		 * Function to open Shape Context Menu
+		 * @param {object} - oShape - Shape Data
+		 */
+		openShapeContextMenu: function (oShape) {
 			if (!this._oShapeContextMenu) {
-					Fragment.load({
-						name: "com.evorait.evosuite.evoresource.view.fragments.ShapeContextMenu",
-						controller: this
-					}).then(function (oDialog) {
-						this._oShapeContextMenu = oDialog;
-						this.getView().addDependent(this._oShapeContextMenu);
-						this._oShapeContextMenu.open(true, oShape, Popup.Dock.BeginTop, Popup.Dock.EndBottom, oShape);
-					}.bind(this));
-				} else {
-					this._oShapeContextMenu.open(true, oShape, Popup.Dock.BeginTop, Popup.Dock.EndBottom, oShape);
-				}
+				Fragment.load({
+					name: "com.evorait.evosuite.evoresource.view.fragments.ShapeContextMenu",
+					controller: this
+				}).then(function (oDialog) {
+					this._oShapeContextMenu = oDialog;
+					this.getView().addDependent(this._oShapeContextMenu);
+					this._oShapeContextMenu.openBy(oShape, false, Popup.Dock.BeginTop, Popup.Dock.EndBottom);
+				}.bind(this));
+			} else {
+				this._oShapeContextMenu.openBy(oShape, false, Popup.Dock.BeginTop, Popup.Dock.EndBottom);
+			}
+		},
+
+		handleShapeContextMenuPress: function (oEvent) {
+			// var oTargetControl,
+			// 	oPopoverData;
+			// this._setPopoverData(oTargetControl, oPopoverData);
+			this.onPressDeleteAssignment();
 		},
 
 		/* =========================================================== */
@@ -2057,7 +2077,7 @@ sap.ui.define([
 			if (aAssignmentData.length) {
 				aAssignmentData.forEach(function (oAssignment, idx) {
 					// TODO remove all assignmnet from gantt matching "RepeatGuid"
-					
+
 				});
 			}
 		},
