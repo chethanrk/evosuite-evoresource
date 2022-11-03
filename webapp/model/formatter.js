@@ -567,7 +567,15 @@ sap.ui.define([
 			}
 			return null;
 		},
-
+		/*
+		 * Returns converted to UTC date in dd-MMM-yyyy format
+		 * @param {string} sNodeType
+		 * @param {date} sGroupDate
+		 * @param {date} sShiftDesc
+		 * @param {boolean} isNew
+		 * @param {boolean} isNew
+		 *
+		 */
 		getDeleteObjectDate: function (sNodeType, sGroupDate, sShiftDesc, isNew, isChanging) {
 			var dateFormat = sap.ui.core.format.DateFormat.getDateInstance({
 					pattern: "dd-MMM-yyyy"
@@ -581,15 +589,37 @@ sap.ui.define([
 
 			return oFormattedDate;
 		},
+		/*
+		 * Returns text based on assignment type
+		 * @param {string} sNodeType
+		 *
+		 */
 		getAssignmentTypeText:function(sNodeType){
 			return {
 				"RES_GROUP":this.getResourceBundle('i18n').getText("xtxt.group"),
 				"SHIFT":this.getResourceBundle('i18n').getText("xtxt.shift")
 			}[sNodeType];
 		},
+		/*
+		 * Returns if shape is selectable or not, if end date is past, then not selectable
+		 * @param {date} oEndDate
+		 *
+		 */
 		getShapeSelectable:function(oEndDate){
 			var oConvertedDate = this.formatter.convertFromUTCDate(oEndDate);
 			return !(moment(oConvertedDate).isBefore(moment().startOf('day').toDate()));
+		},
+		/*
+		 * Returns gantt shape selection model - Single or Multiple based on global config
+		 * @param {boolean} isMultiDeletable
+		 *
+		 */
+		getGanttSelectionMode: function(isMultiDeletable){
+			var sSelectionMode = "Single";
+			if(isMultiDeletable){
+				sSelectionMode = "MultiWithKeyboard";
+			}
+			return sSelectionMode;
 		}
 	};
 
