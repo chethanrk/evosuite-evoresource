@@ -1484,9 +1484,9 @@ sap.ui.define([
 
 		handleShapeContextMenuPress: function (oEvent) {
 			var sKey = oEvent.getParameter("item").getProperty("key"),
-				oData = this.oPlanningModel.getProperty("/tempData/popover")
+				oData = this.oPlanningModel.getProperty("/tempData/popover");
 			if(sKey === "OCCURENCE"){
-				
+				oData.isRepeating=false;
 			}else if(sKey === "SERIES"){
 				oData.isRepeating=true;
 			}
