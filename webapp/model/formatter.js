@@ -590,6 +590,13 @@ sap.ui.define([
 		getShapeSelectable:function(oEndDate){
 			var oConvertedDate = this.formatter.convertFromUTCDate(oEndDate);
 			return !(moment(oConvertedDate).isBefore(moment().startOf('day').toDate()));
+		},
+		getGanttSelectionMode: function(isMultiDeletable){
+			var sSelectionMode = "Single";
+			if(isMultiDeletable){
+				sSelectionMode = "MultiWithKeyboard";
+			}
+			return sSelectionMode;
 		}
 	};
 
