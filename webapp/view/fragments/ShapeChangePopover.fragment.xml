@@ -59,7 +59,7 @@
 							required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.requiredValidate'}"
 							fieldGroupIds="changeShapeInput" liveChange="onEveryLiveChange"/>
 						<Label text="{i18n>xfld.On}" required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.weekModeValidation'}"/>
-						<MultiComboBox width="20rem" selectedKeys="{ganttPlanningModel>/tempData/popover/Days}"
+						<MultiComboBox width="20rem" selectedKeys="{ganttPlanningModel>/tempData/popover/SeriesWeeklyOn}"
 							visible="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.weekModeValidation'}"
 							fieldGroupIds="changeShapeInput"
 							required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.weekModeValidation'}"
@@ -74,7 +74,7 @@
 						</MultiComboBox>
 						<Label text="{i18n>xfld.On}"
 							required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.monthModeValidation'}"/>
-						<RadioButtonGroup id="rbg1" selectedIndex="{ganttPlanningModel>/tempData/popover/On}" class="sapUiMediumMarginBottom"
+						<RadioButtonGroup id="rbg1" selectedIndex="{ganttPlanningModel>/tempData/popover/SeriesMonthlyOn}" class="sapUiMediumMarginBottom"
 							visible="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.monthModeValidation'}"
 							fieldGroupIds="changeShapeInput">
 							<RadioButton text="{path:'ganttPlanningModel>/tempData/popover',formatter:'.formatter.getDay'}"/>
