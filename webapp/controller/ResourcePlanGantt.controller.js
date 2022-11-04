@@ -623,7 +623,8 @@ sap.ui.define([
 				sLastName = oDraggedObj.data.Lastname,
 				sPernr = oDraggedObj.data.Pernr,
 				sGUID = oDraggedObj.data.ResourceGuid,
-				obj = {};
+				obj = {},
+				iScrollTo;
 
 			var nodeType = "RES_GANT";
 			this.getModel().getMetaModel().loaded().then(function () {
@@ -665,6 +666,12 @@ sap.ui.define([
 					oResourceObject: obj,
 					bDragged: true
 				};
+				
+				//Scroll to botton of the screen before adding so that it's visible while adding
+				iScrollTo = this.getLengthOfAllChildren(aChildren);
+				this.getView().getModel("viewModel").setProperty("/gantt/firstVisibleRow", iScrollTo);
+				this._setGanttScrollState();
+				
 				this.openAddNewResourceDialog(oTargetControl, oPopoverData);
 			}.bind(this));
 		},
@@ -2260,7 +2267,9 @@ sap.ui.define([
 		 * when it was changed send validation request
 		 */
 		_validateAssignment: function () {
-			var oData = this.oPlanningModel.getProperty("/tempData/popover");
+			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
+			aChildren = this.oPlanningModel.getProperty("/data/children"),
+			iScrollTo;
 			//validation for the duplicates
 			if (this._validateDuplicateAsigment()) {
 				return;
@@ -2303,9 +2312,9 @@ sap.ui.define([
 			}
 			//added for closing dialog on ok for new resource creation and to scroll to the new added resource
 			if (this._oPlanningDialog) {
-				var iScrollTo = this._treeTable.getRows().length -1;
+				iScrollTo = this.getLengthOfAllChildren(aChildren);
 				this.getView().getModel("viewModel").setProperty("/gantt/firstVisibleRow", iScrollTo);
-				this._treeTable.setFirstVisibleRow(iScrollTo);
+				this._setGanttScrollState();
 				this._oPlanningDialog.close();
 			}
 		},

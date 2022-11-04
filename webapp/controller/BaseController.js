@@ -95,6 +95,10 @@ sap.ui.define([
 				mergeObject: {
 					public: true,
 					final: true
+				},
+				getLengthOfAllChildren: {
+					public: true,
+					final: true
 				}
 
 			}
@@ -282,15 +286,15 @@ sap.ui.define([
 					},
 					oDraggedData = this.getView().getModel("viewModel").getProperty("/draggedData"),
 					nodeType;
-				
-				if (bDragged) { 
+
+				if (bDragged) {
 					nodeType = oDraggedData.data.NodeType;
-					if(nodeType === undefined){
-						if(this.bAddNewResource)
+					if (nodeType === undefined) {
+						if (this.bAddNewResource)
 							nodeType = "RESOURCE";
 					}
 					//added the below condition as Guid is passing as int in POST and causing an issue
-					if(nodeType === "RESOURCE")
+					if (nodeType === "RESOURCE")
 						obj.Guid = obj.Guid.toString();
 				} else {
 					if (oRowData.NodeType) nodeType = oRowData.NodeType;
@@ -315,9 +319,9 @@ sap.ui.define([
 					aProperty.forEach(function (property) {
 						var isCreatable = property["sap:creatable"],
 							defaultValue = {
-								"Edm.String" : "",
-								"Edm.Byte" : 0,
-								"Edm.DateTime" : null,
+								"Edm.String": "",
+								"Edm.Byte": 0,
+								"Edm.DateTime": null,
 							};
 						obj[property.name] = defaultValue.hasOwnProperty(property.type) ? defaultValue[property.type] : null;
 						if (oRowData.hasOwnProperty(property.name)) {
@@ -1083,6 +1087,21 @@ sap.ui.define([
 				window.open(sUri, "_blank");
 			}
 		},
+		
+		/**
+		 * This function is used for calculating length of items in tree table along with the children
+		 * @param aChildren {array} - Array with the GanttPlanningModel data
+		 * */
+		getLengthOfAllChildren: function (aChildren) {
+			var iItemsLength = 0;
+			aChildren.forEach(function (item) {
+				iItemsLength++;
+				if (item.children)
+					iItemsLength += item.children.length;
+			});
+			return iItemsLength - 1;
+		},
+		
 		/**
 		 * get respective navigation details
 		 * @param sAppID
@@ -1176,5 +1195,6 @@ sap.ui.define([
 		_isDateSame: function (oDate, oSecondDate) {
 			return moment(oDate).isSame(oSecondDate);
 		}
+
 	});
 });
