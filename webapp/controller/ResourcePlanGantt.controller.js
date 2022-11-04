@@ -2355,7 +2355,7 @@ sap.ui.define([
 				return;
 			}
 
-			if (!oData.SeriesRepeat || oData.SeriesRepeat === "NEVER") {
+			if (!oData.SeriesRepeat || oData.SeriesRepeat === "N") {
 				if (oData.isNew) {
 					if (oData.NODE_TYPE === "SHIFT") {
 						if (this._shiftValidation(oData)) {
@@ -2726,7 +2726,7 @@ sap.ui.define([
 					oEndDate = formatter.convertFromUTCDate(aResourceData.results[i].EndDate, aResourceData.results[i].isNew, aResourceData.results[
 						i].isChanging);
 					//add missing seconds in the enddate
-					if (oShiftData.SeriesRepeat && oShiftData.SeriesRepeat !== "NEVER") {
+					if (oShiftData.SeriesRepeat && oShiftData.SeriesRepeat !== "N") {
 						oEndDate = moment(oEndDate).add(999, 'milliseconds').toDate();
 					}
 
