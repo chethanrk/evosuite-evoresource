@@ -43,7 +43,8 @@ sap.ui.define([
 				type = oDraggedControl.getParent().getParent().getEntitySet(),
 				NodeType = {
 					"ResourceGroupSet":"RES_GROUP",
-					"ShiftSet":"SHIFT"
+					"ShiftSet":"SHIFT",
+					"ResourceSet":"RESOURCE"
 				}[type],
 				oObject = oContext.getObject(),
 				draggedData;
@@ -53,6 +54,28 @@ sap.ui.define([
 					data: oObject
 				};
 			this.getView().getModel("viewModel").setProperty("/draggedData", draggedData);
+			var result = this.validateResourceExist(oObject);
+			if(result){
+				oEvent.preventDefault();
+			}
+		},
+
+
+		/**
+		 * Called when a resource is dragged from Resource side tab
+		 * Checks if the resource already exists in the GanttResourceHierarchy data
+		 * params @ oDraggedData - it is the dragged resource object
+		 */
+		validateResourceExist: function(oDraggedData){
+			var aChildren = this.getModel("ganttPlanningModel").getProperty("/data/children");
+			var bExists = false;
+			aChildren.forEach(function(item) {
+				if(item.ResourceGuid === oDraggedData.ResourceGuid){
+					this.showMessageToast(this.getResourceBundle().getText("yMsg.resourceValidation"));
+					bExists = true;
+				}		
+			}.bind(this));
+			return bExists;
 		},
 
 		/**

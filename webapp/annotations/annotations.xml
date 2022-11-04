@@ -2,7 +2,9 @@
 	<edmx:Reference Uri="/sap/opu/odata/EVORA/ER_MAIN_SRV/$metadata">
 		<edmx:Include Alias="Metadata" Namespace="com.evorait.evoresource"/>
 	</edmx:Reference>
+	<edmx:Reference Uri="https://wiki.scn.sap.com/wiki/download/attachments/448470968/UI.xml?api=v2">
+		<edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+	</edmx:Reference>
 	<edmx:DataServices>
-		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.evorait.evoresource"></Schema>
 	</edmx:DataServices>
 </edmx:Edmx>
