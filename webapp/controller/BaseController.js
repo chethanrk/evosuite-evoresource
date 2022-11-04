@@ -274,7 +274,7 @@ sap.ui.define([
 						Every: "",
 						Days: [],
 						On: 0,
-						RepeatEndDate: new Date(),
+						SERIES_END_DATE: new Date(),
 						isEditable: true,
 						isDeletable: true,
 						isRestChanges: true,
@@ -316,7 +316,7 @@ sap.ui.define([
 							obj[property.name] = oRowData[property.name];
 						}
 					});
-					obj.RepeatEndDate = oEndTime;
+					obj.SERIES_END_DATE = oEndTime;
 					obj.StartDate = oStartTime;
 					obj.EndDate = oEndTime;
 					obj.EffectiveStartDate = oStartTime;

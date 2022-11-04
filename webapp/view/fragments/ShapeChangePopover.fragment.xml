@@ -43,22 +43,25 @@
 							maxDate="{path:'ganttPlanningModel>/tempData/popover/maxDate'}"
 							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverEndDatePickerVisible'}"/>
 						<Label text="{i18n>xfld.Repeat}"/>
-						<Select id="idRepeatMode" forceSelection="true" change="onChangeRepeatMode" selectedKey="{ganttPlanningModel>/tempData/popover/SeriesRepeat}"
+						<Select id="idRepeatMode" forceSelection="true" change="onChangeRepeatMode"
+							selectedKey="{ganttPlanningModel>/tempData/popover/SeriesRepeat}"
 							visible="{= ${ganttPlanningModel>/tempData/popover/isTemporary} ? true : false}" fieldGroupIds="changeShapeInput">
-							<core:Item key="NEVER" text="{i18n>xfld.Never}"/>
-							<core:Item key="DAY" text="{i18n>lbl.daily}"/>
-							<core:Item key="WEEK" text="{i18n>lbl.weekly}"/>
-							<core:Item key="MONTH" text="{i18n>lbl.monthly}"/>
+							<core:Item key="" text="{i18n>xfld.Never}"/>
+							<core:Item key="D" text="{i18n>lbl.daily}"/>
+							<core:Item key="W" text="{i18n>lbl.weekly}"/>
+							<core:Item key="M" text="{i18n>lbl.monthly}"/>
 						</Select>
-						<Label text="{i18n>xfld.Every}" required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.requiredValidate'}"/>
+						<Label text="{i18n>xfld.Every}"
+							required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.requiredValidate'}"/>
 						<Input type="Number" description="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.repaetModeDescription'}"
 							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'}],formatter:'.formatter.everyAndEndDateVisibility'}"
-							value="{ganttPlanningModel>/tempData/popover/Every}"
-							required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.requiredValidate'}" fieldGroupIds="changeShapeInput"
-							liveChange="onEveryLiveChange"/>
+							value="{ganttPlanningModel>/tempData/popover/SeriesEvery}"
+							required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.requiredValidate'}"
+							fieldGroupIds="changeShapeInput" liveChange="onEveryLiveChange"/>
 						<Label text="{i18n>xfld.On}" required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.weekModeValidation'}"/>
 						<MultiComboBox width="20rem" selectedKeys="{ganttPlanningModel>/tempData/popover/Days}"
-							visible="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.weekModeValidation'}" fieldGroupIds="changeShapeInput"
+							visible="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.weekModeValidation'}"
+							fieldGroupIds="changeShapeInput"
 							required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.weekModeValidation'}"
 							selectionChange="onChangeDaySelection">
 							<core:Item key="0" text="{i18n>xlbl.Sun}"/>
@@ -69,14 +72,17 @@
 							<core:Item key="5" text="{i18n>xlbl.Fri}"/>
 							<core:Item key="6" text="{i18n>xlbl.Sat}"/>
 						</MultiComboBox>
-						<Label text="{i18n>xfld.On}" required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.monthModeValidation'}"/>
+						<Label text="{i18n>xfld.On}"
+							required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.monthModeValidation'}"/>
 						<RadioButtonGroup id="rbg1" selectedIndex="{ganttPlanningModel>/tempData/popover/On}" class="sapUiMediumMarginBottom"
-							visible="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.monthModeValidation'}" fieldGroupIds="changeShapeInput">
+							visible="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.monthModeValidation'}"
+							fieldGroupIds="changeShapeInput">
 							<RadioButton text="{path:'ganttPlanningModel>/tempData/popover',formatter:'.formatter.getDay'}"/>
 							<RadioButton text="{path:'ganttPlanningModel>/tempData/popover',formatter:'.formatter.getDays'}"/>
 						</RadioButtonGroup>
-						<Label text="{i18n>xfld.EndDate}" required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.requiredValidate'}"/>
-						<DatePicker id="idDatePicker" fieldGroupIds="changeShapeInput" dateValue="{ganttPlanningModel>/tempData/popover/RepeatEndDate}"
+						<Label text="{i18n>xfld.EndDate}"
+							required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.requiredValidate'}"/>
+						<DatePicker id="idDatePicker" fieldGroupIds="changeShapeInput" dateValue="{ganttPlanningModel>/tempData/popover/SERIES_END_DATE}"
 							minDate="{ganttPlanningModel>/tempData/popover/minDate}"
 							required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.requiredValidate'}"
 							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'}],formatter:'.formatter.everyAndEndDateVisibility'}"/>

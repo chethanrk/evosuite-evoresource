@@ -11,7 +11,7 @@ sap.ui.define([
 	"sap/ui/model/FilterOperator",
 	"sap/gantt/misc/Utility",
 	"sap/base/util/merge",
-	"sap/ui/core/Popup",
+	"sap/ui/core/Popup"
 ], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Fragment, Filter, FilterOperator,
 	Utility, merge, Popup) {
 	"use strict";
@@ -857,7 +857,7 @@ sap.ui.define([
 		 * reset the repeat mode data each time selection gets changed
 		 */
 		onChangeRepeatMode: function (oEvent) {
-			this.oPlanningModel.setProperty("/tempData/popover/Every", "");
+			this.oPlanningModel.setProperty("/tempData/popover/SeriesEvery", "");
 			this.oPlanningModel.setProperty("/tempData/popover/Days", []);
 			this.oPlanningModel.setProperty("/tempData/popover/On", 0);
 		},
@@ -1458,7 +1458,7 @@ sap.ui.define([
 				oAssignment = oContext && oContext.getObject();
 			if (oShape && oShape.sParentAggregationName !== "shapes1") {
 				this._setPopoverData(oShape, {});
-				if (oAssignment && formatter.isPopoverDeleteButtonVisible(oAssignment.isTemporary,oAssignment.isEditable,oAssignment.isDeletable)) {
+				if (oAssignment && formatter.isPopoverDeleteButtonVisible(oAssignment.isTemporary, oAssignment.isEditable, oAssignment.isDeletable)) {
 					this.openShapeContextMenu(oShape);
 				}
 			}
@@ -1485,13 +1485,13 @@ sap.ui.define([
 		handleShapeContextMenuPress: function (oEvent) {
 			var sKey = oEvent.getParameter("item").getProperty("key"),
 				oData = this.oPlanningModel.getProperty("/tempData/popover");
-			if(sKey === "OCCURENCE"){
-				oData.isRepeating=false;
-			}else if(sKey === "SERIES"){
-				oData.isRepeating=true;
+			if (sKey === "OCCURENCE") {
+				oData.isRepeating = false;
+			} else if (sKey === "SERIES") {
+				oData.isRepeating = true;
 			}
 			this.onPressDeleteAssignment();
-			
+
 		},
 
 		/* =========================================================== */
@@ -2249,7 +2249,8 @@ sap.ui.define([
 				unAssignData: [],
 				tempUnassignData: [],
 				isShapeSelected: false,
-				multiSelectedDataForDelete: []
+				multiSelectedDataForDelete: [],
+				isRepeatAssignmentAdded:false
 			};
 			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
 			this.oPlanningModel.setData(deepClone(this.oOriginData));
@@ -2339,24 +2340,24 @@ sap.ui.define([
 			oStartDate = moment(oData[oDateProp.startDateProp]);
 
 			do {
-				if (oData.SeriesRepeat === "DAY") {
+				if (oData.SeriesRepeat === "D") {
 					newData = deepClone(oData);
 					newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'days').toDate();
 
-					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, null, oDateProp, iEvery);
+					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, null, oDateProp);
 					oStartDate = moment(newData[oDateProp.startDateProp]);
 
-				} else if (oData.SeriesRepeat === "WEEK") {
+				} else if (oData.SeriesRepeat === "W") {
 					var week = oStartDate;
 					for (var d = 0; d < oData.Days.length; d++) {
 						newData = deepClone(oData);
 						newData[oDateProp.startDateProp] = moment(week).day(oData.Days[d]).toDate();
 
-						this._validateAndPrepareNewAssignment(newData, oData, dayCounter, d, oDateProp, iEvery);
+						this._validateAndPrepareNewAssignment(newData, oData, dayCounter, d, oDateProp);
 					}
 					oStartDate = moment(oStartDate.add(iEvery, 'weeks').startOf('weeks').toDate());
 
-				} else if (oData.SeriesRepeat === "MONTH") {
+				} else if (oData.SeriesRepeat === "M") {
 					newData = deepClone(oData);
 					if (oData.On === 0) {
 						newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'months').toDate();
@@ -2366,14 +2367,16 @@ sap.ui.define([
 						newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'months').day(iDay).toDate();
 					}
 
-					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, null, oDateProp, iEvery);
+					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, null, oDateProp);
 					oStartDate = moment(newData[oDateProp.startDateProp]);
 				}
 
 				dayCounter++;
-				iEvery = parseInt(oData.Every, 10);
+				iEvery = parseInt(oData.SeriesEvery, 10);
 			}
-			while (oStartDate.isBefore(moment(oData.RepeatEndDate)));
+			while (oStartDate.isBefore(moment(oData.SERIES_END_DATE)));
+			
+			this.getModel("ganttPlanningModel").setProperty("/isRepeatAssignmentAdded",false);
 		},
 
 		/**
@@ -2383,7 +2386,7 @@ sap.ui.define([
 		 * @param {data} - data to be save fot he new assignment
 		 * @param {oData} - date with popover selection
 		 */
-		_validateAndAddNewAssignment: function (data, oData, iEvery) {
+		_validateAndAddNewAssignment: function (data, oData) {
 			var aAssigments = [];
 			if (oData.NODE_TYPE === "RES_GROUP") {
 				aAssigments = this._getResourceassigmentByKey("ResourceGuid", oData.ResourceGuid, oData.ResourceGroupGuid, oData);
@@ -2398,10 +2401,11 @@ sap.ui.define([
 			if (this._checkDuplicateAsigment(data, aAssigments)) {
 				this._addNewAssignmentShape(data);
 				data.isTemporary = false;
-				if(iEvery === 0){
-					this._markAsPlanningChange(data, true);	
+				if (!this.getModel("ganttPlanningModel").getProperty("/isRepeatAssignmentAdded")) {
+					this._markAsPlanningChange(data, true);
+					this.getModel("ganttPlanningModel").setProperty("/isRepeatAssignmentAdded",true);
 				}
-				
+
 			} else {
 				//TODO message for the overlapping
 			}
@@ -2417,7 +2421,7 @@ sap.ui.define([
 		 * @param iCounter - integer indicator
 		 * @param iDayIndex - integer days loop index
 		 */
-		_validateAndPrepareNewAssignment: function (newData, oData, iCounter, iDayIndex, oDateProp, iEvery) {
+		_validateAndPrepareNewAssignment: function (newData, oData, iCounter, iDayIndex, oDateProp) {
 			newData.Guid = newData.Guid + iCounter;
 			if (iDayIndex) {
 				newData.Guid = newData.Guid + iCounter + iDayIndex;
@@ -2425,8 +2429,8 @@ sap.ui.define([
 			newData[oDateProp.endDateProp] = moment(newData[oDateProp.startDateProp]).endOf('day').toDate();
 
 			if (moment(newData[oDateProp.startDateProp]).isSameOrAfter(oData[oDateProp.startDateProp]) && moment(newData[oDateProp.startDateProp])
-				.isSameOrBefore(moment(oData.RepeatEndDate))) {
-				this._validateAndAddNewAssignment(newData, oData, iEvery);
+				.isSameOrBefore(moment(oData.SERIES_END_DATE))) {
+				this._validateAndAddNewAssignment(newData, oData);
 			}
 		},
 
