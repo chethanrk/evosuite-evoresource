@@ -304,14 +304,14 @@ sap.ui.define([
 		 */
 		repaetModeDescription: function (repeatModeSelection) {
 			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
-			if (!repeatModeSelection || repeatModeSelection === "NEVER") {
+			if (!repeatModeSelection || repeatModeSelection === "N") {
 				return "";
 			}
-			if (repeatModeSelection === "DAY") {
+			if (repeatModeSelection === "D") {
 				return "day(s)";
-			} else if (repeatModeSelection === "WEEK") {
+			} else if (repeatModeSelection === "W") {
 				return "week(s)";
-			} else if (repeatModeSelection === "MONTH") {
+			} else if (repeatModeSelection === "M") {
 				return "month(s)";
 			}
 			return "";
@@ -322,7 +322,7 @@ sap.ui.define([
 		 * oPopOverData popover data
 		 */
 		validateVisibilityEvery: function (oPopOverData) {
-			if (oPopOverData && oPopOverData.SeriesRepeat && oPopOverData.SeriesRepeat !== "NEVER" && oPopOverData.isNew) {
+			if (oPopOverData && oPopOverData.SeriesRepeat && oPopOverData.SeriesRepeat !== "N" && oPopOverData.isNew) {
 				return true;
 			}
 			return false;
@@ -371,7 +371,7 @@ sap.ui.define([
 		 * visibility of every input box
 		 */
 		everyAndEndDateVisibility: function (Repeat, isTemporary) {
-			if (Repeat && isTemporary && Repeat !== "NEVER") {
+			if (Repeat && isTemporary && Repeat !== "N") {
 				return true;
 			}
 
@@ -382,7 +382,7 @@ sap.ui.define([
 		 * Validate the field based on the repeat mode
 		 */
 		requiredValidate: function (Repeat) {
-			if (Repeat && Repeat !== "NEVER") {
+			if (Repeat && Repeat !== "N") {
 				return true;
 			}
 			return false;

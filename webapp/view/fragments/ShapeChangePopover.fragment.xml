@@ -46,7 +46,7 @@
 						<Select id="idRepeatMode" forceSelection="true" change="onChangeRepeatMode"
 							selectedKey="{ganttPlanningModel>/tempData/popover/SeriesRepeat}"
 							visible="{= ${ganttPlanningModel>/tempData/popover/isTemporary} ? true : false}" fieldGroupIds="changeShapeInput">
-							<core:Item key="" text="{i18n>xfld.Never}"/>
+							<core:Item key="N" text="{i18n>xfld.Never}"/>
 							<core:Item key="D" text="{i18n>lbl.daily}"/>
 							<core:Item key="W" text="{i18n>lbl.weekly}"/>
 							<core:Item key="M" text="{i18n>lbl.monthly}"/>

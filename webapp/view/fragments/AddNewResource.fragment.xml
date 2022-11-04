@@ -37,10 +37,10 @@
 					<Label text="{i18n>xfld.Repeat}"/>
 					<Select id="idRepeatModeDialog" forceSelection="true" change="onChangeRepeatMode" selectedKey="{ganttPlanningModel>/tempData/popover/Repeat}"
 						visible="{= ${ganttPlanningModel>/tempData/popover/isTemporary} ? true : false}" fieldGroupIds="changeShapeInput">
-						<core:Item key="NEVER" text="{i18n>xfld.Never}"/>
-						<core:Item key="DAY" text="{i18n>lbl.daily}"/>
-						<core:Item key="WEEK" text="{i18n>lbl.weekly}"/>
-						<core:Item key="MONTH" text="{i18n>lbl.monthly}"/>
+						<core:Item key="N" text="{i18n>xfld.Never}"/>
+						<core:Item key="D" text="{i18n>lbl.daily}"/>
+						<core:Item key="W" text="{i18n>lbl.weekly}"/>
+						<core:Item key="M" text="{i18n>lbl.monthly}"/>
 					</Select>
 					<Label text="{i18n>xfld.Every}" required="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.requiredValidate'}"/>
 					<Input type="Number" description="{path:'ganttPlanningModel>/tempData/popover/Repeat',formatter:'.formatter.repaetModeDescription'}"
