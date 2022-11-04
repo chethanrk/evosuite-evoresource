@@ -255,6 +255,21 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				openAddNewResourceDialog: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onPressCloseResourceDialog: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				addNewResource: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -510,6 +525,7 @@ sap.ui.define([
 		 */
 		openShapeChangePopover: function (oTargetControl, oPopoverData) {
 			this.groupShiftContext = null;
+
 			if (oTargetControl && this._sGanttViewMode.isFuture(oTargetControl.getEndTime())) {
 				// create popover
 				if (!this._oPlanningPopover) {
@@ -541,40 +557,173 @@ sap.ui.define([
 			}
 		},
 
+		/** Called to open AddNewResource Dialog
+		 * @param {object} oTargetControl - Control where popover should open
+		 * @param {object} oPopoverData - Data to be displayed in Dialog
+		 * */
+
+		openAddNewResourceDialog: function (oTargetControl, oPopoverData) {
+			this.groupShiftContext = null;
+
+			if (oTargetControl) {
+				// create popover
+				if (!this._oPlanningDialog) {
+					Fragment.load({
+						name: "com.evorait.evosuite.evoresource.view.fragments.AddNewResource",
+						controller: this
+					}).then(function (pPopover) {
+						this._oPlanningDialog = pPopover;
+						this._setPopoverData(oTargetControl, oPopoverData);
+						this.getView().addDependent(this._oPlanningDialog);
+						// this._oPlanningDialog.openBy(oTargetControl);
+						this._oPlanningDialog.open();
+						//after popover gets opened check popover data for resource group color
+						this._oPlanningDialog.attachAfterOpen(function () {
+							var oData = this.oPlanningModel.getProperty("/tempData/popover");
+							this._addResourceGroupColorDialog(oData);
+							this._validateForOpenPopover(oData);
+						}.bind(this));
+						//after popover gets closed remove popover data
+						this._oPlanningDialog.attachAfterClose(function (oEvent) {
+							this._afterPopoverClose(oEvent);
+						}.bind(this));
+					}.bind(this));
+				} else {
+					this._setPopoverData(oTargetControl, oPopoverData);
+					this._oPlanningDialog.open();
+				}
+			} else {
+				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
+			}
+		},
+		
+		/** Called to close AddNewResource Dialog
+		 * deleting the added item if the user is not saving it and closing the dialog
+		 * */
+
+		onPressCloseResourceDialog: function () {
+			if (this._oPlanningDialog) {
+				//on close of dialog, the newly added resource is deleted here
+				var children = this.oPlanningModel.getProperty("/data/children");
+				children.splice(children.length - 1, 1);
+				this.oPlanningModel.refresh();
+				this._oPlanningDialog.close();
+			}
+		},
+
+		/**
+		 *Called when new Resource is dropped onto the table
+		 *@param oTargetControl - Control where popover should open
+		 *@param oDraggedObj - Dragged object from the resource table 
+		 **/
+
+		addNewResource: function (oTargetControl, oDraggedObj) {
+			var aChildren = this.oPlanningModel.getProperty("/data/children"),
+				sFirstName = oDraggedObj.data.Firstname,
+				sLastName = oDraggedObj.data.Lastname,
+				sPernr = oDraggedObj.data.Pernr,
+				sGUID = oDraggedObj.data.ResourceGuid,
+				obj = {},
+				iScrollTo;
+
+			var nodeType = "RES_GANT";
+			this.getModel().getMetaModel().loaded().then(function () {
+				var oMetaModel = this.getModel().getMetaModel(),
+					oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet"),
+					oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[nodeType]),
+					oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+					aProperty = oEntityType ? oEntityType.property : [];
+
+				if (aProperty.length === 0) {
+					for (var key in oEntitySetList) {
+						oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[key]);
+						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null;
+						aProperty = aProperty.concat(oEntityType ? oEntityType.property : []);
+					}
+				}
+				aProperty.forEach(function (property) {
+					var isCreatable = property["sap:creatable"];
+					obj[property.name] = "";
+				});
+
+				obj.ChildCount = 0;
+				obj.Description = sFirstName + " " + sLastName + " (" + sPernr + ")";
+				obj.ResourceGuid = sGUID;
+				obj.StartDate = moment().startOf("days").toDate();
+				obj.EndDate = moment().endOf("days").toDate();
+				obj.PERNR = sPernr;
+				obj.NodeId = sGUID;
+				obj.NodeType = "RESOURCE";
+				obj.children = [];
+				aChildren.push(obj);
+				//refreshing the model
+				this.oPlanningModel.refresh();
+
+				var oPopoverData = {
+					Guid: new Date().getTime().toString(),
+					sStartTime: obj.StartDate,
+					sEndTime: obj.EndDate,
+					oResourceObject: obj,
+					bDragged: true
+				};
+				
+				//Scroll to botton of the screen before adding so that it's visible while adding
+				iScrollTo = this.getLengthOfAllChildren(aChildren);
+				this.getView().getModel("viewModel").setProperty("/gantt/firstVisibleRow", iScrollTo);
+				this._setGanttScrollState();
+				
+				this.openAddNewResourceDialog(oTargetControl, oPopoverData);
+			}.bind(this));
+		},
+
 		/**
 		 * Called when Resource drop is dropped in Gantt
 		 * @param {object} oEvent
 		 */
 		onResourceGroupDrop: function (oEvent) {
-			//ondrop of the the resourcegroup
+
+			//add functionality - dragged from resource tab
+			var sDraggedFrom = oEvent.getParameter("draggedControl").getBindingContext().getPath().split("(")[0];
 			var oDroppedControl = oEvent.getParameter("droppedControl"),
 				oContext = oDroppedControl.getBindingContext("ganttPlanningModel"),
 				oObject = deepClone(oContext.getObject()),
 				oDraggedObject = this.getView().getModel("viewModel").getProperty("/draggedData"),
 				oBrowserEvent = oEvent.getParameter("browserEvent"),
-				oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id),
-				sStartTime = oDroppedTarget.getTime(),
-				sEndTime = oDroppedTarget.getEndTime(),
+				oDroppedTarget,
+				sStartTime, sEndTime,
 				oPopoverData,
 				oParentData,
 				aIgnoreProperty = ["__metadata", "NodeId", "ParentNodeId", "USER_TIMEZONE"];
 
-			if (oObject.NodeType !== "RESOURCE") {
-				oParentData = this._getParentResource(oObject.ParentNodeId);
-				oObject.USER_TIMEZONE = oParentData.TIME_ZONE;
+			//added a new condition as the drop location is on table and not on gantt
+			if (sDraggedFrom === "/ResourceSet") {
+				oDroppedTarget = oEvent.getParameter("droppedControl");
+				this.addNewResource(oDroppedTarget, oDraggedObject);
 			} else {
-				oObject.ParentNodeId = oObject.NodeId;
+				
+				//ondrop of the the resourcegroup
+				oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id);
+				sStartTime = oDroppedTarget.getTime();
+				sEndTime = oDroppedTarget.getEndTime();
+
+				if (oObject.NodeType !== "RESOURCE") {
+					oParentData = this._getParentResource(oObject.ParentNodeId);
+					oObject.USER_TIMEZONE = oParentData.TIME_ZONE;
+				} else
+					oObject.ParentNodeId = oObject.NodeId;
+
+				oObject = this.copyObjectData(oObject, oDraggedObject.data, aIgnoreProperty);
+
+				oPopoverData = {
+					Guid: new Date().getTime(),
+					sStartTime: sStartTime,
+					sEndTime: sEndTime,
+					oResourceObject: oObject,
+					bDragged: true
+				};
+				this.openShapeChangePopover(oDroppedTarget, oPopoverData);
 			}
 
-			oObject = this.copyObjectData(oObject, oDraggedObject.data, aIgnoreProperty);
-			oPopoverData = {
-				Guid: new Date().getTime(),
-				sStartTime: sStartTime,
-				sEndTime: sEndTime,
-				oResourceObject: oObject,
-				bDragged: true
-			};
-			this.openShapeChangePopover(oDroppedTarget, oPopoverData);
 		},
 		/**
 		 * Button event press save Gantt changes
@@ -715,7 +864,7 @@ sap.ui.define([
 				//add different resource group if it is not exist
 				this._addSingleChildToParent(oData);
 
-				if (!oData.isTemporary) {
+				if (!oData.isTemporary && !this.bAddNewResource) {
 					this._oPlanningPopover.close();
 				}
 			} else {
@@ -1664,7 +1813,12 @@ sap.ui.define([
 					} else {
 						this._addNewAssignmentShape(oData);
 					}
-
+				}.bind(this));
+			} else if (oTargetControl.sParentAggregationName === "rows" || oTargetControl.sParentAggregationName === "cells") {
+				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject, bDragged).then(function (oData) {
+					this.oPlanningModel.setProperty("/tempData/popover", oData);
+					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oData));
+					this._addSingleChildToParent(oData);
 				}.bind(this));
 			} else if (oContext) {
 				oAssignData = oContext.getObject();
@@ -2090,6 +2244,20 @@ sap.ui.define([
 				}
 			}
 		},
+		/**
+		 * To update resource group color based on selected resource group- Duplicate - used for Dialog as id is different
+		 * time out is to wait to load ResourceGroupSet data
+		 */
+		_addResourceGroupColorDialog: function (oData) {
+			if (oData.ResourceGroupGuid && oData.isNew) {
+				var oGroupSelection = sap.ui.getCore().byId("idResourceGroupGroupDialog");
+				if (oGroupSelection && oGroupSelection.getSelectedItem()) {
+					var sColor = oGroupSelection.getSelectedItem().getBindingContext("viewModel").getProperty("ResourceGroupColor");
+					oData.RESOURCE_GROUP_COLOR = sColor;
+					this.oPlanningModel.refresh();
+				}
+			}
+		},
 
 		/**
 		 * Validate assigment while create/update 
@@ -2099,7 +2267,9 @@ sap.ui.define([
 		 * when it was changed send validation request
 		 */
 		_validateAssignment: function () {
-			var oData = this.oPlanningModel.getProperty("/tempData/popover");
+			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
+			aChildren = this.oPlanningModel.getProperty("/data/children"),
+			iScrollTo;
 			//validation for the duplicates
 			if (this._validateDuplicateAsigment()) {
 				return;
@@ -2139,6 +2309,13 @@ sap.ui.define([
 			}
 			if (this._oPlanningPopover) {
 				this._oPlanningPopover.close();
+			}
+			//added for closing dialog on ok for new resource creation and to scroll to the new added resource
+			if (this._oPlanningDialog) {
+				iScrollTo = this.getLengthOfAllChildren(aChildren);
+				this.getView().getModel("viewModel").setProperty("/gantt/firstVisibleRow", iScrollTo);
+				this._setGanttScrollState();
+				this._oPlanningDialog.close();
 			}
 		},
 

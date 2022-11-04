@@ -59,7 +59,8 @@
 																			</Toolbar>
 																		</smartTable:customToolbar>
 																		<Table id="idCustomTable--{path:'contentTabs>Core.LongDescription/String'}" sticky="InfoToolbar,HeaderToolbar,ColumnHeaders"
-																			contextualWidth="{= ${contentTabs>Core.LongDescription/String} === 'ShiftSet' ? 'Auto' : 'Inherit' }">
+																			contextualWidth="{= ${contentTabs>Core.LongDescription/String} === 'ShiftSet' ? 'Auto' : 'Inherit' }" growing="true" 
+																			growingScrollToLoad="true" growingThreshold="50">
 																			<columns>
 																				<core:ExtensionPoint
 																					name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|CustomColumn"/>
@@ -93,10 +94,6 @@
 																					dragStart="onResourceGroupDragStart" dragEnd="onResourceGroupDragEnd"/>
 																			</dragDropConfig>
 																		</Table>
-																		<smartTable:customData>
-																			<core:CustomData key="isGroup" value="{path:'tableDetails>isGroup'}"/>
-																			<core:CustomData key="groupProperty" value="{path:'tableDetails>groupProperty'}"/>
-																		</smartTable:customData>
 																	</smartTable:SmartTable>
 																</template:if>
 															</template:repeat>
