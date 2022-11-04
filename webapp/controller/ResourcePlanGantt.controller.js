@@ -2232,7 +2232,8 @@ sap.ui.define([
 		deleteRepeatingAssignment: function (oAssignmentData) {
 			// TODO for repeatative delete
 			var aAssignmentData = this._getChildrenDataByKey("RepeatGuid", oAssignmentData.RepeatGuid, null);
-			this._manageDates(oAssignmentData); // mark planiing one assignment for delete
+			// this._manageDates(oAssignmentData); 
+			this._markAsPlanningDelete(oAssignmentData); // mark planiing one assignment for delete
 			if (aAssignmentData.length) {
 				aAssignmentData.forEach(function (oAssignment, idx) {
 					// TODO remove all assignmnet from gantt matching "RepeatGuid"
