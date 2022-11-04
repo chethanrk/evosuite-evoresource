@@ -9,7 +9,10 @@
 					<Label text="{i18n>xfld.resourceName}"/>
 					<Text text="{ganttPlanningModel>/tempData/oldPopoverData/DESCRIPTION}"/>
 					<Label text="{i18n>xfld.popoverType}" />
-					<Input value="{i18n>xtxt.group}" editable="false" />
+					<Select forceSelection="true" selectedKey="{ganttPlanningModel>/tempData/popover/NODE_TYPE}"
+						editable="false" change="onChangeAssignmentType" width="100%">
+						<core:Item key="RES_GROUP" text="{i18n>xtxt.group}"/>
+					</Select>
 					<Label text="{i18n>xfld.popoverSelect}" required="true"/>
 					<ComboBox id="idResourceGroupGroupDialog" required="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'RES_GROUP'}"
 						showSecondaryValues="true" name="ResourceGroupGuid" fieldGroupIds="changeShapeInput"

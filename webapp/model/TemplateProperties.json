@@ -60,7 +60,7 @@
 	"EntitySet": {
 		"RES_GROUP": "ResourceAssignmentSet",
 		"SHIFT": "ShiftSet",
-		"RESOURCE": "ResourceSet",
+		"RESOURCE": "ResourceAssignmentSet",
 		"RES_GANT": "GanttResourceHierarchySet"
 	}
 }

@@ -590,7 +590,6 @@ sap.ui.define([
 					}.bind(this));
 				} else {
 					this._setPopoverData(oTargetControl, oPopoverData);
-					// this._oPlanningPopover.openBy(oTargetControl);
 					this._oPlanningDialog.open();
 				}
 			} else {
@@ -2304,7 +2303,7 @@ sap.ui.define([
 			}
 			//added for closing dialog on ok for new resource creation and to scroll to the new added resource
 			if (this._oPlanningDialog) {
-				var iScrollTo = this.oPlanningModel.getProperty("/data/children").length - 1;
+				var iScrollTo = this._treeTable.getRows().length -1;
 				this.getView().getModel("viewModel").setProperty("/gantt/firstVisibleRow", iScrollTo);
 				this._treeTable.setFirstVisibleRow(iScrollTo);
 				this._oPlanningDialog.close();
