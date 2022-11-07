@@ -2232,7 +2232,7 @@ sap.ui.define([
 		deleteRepeatingAssignment: function (oAssignmentData) {
 			// TODO for repeatative delete
 			var aAssignmentData = this._getChildrenDataByKey("RepeatGuid", oAssignmentData.RepeatGuid, null);
-			// this._manageDates(oAssignmentData); 
+			this._manageDates(oAssignmentData); 
 			this._markAsPlanningDelete(oAssignmentData); // mark planiing one assignment for delete
 			if (aAssignmentData.length) {
 				aAssignmentData.forEach(function (oAssignment, idx) {
@@ -2355,7 +2355,7 @@ sap.ui.define([
 				return;
 			}
 
-			if (!oData.SeriesRepeat || oData.SeriesRepeat === "N") {
+			if (!oData.SeriesRepeat || oData.SeriesRepeat === "NEVER") {
 				if (oData.isNew) {
 					if (oData.NODE_TYPE === "SHIFT") {
 						if (this._shiftValidation(oData)) {
@@ -2527,9 +2527,9 @@ sap.ui.define([
 
 				} else if (oData.SeriesRepeat === "W") {
 					var week = oStartDate;
-					for (var d = 0; d < oData.SeriesWeeklyOn.length; d++) {
+					for (var d = 0; d < oData.Days.length; d++) {
 						newData = deepClone(oData);
-						newData[oDateProp.startDateProp] = moment(week).day(oData.SeriesWeeklyOn[d]).toDate();
+						newData[oDateProp.startDateProp] = moment(week).day(oData.Days[d]).toDate();
 
 						this._validateAndPrepareNewAssignment(newData, oData, dayCounter, d, oDateProp);
 					}
@@ -2537,9 +2537,9 @@ sap.ui.define([
 
 				} else if (oData.SeriesRepeat === "M") {
 					newData = deepClone(oData);
-					if (oData.SeriesMonthlyOn === 0) {
+					if (oData.On === 0) {
 						newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'months').toDate();
-					} else if (oData.SeriesMonthlyOn === 1) {
+					} else if (oData.On === 1) {
 						var oStrDate = moment(oData[oDateProp.startDateProp]),
 							iDay = oStrDate.day();
 						newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'months').day(iDay).toDate();
@@ -2726,7 +2726,7 @@ sap.ui.define([
 					oEndDate = formatter.convertFromUTCDate(aResourceData.results[i].EndDate, aResourceData.results[i].isNew, aResourceData.results[
 						i].isChanging);
 					//add missing seconds in the enddate
-					if (oShiftData.SeriesRepeat && oShiftData.SeriesRepeat !== "N") {
+					if (oShiftData.SeriesRepeat && oShiftData.SeriesRepeat !== "NEVER") {
 						oEndDate = moment(oEndDate).add(999, 'milliseconds').toDate();
 					}
 
