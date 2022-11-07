@@ -607,7 +607,7 @@ sap.ui.define([
 				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
 			}
 		},
-		
+
 		/** Called to close AddNewResource Dialog
 		 * deleting the added item if the user is not saving it and closing the dialog
 		 * */
@@ -677,12 +677,12 @@ sap.ui.define([
 					oResourceObject: obj,
 					bDragged: true
 				};
-				
+
 				//Scroll to botton of the screen before adding so that it's visible while adding
 				iScrollTo = this.getLengthOfAllChildren(aChildren);
 				this.getView().getModel("viewModel").setProperty("/gantt/firstVisibleRow", iScrollTo);
 				this._setGanttScrollState();
-				
+
 				this.openAddNewResourceDialog(oTargetControl, oPopoverData);
 			}.bind(this));
 		},
@@ -711,7 +711,7 @@ sap.ui.define([
 				oDroppedTarget = oEvent.getParameter("droppedControl");
 				this.addNewResource(oDroppedTarget, oDraggedObject);
 			} else {
-				
+
 				//ondrop of the the resourcegroup
 				oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id);
 				sStartTime = oDroppedTarget.getTime();
@@ -2232,7 +2232,7 @@ sap.ui.define([
 		deleteRepeatingAssignment: function (oAssignmentData) {
 			// TODO for repeatative delete
 			var aAssignmentData = this._getChildrenDataByKey("RepeatGuid", oAssignmentData.RepeatGuid, null);
-			this._manageDates(oAssignmentData); 
+			this._manageDates(oAssignmentData);
 			this._markAsPlanningDelete(oAssignmentData); // mark planiing one assignment for delete
 			if (aAssignmentData.length) {
 				aAssignmentData.forEach(function (oAssignment, idx) {
@@ -2348,8 +2348,8 @@ sap.ui.define([
 		 */
 		_validateAssignment: function () {
 			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
-			aChildren = this.oPlanningModel.getProperty("/data/children"),
-			iScrollTo;
+				aChildren = this.oPlanningModel.getProperty("/data/children"),
+				iScrollTo;
 			//validation for the duplicates
 			if (this._validateDuplicateAsigment()) {
 				return;
@@ -2428,7 +2428,7 @@ sap.ui.define([
 				tempUnassignData: [],
 				isShapeSelected: false,
 				multiSelectedDataForDelete: [],
-				isRepeatAssignmentAdded:false
+				isRepeatAssignmentAdded: false
 			};
 			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
 			this.oPlanningModel.setData(deepClone(this.oOriginData));
@@ -2527,9 +2527,9 @@ sap.ui.define([
 
 				} else if (oData.SeriesRepeat === "W") {
 					var week = oStartDate;
-					for (var d = 0; d < oData.Days.length; d++) {
+					for (var d = 0; d < oData.SeriesWeeklyOn.length; d++) {
 						newData = deepClone(oData);
-						newData[oDateProp.startDateProp] = moment(week).day(oData.Days[d]).toDate();
+						newData[oDateProp.startDateProp] = moment(week).day(oData.SeriesWeeklyOn[d]).toDate();
 
 						this._validateAndPrepareNewAssignment(newData, oData, dayCounter, d, oDateProp);
 					}
@@ -2537,9 +2537,9 @@ sap.ui.define([
 
 				} else if (oData.SeriesRepeat === "M") {
 					newData = deepClone(oData);
-					if (oData.On === 0) {
+					if (oData.SeriesMonthlyOn === 0) {
 						newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'months').toDate();
-					} else if (oData.On === 1) {
+					} else if (oData.SeriesMonthlyOn === 1) {
 						var oStrDate = moment(oData[oDateProp.startDateProp]),
 							iDay = oStrDate.day();
 						newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'months').day(iDay).toDate();
@@ -2553,8 +2553,8 @@ sap.ui.define([
 				iEvery = parseInt(oData.SeriesEvery, 10);
 			}
 			while (oStartDate.isBefore(moment(oData.SERIES_END_DATE)));
-			
-			this.getModel("ganttPlanningModel").setProperty("/isRepeatAssignmentAdded",false);
+
+			this.getModel("ganttPlanningModel").setProperty("/isRepeatAssignmentAdded", false);
 		},
 
 		/**
@@ -2581,7 +2581,7 @@ sap.ui.define([
 				data.isTemporary = false;
 				if (!this.getModel("ganttPlanningModel").getProperty("/isRepeatAssignmentAdded")) {
 					this._markAsPlanningChange(data, true);
-					this.getModel("ganttPlanningModel").setProperty("/isRepeatAssignmentAdded",true);
+					this.getModel("ganttPlanningModel").setProperty("/isRepeatAssignmentAdded", true);
 				}
 
 			} else {
