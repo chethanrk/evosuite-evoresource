@@ -2579,6 +2579,11 @@ sap.ui.define([
 			if (this._checkDuplicateAsigment(data, aAssigments)) {
 				this._addNewAssignmentShape(data);
 				data.isTemporary = false;
+				if(data.SeriesRepeat === "W"){
+					data.SeriesOn = data.SeriesWeeklyOn.join(",");
+				}else if(data.SeriesRepeat === "M"){
+					data.SeriesOn = data.SeriesMonthlyOn === 0 ? "1" : "2";
+				}
 				if (!this.getModel("ganttPlanningModel").getProperty("/isRepeatAssignmentAdded")) {
 					this._markAsPlanningChange(data, true);
 					this.getModel("ganttPlanningModel").setProperty("/isRepeatAssignmentAdded", true);
