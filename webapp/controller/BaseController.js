@@ -538,14 +538,20 @@ sap.ui.define([
 					},
 					oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet");
 				aDeleteData.forEach(function (oAssignment) {
-					var entitySet = oEntitySetList[oAssignment.NODE_TYPE];
-					if (oAssignment.NODE_TYPE === "RES_GROUP") {
-						this.getModel().remove("/" + entitySet + "('" + oAssignment.Guid + "')", param);
-					} else if (oAssignment.NODE_TYPE === "SHIFT") {
-						this.getModel().remove("/" + entitySet + "(Guid='" + oAssignment.Guid + "',TemplateId='" + oAssignment.TemplateId +
-							"')",
-							param);
+					var entitySet = oEntitySetList[oAssignment.NODE_TYPE],
+						sPath = "";
+					if (oAssignment.isRepeating) {
+						oAssignment.IsSeries = "Y";
+					} else {
+						oAssignment.IsSeries = "N";
 					}
+
+					if (oAssignment.NODE_TYPE === "RES_GROUP") {
+						sPath = "/" + entitySet + "(Guid='" + oAssignment.Guid + "',IsSeries='" + oAssignment.IsSeries + "')";
+					} else if (oAssignment.NODE_TYPE === "SHIFT") {
+						sPath = "/" + entitySet + "(Guid='" + oAssignment.Guid + "',TemplateId='" + oAssignment.TemplateId + ",IsSeries='" + oAssignment.IsSeries + "')";
+					}
+					this.getModel().remove(sPath, param);
 
 				}.bind(this));
 				resolve(aDeleteData);
@@ -1088,7 +1094,7 @@ sap.ui.define([
 				window.open(sUri, "_blank");
 			}
 		},
-		
+
 		/**
 		 * This function is used for calculating length of items in tree table along with the children
 		 * @param aChildren {array} - Array with the GanttPlanningModel data
@@ -1102,7 +1108,7 @@ sap.ui.define([
 			});
 			return iItemsLength - 1;
 		},
-		
+
 		/**
 		 * get respective navigation details
 		 * @param sAppID

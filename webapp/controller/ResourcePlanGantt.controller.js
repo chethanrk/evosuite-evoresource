@@ -837,12 +837,16 @@ sap.ui.define([
 				sMsg = this.getResourceBundle().getText("msg.comfirmDeleteMessage");
 			var successcallback = function () {
 				this._removeAssignmentShape(oData, true);
-				this._oPlanningPopover.close();
+				if (this._oPlanningPopover) {
+					this._oPlanningPopover.close();
+				}
 			};
 			var cancelcallback = function () {};
 			if (oData.isNew) {
 				this._removeAssignmentShape(oData, true);
-				this._oPlanningPopover.close();
+				if (this._oPlanningPopover) {
+					this._oPlanningPopover.close();
+				}
 			} else {
 				this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
 			}
@@ -2231,14 +2235,16 @@ sap.ui.define([
 		 */
 		deleteRepeatingAssignment: function (oAssignmentData) {
 			// TODO for repeatative delete
-			var aAssignmentData = this._getChildrenDataByKey("RepeatGuid", oAssignmentData.RepeatGuid, null);
-			this._manageDates(oAssignmentData);
+			var aAssignmentData = this._getChildrenDataByKey("SeriesGuid", oAssignmentData.SeriesGuid, null),
+				oAssignItem;
+			// this._manageDates(oAssignmentData);
 			this._markAsPlanningDelete(oAssignmentData); // mark planiing one assignment for delete
 			if (aAssignmentData.length) {
-				aAssignmentData.forEach(function (oAssignment, idx) {
-					// TODO remove all assignmnet from gantt matching "RepeatGuid"
-
-				});
+				aAssignmentData.forEach(function (sPath, idx) {
+					// TODO remove all assignmnet from gantt matching "SeriesGuid"
+					oAssignItem = this.oPlanningModel.getProperty(sPath);
+					this._deleteAssignment(oAssignItem, false);
+				}.bind(this));
 			}
 		},
 
@@ -2254,7 +2260,7 @@ sap.ui.define([
 				oAssignItem.EffectiveStartDate = formatter.convertFromUTCDate(oAssignItem.EffectiveStartDate);
 				oAssignItem.EffectiveEndDate = formatter.convertFromUTCDate(oAssignItem.EffectiveEndDate);
 			}
-			this._deleteAssignment(oAssignItem);
+			this._deleteAssignment(oAssignItem, true);
 		},
 
 		/**
@@ -2262,7 +2268,7 @@ sap.ui.define([
 		 * @param {object} oAssignmentData - deleted data
 		 * 
 		 */
-		_deleteAssignment: function (oAssignmentData) {
+		_deleteAssignment: function (oAssignmentData, isPlanningRequired) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			var callbackFn = function (oItem, oData, idx) {
 				var aAssignments, shiftData;
@@ -2276,7 +2282,9 @@ sap.ui.define([
 
 				aAssignments.forEach(function (oAssignItemData, index) {
 					if (oAssignItemData.Guid === oData.Guid) {
-						this._markAsPlanningDelete(oAssignItemData);
+						if (isPlanningRequired) {
+							this._markAsPlanningDelete(oAssignItemData);
+						}
 						if (this.groupShiftContext) {
 							if (oAssignItemData.NODE_TYPE === "RES_GROUP") {
 								oAssignItemData.RESOURCE_GROUP_COLOR = this.groupShiftContext.getProperty("ResourceGroupColor");
@@ -2580,9 +2588,9 @@ sap.ui.define([
 				this._addNewAssignmentShape(data);
 				data.isTemporary = false;
 				data.IsSeries = "Y";
-				if(data.SeriesRepeat === "W"){
+				if (data.SeriesRepeat === "W") {
 					data.SeriesOn = data.SeriesWeeklyOn.join(",");
-				}else if(data.SeriesRepeat === "M"){
+				} else if (data.SeriesRepeat === "M") {
 					data.SeriesOn = data.SeriesMonthlyOn === 0 ? "1" : "2";
 				}
 				if (!this.getModel("ganttPlanningModel").getProperty("/isRepeatAssignmentAdded")) {
