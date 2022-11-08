@@ -1880,7 +1880,7 @@ sap.ui.define([
 				oAssignData = oContext.getObject();
 				if (oAssignData.NODE_TYPE === "RES_GROUP") {
 					//popover data adjustment with repeat mode
-					oAssignData.SeriesRepeat = "NEVER";
+					oAssignData.SeriesRepeat = "N";
 					oAssignData.isEditable = true;
 					oAssignData.isDeletable = this.isGroupDeletable(oAssignData);
 					oAssignData.minDate = this._getShapePopoverMinDate(oAssignData.isDeletable);
@@ -1889,7 +1889,7 @@ sap.ui.define([
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
 				} else if (oAssignData.NODE_TYPE === "SHIFT") {
 					//popover data adjustment with repeat mode
-					oAssignData.SeriesRepeat = "NEVER";
+					oAssignData.SeriesRepeat = "N";
 					oAssignData.isEditable = true;
 					oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
 					oAssignData.isDeletable = this.isShiftDeletable(oAssignData);
@@ -2355,7 +2355,7 @@ sap.ui.define([
 				return;
 			}
 
-			if (!oData.SeriesRepeat || oData.SeriesRepeat === "NEVER") {
+			if (!oData.SeriesRepeat || oData.SeriesRepeat === "N") {
 				if (oData.isNew) {
 					if (oData.NODE_TYPE === "SHIFT") {
 						if (this._shiftValidation(oData)) {
@@ -2579,6 +2579,7 @@ sap.ui.define([
 			if (this._checkDuplicateAsigment(data, aAssigments)) {
 				this._addNewAssignmentShape(data);
 				data.isTemporary = false;
+				data.IsSeries = "Y";
 				if(data.SeriesRepeat === "W"){
 					data.SeriesOn = data.SeriesWeeklyOn.join(",");
 				}else if(data.SeriesRepeat === "M"){

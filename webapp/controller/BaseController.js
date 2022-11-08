@@ -279,6 +279,7 @@ sap.ui.define([
 						SeriesWeeklyOn: [],
 						SeriesMonthlyOn: 0,
 						SERIES_END_DATE: new Date(),
+						IsSeries: "N",
 						isEditable: true,
 						isDeletable: true,
 						isRestChanges: true,
