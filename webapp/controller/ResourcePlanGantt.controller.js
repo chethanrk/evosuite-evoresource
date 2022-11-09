@@ -2236,14 +2236,19 @@ sap.ui.define([
 		deleteRepeatingAssignment: function (oAssignmentData) {
 			// TODO for repeatative delete
 			var aAssignmentData = this._getChildrenDataByKey("SeriesGuid", oAssignmentData.SeriesGuid, null),
+				aAssignment = [],
 				oAssignItem;
 			// this._manageDates(oAssignmentData);
 			this._markAsPlanningDelete(oAssignmentData); // mark planiing one assignment for delete
 			if (aAssignmentData.length) {
 				aAssignmentData.forEach(function (sPath, idx) {
-					// TODO remove all assignmnet from gantt matching "SeriesGuid"
 					oAssignItem = this.oPlanningModel.getProperty(sPath);
-					this._deleteAssignment(oAssignItem, false);
+					aAssignment.push(oAssignItem);
+				}.bind(this));
+
+				aAssignment.forEach(function (oAssignData, idx) {
+					// TODO remove all assignmnet from gantt matching "SeriesGuid"
+					this._deleteAssignment(oAssignData, false);
 				}.bind(this));
 			}
 		},
