@@ -322,7 +322,7 @@ sap.ui.define([
 							defaultValue = {
 								"Edm.String": "",
 								"Edm.Byte": 0,
-								"Edm.DateTime": null,
+								"Edm.DateTime": null
 							};
 						obj[property.name] = defaultValue.hasOwnProperty(property.type) ? defaultValue[property.type] : null;
 						if (oRowData.hasOwnProperty(property.name)) {
@@ -341,6 +341,7 @@ sap.ui.define([
 					obj.PARENT_NODE_ID = oRowData.NodeId;
 					obj.bDragged = bDragged;
 					obj.ParentNodeId = oRowData.ResourceGuid;
+					obj.IsSeries = false;
 
 					if (nodeType === "RESOURCE") {
 						obj.NodeId = oRowData.NodeId;
