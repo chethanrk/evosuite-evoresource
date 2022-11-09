@@ -1609,6 +1609,7 @@ sap.ui.define([
 				oShape = oParams.shape,
 				oContext = oShape && oShape.getBindingContext("ganttPlanningModel"),
 				oAssignment = oContext && oContext.getObject();
+			this.groupShiftContext = null;
 			if (oShape && oShape.sParentAggregationName !== "shapes1") {
 				this._setPopoverData(oShape, {});
 				if (oAssignment && formatter.isPopoverDeleteButtonVisible(oAssignment.isTemporary, oAssignment.isEditable, oAssignment.isDeletable)) {
