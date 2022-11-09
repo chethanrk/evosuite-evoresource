@@ -2086,24 +2086,28 @@ sap.ui.define([
 				return;
 			}
 			if (oAssignData.isNew) {
-				var callbackFn = function (oItem, oData, idx) {
-					var aAssignments = [];
-					if (oData.NODE_TYPE === "RES_GROUP" || oData.NODE_TYPE === "RESOURCE") {
-						aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
-							.results : []) : [];
-					} else if (oData.NODE_TYPE === "SHIFT") {
-						aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
-					}
-					aAssignments.forEach(function (oAssignItem, index) {
-						if (oAssignItem.Guid === oData.Guid || oAssignItem.isTemporary === true) {
-							this._markAsPlanningChange(oAssignItem, false);
-							aAssignments.splice(index, 1);
-
+				if (oAssignData.isRepeating) {
+					this.deleteRepeatingAssignment(oAssignData);
+				} else {
+					var callbackFn = function (oItem, oData, idx) {
+						var aAssignments = [];
+						if (oData.NODE_TYPE === "RES_GROUP" || oData.NODE_TYPE === "RESOURCE") {
+							aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
+								.results : []) : [];
+						} else if (oData.NODE_TYPE === "SHIFT") {
+							aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
 						}
-					}.bind(this));
-				};
-				aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
-				this.oPlanningModel.setProperty("/data/children", aChildren);
+						aAssignments.forEach(function (oAssignItem, index) {
+							if (oAssignItem.Guid === oData.Guid || oAssignItem.isTemporary === true) {
+								this._markAsPlanningChange(oAssignItem, false);
+								aAssignments.splice(index, 1);
+
+							}
+						}.bind(this));
+					};
+					aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
+					this.oPlanningModel.setProperty("/data/children", aChildren);
+				}
 			} else {
 				this._validateForDelete(oAssignData);
 			}
@@ -2238,19 +2242,44 @@ sap.ui.define([
 			// TODO for repeatative delete
 			var aAssignmentData = this._getChildrenDataByKey("SeriesGuid", oAssignmentData.SeriesGuid, null),
 				aAssignment = [],
-				oAssignItem;
+				oAssignItem,
+				aChildren = this.oPlanningModel.getProperty("/data/children");;
 			// this._manageDates(oAssignmentData);
-			this._markAsPlanningDelete(oAssignmentData); // mark planiing one assignment for delete
+
 			if (aAssignmentData.length) {
 				aAssignmentData.forEach(function (sPath, idx) {
 					oAssignItem = this.oPlanningModel.getProperty(sPath);
 					aAssignment.push(oAssignItem);
 				}.bind(this));
+				if (oAssignmentData.isNew) {
+					aAssignment.forEach(function (oAssignData, idx) {
+						var callbackFn = function (oItem, oData, idx) {
+							var aAssignments = [];
+							if (oData.NODE_TYPE === "RES_GROUP" || oData.NODE_TYPE === "RESOURCE") {
+								aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
+									.results : []) : [];
+							} else if (oData.NODE_TYPE === "SHIFT") {
+								aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
+							}
+							aAssignments.forEach(function (oAssignment, index) {
+								if (oAssignment.Guid === oData.Guid || oAssignment.isTemporary === true) {
+									this._markAsPlanningChange(oAssignment, false);
+									aAssignments.splice(index, 1);
 
-				aAssignment.forEach(function (oAssignData, idx) {
-					// TODO remove all assignmnet from gantt matching "SeriesGuid"
-					this._deleteAssignment(oAssignData, false);
-				}.bind(this));
+								}
+							}.bind(this));
+						};
+						aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
+						this.oPlanningModel.setProperty("/data/children", aChildren);
+					}.bind(this));
+
+				} else {
+					this._markAsPlanningDelete(oAssignmentData); // mark planiing one assignment for delete
+					aAssignment.forEach(function (oAssignData, idx) {
+						// TODO remove all assignmnet from gantt matching "SeriesGuid"
+						this._deleteAssignment(oAssignData, false);
+					}.bind(this));
+				}
 			}
 		},
 
@@ -2529,6 +2558,7 @@ sap.ui.define([
 				oDateProp.startDateProp = "EffectiveStartDate";
 				oDateProp.endDateProp = "EffectiveEndDate";
 			}
+			oData.SeriesGuid = new Date().getTime().toString();
 			oStartDate = moment(oData[oDateProp.startDateProp]);
 
 			do {
@@ -2594,7 +2624,7 @@ sap.ui.define([
 				this._addNewAssignmentShape(data);
 				data.isTemporary = false;
 				data.IsSeries = true;
-				data.SERIES_END_DATE = formatter.convertToUTCDate(data.SERIES_END_DATE);     
+				data.SERIES_END_DATE = formatter.convertToUTCDate(data.SERIES_END_DATE);
 				if (data.SeriesRepeat === "W") {
 					data.SeriesOn = data.SeriesWeeklyOn.join(",");
 				} else if (data.SeriesRepeat === "M") {
