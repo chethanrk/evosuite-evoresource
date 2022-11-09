@@ -279,7 +279,7 @@ sap.ui.define([
 						SeriesWeeklyOn: [],
 						SeriesMonthlyOn: 0,
 						SERIES_END_DATE: new Date(),
-						IsSeries: "N",
+						IsSeries: false,
 						isEditable: true,
 						isDeletable: true,
 						isRestChanges: true,
@@ -541,15 +541,15 @@ sap.ui.define([
 					var entitySet = oEntitySetList[oAssignment.NODE_TYPE],
 						sPath = "";
 					if (oAssignment.isRepeating) {
-						oAssignment.IsSeries = "Y";
+						oAssignment.IsSeries = true;
 					} else {
-						oAssignment.IsSeries = "N";
+						oAssignment.IsSeries = false;
 					}
 
 					if (oAssignment.NODE_TYPE === "RES_GROUP") {
-						sPath = "/" + entitySet + "(Guid='" + oAssignment.Guid + "',IsSeries='" + oAssignment.IsSeries + "')";
+						sPath = "/" + entitySet + "(Guid='" + oAssignment.Guid + "',IsSeries=" + oAssignment.IsSeries + ")";
 					} else if (oAssignment.NODE_TYPE === "SHIFT") {
-						sPath = "/" + entitySet + "(Guid='" + oAssignment.Guid + "',TemplateId='" + oAssignment.TemplateId + ",IsSeries='" + oAssignment.IsSeries + "')";
+						sPath = "/" + entitySet + "(Guid='" + oAssignment.Guid + "',TemplateId='" + oAssignment.TemplateId + "',IsSeries=" + oAssignment.IsSeries + ")";
 					}
 					this.getModel().remove(sPath, param);
 

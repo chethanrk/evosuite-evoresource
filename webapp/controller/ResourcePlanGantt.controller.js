@@ -2587,7 +2587,7 @@ sap.ui.define([
 			if (this._checkDuplicateAsigment(data, aAssigments)) {
 				this._addNewAssignmentShape(data);
 				data.isTemporary = false;
-				data.IsSeries = "Y";
+				data.IsSeries = true;
 				if (data.SeriesRepeat === "W") {
 					data.SeriesOn = data.SeriesWeeklyOn.join(",");
 				} else if (data.SeriesRepeat === "M") {
