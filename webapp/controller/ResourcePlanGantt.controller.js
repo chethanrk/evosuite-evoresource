@@ -2593,6 +2593,7 @@ sap.ui.define([
 				this._addNewAssignmentShape(data);
 				data.isTemporary = false;
 				data.IsSeries = true;
+				data.SERIES_END_DATE = formatter.convertToUTCDate(data.SERIES_END_DATE);     
 				if (data.SeriesRepeat === "W") {
 					data.SeriesOn = data.SeriesWeeklyOn.join(",");
 				} else if (data.SeriesRepeat === "M") {
