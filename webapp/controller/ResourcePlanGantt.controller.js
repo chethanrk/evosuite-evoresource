@@ -2243,13 +2243,21 @@ sap.ui.define([
 			var aAssignmentData = this._getChildrenDataByKey("SeriesGuid", oAssignmentData.SeriesGuid, null),
 				aAssignment = [],
 				oAssignItem,
-				aChildren = this.oPlanningModel.getProperty("/data/children");;
+				aChildren = this.oPlanningModel.getProperty("/data/children"),
+				sStartDateProp;
 			// this._manageDates(oAssignmentData);
 
 			if (aAssignmentData.length) {
 				aAssignmentData.forEach(function (sPath, idx) {
 					oAssignItem = this.oPlanningModel.getProperty(sPath);
-					aAssignment.push(oAssignItem);
+					if (oAssignItem.NODE_TYPE === "RES_GROUP") {
+						sStartDateProp = "StartDate";
+					} else if (oAssignItem.NODE_TYPE === "SHIFT") {
+						sStartDateProp = "EffectiveStartDate";
+					}
+					if (!this._isDatePast(oAssignItem[sStartDateProp])) {
+						aAssignment.push(oAssignItem);
+					}
 				}.bind(this));
 				if (oAssignmentData.isNew) {
 					aAssignment.forEach(function (oAssignData, idx) {
