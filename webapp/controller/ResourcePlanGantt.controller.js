@@ -2557,7 +2557,9 @@ sap.ui.define([
 					startDateProp: null,
 					endDateProp: null
 				},
-				oStartDate;
+				oStartDate,
+				oEndDate,
+				iDateDiff=0;
 
 			if (oData.NODE_TYPE === "RES_GROUP") {
 				oDateProp.startDateProp = "StartDate";
@@ -2568,13 +2570,15 @@ sap.ui.define([
 			}
 			oData.SeriesGuid = new Date().getTime().toString();
 			oStartDate = moment(oData[oDateProp.startDateProp]);
+			oEndDate = moment(oData[oDateProp.endDateProp]);
+			iDateDiff = moment(oEndDate).diff(oStartDate,'d');
 
 			do {
 				if (oData.SeriesRepeat === "D") {
 					newData = deepClone(oData);
 					newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'days').toDate();
 
-					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, null, oDateProp);
+					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, iDateDiff, null, oDateProp);
 					oStartDate = moment(newData[oDateProp.startDateProp]);
 
 				} else if (oData.SeriesRepeat === "W") {
@@ -2583,7 +2587,7 @@ sap.ui.define([
 						newData = deepClone(oData);
 						newData[oDateProp.startDateProp] = moment(week).day(oData.SeriesWeeklyOn[d]).toDate();
 
-						this._validateAndPrepareNewAssignment(newData, oData, dayCounter, d, oDateProp);
+						this._validateAndPrepareNewAssignment(newData, oData, dayCounter, iDateDiff, d, oDateProp);
 					}
 					oStartDate = moment(oStartDate.add(iEvery, 'weeks').startOf('weeks').toDate());
 
@@ -2597,7 +2601,7 @@ sap.ui.define([
 						newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'months').day(iDay).toDate();
 					}
 
-					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, null, oDateProp);
+					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, iDateDiff, null, oDateProp);
 					oStartDate = moment(newData[oDateProp.startDateProp]);
 				}
 
@@ -2658,12 +2662,12 @@ sap.ui.define([
 		 * @param iCounter - integer indicator
 		 * @param iDayIndex - integer days loop index
 		 */
-		_validateAndPrepareNewAssignment: function (newData, oData, iCounter, iDayIndex, oDateProp) {
+		_validateAndPrepareNewAssignment: function (newData, oData, iCounter, iDateDiff, iDayIndex, oDateProp) {
 			newData.Guid = newData.Guid + iCounter;
 			if (iDayIndex) {
 				newData.Guid = newData.Guid + iCounter + iDayIndex;
 			}
-			newData[oDateProp.endDateProp] = moment(newData[oDateProp.startDateProp]).endOf('day').toDate();
+			newData[oDateProp.endDateProp] = moment(newData[oDateProp.startDateProp]).add(iDateDiff, 'd').endOf('day').toDate();
 
 			if (moment(newData[oDateProp.startDateProp]).isSameOrAfter(oData[oDateProp.startDateProp]) && moment(newData[oDateProp.startDateProp])
 				.isSameOrBefore(moment(oData.SERIES_END_DATE))) {
