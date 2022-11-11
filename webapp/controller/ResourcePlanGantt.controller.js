@@ -277,7 +277,17 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.After
 				},
+				openShapeContextMenu: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
 				handleShapeContextMenuPress: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				deleteRepeatingAssignment: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
@@ -1635,7 +1645,10 @@ sap.ui.define([
 				this._oShapeContextMenu.openBy(oShape, false, Popup.Dock.BeginTop, Popup.Dock.EndBottom);
 			}
 		},
-
+		/*
+		 * Function called when Shape Context menu pressed
+		 * Setting "isRepeating" property based on the item press
+		 */
 		handleShapeContextMenuPress: function (oEvent) {
 			var sKey = oEvent.getParameter("item").getProperty("key"),
 				oData = this.oPlanningModel.getProperty("/tempData/popover");
@@ -2086,7 +2099,7 @@ sap.ui.define([
 				return;
 			}
 			if (oAssignData.isNew) {
-				if (oAssignData.isRepeating) {
+				if (oAssignData.isRepeating) { //checking if it is delete series
 					this.deleteRepeatingAssignment(oAssignData);
 				} else {
 					var callbackFn = function (oItem, oData, idx) {
@@ -2239,13 +2252,11 @@ sap.ui.define([
 		 * @{param} oAssignmentData - Assignment Information
 		 */
 		deleteRepeatingAssignment: function (oAssignmentData) {
-			// TODO for repeatative delete
 			var aAssignmentData = this._getChildrenDataByKey("SeriesGuid", oAssignmentData.SeriesGuid, null),
 				aAssignment = [],
 				oAssignItem,
 				aChildren = this.oPlanningModel.getProperty("/data/children"),
 				sStartDateProp;
-			// this._manageDates(oAssignmentData);
 
 			if (aAssignmentData.length) {
 				aAssignmentData.forEach(function (sPath, idx) {
@@ -2282,9 +2293,8 @@ sap.ui.define([
 					}.bind(this));
 
 				} else {
-					this._markAsPlanningDelete(oAssignmentData); // mark planiing one assignment for delete
+					this._markAsPlanningDelete(oAssignmentData); // mark planing one assignment for delete
 					aAssignment.forEach(function (oAssignData, idx) {
-						// TODO remove all assignmnet from gantt matching "SeriesGuid"
 						this._deleteAssignment(oAssignData, false);
 					}.bind(this));
 				}
@@ -2309,6 +2319,7 @@ sap.ui.define([
 		/**
 		 * Method will get call after validation is done, if validation pass, data will get delete from gantt.
 		 * @param {object} oAssignmentData - deleted data
+		 * @param {boolean} isPlanningRequired - indicates whether "DELETE" need to be recorded in planning mode
 		 * 
 		 */
 		_deleteAssignment: function (oAssignmentData, isPlanningRequired) {

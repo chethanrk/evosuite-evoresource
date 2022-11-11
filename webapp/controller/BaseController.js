@@ -541,7 +541,7 @@ sap.ui.define([
 				aDeleteData.forEach(function (oAssignment) {
 					var entitySet = oEntitySetList[oAssignment.NODE_TYPE],
 						sPath = "";
-					if (oAssignment.isRepeating) {
+					if (oAssignment.isRepeating) { // checking if single delete or series delete
 						oAssignment.IsSeries = true;
 					} else {
 						oAssignment.IsSeries = false;
