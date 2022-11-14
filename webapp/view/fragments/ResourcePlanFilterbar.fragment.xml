@@ -2,7 +2,7 @@
 	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
 	<smartFilterBar:SmartFilterBar id="idPageResourcePlanningSmartFilterBar" entitySet="GanttResourceHierarchySet" useDateRangeType="true"
 		persistencyKey="com.evorait.evosuite.evoresource.GanttFilterbar" initialized="onInitializedSmartVariant" search="onSearch" liveMode="true"
-		afterVariantLoad="afterVariantLoad" beforeVariantFetch="beforeVariantFetch">
+		afterVariantLoad="afterVariantLoad" beforeVariantFetch="beforeVariantFetch" showClearButton="true">
 		<!-- layout data used to make the table growing but the filter bar fixed -->
 		<smartFilterBar:layoutData>
 			<FlexItemData shrinkFactor="0"/>

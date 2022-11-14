@@ -274,11 +274,12 @@ sap.ui.define([
 						isTemporary: true,
 						isNew: true,
 						Guid: new Date().getTime(),
-						Repeat: "NEVER",
+						SeriesRepeat: "N",
 						Every: "",
-						Days: [],
-						On: 0,
-						RepeatEndDate: new Date(),
+						SeriesWeeklyOn: [],
+						SeriesMonthlyOn: 0,
+						SERIES_END_DATE: new Date(),
+						IsSeries: false,
 						isEditable: true,
 						isDeletable: true,
 						isRestChanges: true,
@@ -321,14 +322,14 @@ sap.ui.define([
 							defaultValue = {
 								"Edm.String": "",
 								"Edm.Byte": 0,
-								"Edm.DateTime": null,
+								"Edm.DateTime": null
 							};
 						obj[property.name] = defaultValue.hasOwnProperty(property.type) ? defaultValue[property.type] : null;
 						if (oRowData.hasOwnProperty(property.name)) {
 							obj[property.name] = oRowData[property.name];
 						}
 					});
-					obj.RepeatEndDate = oEndTime;
+					obj.SERIES_END_DATE = oEndTime;
 					obj.StartDate = oStartTime;
 					obj.EndDate = oEndTime;
 					obj.EffectiveStartDate = oStartTime;
@@ -340,6 +341,7 @@ sap.ui.define([
 					obj.PARENT_NODE_ID = oRowData.NodeId;
 					obj.bDragged = bDragged;
 					obj.ParentNodeId = oRowData.ResourceGuid;
+					obj.IsSeries = false;
 
 					if (nodeType === "RESOURCE") {
 						obj.NodeId = oRowData.NodeId;
@@ -537,14 +539,20 @@ sap.ui.define([
 					},
 					oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet");
 				aDeleteData.forEach(function (oAssignment) {
-					var entitySet = oEntitySetList[oAssignment.NODE_TYPE];
-					if (oAssignment.NODE_TYPE === "RES_GROUP") {
-						this.getModel().remove("/" + entitySet + "('" + oAssignment.Guid + "')", param);
-					} else if (oAssignment.NODE_TYPE === "SHIFT") {
-						this.getModel().remove("/" + entitySet + "(Guid='" + oAssignment.Guid + "',TemplateId='" + oAssignment.TemplateId +
-							"')",
-							param);
+					var entitySet = oEntitySetList[oAssignment.NODE_TYPE],
+						sPath = "";
+					if (oAssignment.isRepeating) { // checking if single delete or series delete
+						oAssignment.IsSeries = true;
+					} else {
+						oAssignment.IsSeries = false;
 					}
+
+					if (oAssignment.NODE_TYPE === "RES_GROUP") {
+						sPath = "/" + entitySet + "(Guid='" + oAssignment.Guid + "',IsSeries=" + oAssignment.IsSeries + ")";
+					} else if (oAssignment.NODE_TYPE === "SHIFT") {
+						sPath = "/" + entitySet + "(Guid='" + oAssignment.Guid + "',TemplateId='" + oAssignment.TemplateId + "',IsSeries=" + oAssignment.IsSeries + ")";
+					}
+					this.getModel().remove(sPath, param);
 
 				}.bind(this));
 				resolve(aDeleteData);
@@ -1087,7 +1095,7 @@ sap.ui.define([
 				window.open(sUri, "_blank");
 			}
 		},
-		
+
 		/**
 		 * This function is used for calculating length of items in tree table along with the children
 		 * @param aChildren {array} - Array with the GanttPlanningModel data
@@ -1101,7 +1109,7 @@ sap.ui.define([
 			});
 			return iItemsLength - 1;
 		},
-		
+
 		/**
 		 * get respective navigation details
 		 * @param sAppID

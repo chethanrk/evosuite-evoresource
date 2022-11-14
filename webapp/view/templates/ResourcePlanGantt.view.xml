@@ -51,7 +51,7 @@
 								<gnt2:GanttChartWithTable id="idResourcePlanGanttChartTable" class="resourceGanttWithTable" shapeSelectionMode="{parts:[{path:'user>/ENABLE_MULTIPLE_DELETE_BUTTON'}], formatter:'.formatter.getGanttSelectionMode'}"
 									shapeDoubleClick="onShapeDoubleClick" shapeSelectionChange="onShapeSelectionChange" ghostAlignment="Start" adhocLineLayer="Bottom" nowLineInUTC="false" shapeMouseEnter="onShapeMouseEnter"
 									shapeDrop="onShapeDrop" shapeResize="onShapeResize" shapeSelectionSettings="{color: '#000000', strokeWidth: 1.5, strokeDasharray: '0'}"
-									visibleHorizonUpdate="onVisibleHorizonUpdate" dragOrientation="Horizontal">
+									visibleHorizonUpdate="onVisibleHorizonUpdate" dragOrientation="Horizontal" shapeContextMenu="onShapeContextMenu">
 									<gnt2:table>
 										<table:TreeTable id="idResourcePlanGanttTreeTable" selectionMode="Single" visibleRowCountMode="Auto" rowActionCount="2" threshold="10"
 											enableColumnReordering="true" enableBusyIndicator="true" busyStateChanged="onBusyStateChanged" enableCellFilter="false"

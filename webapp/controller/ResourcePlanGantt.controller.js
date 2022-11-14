@@ -10,9 +10,10 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/gantt/misc/Utility",
-	"sap/base/util/merge"
+	"sap/base/util/merge",
+	"sap/ui/core/Popup"
 ], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Fragment, Filter, FilterOperator,
-	Utility, merge) {
+	Utility, merge, Popup) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanGantt", {
@@ -267,6 +268,26 @@ sap.ui.define([
 					overrideExecution: OverrideExecution.After
 				},
 				addNewResource: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onShapeContextMenu: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				openShapeContextMenu: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				handleShapeContextMenuPress: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				deleteRepeatingAssignment: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
@@ -596,7 +617,7 @@ sap.ui.define([
 				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
 			}
 		},
-		
+
 		/** Called to close AddNewResource Dialog
 		 * deleting the added item if the user is not saving it and closing the dialog
 		 * */
@@ -666,12 +687,12 @@ sap.ui.define([
 					oResourceObject: obj,
 					bDragged: true
 				};
-				
+
 				//Scroll to botton of the screen before adding so that it's visible while adding
 				iScrollTo = this.getLengthOfAllChildren(aChildren);
 				this.getView().getModel("viewModel").setProperty("/gantt/firstVisibleRow", iScrollTo);
 				this._setGanttScrollState();
-				
+
 				this.openAddNewResourceDialog(oTargetControl, oPopoverData);
 			}.bind(this));
 		},
@@ -700,7 +721,7 @@ sap.ui.define([
 				oDroppedTarget = oEvent.getParameter("droppedControl");
 				this.addNewResource(oDroppedTarget, oDraggedObject);
 			} else {
-				
+
 				//ondrop of the the resourcegroup
 				oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id);
 				sStartTime = oDroppedTarget.getTime();
@@ -826,12 +847,16 @@ sap.ui.define([
 				sMsg = this.getResourceBundle().getText("msg.comfirmDeleteMessage");
 			var successcallback = function () {
 				this._removeAssignmentShape(oData, true);
-				this._oPlanningPopover.close();
+				if (this._oPlanningPopover) {
+					this._oPlanningPopover.close();
+				}
 			};
 			var cancelcallback = function () {};
 			if (oData.isNew) {
 				this._removeAssignmentShape(oData, true);
-				this._oPlanningPopover.close();
+				if (this._oPlanningPopover) {
+					this._oPlanningPopover.close();
+				}
 			} else {
 				this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelcallback.bind(this));
 			}
@@ -995,7 +1020,7 @@ sap.ui.define([
 		 * reset the repeat mode data each time selection gets changed
 		 */
 		onChangeRepeatMode: function (oEvent) {
-			this.oPlanningModel.setProperty("/tempData/popover/Every", "");
+			this.oPlanningModel.setProperty("/tempData/popover/SeriesEvery", "");
 			this.oPlanningModel.setProperty("/tempData/popover/Days", []);
 			this.oPlanningModel.setProperty("/tempData/popover/On", 0);
 		},
@@ -1586,6 +1611,55 @@ sap.ui.define([
 				upperCase: false
 			});
 		},
+		/*
+		 * Function called on right click of assignment
+		 */
+		onShapeContextMenu: function (oEvent) {
+			var oParams = oEvent.getParameters(),
+				oShape = oParams.shape,
+				oContext = oShape && oShape.getBindingContext("ganttPlanningModel"),
+				oAssignment = oContext && oContext.getObject();
+			this.groupShiftContext = null;
+			if (oShape && oShape.sParentAggregationName !== "shapes1") {
+				this._setPopoverData(oShape, {});
+				if (oAssignment && formatter.isPopoverDeleteButtonVisible(oAssignment.isTemporary, oAssignment.isEditable, oAssignment.isDeletable)) {
+					this.openShapeContextMenu(oShape);
+				}
+			}
+		},
+		/*
+		 * Function to open Shape Context Menu
+		 * @param {object} - oShape - Shape Data
+		 */
+		openShapeContextMenu: function (oShape) {
+			if (!this._oShapeContextMenu) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoresource.view.fragments.ShapeContextMenu",
+					controller: this
+				}).then(function (oDialog) {
+					this._oShapeContextMenu = oDialog;
+					this.getView().addDependent(this._oShapeContextMenu);
+					this._oShapeContextMenu.openBy(oShape, false, Popup.Dock.BeginTop, Popup.Dock.EndBottom);
+				}.bind(this));
+			} else {
+				this._oShapeContextMenu.openBy(oShape, false, Popup.Dock.BeginTop, Popup.Dock.EndBottom);
+			}
+		},
+		/*
+		 * Function called when Shape Context menu pressed
+		 * Setting "isRepeating" property based on the item press
+		 */
+		handleShapeContextMenuPress: function (oEvent) {
+			var sKey = oEvent.getParameter("item").getProperty("key"),
+				oData = this.oPlanningModel.getProperty("/tempData/popover");
+			if (sKey === "OCCURENCE") {
+				oData.isRepeating = false;
+			} else if (sKey === "SERIES") {
+				oData.isRepeating = true;
+			}
+			this.onPressDeleteAssignment();
+
+		},
 
 		/* =========================================================== */
 		/* internal methods                                            */
@@ -1824,7 +1898,7 @@ sap.ui.define([
 				oAssignData = oContext.getObject();
 				if (oAssignData.NODE_TYPE === "RES_GROUP") {
 					//popover data adjustment with repeat mode
-					oAssignData.Repeat = "NEVER";
+					oAssignData.SeriesRepeat = "N";
 					oAssignData.isEditable = true;
 					oAssignData.isDeletable = this.isGroupDeletable(oAssignData);
 					oAssignData.minDate = this._getShapePopoverMinDate(oAssignData.isDeletable);
@@ -1833,7 +1907,7 @@ sap.ui.define([
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
 				} else if (oAssignData.NODE_TYPE === "SHIFT") {
 					//popover data adjustment with repeat mode
-					oAssignData.Repeat = "NEVER";
+					oAssignData.SeriesRepeat = "N";
 					oAssignData.isEditable = true;
 					oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
 					oAssignData.isDeletable = this.isShiftDeletable(oAssignData);
@@ -2025,24 +2099,28 @@ sap.ui.define([
 				return;
 			}
 			if (oAssignData.isNew) {
-				var callbackFn = function (oItem, oData, idx) {
-					var aAssignments = [];
-					if (oData.NODE_TYPE === "RES_GROUP" || oData.NODE_TYPE === "RESOURCE") {
-						aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
-							.results : []) : [];
-					} else if (oData.NODE_TYPE === "SHIFT") {
-						aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
-					}
-					aAssignments.forEach(function (oAssignItem, index) {
-						if (oAssignItem.Guid === oData.Guid || oAssignItem.isTemporary === true) {
-							this._markAsPlanningChange(oAssignItem, false);
-							aAssignments.splice(index, 1);
-
+				if (oAssignData.isRepeating) { //checking if it is delete series
+					this.deleteRepeatingAssignment(oAssignData);
+				} else {
+					var callbackFn = function (oItem, oData, idx) {
+						var aAssignments = [];
+						if (oData.NODE_TYPE === "RES_GROUP" || oData.NODE_TYPE === "RESOURCE") {
+							aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
+								.results : []) : [];
+						} else if (oData.NODE_TYPE === "SHIFT") {
+							aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
 						}
-					}.bind(this));
-				};
-				aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
-				this.oPlanningModel.setProperty("/data/children", aChildren);
+						aAssignments.forEach(function (oAssignItem, index) {
+							if (oAssignItem.Guid === oData.Guid || oAssignItem.isTemporary === true) {
+								this._markAsPlanningChange(oAssignItem, false);
+								aAssignments.splice(index, 1);
+
+							}
+						}.bind(this));
+					};
+					aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
+					this.oPlanningModel.setProperty("/data/children", aChildren);
+				}
 			} else {
 				this._validateForDelete(oAssignData);
 			}
@@ -2151,14 +2229,75 @@ sap.ui.define([
 					oDemandModel.setProperty("/data", this._checkMarkedUnassigned(oDemandData.results));
 					this.openDemandDialog();
 				} else {
-					this._manageDates(oAssignItem);
+					if (oAssignItem.isRepeating) { //if repeatative delete
+						this.deleteRepeatingAssignment(oAssignItem);
+					} else {
+						this._manageDates(oAssignItem);
+					}
 				}
 				this.oPlanningModel.refresh();
 			}.bind(this);
 			if (oAssignItem.NODE_TYPE !== "SHIFT" && bAssignmentCheck) {
 				this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
 			} else {
-				this._manageDates(oAssignItem);
+				if (oAssignItem.isRepeating) { //if repeatative delete
+					this.deleteRepeatingAssignment(oAssignItem);
+				} else {
+					this._manageDates(oAssignItem);
+				}
+			}
+		},
+		/**
+		 * Delete repeatative assignment 
+		 * @{param} oAssignmentData - Assignment Information
+		 */
+		deleteRepeatingAssignment: function (oAssignmentData) {
+			var aAssignmentData = this._getChildrenDataByKey("SeriesGuid", oAssignmentData.SeriesGuid, null),
+				aAssignment = [],
+				oAssignItem,
+				aChildren = this.oPlanningModel.getProperty("/data/children"),
+				sStartDateProp;
+
+			if (aAssignmentData.length) {
+				aAssignmentData.forEach(function (sPath, idx) {
+					oAssignItem = this.oPlanningModel.getProperty(sPath);
+					if (oAssignItem.NODE_TYPE === "RES_GROUP") {
+						sStartDateProp = "StartDate";
+					} else if (oAssignItem.NODE_TYPE === "SHIFT") {
+						sStartDateProp = "EffectiveStartDate";
+					}
+					if (!this._isDatePast(oAssignItem[sStartDateProp])) {
+						aAssignment.push(oAssignItem);
+					}
+				}.bind(this));
+				if (oAssignmentData.isNew) {
+					aAssignment.forEach(function (oAssignData, idx) {
+						var callbackFn = function (oItem, oData, idx) {
+							var aAssignments = [];
+							if (oData.NODE_TYPE === "RES_GROUP" || oData.NODE_TYPE === "RESOURCE") {
+								aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
+									.results : []) : [];
+							} else if (oData.NODE_TYPE === "SHIFT") {
+								aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
+							}
+							aAssignments.forEach(function (oAssignment, index) {
+								if (oAssignment.Guid === oData.Guid || oAssignment.isTemporary === true) {
+									this._markAsPlanningChange(oAssignment, false);
+									aAssignments.splice(index, 1);
+
+								}
+							}.bind(this));
+						};
+						aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
+						this.oPlanningModel.setProperty("/data/children", aChildren);
+					}.bind(this));
+
+				} else {
+					this._markAsPlanningDelete(oAssignmentData); // mark planing one assignment for delete
+					aAssignment.forEach(function (oAssignData, idx) {
+						this._deleteAssignment(oAssignData, false);
+					}.bind(this));
+				}
 			}
 		},
 
@@ -2174,15 +2313,16 @@ sap.ui.define([
 				oAssignItem.EffectiveStartDate = formatter.convertFromUTCDate(oAssignItem.EffectiveStartDate);
 				oAssignItem.EffectiveEndDate = formatter.convertFromUTCDate(oAssignItem.EffectiveEndDate);
 			}
-			this._deleteAssignment(oAssignItem);
+			this._deleteAssignment(oAssignItem, true);
 		},
 
 		/**
 		 * Method will get call after validation is done, if validation pass, data will get delete from gantt.
 		 * @param {object} oAssignmentData - deleted data
+		 * @param {boolean} isPlanningRequired - indicates whether "DELETE" need to be recorded in planning mode
 		 * 
 		 */
-		_deleteAssignment: function (oAssignmentData) {
+		_deleteAssignment: function (oAssignmentData, isPlanningRequired) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			var callbackFn = function (oItem, oData, idx) {
 				var aAssignments, shiftData;
@@ -2196,7 +2336,9 @@ sap.ui.define([
 
 				aAssignments.forEach(function (oAssignItemData, index) {
 					if (oAssignItemData.Guid === oData.Guid) {
-						this._markAsPlanningDelete(oAssignItemData);
+						if (isPlanningRequired) {
+							this._markAsPlanningDelete(oAssignItemData);
+						}
 						if (this.groupShiftContext) {
 							if (oAssignItemData.NODE_TYPE === "RES_GROUP") {
 								oAssignItemData.RESOURCE_GROUP_COLOR = this.groupShiftContext.getProperty("ResourceGroupColor");
@@ -2268,14 +2410,14 @@ sap.ui.define([
 		 */
 		_validateAssignment: function () {
 			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
-			aChildren = this.oPlanningModel.getProperty("/data/children"),
-			iScrollTo;
+				aChildren = this.oPlanningModel.getProperty("/data/children"),
+				iScrollTo;
 			//validation for the duplicates
 			if (this._validateDuplicateAsigment()) {
 				return;
 			}
 
-			if (!oData.Repeat || oData.Repeat === "NEVER") {
+			if (!oData.SeriesRepeat || oData.SeriesRepeat === "N") {
 				if (oData.isNew) {
 					if (oData.NODE_TYPE === "SHIFT") {
 						if (this._shiftValidation(oData)) {
@@ -2347,7 +2489,8 @@ sap.ui.define([
 				unAssignData: [],
 				tempUnassignData: [],
 				isShapeSelected: false,
-				multiSelectedDataForDelete: []
+				multiSelectedDataForDelete: [],
+				isRepeatAssignmentAdded: false
 			};
 			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
 			this.oPlanningModel.setData(deepClone(this.oOriginData));
@@ -2425,7 +2568,9 @@ sap.ui.define([
 					startDateProp: null,
 					endDateProp: null
 				},
-				oStartDate;
+				oStartDate,
+				oEndDate,
+				iDateDiff=0;
 
 			if (oData.NODE_TYPE === "RES_GROUP") {
 				oDateProp.startDateProp = "StartDate";
@@ -2434,44 +2579,49 @@ sap.ui.define([
 				oDateProp.startDateProp = "EffectiveStartDate";
 				oDateProp.endDateProp = "EffectiveEndDate";
 			}
+			oData.SeriesGuid = new Date().getTime().toString();
 			oStartDate = moment(oData[oDateProp.startDateProp]);
+			oEndDate = moment(oData[oDateProp.endDateProp]);
+			iDateDiff = moment(oEndDate).diff(oStartDate,'d');
 
 			do {
-				if (oData.Repeat === "DAY") {
+				if (oData.SeriesRepeat === "D") {
 					newData = deepClone(oData);
 					newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'days').toDate();
 
-					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, null, oDateProp);
+					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, iDateDiff, null, oDateProp);
 					oStartDate = moment(newData[oDateProp.startDateProp]);
 
-				} else if (oData.Repeat === "WEEK") {
+				} else if (oData.SeriesRepeat === "W") {
 					var week = oStartDate;
-					for (var d = 0; d < oData.Days.length; d++) {
+					for (var d = 0; d < oData.SeriesWeeklyOn.length; d++) {
 						newData = deepClone(oData);
-						newData[oDateProp.startDateProp] = moment(week).day(oData.Days[d]).toDate();
+						newData[oDateProp.startDateProp] = moment(week).day(oData.SeriesWeeklyOn[d]).toDate();
 
-						this._validateAndPrepareNewAssignment(newData, oData, dayCounter, d, oDateProp);
+						this._validateAndPrepareNewAssignment(newData, oData, dayCounter, iDateDiff, d, oDateProp);
 					}
 					oStartDate = moment(oStartDate.add(iEvery, 'weeks').startOf('weeks').toDate());
 
-				} else if (oData.Repeat === "MONTH") {
+				} else if (oData.SeriesRepeat === "M") {
 					newData = deepClone(oData);
-					if (oData.On === 0) {
+					if (oData.SeriesMonthlyOn === 0) {
 						newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'months').toDate();
-					} else if (oData.On === 1) {
+					} else if (oData.SeriesMonthlyOn === 1) {
 						var oStrDate = moment(oData[oDateProp.startDateProp]),
 							iDay = oStrDate.day();
 						newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'months').day(iDay).toDate();
 					}
 
-					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, null, oDateProp);
+					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, iDateDiff, null, oDateProp);
 					oStartDate = moment(newData[oDateProp.startDateProp]);
 				}
 
 				dayCounter++;
-				iEvery = parseInt(oData.Every, 10);
+				iEvery = parseInt(oData.SeriesEvery, 10);
 			}
-			while (oStartDate.isBefore(moment(oData.RepeatEndDate)));
+			while (oStartDate.isBefore(moment(oData.SERIES_END_DATE)));
+
+			this.getModel("ganttPlanningModel").setProperty("/isRepeatAssignmentAdded", false);
 		},
 
 		/**
@@ -2496,7 +2646,18 @@ sap.ui.define([
 			if (this._checkDuplicateAsigment(data, aAssigments)) {
 				this._addNewAssignmentShape(data);
 				data.isTemporary = false;
-				this._markAsPlanningChange(data, true);
+				data.IsSeries = true;
+				data.SERIES_END_DATE = formatter.convertToUTCDate(data.SERIES_END_DATE);
+				if (data.SeriesRepeat === "W") {
+					data.SeriesOn = data.SeriesWeeklyOn.join(",");
+				} else if (data.SeriesRepeat === "M") {
+					data.SeriesOn = data.SeriesMonthlyOn === 0 ? "1" : "2";
+				}
+				if (!this.getModel("ganttPlanningModel").getProperty("/isRepeatAssignmentAdded")) {
+					this._markAsPlanningChange(data, true);
+					this.getModel("ganttPlanningModel").setProperty("/isRepeatAssignmentAdded", true);
+				}
+
 			} else {
 				//TODO message for the overlapping
 			}
@@ -2512,15 +2673,15 @@ sap.ui.define([
 		 * @param iCounter - integer indicator
 		 * @param iDayIndex - integer days loop index
 		 */
-		_validateAndPrepareNewAssignment: function (newData, oData, iCounter, iDayIndex, oDateProp) {
+		_validateAndPrepareNewAssignment: function (newData, oData, iCounter, iDateDiff, iDayIndex, oDateProp) {
 			newData.Guid = newData.Guid + iCounter;
 			if (iDayIndex) {
 				newData.Guid = newData.Guid + iCounter + iDayIndex;
 			}
-			newData[oDateProp.endDateProp] = moment(newData[oDateProp.startDateProp]).endOf('day').toDate();
+			newData[oDateProp.endDateProp] = moment(newData[oDateProp.startDateProp]).add(iDateDiff, 'd').endOf('day').toDate();
 
 			if (moment(newData[oDateProp.startDateProp]).isSameOrAfter(oData[oDateProp.startDateProp]) && moment(newData[oDateProp.startDateProp])
-				.isSameOrBefore(moment(oData.RepeatEndDate))) {
+				.isSameOrBefore(moment(oData.SERIES_END_DATE))) {
 				this._validateAndAddNewAssignment(newData, oData);
 			}
 		},
@@ -2639,7 +2800,7 @@ sap.ui.define([
 					oEndDate = formatter.convertFromUTCDate(aResourceData.results[i].EndDate, aResourceData.results[i].isNew, aResourceData.results[
 						i].isChanging);
 					//add missing seconds in the enddate
-					if (oShiftData.Repeat && oShiftData.Repeat !== "NEVER") {
+					if (oShiftData.SeriesRepeat && oShiftData.SeriesRepeat !== "NEVER") {
 						oEndDate = moment(oEndDate).add(999, 'milliseconds').toDate();
 					}
 
