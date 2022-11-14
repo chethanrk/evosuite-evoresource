@@ -2153,7 +2153,8 @@ sap.ui.define([
 				EndTimestamp: formatter.convertToUTCDate(oAssignItem.EndDate),
 				StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate),
 				EndTimestampUtc: oAssignItem.EndDate,
-				StartTimestampUtc: oAssignItem.StartDate
+				StartTimestampUtc: oAssignItem.StartDate,
+				IsSeries:oAssignItem.isRepeating ? true : false
 			};
 			sFunctionName = "ValidateResourceAssignment";
 			oDemandModel = this.getModel("demandModel");
@@ -2216,7 +2217,8 @@ sap.ui.define([
 					EndTimestamp: oAssignItem.EndDate,
 					StartTimestamp: oAssignItem.StartDate,
 					StartTimestampUtc: formatter.convertFromUTCDate(oAssignItem.StartDate),
-					EndTimestampUtc: formatter.convertFromUTCDate(oAssignItem.EndDate)
+					EndTimestampUtc: formatter.convertFromUTCDate(oAssignItem.EndDate),
+					IsSeries:oAssignItem.isRepeating ? true : false
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel"),
