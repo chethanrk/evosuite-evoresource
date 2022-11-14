@@ -1310,7 +1310,11 @@ sap.ui.define([
 				if (sType === "Change") {
 					this._changeAssignment(oData);
 				} else if (sType === "Delete") {
-					this._manageDates(oData, this.groupShiftContext);
+					if (oData.isRepeating === true) {
+						this.deleteRepeatingAssignment(oData);
+					} else {
+						this._manageDates(oData, this.groupShiftContext);
+					}
 				}
 			};
 			var cancelcallback = function () {};
@@ -2154,7 +2158,7 @@ sap.ui.define([
 				StartTimestamp: formatter.convertToUTCDate(oAssignItem.StartDate),
 				EndTimestampUtc: oAssignItem.EndDate,
 				StartTimestampUtc: oAssignItem.StartDate,
-				IsSeries:oAssignItem.isRepeating ? true : false
+				IsSeries: oAssignItem.isRepeating ? true : false
 			};
 			sFunctionName = "ValidateResourceAssignment";
 			oDemandModel = this.getModel("demandModel");
@@ -2218,7 +2222,7 @@ sap.ui.define([
 					StartTimestamp: oAssignItem.StartDate,
 					StartTimestampUtc: formatter.convertFromUTCDate(oAssignItem.StartDate),
 					EndTimestampUtc: formatter.convertFromUTCDate(oAssignItem.EndDate),
-					IsSeries:oAssignItem.isRepeating ? true : false
+					IsSeries: oAssignItem.isRepeating ? true : false
 				},
 				sFunctionName = "ValidateResourceAssignment",
 				oDemandModel = this.getModel("demandModel"),
@@ -2572,7 +2576,7 @@ sap.ui.define([
 				},
 				oStartDate,
 				oEndDate,
-				iDateDiff=0;
+				iDateDiff = 0;
 
 			if (oData.NODE_TYPE === "RES_GROUP") {
 				oDateProp.startDateProp = "StartDate";
@@ -2584,7 +2588,7 @@ sap.ui.define([
 			oData.SeriesGuid = new Date().getTime().toString();
 			oStartDate = moment(oData[oDateProp.startDateProp]);
 			oEndDate = moment(oData[oDateProp.endDateProp]);
-			iDateDiff = moment(oEndDate).diff(oStartDate,'d');
+			iDateDiff = moment(oEndDate).diff(oStartDate, 'd');
 
 			do {
 				if (oData.SeriesRepeat === "D") {
