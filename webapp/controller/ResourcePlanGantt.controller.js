@@ -42,6 +42,11 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Before
 				},
+				onShapePress: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
 				onShapeDoubleClick: {
 					public: true,
 					final: false,
@@ -411,7 +416,16 @@ sap.ui.define([
 			}
 
 		},
-
+		/**
+		 * Function called when shape is pressed
+		 * @param {object} oEvent - Event object of the shape pressed
+		 */
+		onShapePress: function(oEvent){
+			var oShape = oEvent.getParameter("shape");
+			if(oShape.sParentAggregationName === "shapes1"){
+				oEvent.preventDefault(); //when background shape is single clicked, do nothing (no border set when selected)
+			}
+		},
 		/**
 		 * when shape was double pressed show popover with details of assignment
 		 * or create new temporary assignment
