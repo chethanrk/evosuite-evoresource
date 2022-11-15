@@ -1395,7 +1395,8 @@ sap.ui.define([
 								EndTimestamp: oAssignmentData.EndDate,
 								StartTimestamp: oAssignmentData.StartDate,
 								StartTimestampUtc: formatter.convertFromUTCDate(oAssignmentData.StartDate),
-								EndTimestampUtc: formatter.convertFromUTCDate(oAssignmentData.EndDate)
+								EndTimestampUtc: formatter.convertFromUTCDate(oAssignmentData.EndDate),
+								IsSeries: false
 							},
 							sFunctionName = "ValidateResourceAssignment",
 							callbackfunction = function (oData) {
