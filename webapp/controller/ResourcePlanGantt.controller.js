@@ -418,7 +418,7 @@ sap.ui.define([
 		},
 		/**
 		 * Function called when shape is pressed
-		 * @param {object} oEvent - when shape in Gantt is pressed
+		 * @param {object} oEvent - Event object of the shape pressed
 		 */
 		onShapePress: function(oEvent){
 			var oShape = oEvent.getParameter("shape");
