@@ -31,7 +31,7 @@
 											<Button id="idResourcePlanBtnDelete" text="{i18n>xbtn.delete}" icon="sap-icon://delete" press="onPressDeleteMultiAssignment"
 												enabled="{ganttPlanningModel>/isShapeSelected}" visible="{user>/ENABLE_MULTIPLE_DELETE_BUTTON}"/>
 											<Button id="idResourcePlanBtnCancel" text="{i18n>xbtn.reset}" icon="sap-icon://cancel" press="onPressCancel"
-												enabled="{ganttPlanningModel>/hasChanges}"/>
+												enabled="{= ${ganttPlanningModel>/hasChanges} || ${viewModel>/isResetEnabled} }"/>
 											<Text text="|"/>
 											<Button id="idResourcePlanBtnToday" text="{i18n>xbtn.today}" press="onPressToday"/>
 											<Button id="idResourcePlanBtnSetting" icon="sap-icon://action-settings" type="Transparent" press="onPressFilter" visible="{user>/ENABLE_GANTT_SELECTION_FILTER}"/>

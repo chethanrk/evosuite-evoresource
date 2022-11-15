@@ -816,6 +816,7 @@ sap.ui.define([
 			var successFn = function () {
 				this._getGanttScrollState();
 				this._loadGanttData();
+				this.getModel("viewModel").setProperty("/isResetEnabled", false);
 			};
 			this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
 		},
@@ -854,6 +855,7 @@ sap.ui.define([
 			var cancelcallback = function () {};
 			if (oData.isNew) {
 				this._removeAssignmentShape(oData, true);
+				this.getModel("viewModel").setProperty("/isResetEnabled", true);
 				if (this._oPlanningPopover) {
 					this._oPlanningPopover.close();
 				}
