@@ -59,7 +59,8 @@ sap.ui.define([
 				},
 				draggedData: null,
 				launchMode: Constants.LAUNCH_MODE.BSP,
-				enableProceed: false
+				enableProceed: false,
+				isResetEnabled: false
 			}), "viewModel");
 
 			this.setModel(models.createHelperModel(), "ganttPlanningModel");
