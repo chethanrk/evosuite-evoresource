@@ -420,9 +420,9 @@ sap.ui.define([
 		 * Function called when shape is pressed
 		 * @param {object} oEvent - Event object of the shape pressed
 		 */
-		onShapePress: function(oEvent){
+		onShapePress: function (oEvent) {
 			var oShape = oEvent.getParameter("shape");
-			if(oShape.sParentAggregationName === "shapes1"){
+			if (oShape.sParentAggregationName === "shapes1") {
 				oEvent.preventDefault(); //when background shape is single clicked, do nothing (no border set when selected)
 			}
 		},
@@ -909,6 +909,11 @@ sap.ui.define([
 					this._oPlanningPopover.close();
 				}
 			} else {
+				if (oData.isApplySeries) {
+					this.groupShiftContextForRepeat = this.groupShiftContext;
+					this.groupShiftContext = null;
+					oData.isRepeating = true; // for deleting series
+				}
 				this._removeAssignmentShape(oData, true);
 				this._oPlanningPopover.close();
 			}
@@ -946,6 +951,11 @@ sap.ui.define([
 					this._oPlanningPopover.close();
 				}
 			} else {
+				if (oData.isApplySeries) {
+					this.groupShiftContextForRepeat = this.groupShiftContext;
+					this.groupShiftContext = null;
+					oData.isRepeating = true; // for deleting series
+				}
 				this._removeAssignmentShape(oData, true);
 				this._oPlanningPopover.close();
 			}
@@ -1919,16 +1929,17 @@ sap.ui.define([
 				oAssignData = oContext.getObject();
 				if (oAssignData.NODE_TYPE === "RES_GROUP") {
 					//popover data adjustment with repeat mode
-					oAssignData.SeriesRepeat = "N";
+					// oAssignData.SeriesRepeat = "N";
 					oAssignData.isEditable = true;
 					oAssignData.isDeletable = this.isGroupDeletable(oAssignData);
 					oAssignData.minDate = this._getShapePopoverMinDate(oAssignData.isDeletable);
 					oAssignData.maxDate = this._getShapePopoverMaxDate(oAssignData.EndDate);
+					oAssignData.isApplySeries = false;
 					this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
 				} else if (oAssignData.NODE_TYPE === "SHIFT") {
 					//popover data adjustment with repeat mode
-					oAssignData.SeriesRepeat = "N";
+					// oAssignData.SeriesRepeat = "N";
 					oAssignData.isEditable = true;
 					oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
 					oAssignData.isDeletable = this.isShiftDeletable(oAssignData);
@@ -1936,6 +1947,7 @@ sap.ui.define([
 					oAssignData.maxDate = this._getShapePopoverMaxDate(oAssignData.EffectiveEndDate);
 					oAssignData.StartDate = oAssignData.EffectiveStartDate;
 					oAssignData.EndDate = oAssignData.EffectiveEndDate;
+					oAssignData.isApplySeries = false;
 					this.oPlanningModel.setProperty("/tempData/popover", oAssignData);
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
 				}
@@ -2321,6 +2333,21 @@ sap.ui.define([
 						this._deleteAssignment(oAssignData, false);
 					}.bind(this));
 				}
+			}
+			if (this.groupShiftContextForRepeat) {
+				if (oAssignmentData.NODE_TYPE === "RES_GROUP") {
+					oAssignmentData.RESOURCE_GROUP_COLOR = this.groupShiftContextForRepeat.getProperty("ResourceGroupColor");
+					oAssignmentData.DESCRIPTION = this.groupShiftContextForRepeat.getProperty("ResourceGroupDesc");
+				} else if (oAssignmentData.NODE_TYPE === "SHIFT") {
+					oAssignmentData.DESCRIPTION = this.groupShiftContextForRepeat.getProperty("ScheduleIdDesc");
+					oAssignmentData.PARENT_NODE_ID = oAssignmentData.NodeId;
+					oAssignmentData.ResourceGuid = oAssignmentData.ParentNodeId;
+					var shiftData = this.groupShiftContextForRepeat.getObject();
+					oAssignmentData = this.mergeObject(oAssignmentData, shiftData);
+				}
+				// oAssignmentData.Guid = new Date().getTime().toString();
+				// this._addSingleChildToParent(oAssignmentData, true);
+				this._repeatAssignments(oAssignmentData);
 			}
 		},
 

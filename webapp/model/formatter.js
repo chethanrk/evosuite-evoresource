@@ -620,6 +620,10 @@ sap.ui.define([
 				sSelectionMode = "MultiWithKeyboard";
 			}
 			return sSelectionMode;
+		},
+		
+		isSeriesCheckVisible: function(isSeries){
+			return isSeries;
 		}
 	};
 
