@@ -545,6 +545,8 @@ sap.ui.define([
 					oAssignment.EffectiveStartDate = oStartTime;
 					oAssignment.EffectiveEndDate = oEndTime;
 					oAssignment.isChanging = true;
+					oAssignment.IsSeries = false;
+					oAssignment.SeriesRepeat = '';
 				}.bind(this));
 			}
 			this.getModel("ganttPlanningModel").refresh();
