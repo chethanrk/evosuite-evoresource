@@ -2293,7 +2293,8 @@ sap.ui.define([
 				aAssignment = [],
 				oAssignItem,
 				aChildren = this.oPlanningModel.getProperty("/data/children"),
-				sStartDateProp;
+				sStartDateProp,
+				oNewAssignmentData;
 
 			if (aAssignmentData.length) {
 				aAssignmentData.forEach(function (sPath, idx) {
@@ -2337,19 +2338,21 @@ sap.ui.define([
 				}
 			}
 			if (this.groupShiftContextForRepeat) {
-				if (oAssignmentData.NODE_TYPE === "RES_GROUP") {
-					oAssignmentData.RESOURCE_GROUP_COLOR = this.groupShiftContextForRepeat.getProperty("ResourceGroupColor");
-					oAssignmentData.DESCRIPTION = this.groupShiftContextForRepeat.getProperty("ResourceGroupDesc");
-				} else if (oAssignmentData.NODE_TYPE === "SHIFT") {
-					oAssignmentData.DESCRIPTION = this.groupShiftContextForRepeat.getProperty("ScheduleIdDesc");
-					oAssignmentData.PARENT_NODE_ID = oAssignmentData.NodeId;
-					oAssignmentData.ResourceGuid = oAssignmentData.ParentNodeId;
+				oNewAssignmentData = deepClone(oAssignmentData);
+				if (oNewAssignmentData.NODE_TYPE === "RES_GROUP") {
+					oNewAssignmentData.RESOURCE_GROUP_COLOR = this.groupShiftContextForRepeat.getProperty("ResourceGroupColor");
+					oNewAssignmentData.DESCRIPTION = this.groupShiftContextForRepeat.getProperty("ResourceGroupDesc");
+				} else if (oNewAssignmentData.NODE_TYPE === "SHIFT") {
+					oNewAssignmentData.DESCRIPTION = this.groupShiftContextForRepeat.getProperty("ScheduleIdDesc");
+					oNewAssignmentData.PARENT_NODE_ID = oNewAssignmentData.NodeId;
+					oNewAssignmentData.ResourceGuid = oNewAssignmentData.ParentNodeId;
 					var shiftData = this.groupShiftContextForRepeat.getObject();
-					oAssignmentData = this.mergeObject(oAssignmentData, shiftData);
+					oNewAssignmentData = this.mergeObject(oNewAssignmentData, shiftData);
 				}
-				// oAssignmentData.Guid = new Date().getTime().toString();
+				oNewAssignmentData.Guid = new Date().getTime().toString();
 				// this._addSingleChildToParent(oAssignmentData, true);
-				this._repeatAssignments(oAssignmentData);
+				this._repeatAssignments(oNewAssignmentData);
+				this.groupShiftContextForRepeat=null;
 			}
 		},
 
