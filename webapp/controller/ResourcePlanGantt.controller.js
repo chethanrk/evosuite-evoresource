@@ -654,8 +654,8 @@ sap.ui.define([
 
 		addNewResource: function (oTargetControl, oDraggedObj) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children"),
-				sFirstName = oDraggedObj.data.Firstname,
-				sLastName = oDraggedObj.data.Lastname,
+				sFirstName = oDraggedObj.data.FIRSTNAME,
+				sLastName = oDraggedObj.data.LASTNAME,
 				sPernr = oDraggedObj.data.Pernr,
 				sGUID = oDraggedObj.data.ResourceGuid,
 				obj = {},
