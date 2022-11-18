@@ -844,11 +844,22 @@ sap.ui.define([
 		 * @param {object} oEvent - event of OK button press
 		 */
 		onPressChangeAssignment: function (oEvent) {
-			var oSimpleformFileds = this.getView().getControlsByFieldGroupId("changeShapeInput");
-			var oValidation = this.validateForm(oSimpleformFileds);
+			var oSimpleformFileds = this.getView().getControlsByFieldGroupId("changeShapeInput"),
+				oValidation = this.validateForm(oSimpleformFileds),
+				oAssignmentData = this.oPlanningModel.getProperty("/tempData/popover");
 
 			if (oValidation && oValidation.state === "success") {
-				this._validateAssignment();
+				if (oAssignmentData.isApplySeries === true) {
+					oAssignmentData.isRepeating = true;
+					oAssignmentData.isTemporary = false;
+					this.editSeriesDate = true;
+					this._removeAssignmentShape(oAssignmentData, true);
+				} else {
+					oAssignmentData.IsSeries = false;
+					oAssignmentData.SeriesRepeat = "";
+					this._validateAssignment();
+				}
+
 			}
 		},
 
@@ -2352,7 +2363,14 @@ sap.ui.define([
 				oNewAssignmentData.Guid = new Date().getTime().toString();
 				// this._addSingleChildToParent(oAssignmentData, true);
 				this._repeatAssignments(oNewAssignmentData);
-				this.groupShiftContextForRepeat=null;
+				this.groupShiftContextForRepeat = null;
+			}
+			if(this.editSeriesDate){
+				oNewAssignmentData = deepClone(oAssignmentData);
+				oNewAssignmentData.Guid = new Date().getTime().toString();
+				// this._addSingleChildToParent(oAssignmentData, true);
+				this._repeatAssignments(oNewAssignmentData);
+				this.editSeriesDate = false;
 			}
 		},
 
