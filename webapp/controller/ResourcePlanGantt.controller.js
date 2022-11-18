@@ -2361,6 +2361,9 @@ sap.ui.define([
 					oNewAssignmentData = this.mergeObject(oNewAssignmentData, shiftData);
 				}
 				oNewAssignmentData.Guid = new Date().getTime().toString();
+				oNewAssignmentData.StartDate = formatter.convertFromUTCDate(oNewAssignmentData.StartDate);              
+				oNewAssignmentData.EndDate = formatter.convertFromUTCDate(oNewAssignmentData.EndDate);   
+				oNewAssignmentData.isNew = true;
 				// this._addSingleChildToParent(oAssignmentData, true);
 				this._repeatAssignments(oNewAssignmentData);
 				this.groupShiftContextForRepeat = null;
