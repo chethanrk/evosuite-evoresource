@@ -916,7 +916,7 @@ sap.ui.define([
 
 				this._removeAssignmentShape(oData, true);
 				//add different resource group if it is not exist
-				this._addSingleChildToParent(oData);
+				this._addSingleChildToParent(oData, false, true);
 
 				if (!oData.isTemporary && !this.bAddNewResource) {
 					this._oPlanningPopover.close();
@@ -958,7 +958,7 @@ sap.ui.define([
 				oData = this.mergeObject(oData, shiftData);
 				this._removeAssignmentShape(oData, true);
 				//add different resource group if it is not exist
-				this._addSingleChildToParent(oData);
+				this._addSingleChildToParent(oData, false, true);
 
 				if (!oData.isTemporary) {
 					this._oPlanningPopover.close();
@@ -1103,7 +1103,7 @@ sap.ui.define([
 			this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", shapeDescription);
 			this._removeAssignmentShape(oldData, true);
 			this.createNewTempAssignment(newData.StartDate, newData.EndDate, newData, false).then(function (oData) {
-				this._addSingleChildToParent(newData);
+				this._addSingleChildToParent(newData, false, true);
 			}.bind(this));
 			this.oPlanningModel.setProperty("/tempData/oldPopoverData", deepClone(newData));
 		},
@@ -1927,7 +1927,7 @@ sap.ui.define([
 						oChildData = Object.assign(oData, {
 							bgTasks: oPopoverData.oResourceObject.bgTasks
 						});
-						this._addSingleChildToParent(oChildData);
+						this._addSingleChildToParent(oChildData, false, true);
 					} else {
 						this._addNewAssignmentShape(oData);
 					}
@@ -1936,7 +1936,7 @@ sap.ui.define([
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject, bDragged).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oData));
-					this._addSingleChildToParent(oData);
+					this._addSingleChildToParent(oData, false, true);
 				}.bind(this));
 			} else if (oContext) {
 				oAssignData = oContext.getObject();
@@ -1993,7 +1993,7 @@ sap.ui.define([
 		 * Add new Resource Group under Resource in Gantt
 		 * @param {object} oData - Resource Group data to be added under Resource if not exist
 		 */
-		_addSingleChildToParent: function (oData, bAllowMarkChange) {
+		_addSingleChildToParent: function (oData, bAllowMarkChange, bAllowAddShape) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			this.getObjectFromEntity("GanttResourceHierarchySet", oData).then(function (oGanntObject) {
 				oGanntObject["bgTasks"] = oData["bgTasks"];
@@ -2016,7 +2016,9 @@ sap.ui.define([
 				}.bind(this);
 				aChildren = this._recurseAllChildren(aChildren, callbackFn, oGanntObject);
 				this.oPlanningModel.setProperty("/data/children", aChildren);
-				this._addNewAssignmentShape(oData);
+				if(bAllowAddShape){
+					this._addNewAssignmentShape(oData);
+				}
 				//Reset bgTasks when new resource added to the gantt
 				this._setBackgroudShapes(this._sGanttViewMode);
 
@@ -2364,14 +2366,14 @@ sap.ui.define([
 				oNewAssignmentData.StartDate = formatter.convertFromUTCDate(oNewAssignmentData.StartDate);              
 				oNewAssignmentData.EndDate = formatter.convertFromUTCDate(oNewAssignmentData.EndDate);   
 				oNewAssignmentData.isNew = true;
-				// this._addSingleChildToParent(oAssignmentData, true);
+				this._addSingleChildToParent(oNewAssignmentData, false, false);
 				this._repeatAssignments(oNewAssignmentData);
 				this.groupShiftContextForRepeat = null;
 			}
 			if(this.editSeriesDate){
 				oNewAssignmentData = deepClone(oAssignmentData);
 				oNewAssignmentData.Guid = new Date().getTime().toString();
-				// this._addSingleChildToParent(oAssignmentData, true);
+				this._addSingleChildToParent(oNewAssignmentData, false, false);
 				this._repeatAssignments(oNewAssignmentData);
 				this.editSeriesDate = false;
 			}
@@ -2427,7 +2429,7 @@ sap.ui.define([
 								oAssignItemData = this.mergeObject(oAssignItemData, shiftData);
 							}
 
-							this._addSingleChildToParent(oAssignItemData, true);
+							this._addSingleChildToParent(oAssignItemData, true, true);
 						}
 						aAssignments.splice(index, 1);
 					}
