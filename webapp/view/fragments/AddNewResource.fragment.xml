@@ -67,7 +67,7 @@
 					</MultiComboBox>
 					<Label text="{i18n>xfld.On}"
 						required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.monthModeValidation'}"/>
-					<RadioButtonGroup id="rbg1Dialog" selectedIndex="{ganttPlanningModel>/tempData/popover/SeriesMonthlyOn}" class="sapUiMediumMarginBottom"
+					<RadioButtonGroup id="rbgDialog" selectedIndex="{ganttPlanningModel>/tempData/popover/SeriesMonthlyOn}" class="sapUiMediumMarginBottom"
 						visible="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.monthModeValidation'}"
 						fieldGroupIds="changeShapeInput">
 						<RadioButton text="{path:'ganttPlanningModel>/tempData/popover',formatter:'.formatter.getDay'}"/>
