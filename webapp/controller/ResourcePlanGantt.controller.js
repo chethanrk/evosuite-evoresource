@@ -1993,7 +1993,7 @@ sap.ui.define([
 		 * Add new Resource Group under Resource in Gantt
 		 * @param {object} oData - Resource Group data to be added under Resource if not exist
 		 */
-		_addSingleChildToParent: function (oData, bAllowMarkChange, bAllowAddShape) {
+		_addSingleChildToParent: function (oData, bAllowMarkChange, bAllowAddShape, bAllowAddRepeatShape) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			this.getObjectFromEntity("GanttResourceHierarchySet", oData).then(function (oGanntObject) {
 				oGanntObject["bgTasks"] = oData["bgTasks"];
@@ -2018,6 +2018,9 @@ sap.ui.define([
 				this.oPlanningModel.setProperty("/data/children", aChildren);
 				if(bAllowAddShape){
 					this._addNewAssignmentShape(oData);
+				}
+				if(bAllowAddRepeatShape){
+					this._repeatAssignments(oData);
 				}
 				//Reset bgTasks when new resource added to the gantt
 				this._setBackgroudShapes(this._sGanttViewMode);
@@ -2366,15 +2369,15 @@ sap.ui.define([
 				oNewAssignmentData.StartDate = formatter.convertFromUTCDate(oNewAssignmentData.StartDate);              
 				oNewAssignmentData.EndDate = formatter.convertFromUTCDate(oNewAssignmentData.EndDate);   
 				oNewAssignmentData.isNew = true;
-				this._addSingleChildToParent(oNewAssignmentData, false, false);
-				this._repeatAssignments(oNewAssignmentData);
+				this._addSingleChildToParent(oNewAssignmentData, false, false, true);
+				// this._repeatAssignments(oNewAssignmentData);
 				this.groupShiftContextForRepeat = null;
 			}
 			if(this.editSeriesDate){
 				oNewAssignmentData = deepClone(oAssignmentData);
 				oNewAssignmentData.Guid = new Date().getTime().toString();
-				this._addSingleChildToParent(oNewAssignmentData, false, false);
-				this._repeatAssignments(oNewAssignmentData);
+				this._addSingleChildToParent(oNewAssignmentData, false, false, true);
+				// this._repeatAssignments(oNewAssignmentData);
 				this.editSeriesDate = false;
 			}
 		},
