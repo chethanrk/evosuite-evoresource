@@ -849,15 +849,27 @@ sap.ui.define([
 				oAssignmentData = this.oPlanningModel.getProperty("/tempData/popover");
 
 			if (oValidation && oValidation.state === "success") {
-				if (oAssignmentData.isApplySeries === true) {
-					oAssignmentData.isRepeating = true;
-					oAssignmentData.isTemporary = false;
-					this.editSeriesDate = true;
-					this._removeAssignmentShape(oAssignmentData, true);
+				if (oAssignmentData.isNew) {
+					if (oAssignmentData.isApplySeries === true) {
+						oAssignmentData.isRepeating = true;
+						oAssignmentData.isTemporary = false;
+						this.editSeriesDate = true;
+						this._removeAssignmentShape(oAssignmentData, true);
+					} else {
+						this._validateAssignment();
+					}
+
 				} else {
-					oAssignmentData.IsSeries = false;
-					oAssignmentData.SeriesRepeat = "";
-					this._validateAssignment();
+					if (oAssignmentData.isApplySeries === true) {
+						oAssignmentData.isRepeating = true;
+						oAssignmentData.isTemporary = false;
+						this.editSeriesDate = true;
+						this._removeAssignmentShape(oAssignmentData, true);
+					} else {
+						oAssignmentData.IsSeries = false;
+						oAssignmentData.SeriesRepeat = "";
+						this._validateAssignment();
+					}
 				}
 
 			}
@@ -914,9 +926,16 @@ sap.ui.define([
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ResourceGroupDesc"));
 				this.oPlanningModel.setProperty("/tempData/popover/ResourceGroupDesc", this.groupShiftContext.getProperty("ResourceGroupDesc"));
 
-				this._removeAssignmentShape(oData, true);
-				//add different resource group if it is not exist
-				this._addSingleChildToParent(oData, false, true);
+				if (oData.isApplySeries) {
+					this.groupShiftContextForRepeat = this.groupShiftContext;
+					this.groupShiftContext = null;
+					oData.isRepeating = true; // for deleting series
+					this._removeAssignmentShape(oData, true);
+				} else {
+					this._removeAssignmentShape(oData, true);
+					//add different resource group if it is not exist
+					this._addSingleChildToParent(oData, false, false);
+				}
 
 				if (!oData.isTemporary && !this.bAddNewResource) {
 					this._oPlanningPopover.close();
@@ -958,7 +977,7 @@ sap.ui.define([
 				oData = this.mergeObject(oData, shiftData);
 				this._removeAssignmentShape(oData, true);
 				//add different resource group if it is not exist
-				this._addSingleChildToParent(oData, false, true);
+				this._addSingleChildToParent(oData, false, false);
 
 				if (!oData.isTemporary) {
 					this._oPlanningPopover.close();
@@ -1103,7 +1122,7 @@ sap.ui.define([
 			this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", shapeDescription);
 			this._removeAssignmentShape(oldData, true);
 			this.createNewTempAssignment(newData.StartDate, newData.EndDate, newData, false).then(function (oData) {
-				this._addSingleChildToParent(newData, false, true);
+				this._addSingleChildToParent(newData, false, false);
 			}.bind(this));
 			this.oPlanningModel.setProperty("/tempData/oldPopoverData", deepClone(newData));
 		},
@@ -1927,7 +1946,7 @@ sap.ui.define([
 						oChildData = Object.assign(oData, {
 							bgTasks: oPopoverData.oResourceObject.bgTasks
 						});
-						this._addSingleChildToParent(oChildData, false, true);
+						this._addSingleChildToParent(oChildData, false, false);
 					} else {
 						this._addNewAssignmentShape(oData);
 					}
@@ -1936,7 +1955,7 @@ sap.ui.define([
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject, bDragged).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oData));
-					this._addSingleChildToParent(oData, false, true);
+					this._addSingleChildToParent(oData, false, false);
 				}.bind(this));
 			} else if (oContext) {
 				oAssignData = oContext.getObject();
@@ -1993,7 +2012,7 @@ sap.ui.define([
 		 * Add new Resource Group under Resource in Gantt
 		 * @param {object} oData - Resource Group data to be added under Resource if not exist
 		 */
-		_addSingleChildToParent: function (oData, bAllowMarkChange, bAllowAddShape, bAllowAddRepeatShape) {
+		_addSingleChildToParent: function (oData, bAllowMarkChange, bIsAddRepeatShape) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			this.getObjectFromEntity("GanttResourceHierarchySet", oData).then(function (oGanntObject) {
 				oGanntObject["bgTasks"] = oData["bgTasks"];
@@ -2016,11 +2035,10 @@ sap.ui.define([
 				}.bind(this);
 				aChildren = this._recurseAllChildren(aChildren, callbackFn, oGanntObject);
 				this.oPlanningModel.setProperty("/data/children", aChildren);
-				if(bAllowAddShape){
-					this._addNewAssignmentShape(oData);
-				}
-				if(bAllowAddRepeatShape){
+				if (bIsAddRepeatShape) {
 					this._repeatAssignments(oData);
+				} else {
+					this._addNewAssignmentShape(oData);
 				}
 				//Reset bgTasks when new resource added to the gantt
 				this._setBackgroudShapes(this._sGanttViewMode);
@@ -2366,17 +2384,17 @@ sap.ui.define([
 					oNewAssignmentData = this.mergeObject(oNewAssignmentData, shiftData);
 				}
 				oNewAssignmentData.Guid = new Date().getTime().toString();
-				oNewAssignmentData.StartDate = formatter.convertFromUTCDate(oNewAssignmentData.StartDate);              
-				oNewAssignmentData.EndDate = formatter.convertFromUTCDate(oNewAssignmentData.EndDate);   
+				oNewAssignmentData.StartDate = formatter.convertFromUTCDate(oNewAssignmentData.StartDate, oNewAssignmentData.isNew, oNewAssignmentData.isChanging);
+				oNewAssignmentData.EndDate = formatter.convertFromUTCDate(oNewAssignmentData.EndDate, oNewAssignmentData.isNew, oNewAssignmentData.isChanging);
 				oNewAssignmentData.isNew = true;
-				this._addSingleChildToParent(oNewAssignmentData, false, false, true);
+				this._addSingleChildToParent(oNewAssignmentData, false, true);
 				// this._repeatAssignments(oNewAssignmentData);
 				this.groupShiftContextForRepeat = null;
 			}
-			if(this.editSeriesDate){
+			if (this.editSeriesDate) {
 				oNewAssignmentData = deepClone(oAssignmentData);
 				oNewAssignmentData.Guid = new Date().getTime().toString();
-				this._addSingleChildToParent(oNewAssignmentData, false, false, true);
+				this._addSingleChildToParent(oNewAssignmentData, false, true);
 				// this._repeatAssignments(oNewAssignmentData);
 				this.editSeriesDate = false;
 			}
@@ -2432,7 +2450,7 @@ sap.ui.define([
 								oAssignItemData = this.mergeObject(oAssignItemData, shiftData);
 							}
 
-							this._addSingleChildToParent(oAssignItemData, true, true);
+							this._addSingleChildToParent(oAssignItemData, true, false);
 						}
 						aAssignments.splice(index, 1);
 					}
