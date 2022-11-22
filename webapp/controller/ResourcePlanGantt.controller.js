@@ -975,9 +975,16 @@ sap.ui.define([
 				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ScheduleIdDesc"));
 				shiftData = oSelContext.getObject();
 				oData = this.mergeObject(oData, shiftData);
-				this._removeAssignmentShape(oData, true);
-				//add different resource group if it is not exist
-				this._addSingleChildToParent(oData, false, false);
+				if (oData.isApplySeries) {
+					this.groupShiftContextForRepeat = this.groupShiftContext;
+					this.groupShiftContext = null;
+					oData.isRepeating = true; // for deleting series
+					this._removeAssignmentShape(oData, true);
+				} else {
+					this._removeAssignmentShape(oData, true);
+					//add different resource group if it is not exist
+					this._addSingleChildToParent(oData, false, false);
+				}
 
 				if (!oData.isTemporary) {
 					this._oPlanningPopover.close();
@@ -2330,6 +2337,7 @@ sap.ui.define([
 				oAssignItem,
 				aChildren = this.oPlanningModel.getProperty("/data/children"),
 				sStartDateProp,
+				sEndDateProp,
 				oNewAssignmentData;
 
 			if (aAssignmentData.length) {
@@ -2337,8 +2345,10 @@ sap.ui.define([
 					oAssignItem = this.oPlanningModel.getProperty(sPath);
 					if (oAssignItem.NODE_TYPE === "RES_GROUP") {
 						sStartDateProp = "StartDate";
+						sEndDateProp = "EndDate";
 					} else if (oAssignItem.NODE_TYPE === "SHIFT") {
 						sStartDateProp = "EffectiveStartDate";
+						sEndDateProp = "EffectiveEndDate";
 					}
 					if (!this._isDatePast(oAssignItem[sStartDateProp])) {
 						aAssignment.push(oAssignItem);
@@ -2386,17 +2396,31 @@ sap.ui.define([
 					oNewAssignmentData = this.mergeObject(oNewAssignmentData, shiftData);
 				}
 				oNewAssignmentData.Guid = new Date().getTime().toString();
-				oNewAssignmentData.StartDate = formatter.convertFromUTCDate(oNewAssignmentData.StartDate, oNewAssignmentData.isNew, oNewAssignmentData.isChanging);
-				oNewAssignmentData.EndDate = formatter.convertFromUTCDate(oNewAssignmentData.EndDate, oNewAssignmentData.isNew, oNewAssignmentData.isChanging);
+				oNewAssignmentData[sStartDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sStartDateProp], oNewAssignmentData.isNew,
+					oNewAssignmentData.isChanging);
+				oNewAssignmentData[sEndDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sEndDateProp], oNewAssignmentData.isNew, oNewAssignmentData
+					.isChanging);
 				oNewAssignmentData.isNew = true;
-				this._addSingleChildToParent(oNewAssignmentData, false, true);
+				if (oNewAssignmentData.NODE_TYPE === "SHIFT") {
+					this._repeatAssignments(oNewAssignmentData);
+				} else {
+					this._addSingleChildToParent(oNewAssignmentData, false, true);
+				}
+				// this._addSingleChildToParent(oNewAssignmentData, false, true);
 				// this._repeatAssignments(oNewAssignmentData);
 				this.groupShiftContextForRepeat = null;
 			}
 			if (this.editSeriesDate) {
 				oNewAssignmentData = deepClone(oAssignmentData);
 				oNewAssignmentData.Guid = new Date().getTime().toString();
-				this._addSingleChildToParent(oNewAssignmentData, false, true);
+				if (oNewAssignmentData.NODE_TYPE === "SHIFT") {
+					oNewAssignmentData.PARENT_NODE_ID = oNewAssignmentData.NodeId;
+					oNewAssignmentData.ResourceGuid = oNewAssignmentData.ParentNodeId;
+					this._repeatAssignments(oNewAssignmentData);
+				} else {
+					this._addSingleChildToParent(oNewAssignmentData, false, true);
+				}
+				// this._addSingleChildToParent(oNewAssignmentData, false, true);
 				// this._repeatAssignments(oNewAssignmentData);
 				this.editSeriesDate = false;
 			}
