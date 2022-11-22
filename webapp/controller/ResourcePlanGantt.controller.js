@@ -1942,6 +1942,8 @@ sap.ui.define([
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject, bDragged).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oData));
+					//to enable the reset button so that they can clear line item added in table
+					this.getModel("viewModel").setProperty("/isResetEnabled", true);
 					if (oData && oData.NODE_TYPE !== "RESOURCE") {
 						oChildData = Object.assign(oData, {
 							bgTasks: oPopoverData.oResourceObject.bgTasks
