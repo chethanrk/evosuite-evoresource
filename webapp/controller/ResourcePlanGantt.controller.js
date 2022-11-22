@@ -658,7 +658,7 @@ sap.ui.define([
 			var aChildren = this.oPlanningModel.getProperty("/data/children"),
 				sFirstName = oDraggedObj.data.FIRSTNAME,
 				sLastName = oDraggedObj.data.LASTNAME,
-				sPernr = oDraggedObj.data.Pernr,
+				sPernr = oDraggedObj.data.PERNR,
 				sGUID = oDraggedObj.data.ResourceGuid,
 				obj = {},
 				iScrollTo;
