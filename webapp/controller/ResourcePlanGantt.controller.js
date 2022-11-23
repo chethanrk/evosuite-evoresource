@@ -901,7 +901,6 @@ sap.ui.define([
 			var cancelcallback = function () {};
 			if (oData.isNew) {
 				this._removeAssignmentShape(oData, true);
-				this.getModel("viewModel").setProperty("/isResetEnabled", true);
 				if (this._oPlanningPopover) {
 					this._oPlanningPopover.close();
 				}
@@ -1966,8 +1965,6 @@ sap.ui.define([
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject, bDragged).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oData));
-					//to enable the reset button so that they can clear line item added in table
-					this.getModel("viewModel").setProperty("/isResetEnabled", true);
 					if (oData && oData.NODE_TYPE !== "RESOURCE") {
 						oChildData = Object.assign(oData, {
 							bgTasks: oPopoverData.oResourceObject.bgTasks
@@ -2693,6 +2690,12 @@ sap.ui.define([
 		_afterPopoverClose: function (oEvent) {
 			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
+				
+			//enable the reset button based on changes
+			if(!this.getModel("viewModel").getProperty("/isResetEnabled")){
+				this.getModel("viewModel").setProperty("/isResetEnabled", this.oPlanningModel.getProperty("/hasChanges"));
+			}
+			
 			if (oData.isRestChanges) {
 				if (!oData.isNew && oData.isTemporary && oOldAssignmentData && oOldAssignmentData.Guid) {
 					var oFoundData = this._getChildrenDataByKey("Guid", oData.Guid, null);
