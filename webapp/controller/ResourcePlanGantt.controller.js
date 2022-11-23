@@ -306,6 +306,8 @@ sap.ui.define([
 		_treeTable: null,
 		_previousView: "DAY",
 		groupShiftContext: null,
+		groupShiftContextForRepeat: null,
+		editSeriesDate: false,
 		_ganttChart: null,
 		_smartFilterBar: null,
 		_dateRangeFilter: null,
