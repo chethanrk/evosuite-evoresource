@@ -2398,7 +2398,8 @@ sap.ui.define([
 				oNewAssignmentData.Guid = new Date().getTime().toString();
 				oNewAssignmentData[sStartDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sStartDateProp], oNewAssignmentData.isNew,
 					oNewAssignmentData.isChanging);
-				oNewAssignmentData[sEndDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sEndDateProp], oNewAssignmentData.isNew, oNewAssignmentData
+				oNewAssignmentData[sEndDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sEndDateProp], oNewAssignmentData.isNew,
+					oNewAssignmentData
 					.isChanging);
 				oNewAssignmentData.isNew = true;
 				if (oNewAssignmentData.NODE_TYPE === "SHIFT") {
@@ -2413,6 +2414,7 @@ sap.ui.define([
 			if (this.editSeriesDate) {
 				oNewAssignmentData = deepClone(oAssignmentData);
 				oNewAssignmentData.Guid = new Date().getTime().toString();
+				oNewAssignmentData.isNew = true;
 				if (oNewAssignmentData.NODE_TYPE === "SHIFT") {
 					oNewAssignmentData.PARENT_NODE_ID = oNewAssignmentData.NodeId;
 					oNewAssignmentData.ResourceGuid = oNewAssignmentData.ParentNodeId;
@@ -2423,6 +2425,9 @@ sap.ui.define([
 				// this._addSingleChildToParent(oNewAssignmentData, false, true);
 				// this._repeatAssignments(oNewAssignmentData);
 				this.editSeriesDate = false;
+			}
+			if (this._oPlanningPopover) {
+				this._oPlanningPopover.close();
 			}
 		},
 
