@@ -1970,7 +1970,6 @@ sap.ui.define([
 				oAssignData = oContext.getObject();
 				if (oAssignData.NODE_TYPE === "RES_GROUP") {
 					//popover data adjustment with repeat mode
-					// oAssignData.SeriesRepeat = "N";
 					oAssignData.isEditable = true;
 					oAssignData.isDeletable = this.isGroupDeletable(oAssignData);
 					oAssignData.minDate = this._getShapePopoverMinDate(oAssignData.isDeletable);
@@ -1980,7 +1979,6 @@ sap.ui.define([
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oAssignData));
 				} else if (oAssignData.NODE_TYPE === "SHIFT") {
 					//popover data adjustment with repeat mode
-					// oAssignData.SeriesRepeat = "N";
 					oAssignData.isEditable = true;
 					oAssignData.isEditable = !oAssignData.HR_SHIFT_FLAG;
 					oAssignData.isDeletable = this.isShiftDeletable(oAssignData);
@@ -2407,8 +2405,6 @@ sap.ui.define([
 				} else {
 					this._addSingleChildToParent(oNewAssignmentData, false, true);
 				}
-				// this._addSingleChildToParent(oNewAssignmentData, false, true);
-				// this._repeatAssignments(oNewAssignmentData);
 				this.groupShiftContextForRepeat = null;
 			}
 			if (this.editSeriesDate) {
@@ -2422,8 +2418,6 @@ sap.ui.define([
 				} else {
 					this._addSingleChildToParent(oNewAssignmentData, false, true);
 				}
-				// this._addSingleChildToParent(oNewAssignmentData, false, true);
-				// this._repeatAssignments(oNewAssignmentData);
 				this.editSeriesDate = false;
 			}
 			if (this._oPlanningPopover) {
