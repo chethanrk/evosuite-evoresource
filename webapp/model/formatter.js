@@ -621,7 +621,11 @@ sap.ui.define([
 			}
 			return sSelectionMode;
 		},
-		
+		/*
+		 * Returns boolean for the visibility of "Apply to Series" check box
+		 * @param {boolean} isSeries
+		 *
+		 */
 		isSeriesCheckVisible: function(isSeries){
 			return isSeries;
 		}
