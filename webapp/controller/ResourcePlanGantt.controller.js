@@ -2035,6 +2035,8 @@ sap.ui.define([
 		/**
 		 * Add new Resource Group under Resource in Gantt
 		 * @param {object} oData - Resource Group data to be added under Resource if not exist
+		 * @param {boolean} bAllowMarkChange - Value true will save the assignment in planning mode
+		 * @param {boolean} bIsAddRepeatShape - If it is adding single or in series
 		 */
 		_addSingleChildToParent: function (oData, bAllowMarkChange, bIsAddRepeatShape) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
