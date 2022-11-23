@@ -17,7 +17,7 @@
 											key="{path:'contentTabs>Core.LongDescription/String'}">
 											<content>
 												<template:with path="templateProperties>/" var="tempProps">
-													<f:DynamicPage id="idDynamicPage--{path:'contentTabs>Core.LongDescription/String'}" headerExpanded="true" fitContent="true"
+													<f:DynamicPage id="idDynamicPage--{path:'contentTabs>Core.LongDescription/String'}" headerExpanded="true" fitContent="false"
 														preserveHeaderStateOnScroll="true" toggleHeaderOnTitleClick="false" class="sapUiNoContentPadding">
 														<f:header>
 															<f:DynamicPageHeader id="idDynamicPageHeader--{path:'contentTabs>Core.LongDescription/String'}" pinnable="true"
@@ -50,7 +50,7 @@
 																		smartFilterId="idSmartFilter--{path:'contentTabs>Core.LongDescription/String'}" entitySet="{:= ${contentTabs>Core.LongDescription/String}}"
 																		enableAutoBinding="true" tableType="ResponsiveTable" demandPopin="true" useTablePersonalisation="true" useExportToExcel="false"
 																		requestAtLeastFields="{:= ${tableDetails>requestAtLeastFields}}" beforeRebindTable="onBeforeRebindSmartTable"
-																		persistencyKey="com.evorait.evosuite.evoresource.SmartTable--{path:'contentTabs>Core.LongDescription/String'}">
+																		persistencyKey="com.evorait.evosuite.evoresource.SmartTable--{path:'contentTabs>Core.LongDescription/String'}" placeToolbarInTable="true">
 																		<smartTable:customToolbar>
 																			<Toolbar>
 																				<ToolbarSpacer/>
@@ -58,7 +58,7 @@
 																					name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|CustomToolbar"/>
 																			</Toolbar>
 																		</smartTable:customToolbar>
-																		<Table id="idCustomTable--{path:'contentTabs>Core.LongDescription/String'}" sticky="InfoToolbar,HeaderToolbar,ColumnHeaders"
+																		<Table id="idCustomTable--{path:'contentTabs>Core.LongDescription/String'}" sticky="ColumnHeaders,HeaderToolbar"
 																			contextualWidth="{= ${contentTabs>Core.LongDescription/String} === 'ShiftSet' ? 'Auto' : 'Inherit' }" growing="true" 
 																			growingScrollToLoad="true" growingThreshold="50">
 																			<columns>
