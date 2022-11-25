@@ -1762,16 +1762,19 @@ sap.ui.define([
 		 */
 		onPressCreateMultiAssignment: function (oEvent) {
 			var oMultiCreateData = {
-				Guid: new Date().getTime(),
-				ResourceList: [{
-					PERNR: "1",
-					FIRSTNAME: "Sagar"
-				}],
 				StartDate: moment().startOf("day").toDate(),
 				EndDate: moment().endOf("day").toDate(),
 				NODE_TYPE: "RES_GROUP",
 				ResourceGroupGuid: "",
-				TemplateId: ""
+				TemplateId: "",
+				isNew: true,
+				IsSeries: false,
+				SeriesRepeat: "N",
+				ResourceList: [],
+				RESOURCE_GROUP_COLOR: "",
+				DESCRIPTION: "",
+				ResourceGroupDesc: "",
+				SERIES_END_DATE:moment().endOf("day").toDate()
 			};
 			this.openMultiCreateAssignmentDialog(oMultiCreateData);
 		},
@@ -1793,14 +1796,8 @@ sap.ui.define([
 					//after popover gets closed remove popover data
 					this._oMultiCreateDialog.attachAfterClose(function (oEvent) {}.bind(this));
 
-					// add validator
-					// sap.ui.getCore().byId("idResourceList").addValidator(function (args) {
-					// 	var key = args.suggestedToken.getProperty("key"),
-					// 		text = args.suggestedToken.getProperty("text");      
-					// 	return new sap.m.Token({
-					// 		key: key,
-					// 		text: text
-					// 	});
+					// sap.ui.getCore().byId("idResourceList").addValidator(function(oItem){
+					// 	return new sap.m.Token().setBindingContext(oItem.suggestionObject.getBindingContext("viewModel"),"ganttPlanningModel");
 					// });
 
 				}.bind(this));
@@ -1817,12 +1814,74 @@ sap.ui.define([
 		},
 
 		onConfirmMultiCreate: function (oEvent) {
+			var oSimpleformFileds = this.getView().getControlsByFieldGroupId("multiCreateInput"),
+				oValidation = this.validateForm(oSimpleformFileds),
+				oResourceControl = sap.ui.getCore().byId("idResourceList"),
+				oAssignmentData, aResourceList;
 
+			if (oValidation && oValidation.state === "success") {
+				aResourceList = oResourceControl.getTokens();
+				oAssignmentData = this.getModel("ganttPlanningModel").getProperty("/multiCreateData");
+				aResourceList.forEach(function (oResource) {
+
+					oAssignmentData.ResourceGuid = oResource.getKey();
+					oAssignmentData.PARENT_NODE_ID = oResource.getKey();
+					oAssignmentData.ParentNodeId = oResource.getKey();
+					oAssignmentData.NodeId = oResource.getKey();
+					this.oPlanningModel.setProperty("/tempData/popover", oAssignmentData);
+					oAssignmentData.Guid = new Date().getTime().toString();
+					this._addSingleChildToParent(oAssignmentData, false, false);
+
+				}.bind(this));
+
+				if (this._oMultiCreateDialog) {
+					this._oMultiCreateDialog.close();
+				}
+			}
 		},
 
 		onCloseMultiCreate: function (oEvent) {
 			if (this._oMultiCreateDialog) {
 				this._oMultiCreateDialog.close();
+			}
+		},
+
+		onMultiCreateResourceListChange: function (oEvent) {
+			var oSource = oEvent.getSource();
+			if (oSource.getTokens() && oSource.getTokens().length) {
+				oSource.setValueState("None");
+			}
+		},
+
+		onMultiCreateGroupChange: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oDataObject = oSource.getSelectedItem().getBindingContext("viewModel").getObject(),
+				oMultiCreateData = this.getModel("ganttPlanningModel").getProperty("/multiCreateData");
+			if (oSource.getSelectedKey()) {
+				oSource.setValueState("None");
+				oMultiCreateData.RESOURCE_GROUP_COLOR = oDataObject.ResourceGroupColor;
+				oMultiCreateData.DESCRIPTION = oDataObject.ResourceGroupDesc;
+				oMultiCreateData.ResourceGroupDesc = oDataObject.ResourceGroupDesc;
+				oMultiCreateData.ResourceGroupDesc = oDataObject.ResourceGroupDesc;
+				oMultiCreateData.TIME_ZONE = oDataObject.TIME_ZONE;
+			}
+
+		},
+		onMultiCreateShiftChange: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oDataObject = oSource.getSelectedItem().getBindingContext("viewModel").getObject(),
+				oMultiCreateData = this.getModel("ganttPlanningModel").getProperty("/multiCreateData");
+			if (oSource.getSelectedKey()) {
+				oSource.setValueState("None");
+				oMultiCreateData = this.mergeObject(oMultiCreateData, oDataObject);
+				oMultiCreateData.EffectiveStartDate = oMultiCreateData.StartDate;
+				oMultiCreateData.EffectiveEndDate = oMultiCreateData.EndDate;
+			}
+		},
+		onMultiCreateDateChange: function (oEvent) {
+			var oSource = oEvent.getSource();
+			if (oSource.getDateValue()) {
+				oSource.setValueState("None");
 			}
 		},
 

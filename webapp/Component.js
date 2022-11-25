@@ -88,6 +88,7 @@ sap.ui.define([
 
 			this._getResourceGroupDetails();
 			this._getShiftDetails();
+			this._getResourceDetails();
 
 			// get System Information
 			this._getSystemInformation();
@@ -250,6 +251,19 @@ sap.ui.define([
 			this.oShiftInfoProm = new Promise(function (resolve) {
 				this.readData("/ShiftSet", []).then(function (oData) {
 					this.getModel("viewModel").setProperty("/Shifts", oData.results);
+					resolve(oData.results);
+				}.bind(this));
+			}.bind(this));
+		},
+		
+		/**
+		 * Gets Resource data
+		 * Returns promise
+		 */
+		_getResourceDetails: function () {
+			this.oResourceInfoProm = new Promise(function (resolve) {
+				this.readData("/ResourceSet", []).then(function (oData) {
+					this.getModel("viewModel").setProperty("/Resources", oData.results);
 					resolve(oData.results);
 				}.bind(this));
 			}.bind(this));

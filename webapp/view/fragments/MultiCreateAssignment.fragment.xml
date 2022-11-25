@@ -7,12 +7,10 @@
 				singleContainerFullSize="true">
 				<f:content>
 					<Label text="{i18n>xfld.resourceName}"/>
-					<MultiInput id="idResourceList" suggestionItems="{ path: '/ResourceSet'}" tokens="{ganttPlanningModel>/multiCreateData/ResourceList}">
-						<tokens>
-							<Token key="{ganttPlanningModel>PERNR}" text="{ganttPlanningModel>FIRSTNAME}"/>
-						</tokens>
+					<MultiInput id="idResourceList" required="true" suggestionItems="{ path: 'viewModel>/Resources'}" fieldGroupIds="multiCreateInput"
+						tokenUpdate="onMultiCreateResourceListChange">
 						<suggestionItems>
-							<core:Item key="{PERNR}" text="{FIRSTNAME} {LASTNAME}"/>
+							<core:Item key="{viewModel>ResourceGuid}" text="{viewModel>FIRSTNAME} {viewModel>LASTNAME}"/>
 						</suggestionItems>
 					</MultiInput>
 					<Label text="{i18n>xfld.popoverType}"/>
@@ -22,21 +20,24 @@
 					</Select>
 					<Label text="{i18n>xfld.popoverSelect}" required="true"/>
 					<ComboBox required="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'RES_GROUP'}" showSecondaryValues="true"
-						name="ResourceGroupGuid" fieldGroupIds="changeShapeInput" items="{ path: 'viewModel>/ResourceGroup', sorter: { path: 'ResourceGroupDesc' }}"
+						name="ResourceGroupGuid" fieldGroupIds="multiCreateInput" items="{ path: 'viewModel>/ResourceGroup', sorter: { path: 'ResourceGroupDesc' }}"
 						selectedKey="{ganttPlanningModel>/multiCreateData/ResourceGroupGuid}"
-						visible="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'RES_GROUP'}">
+						visible="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'RES_GROUP'}"
+						editable="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'RES_GROUP'}" change="onMultiCreateGroupChange">
 						<core:ListItem key="{viewModel>ResourceGroupGuid}" text="{viewModel>ResourceGroupDesc}" additionalText="{viewModel>ResourceGroupUnitId}"/>
 					</ComboBox>
 					<ComboBox required="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'SHIFT'}" showSecondaryValues="true" name="Shift"
-						fieldGroupIds="changeShapeInput" items="{ path: 'viewModel>/Shifts'}" selectedKey="{ganttPlanningModel>/multiCreateData/TemplateId}"
-						visible="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'SHIFT'}">
+						fieldGroupIds="multiCreateInput" items="{ path: 'viewModel>/Shifts'}" selectedKey="{ganttPlanningModel>/multiCreateData/TemplateId}"
+						visible="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'SHIFT'}"
+						editable="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'SHIFT'}" change="onMultiCreateShiftChange">
 						<core:ListItem key="{viewModel>TemplateId}" text="{viewModel>ScheduleIdDesc}" additionalText="{viewModel>TemplateDesc}"/>
 					</ComboBox>
 					<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
-					<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput"
+					<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="multiCreateInput"
 						dateValue="{parts:[{path:'ganttPlanningModel>/multiCreateData/StartDate'},{path:'ganttPlanningModel>/multiCreateData/isNew'}],formatter:'.formatter.convertFromUTCDate'}"
 						secondDateValue="{parts:[{path:'ganttPlanningModel>/multiCreateData/EndDate'},{path:'ganttPlanningModel>/multiCreateData/isNew'}],formatter:'.formatter.convertFromUTCDate'}"
-						minDate="{path:'ganttPlanningModel>/multiCreateData/minDate'}" maxDate="{path:'ganttPlanningModel>/multiCreateData/maxDate'}"/>
+						minDate="{path:'ganttPlanningModel>/multiCreateData/minDate'}" maxDate="{path:'ganttPlanningModel>/multiCreateData/maxDate'}"
+						change="onMultiCreateDateChange"/>
 				</f:content>
 			</f:SimpleForm>
 		</content>
