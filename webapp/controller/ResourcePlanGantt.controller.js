@@ -1818,11 +1818,13 @@ sap.ui.define([
 			var oSimpleformFileds = this.getView().getControlsByFieldGroupId("multiCreateInput"),
 				oValidation = this.validateForm(oSimpleformFileds),
 				oResourceControl = sap.ui.getCore().byId("idResourceList"),
-				oAssignmentData,oCloneAssignmentData, aResourceList,aAssigments;
+				oAssignmentData, oCloneAssignmentData, aResourceList, aAssigments, isResourceExist,
+				aChildren = this.getModel("ganttPlanningModel").getProperty("/data/children");
 
 			if (oValidation && oValidation.state === "success") {
 				aResourceList = oResourceControl.getTokens();
 				oAssignmentData = this.getModel("ganttPlanningModel").getProperty("/multiCreateData");
+				this.getModel("viewModel").setProperty("/busy", true);
 				aResourceList.forEach(function (oResource) {
 					oCloneAssignmentData = deepClone(oAssignmentData);
 					oCloneAssignmentData.ResourceGuid = oResource.data('ResourceGuid');
@@ -1834,17 +1836,31 @@ sap.ui.define([
 
 					//get groups assigned to the selected resource
 					if (oCloneAssignmentData.NODE_TYPE === "RES_GROUP") {
-						aAssigments = this._getResourceassigmentByKey("ResourceGuid", oCloneAssignmentData.ResourceGuid, oCloneAssignmentData.ResourceGroupGuid, oCloneAssignmentData);
+						aAssigments = this._getResourceassigmentByKey("ResourceGuid", oCloneAssignmentData.ResourceGuid, oCloneAssignmentData.ResourceGroupGuid,
+							oCloneAssignmentData);
 					} else if (oCloneAssignmentData.NODE_TYPE === "SHIFT") {
 						aAssigments = this._getResourceShiftByKey(oCloneAssignmentData.ParentNodeId, oCloneAssignmentData);
 					}
 					//validation for the existing assigments
 					if (this._checkDuplicateAsigment(oCloneAssignmentData, aAssigments)) {
+						//
+						isResourceExist = aChildren.some(function (item) {
+							return item.ResourceGuid === oCloneAssignmentData.ResourceGuid;
+						}.bind(this));
+						if (!isResourceExist) {
+							oCloneAssignmentData.ChildCount = 0;
+							oCloneAssignmentData.Description = oResource.getProperty("text");
+							oCloneAssignmentData.PERNR = oResource.data('PERNR');
+							oCloneAssignmentData.NodeType = "RESOURCE";
+							oCloneAssignmentData.children = [];
+							aChildren.push(oCloneAssignmentData);
+						}
+						//
 						this._addSingleChildToParent(oCloneAssignmentData, false, false);
 					}
 
 				}.bind(this));
-
+				this.getModel("viewModel").setProperty("/busy", false);
 				if (this._oMultiCreateDialog) {
 					this._oMultiCreateDialog.close();
 				}
@@ -1937,10 +1953,13 @@ sap.ui.define([
 				aSelectedContext.forEach(function (oItem) {
 					oContextObject = oItem.getObject();
 					oMultiInput.addToken(new sap.m.Token({
-						text: oContextObject.FIRSTNAME,
+						text: oContextObject.FIRSTNAME + " " + oContextObject.LASTNAME + "("+oContextObject.PERNR+")",
 						customData: [new sap.ui.core.CustomData({
 							key: "ResourceGuid",
 							value: oContextObject.ResourceGuid
+						}), new sap.ui.core.CustomData({
+							key: "PERNR",
+							value: oContextObject.PERNR
 						})]
 					}));
 				});
