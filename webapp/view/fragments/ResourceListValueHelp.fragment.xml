@@ -1,0 +1,18 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<SelectDialog
+		title="Resource List"
+		class="sapUiPopupWithPadding"
+		items="{viewModel>/Resources}"
+		search="handleResourceValueHelpSearch"
+		confirm="handleResourceValueHelpClose"
+		cancel="handleResourceValueHelpClose"
+		multiSelect="true">
+		<StandardListItem
+			iconDensityAware="false"
+			iconInset="false"
+			title="{viewModel>FIRSTNAME} {viewModel>LASTNAME}"
+			description="{viewModel>PERNR}" />
+	</SelectDialog>
+</core:FragmentDefinition>

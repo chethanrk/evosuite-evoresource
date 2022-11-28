@@ -7,12 +7,8 @@
 				singleContainerFullSize="true">
 				<f:content>
 					<Label text="{i18n>xfld.resourceName}"/>
-					<MultiInput id="idResourceList" required="true" suggestionItems="{ path: 'viewModel>/Resources'}" fieldGroupIds="multiCreateInput"
-						tokenUpdate="onMultiCreateResourceListChange">
-						<suggestionItems>
-							<core:Item key="{viewModel>ResourceGuid}" text="{viewModel>FIRSTNAME} {viewModel>LASTNAME}"/>
-						</suggestionItems>
-					</MultiInput>
+					<MultiInput id="idResourceList" required="true" fieldGroupIds="multiCreateInput"
+						tokenUpdate="onMultiCreateResourceListChange" valueHelpRequest="handleResourceValueHelp"/>
 					<Label text="{i18n>xfld.popoverType}"/>
 					<Select forceSelection="true" selectedKey="{ganttPlanningModel>/multiCreateData/NODE_TYPE}" width="100%">
 						<core:Item key="RES_GROUP" text="{i18n>xtxt.group}"/>

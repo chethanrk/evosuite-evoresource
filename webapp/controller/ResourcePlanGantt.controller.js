@@ -1769,12 +1769,12 @@ sap.ui.define([
 				TemplateId: "",
 				isNew: true,
 				IsSeries: false,
-				SeriesRepeat: "N",
+				SeriesRepeat: "",
 				ResourceList: [],
 				RESOURCE_GROUP_COLOR: "",
 				DESCRIPTION: "",
 				ResourceGroupDesc: "",
-				SERIES_END_DATE:moment().endOf("day").toDate()
+				SERIES_END_DATE: moment().endOf("day").toDate()
 			};
 			this.openMultiCreateAssignmentDialog(oMultiCreateData);
 		},
@@ -1814,23 +1814,34 @@ sap.ui.define([
 		},
 
 		onConfirmMultiCreate: function (oEvent) {
+			debugger
 			var oSimpleformFileds = this.getView().getControlsByFieldGroupId("multiCreateInput"),
 				oValidation = this.validateForm(oSimpleformFileds),
 				oResourceControl = sap.ui.getCore().byId("idResourceList"),
-				oAssignmentData, aResourceList;
+				oAssignmentData,oCloneAssignmentData, aResourceList,aAssigments;
 
 			if (oValidation && oValidation.state === "success") {
 				aResourceList = oResourceControl.getTokens();
 				oAssignmentData = this.getModel("ganttPlanningModel").getProperty("/multiCreateData");
 				aResourceList.forEach(function (oResource) {
+					oCloneAssignmentData = deepClone(oAssignmentData);
+					oCloneAssignmentData.ResourceGuid = oResource.data('ResourceGuid');
+					oCloneAssignmentData.PARENT_NODE_ID = oResource.data('ResourceGuid');
+					oCloneAssignmentData.ParentNodeId = oResource.data('ResourceGuid');
+					oCloneAssignmentData.NodeId = oResource.data('ResourceGuid');
+					this.oPlanningModel.setProperty("/tempData/popover", oCloneAssignmentData);
+					oCloneAssignmentData.Guid = new Date().getTime().toString();
 
-					oAssignmentData.ResourceGuid = oResource.getKey();
-					oAssignmentData.PARENT_NODE_ID = oResource.getKey();
-					oAssignmentData.ParentNodeId = oResource.getKey();
-					oAssignmentData.NodeId = oResource.getKey();
-					this.oPlanningModel.setProperty("/tempData/popover", oAssignmentData);
-					oAssignmentData.Guid = new Date().getTime().toString();
-					this._addSingleChildToParent(oAssignmentData, false, false);
+					//get groups assigned to the selected resource
+					if (oCloneAssignmentData.NODE_TYPE === "RES_GROUP") {
+						aAssigments = this._getResourceassigmentByKey("ResourceGuid", oCloneAssignmentData.ResourceGuid, oCloneAssignmentData.ResourceGroupGuid, oCloneAssignmentData);
+					} else if (oCloneAssignmentData.NODE_TYPE === "SHIFT") {
+						aAssigments = this._getResourceShiftByKey(oCloneAssignmentData.ParentNodeId, oCloneAssignmentData);
+					}
+					//validation for the existing assigments
+					if (this._checkDuplicateAsigment(oCloneAssignmentData, aAssigments)) {
+						this._addSingleChildToParent(oCloneAssignmentData, false, false);
+					}
 
 				}.bind(this));
 
@@ -1879,9 +1890,60 @@ sap.ui.define([
 			}
 		},
 		onMultiCreateDateChange: function (oEvent) {
-			var oSource = oEvent.getSource();
+			var oSource = oEvent.getSource(),
+				oStartDate, oEndDate;
 			if (oSource.getDateValue()) {
 				oSource.setValueState("None");
+				oStartDate = oSource.getDateValue();
+				oEndDate = moment(oSource.getSecondDateValue()).subtract(999, "milliseconds").toDate();
+				this.oPlanningModel.setProperty("/multiCreateData/StartDate", oStartDate);
+				this.oPlanningModel.setProperty("/multiCreateData/EffectiveStartDate", oStartDate);
+				this.oPlanningModel.setProperty("/multiCreateData/EndDate", oEndDate);
+				this.oPlanningModel.setProperty("/multiCreateData/EffectiveEndDate", oEndDate);
+
+			}
+		},
+		handleResourceValueHelp: function (oEvent) {
+			// create value help dialog
+			if (!this._resourceValueHelpDialog) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoresource.view.fragments.ResourceListValueHelp",
+					controller: this
+				}).then(function (oValueHelpDialog) {
+					this._resourceValueHelpDialog = oValueHelpDialog;
+					this.getView().addDependent(this._resourceValueHelpDialog);
+					this._resourceValueHelpDialog.open();
+				}.bind(this));
+			} else {
+				this._resourceValueHelpDialog.open();
+			}
+		},
+		handleResourceValueHelpSearch: function (evt) {
+			var sValue = evt.getParameter("value");
+			var oFilter = new Filter(
+				"FIRSTNAME",
+				FilterOperator.Contains,
+				sValue
+			);
+			evt.getSource().getBinding("items").filter([oFilter]);
+		},
+
+		handleResourceValueHelpClose: function (evt) {
+			var aSelectedContext = evt.getParameter("selectedContexts"),
+				oMultiInput = sap.ui.getCore().byId("idResourceList"),
+				oContextObject = {};
+
+			if (aSelectedContext && aSelectedContext.length > 0) {
+				aSelectedContext.forEach(function (oItem) {
+					oContextObject = oItem.getObject();
+					oMultiInput.addToken(new sap.m.Token({
+						text: oContextObject.FIRSTNAME,
+						customData: [new sap.ui.core.CustomData({
+							key: "ResourceGuid",
+							value: oContextObject.ResourceGuid
+						})]
+					}));
+				});
 			}
 		},
 
