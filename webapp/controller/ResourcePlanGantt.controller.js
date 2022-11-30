@@ -2004,9 +2004,11 @@ sap.ui.define([
 				}).then(function (oValueHelpDialog) {
 					this._resourceValueHelpDialog = oValueHelpDialog;
 					this.getView().addDependent(this._resourceValueHelpDialog);
+					this._resourceValueHelpDialog.getBinding("items").filter([]);
 					this._resourceValueHelpDialog.open();
 				}.bind(this));
 			} else {
+				this._resourceValueHelpDialog.getBinding("items").filter([]);
 				this._resourceValueHelpDialog.open();
 			}
 		},
