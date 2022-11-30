@@ -1908,10 +1908,11 @@ sap.ui.define([
 							oCloneAssignmentData.PERNR = oResource.data('PERNR');
 							oCloneAssignmentData.NodeType = "RESOURCE";
 							oCloneAssignmentData.children = [];
-							aChildren.push(oCloneAssignmentData);
+							var oResourceData = deepClone(oCloneAssignmentData)
+							aChildren.push(oResourceData);
 						}
 						//
-						this._addSingleChildToParent(oCloneAssignmentData, false, false, true);
+						this._addSingleChildToParent(oCloneAssignmentData, false, false);
 					}
 
 				}.bind(this));
@@ -2340,7 +2341,7 @@ sap.ui.define([
 		 * @param {boolean} bAllowMarkChange - Value true will save the assignment in planning mode
 		 * @param {boolean} bIsAddRepeatShape - If it is adding single or in series
 		 */
-		_addSingleChildToParent: function (oData, bAllowMarkChange, bIsAddRepeatShape, bIsMultiCreate) {
+		_addSingleChildToParent: function (oData, bAllowMarkChange, bIsAddRepeatShape) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children"),
 				oCloneData;
 			this.getObjectFromEntity("GanttResourceHierarchySet", oData).then(function (oGanntObject) {
@@ -2364,29 +2365,25 @@ sap.ui.define([
 				}.bind(this);
 				aChildren = this._recurseAllChildren(aChildren, callbackFn, oGanntObject);
 				this.oPlanningModel.setProperty("/data/children", aChildren);
-				if(bIsMultiCreate){
-					oCloneData = deepClone(oData);
-				}else{
-					oCloneData = oData;
-				}
+				
 				
 				if (bIsAddRepeatShape) {
-					this._repeatAssignments(oCloneData);
+					this._repeatAssignments(oData);
 				} else {
-					this._addNewAssignmentShape(oCloneData);
+					this._addNewAssignmentShape(oData);
 				}
 				//Reset bgTasks when new resource added to the gantt
 				this._setBackgroudShapes(this._sGanttViewMode);
 
-				if (bAllowMarkChange && !oCloneData.isNew) {
-					var oFoundData = this._getChildDataByKey("Guid", oCloneData.Guid, null),
+				if (bAllowMarkChange && !oData.isNew) {
+					var oFoundData = this._getChildDataByKey("Guid", oData.Guid, null),
 						sPath = oFoundData.sPath;
 					this.oPlanningModel.setProperty(sPath + "/isNew", true);
 					this.oPlanningModel.setProperty(sPath + "/isTemporary", false);
 					this.oPlanningModel.setProperty(sPath + "/PARENT_NODE_ID", "");
 					this.oPlanningModel.setProperty(sPath + "/NODE_ID", "");
 				}
-				this._markAsPlanningChange(oCloneData, true);
+				this._markAsPlanningChange(oData, true);
 			}.bind(this));
 		},
 
