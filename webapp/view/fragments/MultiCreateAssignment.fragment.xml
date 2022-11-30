@@ -8,7 +8,7 @@
 				<f:content>
 					<Label text="{i18n>xfld.resourceName}"/>
 					<MultiInput id="idResourceList" required="true" fieldGroupIds="multiCreateInput"
-						tokenUpdate="onMultiCreateResourceListChange" valueHelpRequest="handleResourceValueHelp"/>
+						tokenUpdate="onMultiCreateResourceListChange" valueHelpRequest="handleResourceValueHelp" valueHelpOnly="true"/>
 					<Label text="{i18n>xfld.popoverType}"/>
 					<Select forceSelection="true" selectedKey="{ganttPlanningModel>/multiCreateData/NODE_TYPE}" width="100%">
 						<core:Item key="RES_GROUP" text="{i18n>xtxt.group}"/>

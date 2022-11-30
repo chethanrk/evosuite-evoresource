@@ -311,6 +311,56 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				setMultiCreateData: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onConfirmMultiCreate: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onCloseMultiCreate: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onMultiCreateResourceListChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onMultiCreateGroupChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onMultiCreateShiftChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onMultiCreateDateChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				handleResourceValueHelp: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				handleResourceValueHelpSearch: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				handleResourceValueHelpClose: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -1776,10 +1826,13 @@ sap.ui.define([
 				ResourceGroupDesc: "",
 				SERIES_END_DATE: moment().endOf("day").toDate()
 			};
-			this.openMultiCreateAssignmentDialog(oMultiCreateData);
+			this.createNewTempAssignment(oMultiCreateData.StartDate,oMultiCreateData.EndDate,oMultiCreateData).then(function(oData){
+				this.openMultiCreateAssignmentDialog(oData);
+			}.bind(this));                                       
 		},
 		/*
 		 * Function to open Multi Create Assignment Dialog
+		 * @param {object} - oMultiCreateData - Default assignment information
 		 */
 		openMultiCreateAssignmentDialog: function (oMultiCreateData) {
 			if (!this._oMultiCreateDialog) {
@@ -1796,25 +1849,26 @@ sap.ui.define([
 					//after popover gets closed remove popover data
 					this._oMultiCreateDialog.attachAfterClose(function (oEvent) {}.bind(this));
 
-					// sap.ui.getCore().byId("idResourceList").addValidator(function(oItem){
-					// 	return new sap.m.Token().setBindingContext(oItem.suggestionObject.getBindingContext("viewModel"),"ganttPlanningModel");
-					// });
-
 				}.bind(this));
 			} else {
 				this.setMultiCreateData(oMultiCreateData);
 				this._oMultiCreateDialog.open();
 			}
 		},
+		/*
+		 * Function to set multi create information to "ganttPlanningModel"
+		 * @param {object} - oMultiCreateData - Default assignment information
+		 */
 		setMultiCreateData: function (oMultiCreateData) {
+			var oResourceListId = sap.ui.getCore().byId("idResourceList");
+			oResourceListId.removeAllTokens();
 			this.getModel("ganttPlanningModel").setProperty("/multiCreateData", oMultiCreateData);
 		},
-		resourceValueHelp: function (oEvent) {
-
-		},
-
+		/*
+		 * Function called when "Create" button is clicked on MultiCreate Dialog
+		 * @param {object} - oEvent - Event parameter for button press
+		 */
 		onConfirmMultiCreate: function (oEvent) {
-			debugger
 			var oSimpleformFileds = this.getView().getControlsByFieldGroupId("multiCreateInput"),
 				oValidation = this.validateForm(oSimpleformFileds),
 				oResourceControl = sap.ui.getCore().byId("idResourceList"),
@@ -1831,6 +1885,7 @@ sap.ui.define([
 					oCloneAssignmentData.PARENT_NODE_ID = oResource.data('ResourceGuid');
 					oCloneAssignmentData.ParentNodeId = oResource.data('ResourceGuid');
 					oCloneAssignmentData.NodeId = oResource.data('ResourceGuid');
+					oCloneAssignmentData.isTemporary = false;
 					this.oPlanningModel.setProperty("/tempData/popover", oCloneAssignmentData);
 					oCloneAssignmentData.Guid = new Date().getTime().toString();
 
@@ -1860,26 +1915,35 @@ sap.ui.define([
 					}
 
 				}.bind(this));
-				this.getModel("viewModel").setProperty("/busy", false);
 				if (this._oMultiCreateDialog) {
 					this._oMultiCreateDialog.close();
 				}
+				this.getModel("viewModel").setProperty("/busy", false);
 			}
 		},
-
+		/*
+		 * Function called when "Close" button is clicked on MultiCreate Dialog
+		 * @param {object} - oEvent - Event parameter for button press
+		 */
 		onCloseMultiCreate: function (oEvent) {
 			if (this._oMultiCreateDialog) {
 				this._oMultiCreateDialog.close();
 			}
 		},
-
+		/*
+		 * Function called when ResourceList MultiInput token changed
+		 * @param {object} - oEvent - Event parameter
+		 */
 		onMultiCreateResourceListChange: function (oEvent) {
 			var oSource = oEvent.getSource();
 			if (oSource.getTokens() && oSource.getTokens().length) {
 				oSource.setValueState("None");
 			}
 		},
-
+		/*
+		 * Function called MultiCreate Group changed
+		 * @param {object} - oEvent - Event parameter
+		 */
 		onMultiCreateGroupChange: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				oDataObject = oSource.getSelectedItem().getBindingContext("viewModel").getObject(),
@@ -1894,6 +1958,10 @@ sap.ui.define([
 			}
 
 		},
+		/*
+		 * Function called when MultiCreate Shift changed
+		 * @param {object} - oEvent - Event parameter
+		 */
 		onMultiCreateShiftChange: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				oDataObject = oSource.getSelectedItem().getBindingContext("viewModel").getObject(),
@@ -1905,6 +1973,10 @@ sap.ui.define([
 				oMultiCreateData.EffectiveEndDate = oMultiCreateData.EndDate;
 			}
 		},
+		/*
+		 * Function called when MultiCreate Date changed
+		 * @param {object} - oEvent - Event parameter
+		 */
 		onMultiCreateDateChange: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				oStartDate, oEndDate;
@@ -1919,6 +1991,10 @@ sap.ui.define([
 
 			}
 		},
+		/*
+		 * Function called MultiCreate Group changed
+		 * @param {object} - oEvent - Event parameter
+		 */
 		handleResourceValueHelp: function (oEvent) {
 			// create value help dialog
 			if (!this._resourceValueHelpDialog) {
@@ -1936,11 +2012,19 @@ sap.ui.define([
 		},
 		handleResourceValueHelpSearch: function (evt) {
 			var sValue = evt.getParameter("value");
-			var oFilter = new Filter(
+			var oFilter = new Filter([new Filter(
 				"FIRSTNAME",
 				FilterOperator.Contains,
 				sValue
-			);
+			), new Filter(
+				"LASTNAME",
+				FilterOperator.Contains,
+				sValue
+			), new Filter(
+				"PERNR",
+				FilterOperator.Contains,
+				sValue
+			)], false);
 			evt.getSource().getBinding("items").filter([oFilter]);
 		},
 
@@ -1953,7 +2037,7 @@ sap.ui.define([
 				aSelectedContext.forEach(function (oItem) {
 					oContextObject = oItem.getObject();
 					oMultiInput.addToken(new sap.m.Token({
-						text: oContextObject.FIRSTNAME + " " + oContextObject.LASTNAME + "("+oContextObject.PERNR+")",
+						text: oContextObject.FIRSTNAME + " " + oContextObject.LASTNAME + "(" + oContextObject.PERNR + ")",
 						customData: [new sap.ui.core.CustomData({
 							key: "ResourceGuid",
 							value: oContextObject.ResourceGuid

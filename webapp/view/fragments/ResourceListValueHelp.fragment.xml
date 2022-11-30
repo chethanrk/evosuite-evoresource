@@ -6,6 +6,7 @@
 		class="sapUiPopupWithPadding"
 		items="{viewModel>/Resources}"
 		search="handleResourceValueHelpSearch"
+		liveChange="handleResourceValueHelpSearch"
 		confirm="handleResourceValueHelpClose"
 		cancel="handleResourceValueHelpClose"
 		multiSelect="true">
