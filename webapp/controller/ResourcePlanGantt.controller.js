@@ -2341,7 +2341,8 @@ sap.ui.define([
 		 * @param {boolean} bIsAddRepeatShape - If it is adding single or in series
 		 */
 		_addSingleChildToParent: function (oData, bAllowMarkChange, bIsAddRepeatShape) {
-			var aChildren = this.oPlanningModel.getProperty("/data/children");
+			var aChildren = this.oPlanningModel.getProperty("/data/children"),
+				oCloneData;
 			this.getObjectFromEntity("GanttResourceHierarchySet", oData).then(function (oGanntObject) {
 				oGanntObject["bgTasks"] = oData["bgTasks"];
 				oGanntObject["Description"] = oData["DESCRIPTION"];
@@ -2363,23 +2364,24 @@ sap.ui.define([
 				}.bind(this);
 				aChildren = this._recurseAllChildren(aChildren, callbackFn, oGanntObject);
 				this.oPlanningModel.setProperty("/data/children", aChildren);
+				oCloneData = deepClone(oData);
 				if (bIsAddRepeatShape) {
-					this._repeatAssignments(oData);
+					this._repeatAssignments(oCloneData);
 				} else {
-					this._addNewAssignmentShape(oData);
+					this._addNewAssignmentShape(oCloneData);
 				}
 				//Reset bgTasks when new resource added to the gantt
 				this._setBackgroudShapes(this._sGanttViewMode);
 
-				if (bAllowMarkChange && !oData.isNew) {
-					var oFoundData = this._getChildDataByKey("Guid", oData.Guid, null),
+				if (bAllowMarkChange && !oCloneData.isNew) {
+					var oFoundData = this._getChildDataByKey("Guid", oCloneData.Guid, null),
 						sPath = oFoundData.sPath;
 					this.oPlanningModel.setProperty(sPath + "/isNew", true);
 					this.oPlanningModel.setProperty(sPath + "/isTemporary", false);
 					this.oPlanningModel.setProperty(sPath + "/PARENT_NODE_ID", "");
 					this.oPlanningModel.setProperty(sPath + "/NODE_ID", "");
 				}
-				this._markAsPlanningChange(oData, true);
+				this._markAsPlanningChange(oCloneData, true);
 			}.bind(this));
 		},
 
