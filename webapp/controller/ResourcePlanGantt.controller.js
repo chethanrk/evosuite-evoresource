@@ -1911,7 +1911,7 @@ sap.ui.define([
 							aChildren.push(oCloneAssignmentData);
 						}
 						//
-						this._addSingleChildToParent(oCloneAssignmentData, false, false);
+						this._addSingleChildToParent(oCloneAssignmentData, false, false, true);
 					}
 
 				}.bind(this));
@@ -2340,7 +2340,7 @@ sap.ui.define([
 		 * @param {boolean} bAllowMarkChange - Value true will save the assignment in planning mode
 		 * @param {boolean} bIsAddRepeatShape - If it is adding single or in series
 		 */
-		_addSingleChildToParent: function (oData, bAllowMarkChange, bIsAddRepeatShape) {
+		_addSingleChildToParent: function (oData, bAllowMarkChange, bIsAddRepeatShape, bIsMultiCreate) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children"),
 				oCloneData;
 			this.getObjectFromEntity("GanttResourceHierarchySet", oData).then(function (oGanntObject) {
@@ -2364,7 +2364,12 @@ sap.ui.define([
 				}.bind(this);
 				aChildren = this._recurseAllChildren(aChildren, callbackFn, oGanntObject);
 				this.oPlanningModel.setProperty("/data/children", aChildren);
-				oCloneData = deepClone(oData);
+				if(bIsMultiCreate){
+					oCloneData = deepClone(oData);
+				}else{
+					oCloneData = oData;
+				}
+				
 				if (bIsAddRepeatShape) {
 					this._repeatAssignments(oCloneData);
 				} else {
