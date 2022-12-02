@@ -2,7 +2,7 @@
 	xmlns="sap.m"
 	xmlns:core="sap.ui.core">
 	<SelectDialog
-		title="Resource List"
+		title="{i18n>xtit.resourceList}"
 		class="sapUiPopupWithPadding"
 		items="{viewModel>/Resources}"
 		search="handleResourceValueHelpSearch"
