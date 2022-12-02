@@ -1873,7 +1873,8 @@ sap.ui.define([
 				oValidation = this.validateForm(oSimpleformFileds),
 				oResourceControl = sap.ui.getCore().byId("idResourceList"),
 				oAssignmentData, oCloneAssignmentData, aResourceList, aAssigments, isResourceExist,
-				aChildren = this.getModel("ganttPlanningModel").getProperty("/data/children");
+				aChildren = this.getModel("ganttPlanningModel").getProperty("/data/children"),
+				oResourceData;
 
 			if (oValidation && oValidation.state === "success") {
 				aResourceList = oResourceControl.getTokens();
@@ -1907,7 +1908,7 @@ sap.ui.define([
 							oCloneAssignmentData.PERNR = oResource.data('PERNR');
 							oCloneAssignmentData.NodeType = "RESOURCE";
 							oCloneAssignmentData.children = [];
-							var oResourceData = deepClone(oCloneAssignmentData)
+							oResourceData = deepClone(oCloneAssignmentData);
 							aChildren.push(oResourceData);
 						}
 						this._addSingleChildToParent(oCloneAssignmentData, false, false);
