@@ -1993,7 +1993,7 @@ sap.ui.define([
 			}
 		},
 		/*
-		 * Function called MultiCreate Group changed
+		 * Function called to open Resource List value help
 		 * @param {object} - oEvent - Event parameter
 		 */
 		handleResourceValueHelp: function (oEvent) {
@@ -2013,8 +2013,12 @@ sap.ui.define([
 				this._resourceValueHelpDialog.open();
 			}
 		},
-		handleResourceValueHelpSearch: function (evt) {
-			var sValue = evt.getParameter("value");
+		/*
+		 * Function called to filter Resource List value help
+		 * @param {object} - oEvent - Event parameter
+		 */
+		handleResourceValueHelpSearch: function (oEvent) {
+			var sValue = oEvent.getParameter("value");
 			var oFilter = new Filter([new Filter(
 				"FIRSTNAME",
 				FilterOperator.Contains,
@@ -2028,11 +2032,14 @@ sap.ui.define([
 				FilterOperator.Contains,
 				sValue
 			)], false);
-			evt.getSource().getBinding("items").filter([oFilter]);
+			oEvent.getSource().getBinding("items").filter([oFilter]);
 		},
-
-		handleResourceValueHelpClose: function (evt) {
-			var aSelectedContext = evt.getParameter("selectedContexts"),
+		/*
+		 * Function called when "Close" or "Select" button pressed
+		 * @param {object} - oEvent - Event parameter
+		 */
+		handleResourceValueHelpClose: function (oEvent) {
+			var aSelectedContext = oEvent.getParameter("selectedContexts"),
 				oMultiInput = sap.ui.getCore().byId("idResourceList"),
 				oContextObject = {};
 
