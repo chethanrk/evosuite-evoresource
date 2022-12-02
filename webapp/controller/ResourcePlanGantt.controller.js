@@ -1898,7 +1898,6 @@ sap.ui.define([
 					}
 					//validation for the existing assigments
 					if (this._checkDuplicateAsigment(oCloneAssignmentData, aAssigments)) {
-						//
 						isResourceExist = aChildren.some(function (item) {
 							return item.ResourceGuid === oCloneAssignmentData.ResourceGuid;
 						}.bind(this));
@@ -1911,7 +1910,6 @@ sap.ui.define([
 							var oResourceData = deepClone(oCloneAssignmentData)
 							aChildren.push(oResourceData);
 						}
-						//
 						this._addSingleChildToParent(oCloneAssignmentData, false, false);
 					}
 
