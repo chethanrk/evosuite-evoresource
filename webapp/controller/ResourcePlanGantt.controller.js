@@ -2346,8 +2346,7 @@ sap.ui.define([
 		 * @param {boolean} bIsAddRepeatShape - If it is adding single or in series
 		 */
 		_addSingleChildToParent: function (oData, bAllowMarkChange, bIsAddRepeatShape) {
-			var aChildren = this.oPlanningModel.getProperty("/data/children"),
-				oCloneData;
+			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			this.getObjectFromEntity("GanttResourceHierarchySet", oData).then(function (oGanntObject) {
 				oGanntObject["bgTasks"] = oData["bgTasks"];
 				oGanntObject["Description"] = oData["DESCRIPTION"];
