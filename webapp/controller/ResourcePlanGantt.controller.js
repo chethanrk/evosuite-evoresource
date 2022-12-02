@@ -1879,7 +1879,6 @@ sap.ui.define([
 			if (oValidation && oValidation.state === "success") {
 				aResourceList = oResourceControl.getTokens();
 				oAssignmentData = this.getModel("ganttPlanningModel").getProperty("/multiCreateData");
-				this.getModel("viewModel").setProperty("/busy", true);
 				aResourceList.forEach(function (oResource) {
 					oCloneAssignmentData = deepClone(oAssignmentData);
 					oCloneAssignmentData.ResourceGuid = oResource.data('ResourceGuid');
@@ -1918,7 +1917,6 @@ sap.ui.define([
 				if (this._oMultiCreateDialog) {
 					this._oMultiCreateDialog.close();
 				}
-				this.getModel("viewModel").setProperty("/busy", false);
 			}
 		},
 		/*
