@@ -901,6 +901,7 @@ sap.ui.define([
 			var cancelcallback = function () {};
 			if (oData.isNew) {
 				this._removeAssignmentShape(oData, true);
+				this.getModel("viewModel").setProperty("/isResetEnabled", this.oPlanningModel.getProperty("/hasChanges"));
 				if (this._oPlanningPopover) {
 					this._oPlanningPopover.close();
 				}
@@ -1902,6 +1903,7 @@ sap.ui.define([
 
 			//object change needs added to "/changedData" array by path
 			if (isNewChange) {
+				this.getModel("viewModel").setProperty("/isResetEnabled", true);
 				if (oFoundData && oFoundData.oData && oFoundData.oData.Guid && aChanges.indexOf(oFoundData.oData.Guid) < 0) {
 					aChanges.push(oFoundData.oData.Guid);
 				}
