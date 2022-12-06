@@ -3088,7 +3088,7 @@ sap.ui.define([
 				}
 
 				dayCounter++;
-				iEvery = oData.SeriesEvery;
+				iEvery = parseInt(oData.SeriesEvery, 10);
 			}
 			while (oStartDate.isBefore(moment(oData.SERIES_END_DATE)));
 
