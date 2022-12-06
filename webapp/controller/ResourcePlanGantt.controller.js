@@ -2213,7 +2213,6 @@ sap.ui.define([
 
 			//object change needs added to "/changedData" array by path
 			if (isNewChange) {
-				this.getModel("viewModel").setProperty("/isResetEnabled", true);
 				if (oFoundData && oFoundData.oData && oFoundData.oData.Guid && aChanges.indexOf(oFoundData.oData.Guid) < 0) {
 					aChanges.push(oFoundData.oData.Guid);
 				}
@@ -2360,11 +2359,13 @@ sap.ui.define([
 				var callbackFn = function (oItem, oData) {
 					if (oData.NodeType === "RES_GROUP" && !this._checkIfGroupExist(oItem, oData["ResourceGroupGuid"]) && oItem.NodeId === oData.ParentNodeId &&
 						oItem.children) {
+						this.getModel("viewModel").setProperty("/isResetEnabled", true);
 						oItem.children.push(oData);
 					}
 
 					if (oData.NodeType === "SHIFT" && !this._checkIfShiftExist(oItem) && oItem.NodeId === oData.ParentNodeId && oItem.children) {
 						oData["Description"] = this.getResourceBundle('i18n').getText("xtit.shift");
+						this.getModel("viewModel").setProperty("/isResetEnabled", true);
 						oItem.children.unshift(oData);
 					}
 				}.bind(this);
