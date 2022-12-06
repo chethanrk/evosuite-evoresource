@@ -961,6 +961,7 @@ sap.ui.define([
 			var cancelcallback = function () {};
 			if (oData.isNew) {
 				this._removeAssignmentShape(oData, true);
+				this.getModel("viewModel").setProperty("/isResetEnabled", this.oPlanningModel.getProperty("/hasChanges"));
 				if (this._oPlanningPopover) {
 					this._oPlanningPopover.close();
 				}
@@ -2358,11 +2359,13 @@ sap.ui.define([
 				var callbackFn = function (oItem, oData) {
 					if (oData.NodeType === "RES_GROUP" && !this._checkIfGroupExist(oItem, oData["ResourceGroupGuid"]) && oItem.NodeId === oData.ParentNodeId &&
 						oItem.children) {
+						this.getModel("viewModel").setProperty("/isResetEnabled", true);
 						oItem.children.push(oData);
 					}
 
 					if (oData.NodeType === "SHIFT" && !this._checkIfShiftExist(oItem) && oItem.NodeId === oData.ParentNodeId && oItem.children) {
 						oData["Description"] = this.getResourceBundle('i18n').getText("xtit.shift");
+						this.getModel("viewModel").setProperty("/isResetEnabled", true);
 						oItem.children.unshift(oData);
 					}
 				}.bind(this);

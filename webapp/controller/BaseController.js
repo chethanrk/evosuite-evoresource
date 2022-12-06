@@ -448,6 +448,7 @@ sap.ui.define([
 				if (oData.length > 0) {
 					this.getModel().setRefreshAfterChange(false); //avoid GET request for every after POST request
 					this.getModel().submitChanges(mParameters);
+					this.getView().getModel("viewModel").setProperty("/isResetEnabled", false);
 				} else {
 					if (oSuccessCallback) {
 						oSuccessCallback();
