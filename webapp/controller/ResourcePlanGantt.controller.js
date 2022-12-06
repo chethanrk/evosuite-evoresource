@@ -3031,7 +3031,7 @@ sap.ui.define([
 		 * Calculate the future assignments based on sented repeat mode
 		 * @param {oData} Initial popover selection
 		 */
-		_repeatAssignments: function (oData) {debugger
+		_repeatAssignments: function (oData) {
 			var newData, iEvery = 0,
 				dayCounter = 0,
 				oDateProp = {
