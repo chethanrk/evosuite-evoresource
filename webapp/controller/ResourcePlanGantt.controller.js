@@ -3031,7 +3031,7 @@ sap.ui.define([
 		 * Calculate the future assignments based on sented repeat mode
 		 * @param {oData} Initial popover selection
 		 */
-		_repeatAssignments: function (oData) {
+		_repeatAssignments: function (oData) {debugger
 			var newData, iEvery = 0,
 				dayCounter = 0,
 				oDateProp = {
@@ -3053,6 +3053,7 @@ sap.ui.define([
 			oStartDate = moment(oData[oDateProp.startDateProp]);
 			oEndDate = moment(oData[oDateProp.endDateProp]);
 			iDateDiff = moment(oEndDate).diff(oStartDate, 'd');
+			oData.SeriesEvery = parseInt(oData.SeriesEvery,10) < (iDateDiff + 1) ? (iDateDiff + 1).toString() : oData.SeriesEvery;
 
 			do {
 				if (oData.SeriesRepeat === "D") {
@@ -3087,7 +3088,7 @@ sap.ui.define([
 				}
 
 				dayCounter++;
-				iEvery = parseInt(oData.SeriesEvery, 10);
+				iEvery = oData.SeriesEvery;
 			}
 			while (oStartDate.isBefore(moment(oData.SERIES_END_DATE)));
 
