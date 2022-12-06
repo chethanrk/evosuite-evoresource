@@ -391,8 +391,8 @@ sap.ui.define([
 		/**
 		 * Validate the field based on the week mode
 		 */
-		weekModeValidation: function (Repeat) {
-			if (Repeat && Repeat === "W") {
+		weekModeValidation: function (isNew,Repeat) {
+			if (isNew && Repeat && Repeat === "W") {
 				return true;
 			}
 			return false;
@@ -401,8 +401,8 @@ sap.ui.define([
 		/**
 		 * Validate the field based on the month mode
 		 */
-		monthModeValidation: function (Repeat) {
-			if (Repeat && Repeat === "M") {
+		monthModeValidation: function (isNew,Repeat) {
+			if (isNew && Repeat && Repeat === "M") {
 				return true;
 			}
 			return false;
