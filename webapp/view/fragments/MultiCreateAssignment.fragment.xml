@@ -1,0 +1,47 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
+	<Dialog title="{i18n>xtit.createAssignment}" resizable="true" draggable="true" contentWidth="30%" contentHeight="auto"
+		verticalScrolling="false" horizontalScrolling="false">
+		<content>
+			<f:SimpleForm id="idFormMultiCreate" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3"
+				labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
+				singleContainerFullSize="true">
+				<f:content>
+					<Label text="{i18n>xfld.resourceName}"/>
+					<MultiInput id="idResourceList" required="true" fieldGroupIds="multiCreateInput"
+						tokenUpdate="onMultiCreateResourceListChange" valueHelpRequest="handleResourceValueHelp" valueHelpOnly="true"/>
+					<Label text="{i18n>xfld.popoverType}"/>
+					<Select forceSelection="true" selectedKey="{ganttPlanningModel>/multiCreateData/NODE_TYPE}" width="100%">
+						<core:Item key="RES_GROUP" text="{i18n>xtxt.group}"/>
+						<core:Item key="SHIFT" text="{i18n>xtxt.shift}"/>
+					</Select>
+					<Label text="{i18n>xlbl.subtype}" required="true"/>
+					<ComboBox required="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'RES_GROUP'}" showSecondaryValues="true"
+						name="ResourceGroupGuid" fieldGroupIds="multiCreateInput" items="{ path: 'viewModel>/ResourceGroup', sorter: { path: 'ResourceGroupDesc' }}"
+						selectedKey="{ganttPlanningModel>/multiCreateData/ResourceGroupGuid}"
+						visible="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'RES_GROUP'}"
+						editable="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'RES_GROUP'}" change="onMultiCreateGroupChange">
+						<core:ListItem key="{viewModel>ResourceGroupGuid}" text="{viewModel>ResourceGroupDesc}" additionalText="{viewModel>ResourceGroupUnitId}"/>
+					</ComboBox>
+					<ComboBox required="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'SHIFT'}" showSecondaryValues="true" name="Shift"
+						fieldGroupIds="multiCreateInput" items="{ path: 'viewModel>/Shifts'}" selectedKey="{ganttPlanningModel>/multiCreateData/TemplateId}"
+						visible="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'SHIFT'}"
+						editable="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'SHIFT'}" change="onMultiCreateShiftChange">
+						<core:ListItem key="{viewModel>TemplateId}" text="{viewModel>ScheduleIdDesc}" additionalText="{viewModel>TemplateDesc}"/>
+					</ComboBox>
+					<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
+					<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="multiCreateInput"
+						dateValue="{parts:[{path:'ganttPlanningModel>/multiCreateData/StartDate'},{path:'ganttPlanningModel>/multiCreateData/isNew'}],formatter:'.formatter.convertFromUTCDate'}"
+						secondDateValue="{parts:[{path:'ganttPlanningModel>/multiCreateData/EndDate'},{path:'ganttPlanningModel>/multiCreateData/isNew'}],formatter:'.formatter.convertFromUTCDate'}"
+						minDate="{path:'ganttPlanningModel>/multiCreateData/minDate'}" maxDate="{path:'ganttPlanningModel>/multiCreateData/maxDate'}"
+						change="onMultiCreateDateChange"/>
+				</f:content>
+			</f:SimpleForm>
+		</content>
+		<beginButton>
+			<Button type="Emphasized" text="{i18n>xbtn.create}" press="onConfirmMultiCreate"/>
+		</beginButton>
+		<endButton>
+			<Button text="{i18n>btn.close}" press="onCloseMultiCreate"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

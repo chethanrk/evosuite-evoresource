@@ -384,6 +384,9 @@ sap.ui.define([
 					if (aCustomFields[i] instanceof sap.m.MultiComboBox) {
 						sValue = aCustomFields[i].getSelectedKeys().length;
 					}
+					if (aCustomFields[i] instanceof sap.m.MultiInput) {
+						sValue = aCustomFields[i].getTokens().length;
+					}
 					try {
 						if (aCustomFields[i].getRequired() && aCustomFields[i].getEditable() && (!sValue || sValue.trim() === "")) {
 							aCustomFields[i].setValueState(sap.ui.core.ValueState.Error);

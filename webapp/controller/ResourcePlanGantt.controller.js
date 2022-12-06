@@ -301,6 +301,66 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				onPressCreateMultiAssignment: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				openMultiCreateAssignmentDialog: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				setMultiCreateData: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onConfirmMultiCreate: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onCloseMultiCreate: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onMultiCreateResourceListChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onMultiCreateGroupChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onMultiCreateShiftChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onMultiCreateDateChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				handleResourceValueHelp: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				handleResourceValueHelpSearch: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				handleResourceValueHelpClose: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -1746,6 +1806,256 @@ sap.ui.define([
 			this.onPressDeleteAssignment();
 
 		},
+		/*
+		 * Function called when Multi Creat button is pressed
+		 * @param {object} - oEvent - Event parameter for button press
+		 */
+		onPressCreateMultiAssignment: function (oEvent) {
+			var oMultiCreateData = {
+				StartDate: moment().startOf("day").toDate(),
+				EndDate: moment().endOf("day").toDate(),
+				NODE_TYPE: "RES_GROUP",
+				ResourceGroupGuid: "",
+				TemplateId: "",
+				isNew: true,
+				IsSeries: false,
+				SeriesRepeat: "",
+				ResourceList: [],
+				RESOURCE_GROUP_COLOR: "",
+				DESCRIPTION: "",
+				ResourceGroupDesc: "",
+				SERIES_END_DATE: moment().endOf("day").toDate()
+			};
+			this.createNewTempAssignment(oMultiCreateData.StartDate,oMultiCreateData.EndDate,oMultiCreateData).then(function(oData){
+				this.openMultiCreateAssignmentDialog(oData);
+			}.bind(this));                                       
+		},
+		/*
+		 * Function to open Multi Create Assignment Dialog
+		 * @param {object} - oMultiCreateData - Default assignment information
+		 */
+		openMultiCreateAssignmentDialog: function (oMultiCreateData) {
+			if (!this._oMultiCreateDialog) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoresource.view.fragments.MultiCreateAssignment",
+					controller: this
+				}).then(function (pPopover) {
+					this._oMultiCreateDialog = pPopover;
+					this.getView().addDependent(this._oMultiCreateDialog);
+					this.setMultiCreateData(oMultiCreateData);
+					this._oMultiCreateDialog.open();
+					//after popover gets opened check popover data for resource group color
+					this._oMultiCreateDialog.attachAfterOpen(function (oEvent) {}.bind(this));
+					//after popover gets closed remove popover data
+					this._oMultiCreateDialog.attachAfterClose(function (oEvent) {}.bind(this));
+
+				}.bind(this));
+			} else {
+				this.setMultiCreateData(oMultiCreateData);
+				this._oMultiCreateDialog.open();
+			}
+		},
+		/*
+		 * Function to set multi create information to "ganttPlanningModel"
+		 * @param {object} - oMultiCreateData - Default assignment information
+		 */
+		setMultiCreateData: function (oMultiCreateData) {
+			var oResourceListId = sap.ui.getCore().byId("idResourceList");
+			oResourceListId.removeAllTokens();
+			this.getModel("ganttPlanningModel").setProperty("/multiCreateData", oMultiCreateData);
+		},
+		/*
+		 * Function called when "Create" button is clicked on MultiCreate Dialog
+		 * @param {object} - oEvent - Event parameter for button press
+		 */
+		onConfirmMultiCreate: function (oEvent) {
+			var oSimpleformFileds = this.getView().getControlsByFieldGroupId("multiCreateInput"),
+				oValidation = this.validateForm(oSimpleformFileds),
+				oResourceControl = sap.ui.getCore().byId("idResourceList"),
+				oAssignmentData, oCloneAssignmentData, aResourceList, aAssigments, isResourceExist,
+				aChildren = this.getModel("ganttPlanningModel").getProperty("/data/children"),
+				oResourceData;
+
+			if (oValidation && oValidation.state === "success") {
+				aResourceList = oResourceControl.getTokens();
+				oAssignmentData = this.getModel("ganttPlanningModel").getProperty("/multiCreateData");
+				aResourceList.forEach(function (oResource) {
+					oCloneAssignmentData = deepClone(oAssignmentData);
+					oCloneAssignmentData.ResourceGuid = oResource.data('ResourceGuid');
+					oCloneAssignmentData.PARENT_NODE_ID = oResource.data('ResourceGuid');
+					oCloneAssignmentData.ParentNodeId = oResource.data('ResourceGuid');
+					oCloneAssignmentData.NodeId = oResource.data('ResourceGuid');
+					oCloneAssignmentData.isTemporary = false;
+					this.oPlanningModel.setProperty("/tempData/popover", oCloneAssignmentData);
+					oCloneAssignmentData.Guid = new Date().getTime().toString();
+
+					//get groups assigned to the selected resource
+					if (oCloneAssignmentData.NODE_TYPE === "RES_GROUP") {
+						aAssigments = this._getResourceassigmentByKey("ResourceGuid", oCloneAssignmentData.ResourceGuid, oCloneAssignmentData.ResourceGroupGuid,
+							oCloneAssignmentData);
+					} else if (oCloneAssignmentData.NODE_TYPE === "SHIFT") {
+						aAssigments = this._getResourceShiftByKey(oCloneAssignmentData.ParentNodeId, oCloneAssignmentData);
+					}
+					//validation for the existing assigments
+					if (this._checkDuplicateAsigment(oCloneAssignmentData, aAssigments)) {
+						isResourceExist = aChildren.some(function (item) {
+							return item.ResourceGuid === oCloneAssignmentData.ResourceGuid;
+						}.bind(this));
+						if (!isResourceExist) {
+							oCloneAssignmentData.ChildCount = 0;
+							oCloneAssignmentData.Description = oResource.getProperty("text");
+							oCloneAssignmentData.PERNR = oResource.data('PERNR');
+							oCloneAssignmentData.NodeType = "RESOURCE";
+							oCloneAssignmentData.children = [];
+							oResourceData = deepClone(oCloneAssignmentData);
+							aChildren.push(oResourceData);
+						}
+						this._addSingleChildToParent(oCloneAssignmentData, false, false);
+					}
+
+				}.bind(this));
+				if (this._oMultiCreateDialog) {
+					this._oMultiCreateDialog.close();
+				}
+			}
+		},
+		/*
+		 * Function called when "Close" button is clicked on MultiCreate Dialog
+		 * @param {object} - oEvent - Event parameter for button press
+		 */
+		onCloseMultiCreate: function (oEvent) {
+			if (this._oMultiCreateDialog) {
+				this._oMultiCreateDialog.close();
+			}
+		},
+		/*
+		 * Function called when ResourceList MultiInput token changed
+		 * @param {object} - oEvent - Event parameter
+		 */
+		onMultiCreateResourceListChange: function (oEvent) {
+			var oSource = oEvent.getSource();
+			if (oSource.getTokens() && oSource.getTokens().length) {
+				oSource.setValueState("None");
+			}
+		},
+		/*
+		 * Function called MultiCreate Group changed
+		 * @param {object} - oEvent - Event parameter
+		 */
+		onMultiCreateGroupChange: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oDataObject = oSource.getSelectedItem().getBindingContext("viewModel").getObject(),
+				oMultiCreateData = this.getModel("ganttPlanningModel").getProperty("/multiCreateData");
+			if (oSource.getSelectedKey()) {
+				oSource.setValueState("None");
+				oMultiCreateData.RESOURCE_GROUP_COLOR = oDataObject.ResourceGroupColor;
+				oMultiCreateData.DESCRIPTION = oDataObject.ResourceGroupDesc;
+				oMultiCreateData.ResourceGroupDesc = oDataObject.ResourceGroupDesc;
+				oMultiCreateData.ResourceGroupDesc = oDataObject.ResourceGroupDesc;
+				oMultiCreateData.TIME_ZONE = oDataObject.TIME_ZONE;
+			}
+
+		},
+		/*
+		 * Function called when MultiCreate Shift changed
+		 * @param {object} - oEvent - Event parameter
+		 */
+		onMultiCreateShiftChange: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oDataObject = oSource.getSelectedItem().getBindingContext("viewModel").getObject(),
+				oMultiCreateData = this.getModel("ganttPlanningModel").getProperty("/multiCreateData");
+			if (oSource.getSelectedKey()) {
+				oSource.setValueState("None");
+				oMultiCreateData = this.mergeObject(oMultiCreateData, oDataObject);
+				oMultiCreateData.EffectiveStartDate = oMultiCreateData.StartDate;
+				oMultiCreateData.EffectiveEndDate = oMultiCreateData.EndDate;
+			}
+		},
+		/*
+		 * Function called when MultiCreate Date changed
+		 * @param {object} - oEvent - Event parameter
+		 */
+		onMultiCreateDateChange: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oStartDate, oEndDate;
+			if (oSource.getDateValue()) {
+				oSource.setValueState("None");
+				oStartDate = oSource.getDateValue();
+				oEndDate = moment(oSource.getSecondDateValue()).subtract(999, "milliseconds").toDate();
+				this.oPlanningModel.setProperty("/multiCreateData/StartDate", oStartDate);
+				this.oPlanningModel.setProperty("/multiCreateData/EffectiveStartDate", oStartDate);
+				this.oPlanningModel.setProperty("/multiCreateData/EndDate", oEndDate);
+				this.oPlanningModel.setProperty("/multiCreateData/EffectiveEndDate", oEndDate);
+
+			}
+		},
+		/*
+		 * Function called to open Resource List value help
+		 * @param {object} - oEvent - Event parameter
+		 */
+		handleResourceValueHelp: function (oEvent) {
+			// create value help dialog
+			if (!this._resourceValueHelpDialog) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoresource.view.fragments.ResourceListValueHelp",
+					controller: this
+				}).then(function (oValueHelpDialog) {
+					this._resourceValueHelpDialog = oValueHelpDialog;
+					this.getView().addDependent(this._resourceValueHelpDialog);
+					this._resourceValueHelpDialog.getBinding("items").filter([]);
+					this._resourceValueHelpDialog.open();
+				}.bind(this));
+			} else {
+				this._resourceValueHelpDialog.getBinding("items").filter([]);
+				this._resourceValueHelpDialog.open();
+			}
+		},
+		/*
+		 * Function called to filter Resource List value help
+		 * @param {object} - oEvent - Event parameter
+		 */
+		handleResourceValueHelpSearch: function (oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var oFilter = new Filter([new Filter(
+				"FIRSTNAME",
+				FilterOperator.Contains,
+				sValue
+			), new Filter(
+				"LASTNAME",
+				FilterOperator.Contains,
+				sValue
+			), new Filter(
+				"PERNR",
+				FilterOperator.Contains,
+				sValue
+			)], false);
+			oEvent.getSource().getBinding("items").filter([oFilter]);
+		},
+		/*
+		 * Function called when "Close" or "Select" button pressed
+		 * @param {object} - oEvent - Event parameter
+		 */
+		handleResourceValueHelpClose: function (oEvent) {
+			var aSelectedContext = oEvent.getParameter("selectedContexts"),
+				oMultiInput = sap.ui.getCore().byId("idResourceList"),
+				oContextObject = {};
+
+			if (aSelectedContext && aSelectedContext.length > 0) {
+				aSelectedContext.forEach(function (oItem) {
+					oContextObject = oItem.getObject();
+					oMultiInput.addToken(new sap.m.Token({
+						text: oContextObject.FIRSTNAME + " " + oContextObject.LASTNAME + "(" + oContextObject.PERNR + ")",
+						customData: [new sap.ui.core.CustomData({
+							key: "ResourceGuid",
+							value: oContextObject.ResourceGuid
+						}), new sap.ui.core.CustomData({
+							key: "PERNR",
+							value: oContextObject.PERNR
+						})]
+					}));
+				});
+			}
+		},
 
 		/* =========================================================== */
 		/* internal methods                                            */
@@ -2058,6 +2368,8 @@ sap.ui.define([
 				}.bind(this);
 				aChildren = this._recurseAllChildren(aChildren, callbackFn, oGanntObject);
 				this.oPlanningModel.setProperty("/data/children", aChildren);
+				
+				
 				if (bIsAddRepeatShape) {
 					this._repeatAssignments(oData);
 				} else {
@@ -2641,7 +2953,8 @@ sap.ui.define([
 				tempUnassignData: [],
 				isShapeSelected: false,
 				multiSelectedDataForDelete: [],
-				isRepeatAssignmentAdded: false
+				isRepeatAssignmentAdded: false,
+				multiCreateData: {}
 			};
 			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
 			this.oPlanningModel.setData(deepClone(this.oOriginData));
@@ -2690,12 +3003,12 @@ sap.ui.define([
 		_afterPopoverClose: function (oEvent) {
 			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
-				
+
 			//enable the reset button based on changes
-			if(!this.getModel("viewModel").getProperty("/isResetEnabled")){
+			if (!this.getModel("viewModel").getProperty("/isResetEnabled")) {
 				this.getModel("viewModel").setProperty("/isResetEnabled", this.oPlanningModel.getProperty("/hasChanges"));
 			}
-			
+
 			if (oData.isRestChanges) {
 				if (!oData.isNew && oData.isTemporary && oOldAssignmentData && oOldAssignmentData.Guid) {
 					var oFoundData = this._getChildrenDataByKey("Guid", oData.Guid, null);
