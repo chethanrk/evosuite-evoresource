@@ -2670,7 +2670,8 @@ sap.ui.define([
 				oAssignItem,
 				aChildren = this.oPlanningModel.getProperty("/data/children"),
 				sStartDateProp,
-				sEndDateProp;
+				sEndDateProp,
+				oFoundData={};
 
 			if (aAssignmentData.length) {
 				aAssignmentData.forEach(function (sPath, idx) {
@@ -2709,6 +2710,8 @@ sap.ui.define([
 					}.bind(this));
 
 				} else {
+					oFoundData = this._getChildDataByKey("Guid", oAssignmentData.Guid, null);
+					this.oPlanningModel.setProperty(oFoundData.sPath + "/isRepeating", true);
 					this._markAsPlanningDelete(oAssignmentData); // mark planing one assignment for delete
 					aAssignment.forEach(function (oAssignData, idx) {
 						this._deleteAssignment(oAssignData, false);
