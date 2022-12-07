@@ -370,8 +370,8 @@ sap.ui.define([
 		/**
 		 * visibility of every input box
 		 */
-		everyAndEndDateVisibility: function (Repeat, isTemporary) {
-			if (Repeat && isTemporary && Repeat !== "N") {
+		everyAndEndDateVisibility: function (Repeat, isTemporary, isNew) {
+			if (isNew && Repeat && isTemporary && Repeat !== "N") {
 				return true;
 			}
 

@@ -54,7 +54,7 @@
 						<Label text="{i18n>xfld.Every}"
 							required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.requiredValidate'}"/>
 						<Input type="Number" description="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.repaetModeDescription'}"
-							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'}],formatter:'.formatter.everyAndEndDateVisibility'}"
+							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'},{path:'ganttPlanningModel>/tempData/popover/isNew'}],formatter:'.formatter.everyAndEndDateVisibility'}"
 							value="{ganttPlanningModel>/tempData/popover/SeriesEvery}"
 							required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.requiredValidate'}"
 							fieldGroupIds="changeShapeInput" liveChange="onEveryLiveChange"/>
@@ -85,7 +85,7 @@
 						<DatePicker id="idDatePicker" fieldGroupIds="changeShapeInput" dateValue="{ganttPlanningModel>/tempData/popover/SERIES_END_DATE}"
 							minDate="{ganttPlanningModel>/tempData/popover/minDate}"
 							required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.requiredValidate'}"
-							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'}],formatter:'.formatter.everyAndEndDateVisibility'}"/>
+							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'},{path:'ganttPlanningModel>/tempData/popover/isNew'}],formatter:'.formatter.everyAndEndDateVisibility'}"/>
 						<Label/>
 						<CheckBox text="{i18n>xlbl.ApplyToSeries}" selected="{ganttPlanningModel>/tempData/popover/isApplySeries}"
 							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/IsSeries'}],formatter:'.formatter.isSeriesCheckVisible'}"/>
