@@ -1899,6 +1899,10 @@ sap.ui.define([
 					}
 					//validation for the existing assigments
 					if (this._checkDuplicateAsigment(oCloneAssignmentData, aAssigments)) {
+						if(oCloneAssignmentData.NODE_TYPE === "SHIFT" && !this._shiftValidation(oCloneAssignmentData)){
+							//checking if group is exist for the selected date
+							return;
+						}
 						isResourceExist = aChildren.some(function (item) {
 							return item.ResourceGuid === oCloneAssignmentData.ResourceGuid;
 						}.bind(this));
