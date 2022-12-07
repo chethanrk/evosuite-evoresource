@@ -2535,6 +2535,9 @@ sap.ui.define([
 			} else {
 				this._validateForDelete(oAssignData);
 			}
+			if (this._oPlanningPopover) {
+				this._oPlanningPopover.close();
+			}
 
 		},
 		/**
@@ -2721,9 +2724,6 @@ sap.ui.define([
 
 			if (this.groupShiftContextForRepeat || this.editSeriesDate) {
 				this.editRepeatingAssignment(oAssignmentData);
-			}
-			if (this._oPlanningPopover) {
-				this._oPlanningPopover.close();
 			}
 		},
 		/**
