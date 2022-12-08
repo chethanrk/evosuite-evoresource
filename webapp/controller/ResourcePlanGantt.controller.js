@@ -3062,13 +3062,15 @@ sap.ui.define([
 			oStartDate = moment(oData[oDateProp.startDateProp]);
 			oEndDate = moment(oData[oDateProp.endDateProp]);
 			iDateDiff = moment(oEndDate).diff(oStartDate, 'd');
-			oData.SeriesEvery = parseInt(oData.SeriesEvery, 10) < (iDateDiff + 1) ? (iDateDiff + 1).toString() : oData.SeriesEvery;
+			if (oData.SeriesRepeat === "D") {
+				oData.SeriesEvery = parseInt(oData.SeriesEvery, 10) < (iDateDiff + 1) ? (iDateDiff + 1).toString() : oData.SeriesEvery;
+			}
 			if (isEditMode) {
-				if(oData.SeriesRepeat === "W"){
+				if (oData.SeriesRepeat === "W") {
 					oData.SeriesWeeklyOn = oData.SeriesOn.split(",");
 				}
-				if(oData.SeriesRepeat === "M"){
-					oData.SeriesMonthlyOn = oData.SeriesOn;
+				if (oData.SeriesRepeat === "M") {
+					oData.SeriesMonthlyOn = oData.SeriesOn === "1" ? 0 : 1;
 				}
 			}
 			do {
