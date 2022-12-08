@@ -1814,7 +1814,7 @@ sap.ui.define([
 		onPressCreateMultiAssignment: function (oEvent) {
 			var oMultiCreateData = {
 				StartDate: moment().startOf("day").toDate(),
-				EndDate: moment().endOf("day").toDate(),
+				EndDate: moment().endOf("day").subtract(999, "milliseconds").toDate(),
 				NODE_TYPE: "RES_GROUP",
 				ResourceGroupGuid: "",
 				TemplateId: "",
@@ -1827,9 +1827,9 @@ sap.ui.define([
 				ResourceGroupDesc: "",
 				SERIES_END_DATE: moment().endOf("day").toDate()
 			};
-			this.createNewTempAssignment(oMultiCreateData.StartDate,oMultiCreateData.EndDate,oMultiCreateData).then(function(oData){
+			this.createNewTempAssignment(oMultiCreateData.StartDate, oMultiCreateData.EndDate, oMultiCreateData).then(function (oData) {
 				this.openMultiCreateAssignmentDialog(oData);
-			}.bind(this));                                       
+			}.bind(this));
 		},
 		/*
 		 * Function to open Multi Create Assignment Dialog
@@ -1899,7 +1899,7 @@ sap.ui.define([
 					}
 					//validation for the existing assigments
 					if (this._checkDuplicateAsigment(oCloneAssignmentData, aAssigments)) {
-						if(oCloneAssignmentData.NODE_TYPE === "SHIFT" && !this._shiftValidation(oCloneAssignmentData)){
+						if (oCloneAssignmentData.NODE_TYPE === "SHIFT" && !this._shiftValidation(oCloneAssignmentData)) {
 							//checking if group is exist for the selected date
 							return;
 						}
@@ -2350,7 +2350,7 @@ sap.ui.define([
 		 * @param {boolean} bAllowMarkChange - Value true will save the assignment in planning mode
 		 * @param {boolean} bIsAddRepeatShape - If it is adding single or in series
 		 */
-		_addSingleChildToParent: function (oData, bAllowMarkChange, bIsAddRepeatShape) {
+		_addSingleChildToParent: function (oData, bAllowMarkChange, bIsAddRepeatShape, bIsEditSeriesMode) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			this.getObjectFromEntity("GanttResourceHierarchySet", oData).then(function (oGanntObject) {
 				oGanntObject["bgTasks"] = oData["bgTasks"];
@@ -2375,10 +2375,9 @@ sap.ui.define([
 				}.bind(this);
 				aChildren = this._recurseAllChildren(aChildren, callbackFn, oGanntObject);
 				this.oPlanningModel.setProperty("/data/children", aChildren);
-				
-				
+
 				if (bIsAddRepeatShape) {
-					this._repeatAssignments(oData);
+					this._repeatAssignments(oData, bIsEditSeriesMode);
 				} else {
 					this._addNewAssignmentShape(oData);
 				}
@@ -2535,9 +2534,6 @@ sap.ui.define([
 			} else {
 				this._validateForDelete(oAssignData);
 			}
-			if (this._oPlanningPopover) {
-				this._oPlanningPopover.close();
-			}
 
 		},
 		/**
@@ -2674,7 +2670,7 @@ sap.ui.define([
 				aChildren = this.oPlanningModel.getProperty("/data/children"),
 				sStartDateProp,
 				sEndDateProp,
-				oFoundData={};
+				oFoundData = {};
 
 			if (aAssignmentData.length) {
 				aAssignmentData.forEach(function (sPath, idx) {
@@ -2725,6 +2721,9 @@ sap.ui.define([
 			if (this.groupShiftContextForRepeat || this.editSeriesDate) {
 				this.editRepeatingAssignment(oAssignmentData);
 			}
+			if (this._oPlanningPopover) {
+				this._oPlanningPopover.close();
+			}
 		},
 		/**
 		 * Create series assignment after deleting series assignment
@@ -2759,7 +2758,7 @@ sap.ui.define([
 					oNewAssignmentData
 					.isChanging);
 				oNewAssignmentData.isNew = true;
-				this._addSingleChildToParent(oNewAssignmentData, false, true);
+				this._addSingleChildToParent(oNewAssignmentData, false, true, true);
 				this.groupShiftContextForRepeat = null;
 			}
 			if (this.editSeriesDate) {
@@ -2769,7 +2768,7 @@ sap.ui.define([
 					oNewAssignmentData.PARENT_NODE_ID = oNewAssignmentData.NodeId;
 					oNewAssignmentData.ResourceGuid = oNewAssignmentData.ParentNodeId;
 				}
-				this._addSingleChildToParent(oNewAssignmentData, false, true);
+				this._addSingleChildToParent(oNewAssignmentData, false, true, true);
 				this.editSeriesDate = false;
 			}
 		},
@@ -3041,7 +3040,7 @@ sap.ui.define([
 		 * Calculate the future assignments based on sented repeat mode
 		 * @param {oData} Initial popover selection
 		 */
-		_repeatAssignments: function (oData) {
+		_repeatAssignments: function (oData, isEditMode) {
 			var newData, iEvery = 0,
 				dayCounter = 0,
 				oDateProp = {
@@ -3063,8 +3062,15 @@ sap.ui.define([
 			oStartDate = moment(oData[oDateProp.startDateProp]);
 			oEndDate = moment(oData[oDateProp.endDateProp]);
 			iDateDiff = moment(oEndDate).diff(oStartDate, 'd');
-			oData.SeriesEvery = parseInt(oData.SeriesEvery,10) < (iDateDiff + 1) ? (iDateDiff + 1).toString() : oData.SeriesEvery;
-
+			oData.SeriesEvery = parseInt(oData.SeriesEvery, 10) < (iDateDiff + 1) ? (iDateDiff + 1).toString() : oData.SeriesEvery;
+			if (isEditMode) {
+				if(oData.SeriesRepeat === "W"){
+					oData.SeriesWeeklyOn = oData.SeriesOn.split(",");
+				}
+				if(oData.SeriesRepeat === "M"){
+					oData.SeriesMonthlyOn = oData.SeriesOn;
+				}
+			}
 			do {
 				if (oData.SeriesRepeat === "D") {
 					newData = deepClone(oData);
