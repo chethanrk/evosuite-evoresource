@@ -628,6 +628,10 @@ sap.ui.define([
 		 */
 		isSeriesCheckVisible: function(isSeries){
 			return isSeries;
+		},
+		
+		repeatModeVisible: function(isNew, isTemporary){
+			return isNew && isTemporary;
 		}
 	};
 
