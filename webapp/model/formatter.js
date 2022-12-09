@@ -629,7 +629,12 @@ sap.ui.define([
 		isSeriesCheckVisible: function(isSeries){
 			return isSeries;
 		},
-		
+		/*
+		 * Returns boolean for the visibility of "Repeat mode" field
+		 * @param {boolean} isNew
+		 * @param {boolean} isTemporary
+		 *
+		 */
 		repeatModeVisible: function(isNew, isTemporary){
 			if(isNew && isTemporary){
 				return true;
