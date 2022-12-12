@@ -370,8 +370,8 @@ sap.ui.define([
 		/**
 		 * visibility of every input box
 		 */
-		everyAndEndDateVisibility: function (Repeat, isTemporary) {
-			if (Repeat && isTemporary && Repeat !== "N") {
+		everyAndEndDateVisibility: function (Repeat, isTemporary, isNew) {
+			if (isNew && Repeat && isTemporary && Repeat !== "N") {
 				return true;
 			}
 
@@ -391,8 +391,8 @@ sap.ui.define([
 		/**
 		 * Validate the field based on the week mode
 		 */
-		weekModeValidation: function (isNew,Repeat) {
-			if (isNew && Repeat && Repeat === "W") {
+		weekModeValidation: function (isNew,isTemporary,Repeat) {
+			if (isNew && isTemporary && Repeat && Repeat === "W") {
 				return true;
 			}
 			return false;
@@ -401,8 +401,8 @@ sap.ui.define([
 		/**
 		 * Validate the field based on the month mode
 		 */
-		monthModeValidation: function (isNew,Repeat) {
-			if (isNew && Repeat && Repeat === "M") {
+		monthModeValidation: function (isNew,isTemporary,Repeat) {
+			if (isNew && isTemporary && Repeat && Repeat === "M") {
 				return true;
 			}
 			return false;
@@ -628,6 +628,18 @@ sap.ui.define([
 		 */
 		isSeriesCheckVisible: function(isSeries){
 			return isSeries;
+		},
+		/*
+		 * Returns boolean for the visibility of "Repeat mode" field
+		 * @param {boolean} isNew
+		 * @param {boolean} isTemporary
+		 *
+		 */
+		repeatModeVisible: function(isNew, isTemporary){
+			if(isNew && isTemporary){
+				return true;
+			}
+			return false;
 		}
 	};
 
