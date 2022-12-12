@@ -3275,7 +3275,13 @@ sap.ui.define([
 				oEndDate = null,
 				oStartDate = null,
 				sDummyDate = null,
-				oNodeData = this._getChildDataByKey("NodeId", oShiftData.ParentNodeId);
+				oNodeData = this._getChildDataByKey("NodeId", oShiftData.ParentNodeId),
+				bShiftValidationCheck = this.getModel("user").getProperty("/ENABLE_SHIFT_VALIDATION");
+
+			//check if global config enabled, if not enabled then no validation check for shift creation against group for same date range	
+			if (!bShiftValidationCheck) {
+				return true;
+			}
 
 			if (oNodeData && oNodeData["oData"] && oNodeData["oData"].GanttHierarchyToResourceAssign) {
 				var aResourceData = oNodeData["oData"].GanttHierarchyToResourceAssign;
