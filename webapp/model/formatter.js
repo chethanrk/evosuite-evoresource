@@ -40,8 +40,7 @@ sap.ui.define([
 				return oEndDate.diff(oStartDate, 'weeks');
 			},
 			bgStartDateFn: function (oDate) {
-				//monday of this week
-				return oDate.day(1).format("YYYYMMDD000000");
+				return oDate.format("YYYYMMDD000000");
 			},
 			bgEndDateFn: function (oDate) {
 				//sunday of week
@@ -68,8 +67,7 @@ sap.ui.define([
 				return oEndDate.diff(oStartDate, 'months');
 			},
 			bgStartDateFn: function (oDate) {
-				//first day of month
-				return oDate.startOf("month").format("YYYYMMDD000000");
+				return oDate.format("YYYYMMDD000000");
 			},
 			bgEndDateFn: function (oDate) {
 				//last day of month
@@ -391,7 +389,7 @@ sap.ui.define([
 		/**
 		 * Validate the field based on the week mode
 		 */
-		weekModeValidation: function (isNew,isTemporary,Repeat) {
+		weekModeValidation: function (isNew, isTemporary, Repeat) {
 			if (isNew && isTemporary && Repeat && Repeat === "W") {
 				return true;
 			}
@@ -401,7 +399,7 @@ sap.ui.define([
 		/**
 		 * Validate the field based on the month mode
 		 */
-		monthModeValidation: function (isNew,isTemporary,Repeat) {
+		monthModeValidation: function (isNew, isTemporary, Repeat) {
 			if (isNew && isTemporary && Repeat && Repeat === "M") {
 				return true;
 			}
@@ -594,10 +592,10 @@ sap.ui.define([
 		 * @param {string} sNodeType
 		 *
 		 */
-		getAssignmentTypeText:function(sNodeType){
+		getAssignmentTypeText: function (sNodeType) {
 			return {
-				"RES_GROUP":this.getResourceBundle('i18n').getText("xtxt.group"),
-				"SHIFT":this.getResourceBundle('i18n').getText("xtxt.shift")
+				"RES_GROUP": this.getResourceBundle('i18n').getText("xtxt.group"),
+				"SHIFT": this.getResourceBundle('i18n').getText("xtxt.shift")
 			}[sNodeType];
 		},
 		/*
@@ -605,7 +603,7 @@ sap.ui.define([
 		 * @param {date} oEndDate
 		 *
 		 */
-		getShapeSelectable:function(oEndDate){
+		getShapeSelectable: function (oEndDate) {
 			var oConvertedDate = this.formatter.convertFromUTCDate(oEndDate);
 			return !(moment(oConvertedDate).isBefore(moment().startOf('day').toDate()));
 		},
@@ -614,9 +612,9 @@ sap.ui.define([
 		 * @param {boolean} isMultiDeletable
 		 *
 		 */
-		getGanttSelectionMode: function(isMultiDeletable){
+		getGanttSelectionMode: function (isMultiDeletable) {
 			var sSelectionMode = "Single";
-			if(isMultiDeletable){
+			if (isMultiDeletable) {
 				sSelectionMode = "MultiWithKeyboard";
 			}
 			return sSelectionMode;
@@ -626,7 +624,7 @@ sap.ui.define([
 		 * @param {boolean} isSeries
 		 *
 		 */
-		isSeriesCheckVisible: function(isSeries){
+		isSeriesCheckVisible: function (isSeries) {
 			return isSeries;
 		},
 		/*
@@ -635,8 +633,8 @@ sap.ui.define([
 		 * @param {boolean} isTemporary
 		 *
 		 */
-		repeatModeVisible: function(isNew, isTemporary){
-			if(isNew && isTemporary){
+		repeatModeVisible: function (isNew, isTemporary) {
+			if (isNew && isTemporary) {
 				return true;
 			}
 			return false;
