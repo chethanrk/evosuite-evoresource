@@ -4,7 +4,7 @@
 	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1">
 	<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
 		<template:alias name=".evoAH" value="com.evorait.evosuite.evoresource.model.AnnotationHelper">
-			<Page id="idResourceGroupPage" showHeader="false">
+			<Page id="idResourceGroupPage" showHeader="false" enableScrolling="false">
 				<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
 					<template:with path="templateProperties>/annotationPath" helper="com.evorait.evosuite.evoresource.model.AnnotationHelper.resolveModelPath"
 						var="paths">
@@ -17,7 +17,7 @@
 											key="{path:'contentTabs>Core.LongDescription/String'}">
 											<content>
 												<template:with path="templateProperties>/" var="tempProps">
-													<f:DynamicPage id="idDynamicPage--{path:'contentTabs>Core.LongDescription/String'}" headerExpanded="true" fitContent="false"
+													<f:DynamicPage id="idDynamicPage--{path:'contentTabs>Core.LongDescription/String'}" headerExpanded="true" fitContent="true"
 														preserveHeaderStateOnScroll="true" toggleHeaderOnTitleClick="false" class="sapUiNoContentPadding">
 														<f:header>
 															<f:DynamicPageHeader id="idDynamicPageHeader--{path:'contentTabs>Core.LongDescription/String'}" pinnable="true"
@@ -45,56 +45,58 @@
 														<f:content>
 															<template:repeat list="{tempProps>/IconTabBarTable}" var="tableDetails">
 																<template:if test="{:= (${contentTabs>Core.LongDescription/String} === ${tableDetails>tabName})}">
-																	<smartTable:SmartTable header="{path:'contentTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"
-																		id="idSmartTable--{path:'contentTabs>Core.LongDescription/String'}"
-																		smartFilterId="idSmartFilter--{path:'contentTabs>Core.LongDescription/String'}" entitySet="{:= ${contentTabs>Core.LongDescription/String}}"
-																		enableAutoBinding="true" tableType="ResponsiveTable" demandPopin="true" useTablePersonalisation="true" useExportToExcel="false"
-																		requestAtLeastFields="{:= ${tableDetails>requestAtLeastFields}}" beforeRebindTable="onBeforeRebindSmartTable"
-																		persistencyKey="com.evorait.evosuite.evoresource.SmartTable--{path:'contentTabs>Core.LongDescription/String'}" placeToolbarInTable="true">
-																		<smartTable:customToolbar>
-																			<Toolbar>
-																				<ToolbarSpacer/>
-																				<core:ExtensionPoint
-																					name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|CustomToolbar"/>
-																			</Toolbar>
-																		</smartTable:customToolbar>
-																		<Table id="idCustomTable--{path:'contentTabs>Core.LongDescription/String'}" sticky="ColumnHeaders,HeaderToolbar"
-																			contextualWidth="{= ${contentTabs>Core.LongDescription/String} === 'ShiftSet' ? 'Auto' : 'Inherit' }" growing="true" 
-																			growingScrollToLoad="true" growingThreshold="50">
-																			<columns>
-																				<core:ExtensionPoint
-																					name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|CustomColumn"/>
-																				<template:repeat list="{tableDetails>CustomColumn}" var="custColumn">
-																					<Column>
-																						<Text
-																							text="{= '{path:\'/' + ${path:'tableDetails>tabName'} + '/' + ${path:'custColumn>'} + '/##com.sap.vocabularies.Common.v1.Label/String\'}' }"/>
-																						<customData>
-																							<core:CustomData key="p13nData" value='\{"columnKey": "{custColumn>}","leadingProperty": "{custColumn>}", "columnIndex":"999"}'/>
-																						</customData>
-																					</Column>
-																				</template:repeat>
-																			</columns>
-																			<items>
-																				<ColumnListItem>
-																					<cells>
-																						<core:ExtensionPoint
-																							name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|CustomCell"/>
-																						<template:repeat list="{tableDetails>CustomColumn}" var="custColumn">
-																							<core:Icon src="sap-icon://color-fill" color="{= '{' + ${path:'custColumn>'} + '}' }" tooltip="{:= '{' + ${path:'custColumn>'} + '}' }">
-																								<core:layoutData>
-																									<FlexItemData growFactor="1"/>
-																								</core:layoutData>
-																							</core:Icon>
-																						</template:repeat>
-																					</cells>
-																				</ColumnListItem>
-																			</items>
-																			<dragDropConfig>
-																				<dnd:DragInfo groupName="{path:'contentTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" sourceAggregation="items"
-																					dragStart="onResourceGroupDragStart" dragEnd="onResourceGroupDragEnd"/>
-																			</dragDropConfig>
-																		</Table>
-																	</smartTable:SmartTable>
+																	<ScrollContainer height="100%" vertical="true">
+																		<smartTable:SmartTable header="{path:'contentTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"
+																			id="idSmartTable--{path:'contentTabs>Core.LongDescription/String'}"
+																			smartFilterId="idSmartFilter--{path:'contentTabs>Core.LongDescription/String'}" entitySet="{:= ${contentTabs>Core.LongDescription/String}}"
+																			enableAutoBinding="true" tableType="ResponsiveTable" demandPopin="true" useTablePersonalisation="true" useExportToExcel="false"
+																			requestAtLeastFields="{:= ${tableDetails>requestAtLeastFields}}" beforeRebindTable="onBeforeRebindSmartTable"
+																			persistencyKey="com.evorait.evosuite.evoresource.SmartTable--{path:'contentTabs>Core.LongDescription/String'}" placeToolbarInTable="true">
+																			<smartTable:customToolbar>
+																				<Toolbar>
+																					<ToolbarSpacer/>
+																					<core:ExtensionPoint
+																						name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|CustomToolbar"/>
+																				</Toolbar>
+																			</smartTable:customToolbar>
+																			<Table id="idCustomTable--{path:'contentTabs>Core.LongDescription/String'}" sticky="ColumnHeaders,HeaderToolbar"
+																				contextualWidth="{= ${contentTabs>Core.LongDescription/String} === 'ShiftSet' ? 'Auto' : 'Inherit' }" growing="true"
+																				growingScrollToLoad="true" growingThreshold="50">
+																				<columns>
+																					<core:ExtensionPoint
+																						name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|CustomColumn"/>
+																					<template:repeat list="{tableDetails>CustomColumn}" var="custColumn">
+																						<Column>
+																							<Text
+																								text="{= '{path:\'/' + ${path:'tableDetails>tabName'} + '/' + ${path:'custColumn>'} + '/##com.sap.vocabularies.Common.v1.Label/String\'}' }"/>
+																							<customData>
+																								<core:CustomData key="p13nData" value='\{"columnKey": "{custColumn>}","leadingProperty": "{custColumn>}", "columnIndex":"999"}'/>
+																							</customData>
+																						</Column>
+																					</template:repeat>
+																				</columns>
+																				<items>
+																					<ColumnListItem>
+																						<cells>
+																							<core:ExtensionPoint
+																								name="TableExtP|{path:'contentTabs>Core.LongDescription/String'}|{path:'contentTabs>Core.LongDescription/String'}|CustomCell"/>
+																							<template:repeat list="{tableDetails>CustomColumn}" var="custColumn">
+																								<core:Icon src="sap-icon://color-fill" color="{= '{' + ${path:'custColumn>'} + '}' }" tooltip="{:= '{' + ${path:'custColumn>'} + '}' }">
+																									<core:layoutData>
+																										<FlexItemData growFactor="1"/>
+																									</core:layoutData>
+																								</core:Icon>
+																							</template:repeat>
+																						</cells>
+																					</ColumnListItem>
+																				</items>
+																				<dragDropConfig>
+																					<dnd:DragInfo groupName="{path:'contentTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" sourceAggregation="items"
+																						dragStart="onResourceGroupDragStart" dragEnd="onResourceGroupDragEnd"/>
+																				</dragDropConfig>
+																			</Table>
+																		</smartTable:SmartTable>
+																	</ScrollContainer>
 																</template:if>
 															</template:repeat>
 														</f:content>
