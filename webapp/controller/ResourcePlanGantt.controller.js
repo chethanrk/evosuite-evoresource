@@ -3067,6 +3067,7 @@ sap.ui.define([
 				oData.SeriesEvery = parseInt(oData.SeriesEvery, 10) < (iDateDiff + 1) ? (iDateDiff + 1).toString() : oData.SeriesEvery;
 			}
 			if (isEditMode) {
+				oStartDate = oData.SERIES_START_DATE ? moment(oData.SERIES_START_DATE) : oStartDate;
 				if (oData.SeriesRepeat === "W") {
 					oData.SeriesWeeklyOn = oData.SeriesOn.split(",");
 				}
@@ -3170,7 +3171,11 @@ sap.ui.define([
 			}
 			newData[oDateProp.endDateProp] = moment(newData[oDateProp.startDateProp]).add(iDateDiff, 'd').endOf('day').toDate();
 
-			if (moment(newData[oDateProp.startDateProp]).isSameOrAfter(oData[oDateProp.startDateProp]) && moment(newData[oDateProp.startDateProp])
+			// if (moment(newData[oDateProp.startDateProp]).isSameOrAfter(oData[oDateProp.startDateProp]) && moment(newData[oDateProp.startDateProp])
+			// 	.isSameOrBefore(moment(oData.SERIES_END_DATE))) {
+			// 	this._validateAndAddNewAssignment(newData, oData);
+			// }
+			if (!this._isDatePast(newData[oDateProp.startDateProp]) && moment(newData[oDateProp.startDateProp])
 				.isSameOrBefore(moment(oData.SERIES_END_DATE))) {
 				this._validateAndAddNewAssignment(newData, oData);
 			}
