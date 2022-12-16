@@ -1084,11 +1084,26 @@ sap.ui.define([
 		onChangeDate: function (oEvent) {
 			var oDateRange = oEvent.getSource(),
 				oStartDate = oDateRange.getDateValue(),
-				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate();
+				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
+				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
+				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
+				dStartDateDiff, oSeriesStartDate, sStartDateProp;
 			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
+
+			//series date calculation
+			if (oPopoverData.NODE_TYPE === "RES_GROUP") {
+				sStartDateProp = "StartDate";
+			} else if (oPopoverData.NODE_TYPE === "SHIFT") {
+				sStartDateProp = "EffectiveStartDate";
+			}
+			dStartDateDiff = moment(oPopoverData[sStartDateProp]).diff(oOldPopoverData[sStartDateProp], "d");
+			oSeriesStartDate = moment(formatter.convertFromUTCDate(oPopoverData["SERIES_START_DATE"], oPopoverData.isNew, oPopoverData.isChanging))
+				.add(dStartDateDiff, "d").toDate();
+			this.oPlanningModel.setProperty("/tempData/popover/SERIES_START_DATE", oSeriesStartDate);
+
 			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
 
 			//validate for the overlapping
@@ -2798,6 +2813,10 @@ sap.ui.define([
 				oNewAssignmentData[sEndDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sEndDateProp], oNewAssignmentData.isNew,
 					oNewAssignmentData
 					.isChanging);
+				oNewAssignmentData["SERIES_START_DATE"] = formatter.convertFromUTCDate(oNewAssignmentData["SERIES_START_DATE"], oNewAssignmentData
+					.isNew,
+					oNewAssignmentData
+					.isChanging);
 				oNewAssignmentData.isNew = true;
 				this._addSingleChildToParent(oNewAssignmentData, false, true, true);
 				this.groupShiftContextForRepeat = null;
@@ -3107,6 +3126,8 @@ sap.ui.define([
 				oData.SeriesEvery = parseInt(oData.SeriesEvery, 10) < (iDateDiff + 1) ? (iDateDiff + 1).toString() : oData.SeriesEvery;
 			}
 			if (isEditMode) {
+				oStartDate = oData.SERIES_START_DATE ? moment(formatter.convertFromUTCDate(oData.SERIES_START_DATE, oData.isNew, oData.isChanging)) :
+					oStartDate;
 				if (oData.SeriesRepeat === "W") {
 					oData.SeriesWeeklyOn = oData.SeriesOn.split(",");
 				}
@@ -3210,7 +3231,7 @@ sap.ui.define([
 			}
 			newData[oDateProp.endDateProp] = moment(newData[oDateProp.startDateProp]).add(iDateDiff, 'd').endOf('day').toDate();
 
-			if (moment(newData[oDateProp.startDateProp]).isSameOrAfter(oData[oDateProp.startDateProp]) && moment(newData[oDateProp.startDateProp])
+			if (!this._isDatePast(newData[oDateProp.startDateProp]) && moment(newData[oDateProp.startDateProp])
 				.isSameOrBefore(moment(oData.SERIES_END_DATE))) {
 				this._validateAndAddNewAssignment(newData, oData);
 			}
