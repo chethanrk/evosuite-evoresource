@@ -1084,11 +1084,14 @@ sap.ui.define([
 		onChangeDate: function (oEvent) {
 			var oDateRange = oEvent.getSource(),
 				oStartDate = oDateRange.getDateValue(),
-				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate();
+				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
+				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
 			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
+			this.oPlanningModel.setProperty("/tempData/popover/SERIES_START_DATE", formatter.convertFromUTCDate(oPopoverData[
+				"SERIES_START_DATE"], oPopoverData.isNew, oPopoverData.isChanging));
 			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
 
 			//validate for the overlapping
@@ -2758,6 +2761,10 @@ sap.ui.define([
 				oNewAssignmentData[sEndDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sEndDateProp], oNewAssignmentData.isNew,
 					oNewAssignmentData
 					.isChanging);
+				oNewAssignmentData["SERIES_START_DATE"] = formatter.convertFromUTCDate(oNewAssignmentData["SERIES_START_DATE"], oNewAssignmentData
+					.isNew,
+					oNewAssignmentData
+					.isChanging);
 				oNewAssignmentData.isNew = true;
 				this._addSingleChildToParent(oNewAssignmentData, false, true, true);
 				this.groupShiftContextForRepeat = null;
@@ -3067,7 +3074,8 @@ sap.ui.define([
 				oData.SeriesEvery = parseInt(oData.SeriesEvery, 10) < (iDateDiff + 1) ? (iDateDiff + 1).toString() : oData.SeriesEvery;
 			}
 			if (isEditMode) {
-				oStartDate = oData.SERIES_START_DATE ? moment(oData.SERIES_START_DATE) : oStartDate;
+				oStartDate = oData.SERIES_START_DATE ? moment(formatter.convertFromUTCDate(oData.SERIES_START_DATE, oData.isNew, oData.isChanging)) :
+					oStartDate;
 				if (oData.SeriesRepeat === "W") {
 					oData.SeriesWeeklyOn = oData.SeriesOn.split(",");
 				}
