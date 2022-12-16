@@ -1808,6 +1808,19 @@ sap.ui.define([
 
 		},
 		/*
+		 * Function called Resource selected from Gantt
+		 * @param {object} - oEvent - Event parameter for checkbox
+		 */
+		onChangeSelectResource: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				parent = oSource.getParent(),
+				sPath = parent.getBindingContext("ganttPlanningModel").getPath(),
+				oParams = oEvent.getParameters();
+
+			//Sets the property IsSelected manually
+			this.getModel("ganttPlanningModel").setProperty(sPath + "/IsSelected", oParams.selected);
+		},
+		/*
 		 * Function called when Multi Creat button is pressed
 		 * @param {object} - oEvent - Event parameter for button press
 		 */
@@ -1821,13 +1834,20 @@ sap.ui.define([
 				isNew: true,
 				IsSeries: false,
 				SeriesRepeat: "",
-				ResourceList: [],
 				RESOURCE_GROUP_COLOR: "",
 				DESCRIPTION: "",
 				ResourceGroupDesc: "",
 				SERIES_END_DATE: moment().endOf("day").toDate()
-			};
+			},
+			aChildren = this.getModel("ganttPlanningModel").getProperty("/data/children"),
+			selectedResources = [];
+			aChildren.forEach(function(oResource){
+				if(oResource.IsSelected){
+					selectedResources.push(deepClone(oResource));
+				}
+			}.bind(this));
 			this.createNewTempAssignment(oMultiCreateData.StartDate, oMultiCreateData.EndDate, oMultiCreateData).then(function (oData) {
+				oData.ResourceList = selectedResources;
 				this.openMultiCreateAssignmentDialog(oData);
 			}.bind(this));
 		},
@@ -1846,9 +1866,32 @@ sap.ui.define([
 					this.setMultiCreateData(oMultiCreateData);
 					this._oMultiCreateDialog.open();
 					//after popover gets opened check popover data for resource group color
-					this._oMultiCreateDialog.attachAfterOpen(function (oEvent) {}.bind(this));
+					this._oMultiCreateDialog.attachAfterOpen(function (oEvent) {
+						var oResourceControl = sap.ui.getCore().byId("idResourceList"),
+							oSuggetionContext = {},
+							oResourceObject = {};
+						oResourceControl.addValidator(function (oSuggetion) {
+							if (oSuggetion.suggestionObject) {
+								oSuggetionContext = oSuggetion.suggestionObject.getBindingContext("ganttPlanningModel");
+								oResourceObject = oSuggetionContext.getObject();
+								return new sap.m.Token({
+									text: oResourceObject.Description,
+									customData: [new sap.ui.core.CustomData({
+										key: "ResourceGuid",
+										value: oResourceObject.ResourceGuid
+									}), new sap.ui.core.CustomData({
+										key: "PERNR",
+										value: oResourceObject.PERNR
+									})]
+								});
+							}
+							return null;
+						}.bind(this));
+					}.bind(this));
 					//after popover gets closed remove popover data
-					this._oMultiCreateDialog.attachAfterClose(function (oEvent) {}.bind(this));
+					this._oMultiCreateDialog.attachAfterClose(function (oEvent) {
+						this.getModel("ganttPlanningModel").setProperty("/multiCreateData/ResourceList",[]);
+					}.bind(this));
 
 				}.bind(this));
 			} else {
@@ -1861,8 +1904,7 @@ sap.ui.define([
 		 * @param {object} - oMultiCreateData - Default assignment information
 		 */
 		setMultiCreateData: function (oMultiCreateData) {
-			var oResourceListId = sap.ui.getCore().byId("idResourceList");
-			oResourceListId.removeAllTokens();
+			// var oResourceListId = sap.ui.getCore().byId("idResourceList");
 			this.getModel("ganttPlanningModel").setProperty("/multiCreateData", oMultiCreateData);
 		},
 		/*
@@ -1919,16 +1961,14 @@ sap.ui.define([
 					}
 
 				}.bind(this));
-				if (this._oMultiCreateDialog) {
-					this._oMultiCreateDialog.close();
-				}
+				this.onCloseMultiCreate();
 			}
 		},
 		/*
 		 * Function called when "Close" button is clicked on MultiCreate Dialog
 		 * @param {object} - oEvent - Event parameter for button press
 		 */
-		onCloseMultiCreate: function (oEvent) {
+		onCloseMultiCreate: function () {
 			if (this._oMultiCreateDialog) {
 				this._oMultiCreateDialog.close();
 			}
