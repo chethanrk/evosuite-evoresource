@@ -3191,10 +3191,6 @@ sap.ui.define([
 			}
 			newData[oDateProp.endDateProp] = moment(newData[oDateProp.startDateProp]).add(iDateDiff, 'd').endOf('day').toDate();
 
-			// if (moment(newData[oDateProp.startDateProp]).isSameOrAfter(oData[oDateProp.startDateProp]) && moment(newData[oDateProp.startDateProp])
-			// 	.isSameOrBefore(moment(oData.SERIES_END_DATE))) {
-			// 	this._validateAndAddNewAssignment(newData, oData);
-			// }
 			if (!this._isDatePast(newData[oDateProp.startDateProp]) && moment(newData[oDateProp.startDateProp])
 				.isSameOrBefore(moment(oData.SERIES_END_DATE))) {
 				this._validateAndAddNewAssignment(newData, oData);
