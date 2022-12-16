@@ -329,6 +329,7 @@ sap.ui.define([
 							obj[property.name] = oRowData[property.name];
 						}
 					});
+					obj.SERIES_START_DATE = oStartTime;
 					obj.SERIES_END_DATE = oEndTime;
 					obj.StartDate = oStartTime;
 					obj.EndDate = oEndTime;
