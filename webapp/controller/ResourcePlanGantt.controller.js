@@ -1085,13 +1085,25 @@ sap.ui.define([
 			var oDateRange = oEvent.getSource(),
 				oStartDate = oDateRange.getDateValue(),
 				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
-				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover");
+				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
+				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
+				dStartDateDiff, oSeriesStartDate, sStartDateProp;
 			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
-			this.oPlanningModel.setProperty("/tempData/popover/SERIES_START_DATE", formatter.convertFromUTCDate(oPopoverData[
-				"SERIES_START_DATE"], oPopoverData.isNew, oPopoverData.isChanging));
+
+			//series date calculation
+			if (oPopoverData.NODE_TYPE === "RES_GROUP") {
+				sStartDateProp = "StartDate";
+			} else if (oPopoverData.NODE_TYPE === "SHIFT") {
+				sStartDateProp = "EffectiveStartDate";
+			}
+			dStartDateDiff = moment(oPopoverData[sStartDateProp]).diff(oOldPopoverData[sStartDateProp], "d");
+			oSeriesStartDate = moment(formatter.convertFromUTCDate(oPopoverData["SERIES_START_DATE"], oPopoverData.isNew, oPopoverData.isChanging))
+				.add(dStartDateDiff, "d").toDate();
+			this.oPlanningModel.setProperty("/tempData/popover/SERIES_START_DATE", oSeriesStartDate);
+
 			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
 
 			//validate for the overlapping
