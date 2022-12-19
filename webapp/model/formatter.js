@@ -639,7 +639,10 @@ sap.ui.define([
 			}
 			return false;
 		},
-		
+		/*
+		 * Returns boolean for the visibility of Checkbox for Resource
+		 * @param {string} sNodeType
+		 */
 		isMainResource: function(sNodeType) {
 			return sNodeType === "RESOURCE";
 		}
