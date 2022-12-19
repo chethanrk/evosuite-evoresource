@@ -368,7 +368,6 @@ sap.ui.define([
 		_dateRangeFilter: null,
 		_viewModeFilter: null,
 		_sGanttViewMode: null,
-		selectedResources: [],
 
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
@@ -1821,20 +1820,21 @@ sap.ui.define([
 			var oSource = oEvent.getSource(),
 				parent = oSource.getParent(),
 				sPath = parent.getBindingContext("ganttPlanningModel").getPath(),
-				oParams = oEvent.getParameters();
+				oParams = oEvent.getParameters(),
+				aSelectedResource = this.getModel("ganttPlanningModel").getProperty("/selectedResources");
 
 			//Sets the property IsSelected manually
 			this.getModel("ganttPlanningModel").setProperty(sPath + "/IsSelected", oParams.selected);
 
 			if (oParams.selected) {
-				this.selectedResources.push(sPath);
+				aSelectedResource.push(sPath);
 
-			} else if (this.selectedResources.indexOf(sPath) >= 0) {
-				//removing the path from this.selectedResources when user unselect the checkbox
-				this.selectedResources.splice(this.selectedResources.indexOf(sPath), 1);
+			} else if (aSelectedResource.indexOf(sPath) >= 0) {
+				//removing the path from "aSelectedResource" when user unselect the checkbox
+				aSelectedResource.splice(aSelectedResource.indexOf(sPath), 1);
 			}
 			
-			if (this.selectedResources.length > 0) {
+			if (aSelectedResource.length > 0) {
 				this.getModel("ganttPlanningModel").setProperty("/isResourceSelected",true);
 			}else{
 				this.getModel("ganttPlanningModel").setProperty("/isResourceSelected",false);
@@ -1858,12 +1858,13 @@ sap.ui.define([
 				DESCRIPTION: "",
 				ResourceGroupDesc: "",
 				SERIES_END_DATE: moment().endOf("day").toDate()
-			};
+			},
+			aSelectedResource = this.getModel("ganttPlanningModel").getProperty("/selectedResources");
 			this.createNewTempAssignment(oMultiCreateData.StartDate, oMultiCreateData.EndDate, oMultiCreateData).then(function (oData) {
 				var oResource = {},
 					oGanttObject = {};
 				oData.ResourceList = [];
-				this.selectedResources.forEach(function (sPath) {
+				aSelectedResource.forEach(function (sPath) {
 					oGanttObject = deepClone(this.getModel("ganttPlanningModel").getProperty(sPath));
 					oResource = {
 						NodeId:oGanttObject.NodeId,
@@ -2934,9 +2935,9 @@ sap.ui.define([
 				isResourceSelected: false,
 				multiSelectedDataForDelete: [],
 				isRepeatAssignmentAdded: false,
-				multiCreateData: {}
+				multiCreateData: {},
+				selectedResources:[]
 			};
-			this.selectedResources = [];
 			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
 			this.oPlanningModel.setData(deepClone(this.oOriginData));
 		},
