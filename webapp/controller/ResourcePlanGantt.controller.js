@@ -1908,7 +1908,6 @@ sap.ui.define([
 		 * @param {object} - oMultiCreateData - Default assignment information
 		 */
 		setMultiCreateData: function (oMultiCreateData) {
-			// var oResourceListId = sap.ui.getCore().byId("idResourceList");
 			this.getModel("ganttPlanningModel").setProperty("/multiCreateData", oMultiCreateData);
 		},
 		/*
