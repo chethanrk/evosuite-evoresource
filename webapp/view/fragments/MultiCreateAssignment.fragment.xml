@@ -7,8 +7,8 @@
 				singleContainerFullSize="true">
 				<f:content>
 					<Label text="{i18n>xfld.resourceName}"/>
-					<MultiInput id="idResourceList" required="true" fieldGroupIds="multiCreateInput" tokenUpdate="onMultiCreateResourceListChange"
-						valueHelpRequest="handleResourceValueHelp" tokens="{ganttPlanningModel>/multiCreateData/ResourceList}" suggestionItems="{ganttPlanningModel>/data/children}">
+					<MultiInput id="idResourceList" required="true" fieldGroupIds="multiCreateInput" tokens="{ganttPlanningModel>/multiCreateData/ResourceList}"
+						editable="false">
 						<tokens>
 							<Token key="{ganttPlanningModel>NodeId}" text="{ganttPlanningModel>Description}">
 								<customData>
@@ -17,9 +17,6 @@
 								</customData>
 							</Token>
 						</tokens>
-						<suggestionItems>
-							<core:Item key="{ganttPlanningModel>NodeId}" text="{ganttPlanningModel>Description}"/>
-						</suggestionItems>
 					</MultiInput>
 					<Label text="{i18n>xfld.popoverType}"/>
 					<Select forceSelection="true" selectedKey="{ganttPlanningModel>/multiCreateData/NODE_TYPE}" width="100%">
