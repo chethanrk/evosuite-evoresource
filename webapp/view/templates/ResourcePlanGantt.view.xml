@@ -31,7 +31,7 @@
 											<Button id="idResourcePlanBtnSave" text="{i18n>xbtn.save}" icon="sap-icon://save" type="Emphasized" press="onPressSave"
 												enabled="{ganttPlanningModel>/hasChanges}"/>
 											<Button id="idResourcePlanBtnCreate" text="{i18n>xbtn.create}" icon="sap-icon://add" press="onPressCreateMultiAssignment"
-												visible="{user>/ENABLE_MULTIPLE_CREATE_BUTTON}"/>
+												visible="{user>/ENABLE_MULTIPLE_CREATE_BUTTON}" enabled = "{ganttPlanningModel>/isResourceSelected}"/>
 											<Button id="idResourcePlanBtnDelete" text="{i18n>xbtn.delete}" icon="sap-icon://delete" press="onPressDeleteMultiAssignment"
 												enabled="{ganttPlanningModel>/isShapeSelected}" visible="{user>/ENABLE_MULTIPLE_DELETE_BUTTON}"/>
 											<Button id="idResourcePlanBtnCancel" text="{i18n>xbtn.reset}" icon="sap-icon://cancel" press="onPressCancel"
@@ -91,6 +91,15 @@
 														</table:template>
 													</table:Column>
 												</template:repeat>
+												<table:Column label="{i18n>xtit.resourceCheckbox}" width="2.5rem" class="sapUiNoContentPadding">
+													<table:customData>
+														<core:CustomData key="p13nData" value='\{"columnKey": "NodeType", "leadingProperty": "NodeType"}'/>
+													</table:customData>
+													<table:template>
+														<CheckBox enabled="true" select="onChangeSelectResource" visible="{ path: 'ganttPlanningModel>NodeType', formatter: '.formatter.isMainResource' }"
+															selected="{ganttPlanningModel>IsSelected}"/>
+													</table:template>
+												</table:Column>
 											</table:columns>
 											<table:rowActionTemplate></table:rowActionTemplate>
 											<table:rowSettingsTemplate>
