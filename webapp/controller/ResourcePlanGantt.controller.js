@@ -2725,8 +2725,7 @@ sap.ui.define([
 					oNewAssignmentData = this.mergeObject(oNewAssignmentData, shiftData);
 				}
 				oNewAssignmentData.Guid = new Date().getTime().toString();
-				oNewAssignmentData[sStartDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sStartDateProp], oNewAssignmentData.isNew,
-					oNewAssignmentData.isChanging);
+				oNewAssignmentData[sStartDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sStartDateProp], oNewAssignmentData.isNew,oNewAssignmentData.isChanging);
 				oNewAssignmentData[sEndDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sEndDateProp], oNewAssignmentData.isNew,	oNewAssignmentData.isChanging);
 				oNewAssignmentData["SERIES_START_DATE"] = formatter.convertFromUTCDate(oNewAssignmentData["SERIES_START_DATE"], oNewAssignmentData.isNew,oNewAssignmentData.isChanging);
 				oNewAssignmentData["SERIES_END_DATE"] = formatter.convertFromUTCDate(oNewAssignmentData["SERIES_END_DATE"], oNewAssignmentData.isNew,oNewAssignmentData.isChanging);
