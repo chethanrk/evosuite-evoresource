@@ -2727,17 +2727,9 @@ sap.ui.define([
 				oNewAssignmentData.Guid = new Date().getTime().toString();
 				oNewAssignmentData[sStartDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sStartDateProp], oNewAssignmentData.isNew,
 					oNewAssignmentData.isChanging);
-				oNewAssignmentData[sEndDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sEndDateProp], oNewAssignmentData.isNew,
-					oNewAssignmentData
-					.isChanging);
-				oNewAssignmentData["SERIES_START_DATE"] = formatter.convertFromUTCDate(oNewAssignmentData["SERIES_START_DATE"], oNewAssignmentData
-					.isNew,
-					oNewAssignmentData
-					.isChanging);
-				oNewAssignmentData["SERIES_END_DATE"] = formatter.convertFromUTCDate(oNewAssignmentData["SERIES_END_DATE"], oNewAssignmentData
-					.isNew,
-					oNewAssignmentData
-					.isChanging);
+				oNewAssignmentData[sEndDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sEndDateProp], oNewAssignmentData.isNew,	oNewAssignmentData.isChanging);
+				oNewAssignmentData["SERIES_START_DATE"] = formatter.convertFromUTCDate(oNewAssignmentData["SERIES_START_DATE"], oNewAssignmentData.isNew,oNewAssignmentData.isChanging);
+				oNewAssignmentData["SERIES_END_DATE"] = formatter.convertFromUTCDate(oNewAssignmentData["SERIES_END_DATE"], oNewAssignmentData.isNew,oNewAssignmentData.isChanging);
 				oNewAssignmentData.isNew = true;
 				this._addSingleChildToParent(oNewAssignmentData, false, true, true);
 				this.groupShiftContextForRepeat = null;
@@ -3121,7 +3113,6 @@ sap.ui.define([
 				this._addNewAssignmentShape(data);
 				data.isTemporary = false;
 				data.IsSeries = true;
-				// data.SERIES_END_DATE = formatter.convertToUTCDate(data.SERIES_END_DATE,data.isNew,data.isChanging);
 				if (data.SeriesRepeat === "W") {
 					data.SeriesOn = data.SeriesWeeklyOn.join(",");
 				} else if (data.SeriesRepeat === "M") {
