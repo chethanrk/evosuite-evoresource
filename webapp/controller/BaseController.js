@@ -508,7 +508,7 @@ sap.ui.define([
 								obj[property.name] = oRowData[property.name];
 								
 								// added formatter to convert the date to UTC before backend call
-								if(property.type === "Edm.DateTime" && oRowData[property.name]){
+								if((property.type === "Edm.DateTime" || property.type === "Edm.DateTimeOffset") && oRowData[property.name]){
 									obj[property.name] = Formatter.convertToUTCDate(oRowData[property.name]);
 								}
 								/**
@@ -517,7 +517,7 @@ sap.ui.define([
 								 * Removed 1 more second from the enddate before send it to backend
 								 * Remove bellow code once we get valid loigc to send UTC date for multiple days selection
 								 */
-								if ((property.name === "EndDate" || property.name === "EffectiveEndDate") && oRowData[property.name]) {
+								if ((property.name === "EndDate" || property.name === "EffectiveEndDate") && obj[property.name]) {
 									obj[property.name] = new Date(obj[property.name].getTime() - 1000);
 								}
 							}
