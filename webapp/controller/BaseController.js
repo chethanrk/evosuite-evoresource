@@ -521,6 +521,13 @@ sap.ui.define([
 									obj[property.name] = new Date(oRowData[property.name].getTime() - 1000);
 									obj[property.name] = Formatter.convertToUTCDate(obj[property.name]);
 								}
+								
+								if (property.name === "SERIES_START_DATE" && oRowData[property.name]) {
+									obj[property.name] = Formatter.convertToUTCDate(oRowData[property.name]);
+								}
+								if (property.name === "SERIES_END_DATE" && oRowData[property.name]) {
+									obj[property.name] = Formatter.convertToUTCDate(oRowData[property.name]);
+								}
 							}
 						});
 						singleentry.properties = obj;
