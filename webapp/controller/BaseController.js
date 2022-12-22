@@ -506,9 +506,9 @@ sap.ui.define([
 							obj[property.name] = "";
 							if (oRowData.hasOwnProperty(property.name)) {
 								obj[property.name] = oRowData[property.name];
-
+								
 								// added formatter to convert the date to UTC before backend call
-								if ((property.name === "StartDate" || property.name === "EffectiveStartDate") && oRowData[property.name]) {
+								if(property.type === "Edm.DateTime" && oRowData[property.name]){
 									obj[property.name] = Formatter.convertToUTCDate(oRowData[property.name]);
 								}
 								/**
@@ -518,15 +518,7 @@ sap.ui.define([
 								 * Remove bellow code once we get valid loigc to send UTC date for multiple days selection
 								 */
 								if ((property.name === "EndDate" || property.name === "EffectiveEndDate") && oRowData[property.name]) {
-									obj[property.name] = new Date(oRowData[property.name].getTime() - 1000);
-									obj[property.name] = Formatter.convertToUTCDate(obj[property.name]);
-								}
-								
-								if (property.name === "SERIES_START_DATE" && oRowData[property.name]) {
-									obj[property.name] = Formatter.convertToUTCDate(oRowData[property.name]);
-								}
-								if (property.name === "SERIES_END_DATE" && oRowData[property.name]) {
-									obj[property.name] = Formatter.convertToUTCDate(oRowData[property.name]);
+									obj[property.name] = new Date(obj[property.name].getTime() - 1000);
 								}
 							}
 						});
