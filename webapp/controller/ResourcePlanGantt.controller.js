@@ -1077,7 +1077,9 @@ sap.ui.define([
 				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
 				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
-				dStartDateDiff, oSeriesStartDate, sStartDateProp;
+				dStartDateDiff, oSeriesStartDate,oSeriesEndDate, sStartDateProp,oOldPopverStartDate;
+			
+			
 			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
@@ -1089,11 +1091,15 @@ sap.ui.define([
 			} else if (oPopoverData.NODE_TYPE === "SHIFT") {
 				sStartDateProp = "EffectiveStartDate";
 			}
-			dStartDateDiff = moment(oPopoverData[sStartDateProp]).diff(oOldPopoverData[sStartDateProp], "d");
+			oOldPopverStartDate = formatter.convertFromUTCDate(oOldPopoverData[sStartDateProp],oOldPopoverData["isNew"],oOldPopoverData["isChanging"]);
+			dStartDateDiff = moment(oPopoverData[sStartDateProp]).diff(oOldPopverStartDate, "d");
 			oSeriesStartDate = moment(formatter.convertFromUTCDate(oPopoverData["SERIES_START_DATE"], oPopoverData.isNew, oPopoverData.isChanging))
 				.add(dStartDateDiff, "d").toDate();
 			this.oPlanningModel.setProperty("/tempData/popover/SERIES_START_DATE", oSeriesStartDate);
-
+			
+			oSeriesEndDate = formatter.convertFromUTCDate(oPopoverData["SERIES_END_DATE"], oPopoverData.isNew, oPopoverData.isChanging);
+			this.oPlanningModel.setProperty("/tempData/popover/SERIES_END_DATE", oSeriesEndDate);
+			
 			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
 
 			//validate for the overlapping
@@ -2719,15 +2725,10 @@ sap.ui.define([
 					oNewAssignmentData = this.mergeObject(oNewAssignmentData, shiftData);
 				}
 				oNewAssignmentData.Guid = new Date().getTime().toString();
-				oNewAssignmentData[sStartDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sStartDateProp], oNewAssignmentData.isNew,
-					oNewAssignmentData.isChanging);
-				oNewAssignmentData[sEndDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sEndDateProp], oNewAssignmentData.isNew,
-					oNewAssignmentData
-					.isChanging);
-				oNewAssignmentData["SERIES_START_DATE"] = formatter.convertFromUTCDate(oNewAssignmentData["SERIES_START_DATE"], oNewAssignmentData
-					.isNew,
-					oNewAssignmentData
-					.isChanging);
+				oNewAssignmentData[sStartDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sStartDateProp], oNewAssignmentData.isNew,oNewAssignmentData.isChanging);
+				oNewAssignmentData[sEndDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sEndDateProp], oNewAssignmentData.isNew,	oNewAssignmentData.isChanging);
+				oNewAssignmentData["SERIES_START_DATE"] = formatter.convertFromUTCDate(oNewAssignmentData["SERIES_START_DATE"], oNewAssignmentData.isNew,oNewAssignmentData.isChanging);
+				oNewAssignmentData["SERIES_END_DATE"] = formatter.convertFromUTCDate(oNewAssignmentData["SERIES_END_DATE"], oNewAssignmentData.isNew,oNewAssignmentData.isChanging);
 				oNewAssignmentData.isNew = true;
 				this._addSingleChildToParent(oNewAssignmentData, false, true, true);
 				this.groupShiftContextForRepeat = null;
@@ -3111,7 +3112,6 @@ sap.ui.define([
 				this._addNewAssignmentShape(data);
 				data.isTemporary = false;
 				data.IsSeries = true;
-				data.SERIES_END_DATE = formatter.convertToUTCDate(data.SERIES_END_DATE);
 				if (data.SeriesRepeat === "W") {
 					data.SeriesOn = data.SeriesWeeklyOn.join(",");
 				} else if (data.SeriesRepeat === "M") {
