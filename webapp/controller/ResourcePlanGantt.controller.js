@@ -1,6 +1,6 @@
 /* globals moment */
 sap.ui.define([
-	"com/evorait/evosuite/evoresource/controller/BaseController",
+	"com/evorait/evosuite/evoresource/controller/BaseResourcePlanGanttController",
 	"sap/ui/core/mvc/OverrideExecution",
 	"com/evorait/evosuite/evoresource/model/formatter",
 	"sap/base/util/deepClone",
@@ -12,11 +12,11 @@ sap.ui.define([
 	"sap/gantt/misc/Utility",
 	"sap/base/util/merge",
 	"sap/ui/core/Popup"
-], function (BaseController, OverrideExecution, formatter, deepClone, deepEqual, models, Fragment, Filter, FilterOperator,
+], function (BaseResourcePlanGanttController, OverrideExecution, formatter, deepClone, deepEqual, models, Fragment, Filter, FilterOperator,
 	Utility, merge, Popup) {
 	"use strict";
 
-	return BaseController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanGantt", {
+	return BaseResourcePlanGanttController.extend("com.evorait.evosuite.evoresource.controller.ResourcePlanGantt", {
 
 		metadata: {
 			// extension can declare the public methods
