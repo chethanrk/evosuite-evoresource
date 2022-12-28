@@ -41,7 +41,7 @@ sap.ui.define([
 			this.oViewModel.setProperty("/busy", true);
 			this.getModel().metadataLoaded().then(function () {
 				//get template and create views
-				this.insertTemplateFragment("/ResourceGroupSet", sViewName, "idPageResourcePlanningSideWrapper", this._afterBindSuccess.bind(this));
+				this.insertTemplateFragment(null, sViewName, "idPageResourcePlanningSideWrapper", this._afterBindSuccess.bind(this));
 			}.bind(this));
 		},
 		
