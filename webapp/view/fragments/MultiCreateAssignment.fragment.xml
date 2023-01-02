@@ -31,6 +31,7 @@
 						editable="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'RES_GROUP'}" change="onMultiCreateGroupChange">
 						<core:ListItem key="{viewModel>ResourceGroupGuid}" text="{viewModel>ResourceGroupDesc}" additionalText="{viewModel>ResourceGroupUnitId}"/>
 					</ComboBox>
+					<Label text="{i18n>xlbl.subtype}" required="true"/>
 					<ComboBox required="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'SHIFT'}" showSecondaryValues="true" name="Shift"
 						fieldGroupIds="multiCreateInput" items="{ path: 'viewModel>/Shifts'}" selectedKey="{ganttPlanningModel>/multiCreateData/TemplateId}"
 						visible="{= ${ganttPlanningModel>/multiCreateData/NODE_TYPE} === 'SHIFT'}"

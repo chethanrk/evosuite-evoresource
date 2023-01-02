@@ -22,6 +22,7 @@
 						editable="{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverGroupChangeEnable'}">
 						<core:ListItem key="{viewModel>ResourceGroupGuid}" text="{viewModel>ResourceGroupDesc}" additionalText="{viewModel>ResourceGroupUnitId}"/>
 					</ComboBox>
+					<Label text="{i18n>xfld.popoverSelect}" required="true"/>
 					<ComboBox id="idShiftDialog" required="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}" showSecondaryValues="true"
 						name="Shift" fieldGroupIds="changeShapeInput" items="{ path: 'viewModel>/Shifts'}"
 						selectedKey="{ganttPlanningModel>/tempData/popover/TemplateId}" change="onChangeShift"
