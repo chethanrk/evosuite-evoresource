@@ -2993,7 +2993,7 @@ sap.ui.define([
 			}
 
 			if (oData.isRestChanges) {
-				if (!oData.isNew && oData.isTemporary && oOldAssignmentData && oOldAssignmentData.Guid) {
+				if (oData.isTemporary && oOldAssignmentData && oOldAssignmentData.Guid) {
 					var oFoundData = this._getChildrenDataByKey("Guid", oData.Guid, null);
 					if (oFoundData && oFoundData.length === 2) {
 						for (var i = 0; i < oFoundData.length; i++) {
@@ -3036,6 +3036,8 @@ sap.ui.define([
 			oStartDate = moment(oData[oDateProp.startDateProp]);
 			oEndDate = moment(oData[oDateProp.endDateProp]);
 			iDateDiff = moment(oEndDate).diff(oStartDate, 'd');
+			oData.isTemporary = false;
+			oData.IsSeries = true;
 			if (oData.SeriesRepeat === "D") {
 				oData.SeriesEvery = parseInt(oData.SeriesEvery, 10) < (iDateDiff + 1) ? (iDateDiff + 1).toString() : oData.SeriesEvery;
 			}
