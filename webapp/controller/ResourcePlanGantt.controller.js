@@ -1996,7 +1996,7 @@ sap.ui.define([
 					sNoShiftMsg = this.getResourceBundle().getText("yMsg.shiftvalidations", aNoShiftResource.join(","));
 				}
 				if (isValidationFailed) {
-					this.showMessageToast(sDuplicateMsg + "\n" + sNoShiftMsg);
+					this.showMessageToast(sDuplicateMsg + "\n\n" + sNoShiftMsg);
 				}
 				this.onCloseMultiCreate();
 			}
