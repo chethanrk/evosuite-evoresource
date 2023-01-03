@@ -3067,7 +3067,6 @@ sap.ui.define([
 			oStartDate = moment(oData[oDateProp.startDateProp]);
 			oEndDate = moment(oData[oDateProp.endDateProp]);
 			iDateDiff = moment(oEndDate).diff(oStartDate, 'd');
-			oData.isTemporary = false;
 			oData.IsSeries = true;
 			if (oData.SeriesRepeat === "D") {
 				oData.SeriesEvery = parseInt(oData.SeriesEvery, 10) < (iDateDiff + 1) ? (iDateDiff + 1).toString() : oData.SeriesEvery;
@@ -3082,6 +3081,7 @@ sap.ui.define([
 					oData.SeriesMonthlyOn = oData.SeriesOn === "1" ? 0 : 1;
 				}
 			}
+			this._removeAssignmentShape(oData);
 			do {
 				if (oData.SeriesRepeat === "D") {
 					newData = deepClone(oData);
