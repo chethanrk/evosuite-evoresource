@@ -1095,8 +1095,8 @@ sap.ui.define([
 			oOldPopverStartDate = formatter.convertFromUTCDate(oOldPopoverData[sStartDateProp], oOldPopoverData["isNew"], oOldPopoverData[
 				"isChanging"]);
 			dStartDateDiff = moment(oPopoverData[sStartDateProp]).diff(oOldPopverStartDate, "d");
-			oSeriesStartDate = moment(formatter.convertFromUTCDate(oPopoverData["SERIES_START_DATE"], oPopoverData.isNew, oPopoverData.isChanging))
-				.add(dStartDateDiff, "d").toDate();
+			oSeriesStartDate = oPopoverData["SERIES_START_DATE"] ? moment(formatter.convertFromUTCDate(oPopoverData["SERIES_START_DATE"], oPopoverData.isNew, oPopoverData.isChanging))
+				.add(dStartDateDiff, "d").toDate() : null;
 			this.oPlanningModel.setProperty("/tempData/popover/SERIES_START_DATE", oSeriesStartDate);
 
 			oSeriesEndDate = formatter.convertFromUTCDate(oPopoverData["SERIES_END_DATE"], oPopoverData.isNew, oPopoverData.isChanging);
