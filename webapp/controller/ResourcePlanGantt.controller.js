@@ -363,6 +363,7 @@ sap.ui.define([
 		_previousView: "DAY",
 		groupShiftContext: null,
 		groupShiftContextForRepeat: null,
+		groupShiftSeriesDuplicate: false,
 		editSeriesDate: false,
 		_ganttChart: null,
 		_smartFilterBar: null,
@@ -3120,6 +3121,10 @@ sap.ui.define([
 			while (oStartDate.isBefore(moment(oData.SERIES_END_DATE)));
 
 			this.getModel("ganttPlanningModel").setProperty("/isRepeatAssignmentAdded", false);
+			if(this.groupShiftSeriesDuplicate){
+				this.showMessageToast(this.getResourceBundle().getText("yMsg.seriesDuplicate"));
+				this.groupShiftSeriesDuplicate = false;
+			}
 		},
 
 		/**
@@ -3156,7 +3161,7 @@ sap.ui.define([
 				}
 
 			} else {
-				//TODO message for the overlapping
+				this.groupShiftSeriesDuplicate = true;
 			}
 		},
 
