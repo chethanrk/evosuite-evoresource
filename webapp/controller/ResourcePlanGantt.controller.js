@@ -1932,8 +1932,8 @@ sap.ui.define([
 				oResourceData,
 				aNoShiftResource = [],
 				aDuplicateAssignment = [],
-				sDuplicateMsg = "",
 				sNoShiftMsg = "",
+				sValidationMsg = "",
 				sNodeType = "",
 				isValidationFailed = false;
 
@@ -1990,14 +1990,19 @@ sap.ui.define([
 					} else if (oAssignmentData.NODE_TYPE === "SHIFT") {
 						sNodeType = this.getResourceBundle().getText("xtxt.shift");
 					}
-					sDuplicateMsg = this.getResourceBundle().getText("msg.errorduplicateresources", [sNodeType, aDuplicateAssignment.join(",")]);
+					sValidationMsg = this.getResourceBundle().getText("msg.errorduplicateresources", [sNodeType, aDuplicateAssignment.join(",")]);
 				}
 				if (aNoShiftResource.length) {
 					isValidationFailed = true;
 					sNoShiftMsg = this.getResourceBundle().getText("yMsg.shiftvalidations", aNoShiftResource.join(","));
+					if(sValidationMsg){
+						sValidationMsg = sValidationMsg + "\n\n" + sNoShiftMsg;
+					}else{
+						sValidationMsg = sNoShiftMsg;
+					}
 				}
 				if (isValidationFailed) {
-					this.showMessageToast(sDuplicateMsg + "\n\n" + sNoShiftMsg);
+					this.showMessageToast(sValidationMsg);
 				}
 				this.onCloseMultiCreate();
 			}
