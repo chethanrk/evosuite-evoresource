@@ -78,8 +78,8 @@
 						<RadioButtonGroup id="rbg1" selectedIndex="{ganttPlanningModel>/tempData/popover/SeriesMonthlyOn}" class="sapUiMediumMarginBottom"
 							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'},{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat'}],formatter:'.formatter.monthModeValidation'}"
 							fieldGroupIds="changeShapeInput">
-							<RadioButton text="{path:'ganttPlanningModel>/tempData/popover',formatter:'.formatter.getDay'}"/>
-							<RadioButton text="{path:'ganttPlanningModel>/tempData/popover',formatter:'.formatter.getDays'}"/>
+							<RadioButton text="{path:'ganttPlanningModel>/tempData/popover/StartDate',formatter:'.formatter.getDay'}"/>
+							<RadioButton text="{path:'ganttPlanningModel>/tempData/popover/StartDate',formatter:'.formatter.getDays'}"/>
 						</RadioButtonGroup>
 						<Label text="{i18n>xfld.EndDate}"
 							required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.requiredValidate'}"/>
