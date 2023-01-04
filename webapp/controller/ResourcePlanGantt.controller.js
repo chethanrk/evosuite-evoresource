@@ -1216,12 +1216,13 @@ sap.ui.define([
 			} else if (newData.NODE_TYPE === "SHIFT") {
 				shapeDescription = newData["ScheduleIdDesc"] || this.getResourceBundle().getText("xtit.shift");
 			}
-			this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", shapeDescription);
+			this.oPlanningModel.setProperty("/tempData/popover/Description", shapeDescription);
 			this._removeAssignmentShape(oldData, true);
 			this.createNewTempAssignment(newData.StartDate, newData.EndDate, newData, false).then(function (oData) {
-				this._addSingleChildToParent(newData, false, false);
+				oData.Guid = "";
+				this._addSingleChildToParent(oData, false, false);
+				this.oPlanningModel.setProperty("/tempData/oldPopoverData", deepClone(oData));
 			}.bind(this));
-			this.oPlanningModel.setProperty("/tempData/oldPopoverData", deepClone(newData));
 		},
 		/**
 		 * Update global variables with the filter value
