@@ -357,15 +357,6 @@ sap.ui.define([
 		},
 
 		/**
-		 * return string value of selected date
-		 * oData popover data
-		 */
-		getDayString: function (oData) {
-			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
-			return getCurrentDayString(oData, oResourceBundle);
-		},
-
-		/**
 		 * visibility of every input box
 		 */
 		everyAndEndDateVisibility: function (Repeat, isTemporary, isNew) {
