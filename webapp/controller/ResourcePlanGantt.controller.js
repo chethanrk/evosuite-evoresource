@@ -3098,6 +3098,7 @@ sap.ui.define([
 
 				} else if (oData.SeriesRepeat === "W") {
 					var week = oStartDate;
+					iEvery = parseInt(oData.SeriesEvery, 10);
 					for (var d = 0; d < oData.SeriesWeeklyOn.length; d++) {
 						newData = deepClone(oData);
 						newData[oDateProp.startDateProp] = moment(week).day(oData.SeriesWeeklyOn[d]).toDate();
@@ -3105,7 +3106,6 @@ sap.ui.define([
 						this._validateAndPrepareNewAssignment(newData, oData, dayCounter, iDateDiff, d, oDateProp);
 					}
 					oStartDate = moment(oStartDate.add(iEvery, 'weeks').startOf('weeks').toDate());
-
 				} else if (oData.SeriesRepeat === "M") {
 					newData = deepClone(oData);
 					if (oData.SeriesMonthlyOn === 0) {
