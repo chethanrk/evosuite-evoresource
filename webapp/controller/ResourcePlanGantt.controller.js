@@ -1210,18 +1210,27 @@ sap.ui.define([
 		onChangeAssignmentType: function (oEvent) {
 			var newData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oldData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
-				shapeDescription;
+				shapeDescription,oCloneData;
 			if (newData.NODE_TYPE === "RES_GROUP") {
-				shapeDescription = newData["ResourceGroupDesc"] || this.getResourceBundle().getText("xtit.group");
+				shapeDescription = this.getResourceBundle().getText("xtit.group");
+				newData["ResourceGroupGuid"] = null;
+				newData["ResourceGroupDesc"] = null;
+				newData["RESOURCE_GROUP_COLOR"] = null;
 			} else if (newData.NODE_TYPE === "SHIFT") {
-				shapeDescription = newData["ScheduleIdDesc"] || this.getResourceBundle().getText("xtit.shift");
+				shapeDescription = this.getResourceBundle().getText("xtit.shift");
+				newData["ScheduleId"] = null;
+				newData["ScheduleIdDesc"] = null;
+				newData["TemplateId"] = null;
+				newData["TemplateIdDesc"] = null;
+				newData["SHIFT_COLOR"] = null;
 			}
 			this.oPlanningModel.setProperty("/tempData/popover/Description", shapeDescription);
 			this._removeAssignmentShape(oldData, true);
 			this.createNewTempAssignment(newData.StartDate, newData.EndDate, newData, false).then(function (oData) {
-				oData.Guid = "";
 				this._addSingleChildToParent(oData, false, false);
-				this.oPlanningModel.setProperty("/tempData/oldPopoverData", deepClone(oData));
+				oCloneData = deepClone(oData);
+				oCloneData.Guid = "";
+				this.oPlanningModel.setProperty("/tempData/oldPopoverData", oCloneData);
 			}.bind(this));
 		},
 		/**
