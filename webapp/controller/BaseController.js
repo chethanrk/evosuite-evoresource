@@ -801,19 +801,6 @@ sap.ui.define([
 		getObjectFromEntity: function (sEntitySet, oRowData) {
 			var obj = {};
 			return new Promise(function (resolve) {
-				/*this.getModel().getMetaModel().loaded().then(function () {
-					var oMetaModel = this.getModel().getMetaModel(),
-						oEntitySet = oMetaModel.getODataEntitySet(sEntitySet),
-						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-						aProperty = oEntityType ? oEntityType.property : [];
-					aProperty.forEach(function (property) {
-						obj[property.name] = "";
-						if (oRowData[property.name]) {
-							obj[property.name] = oRowData[property.name];
-						}
-					});
-					resolve(obj);
-				}.bind(this));*/
 				this.getEntityPropeties(sEntitySet).then(function (aProperty) {
 					aProperty.forEach(function (property) {
 						obj[property.name] = "";
