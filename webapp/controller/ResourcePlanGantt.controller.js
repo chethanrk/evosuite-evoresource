@@ -481,7 +481,7 @@ sap.ui.define([
 		 */
 		onShapePress: function (oEvent) {
 			var oShape = oEvent.getParameter("shape");
-			if (oShape.sParentAggregationName === "shapes1") {
+			if (oShape && oShape.sParentAggregationName === "shapes1") {
 				oEvent.preventDefault(); //when background shape is single clicked, do nothing (no border set when selected)
 			}
 		},
