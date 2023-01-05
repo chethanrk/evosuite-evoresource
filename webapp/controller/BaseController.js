@@ -54,7 +54,7 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
-				
+
 				getObjectFromEntity: {
 					public: true,
 					final: true
@@ -90,8 +90,11 @@ sap.ui.define([
 				getLengthOfAllChildren: {
 					public: true,
 					final: true
+				},
+				getEntityPropeties: {
+					public: true,
+					final: true
 				}
-
 			}
 		},
 
@@ -250,8 +253,6 @@ sap.ui.define([
 			});
 		},
 
-		
-
 		/**
 		 * Validate simiple form
 		 * @public
@@ -361,6 +362,33 @@ sap.ui.define([
 			return merge(destination, source);
 		},
 
+		/**
+		 * Get entity properties based on metamodel
+		 * Wait till metadata load then fetch property details of the entity
+		 * @param {oEntitySetList} - list of entity
+		 * @param sEntitySet - entityset of node selected
+		 */
+		getEntityPropeties: function (sEntitySet, oEntitySetList) {
+			return new Promise(function (resolve) {
+				//collect all assignment properties who allowed for create
+				this.getModel().getMetaModel().loaded().then(function () {
+					var oMetaModel = this.getModel().getMetaModel(),
+						oEntitySet = oMetaModel.getODataEntitySet(sEntitySet),
+						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+						aProperty = oEntityType ? oEntityType.property : [];
+
+					if (aProperty.length === 0) {
+						for (var key in oEntitySetList) {
+							oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[key]);
+							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null;
+							aProperty = aProperty.concat(oEntityType ? oEntityType.property : []);
+						}
+					}
+					resolve(aProperty);
+				}.bind(this));
+			}.bind(this));
+		},
+
 		/* =========================================================== */
 		/* internal methods                                            */
 		/* =========================================================== */
@@ -373,6 +401,7 @@ sap.ui.define([
 		_preparePayload: function (mParameters) {
 			return new Promise(function (resolve) {
 				var aChangedData = this.oPlanningModel.getProperty("/changedData"),
+					aPromises = [],
 					oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet");
 				this.getModel().setDeferredGroups(["batchSave"]);
 				aChangedData.forEach(function (sPath) {
@@ -384,19 +413,14 @@ sap.ui.define([
 						obj = {},
 						entitySet = oEntitySetList[oRowData.NODE_TYPE];
 					//collect all assignment properties who allowed for create
-					this.getModel().getMetaModel().loaded().then(function () {
-						var oMetaModel = this.getModel().getMetaModel(),
-							oEntitySet = oMetaModel.getODataEntitySet(entitySet),
-							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-							aProperty = oEntityType ? oEntityType.property : [];
-
+					this.getEntityPropeties(entitySet, oEntitySetList).then(function (aProperty) {
 						aProperty.forEach(function (property) {
 							obj[property.name] = "";
 							if (oRowData.hasOwnProperty(property.name)) {
 								obj[property.name] = oRowData[property.name];
-								
+
 								// added formatter to convert the date to UTC before backend call
-								if((property.type === "Edm.DateTime" || property.type === "Edm.DateTimeOffset") && oRowData[property.name]){
+								if ((property.type === "Edm.DateTime" || property.type === "Edm.DateTimeOffset") && oRowData[property.name]) {
 									obj[property.name] = Formatter.convertToUTCDate(oRowData[property.name]);
 								}
 								/**
@@ -411,10 +435,14 @@ sap.ui.define([
 							}
 						});
 						singleentry.properties = obj;
-						this.getModel().createEntry("/" + entitySet, singleentry);
+						aPromises.push(this.getModel().createEntry("/" + entitySet, singleentry));
 					}.bind(this));
+
 				}.bind(this));
-				resolve(aChangedData);
+				Promise.all(aPromises).then(function () {
+					resolve(aChangedData);
+				});
+
 			}.bind(this));
 		},
 
@@ -442,7 +470,8 @@ sap.ui.define([
 					if (oAssignment.NODE_TYPE === "RES_GROUP") {
 						sPath = "/" + entitySet + "(Guid='" + oAssignment.Guid + "',IsSeries=" + oAssignment.IsSeries + ")";
 					} else if (oAssignment.NODE_TYPE === "SHIFT") {
-						sPath = "/" + entitySet + "(Guid='" + oAssignment.Guid + "',TemplateId='" + oAssignment.TemplateId + "',IsSeries=" + oAssignment.IsSeries + ")";
+						sPath = "/" + entitySet + "(Guid='" + oAssignment.Guid + "',TemplateId='" + oAssignment.TemplateId + "',IsSeries=" +
+							oAssignment.IsSeries + ")";
 					}
 					this.getModel().remove(sPath, param);
 
@@ -764,7 +793,6 @@ sap.ui.define([
 			return false;
 		},
 
-
 		/**
 		 * Promise return Structture of a given EntitySet with data if passed
 		 * @param {string} sEntitySet - EntitySet name
@@ -773,11 +801,7 @@ sap.ui.define([
 		getObjectFromEntity: function (sEntitySet, oRowData) {
 			var obj = {};
 			return new Promise(function (resolve) {
-				this.getModel().getMetaModel().loaded().then(function () {
-					var oMetaModel = this.getModel().getMetaModel(),
-						oEntitySet = oMetaModel.getODataEntitySet(sEntitySet),
-						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-						aProperty = oEntityType ? oEntityType.property : [];
+				this.getEntityPropeties(sEntitySet).then(function (aProperty) {
 					aProperty.forEach(function (property) {
 						obj[property.name] = "";
 						if (oRowData[property.name]) {
@@ -797,10 +821,6 @@ sap.ui.define([
 			this.getOwnerComponent().MessageManager.open(oView, oEvent);
 		},
 
-		
-		
-
-		
 		/**
 		 * Method copy one object data to another having same property
 		 * @param source {object} source object
