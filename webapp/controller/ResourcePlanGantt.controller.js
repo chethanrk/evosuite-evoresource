@@ -1210,18 +1210,28 @@ sap.ui.define([
 		onChangeAssignmentType: function (oEvent) {
 			var newData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oldData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
-				shapeDescription;
+				shapeDescription,oCloneData;
 			if (newData.NODE_TYPE === "RES_GROUP") {
-				shapeDescription = newData["ResourceGroupDesc"] || this.getResourceBundle().getText("xtit.group");
+				shapeDescription = this.getResourceBundle().getText("xtit.group");
+				newData["ResourceGroupGuid"] = null;
+				newData["ResourceGroupDesc"] = null;
+				newData["RESOURCE_GROUP_COLOR"] = null;
 			} else if (newData.NODE_TYPE === "SHIFT") {
-				shapeDescription = newData["ScheduleIdDesc"] || this.getResourceBundle().getText("xtit.shift");
+				shapeDescription = this.getResourceBundle().getText("xtit.shift");
+				newData["ScheduleId"] = null;
+				newData["ScheduleIdDesc"] = null;
+				newData["TemplateId"] = null;
+				newData["TemplateIdDesc"] = null;
+				newData["SHIFT_COLOR"] = null;
 			}
-			this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", shapeDescription);
+			this.oPlanningModel.setProperty("/tempData/popover/Description", shapeDescription);
 			this._removeAssignmentShape(oldData, true);
 			this.createNewTempAssignment(newData.StartDate, newData.EndDate, newData, false).then(function (oData) {
-				this._addSingleChildToParent(newData, false, false);
+				this._addSingleChildToParent(oData, false, false);
+				oCloneData = deepClone(oData);
+				oCloneData.Guid = "";
+				this.oPlanningModel.setProperty("/tempData/oldPopoverData", oCloneData);
 			}.bind(this));
-			this.oPlanningModel.setProperty("/tempData/oldPopoverData", deepClone(newData));
 		},
 		/**
 		 * Update global variables with the filter value
@@ -3098,6 +3108,7 @@ sap.ui.define([
 
 				} else if (oData.SeriesRepeat === "W") {
 					var week = oStartDate;
+					iEvery = parseInt(oData.SeriesEvery, 10);
 					for (var d = 0; d < oData.SeriesWeeklyOn.length; d++) {
 						newData = deepClone(oData);
 						newData[oDateProp.startDateProp] = moment(week).day(oData.SeriesWeeklyOn[d]).toDate();
@@ -3105,7 +3116,6 @@ sap.ui.define([
 						this._validateAndPrepareNewAssignment(newData, oData, dayCounter, iDateDiff, d, oDateProp);
 					}
 					oStartDate = moment(oStartDate.add(iEvery, 'weeks').startOf('weeks').toDate());
-
 				} else if (oData.SeriesRepeat === "M") {
 					newData = deepClone(oData);
 					if (oData.SeriesMonthlyOn === 0) {
