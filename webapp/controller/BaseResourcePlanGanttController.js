@@ -21,7 +21,7 @@ sap.ui.define([
 				}
 			}
 		},
-		
+
 		formatter: Formatter,
 
 		/**
@@ -50,84 +50,38 @@ sap.ui.define([
 						isRestChanges: true,
 						maxDate: this.getModel("viewModel").getProperty("/gantt/defaultEndDate")
 					},
+					oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet"),
 					oDraggedData = this.getView().getModel("viewModel").getProperty("/draggedData"),
 					nodeType;
 
 				if (bDragged) {
+					obj.bDragged = bDragged;
 					nodeType = oDraggedData.data.NodeType;
-					if (nodeType === undefined) {
-						if (this.bAddNewResource)
-							nodeType = "RESOURCE";
+					if (nodeType === undefined && this.bAddNewResource) {
+						nodeType = "RESOURCE";
 					}
-					//added the below condition as Guid is passing as int in POST and causing an issue
-					if (nodeType === "RESOURCE")
-						obj.Guid = obj.Guid.toString();
 				} else {
-					if (oRowData.NodeType) nodeType = oRowData.NodeType;
-					else if (oRowData.NODE_TYPE) nodeType = oRowData.NODE_TYPE;
+					nodeType = oRowData.NodeType ? oRowData.NodeType : (oRowData.NODE_TYPE ? oRowData.NODE_TYPE : nodeType);
 				}
 				//collect all assignment properties who allowed for create
-				this.getModel().getMetaModel().loaded().then(function () {
-					var oMetaModel = this.getModel().getMetaModel(),
-						oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet"),
-						oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[nodeType]),
-						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-						aProperty = oEntityType ? oEntityType.property : [];
-
-					if (aProperty.length === 0) {
-						for (var key in oEntitySetList) {
-							oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[key]);
-							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null;
-							aProperty = aProperty.concat(oEntityType ? oEntityType.property : [])
-						}
-					}
-
+				this.getEntityPropeties(oEntitySetList[nodeType], oEntitySetList).then(function (aProperty) {
 					aProperty.forEach(function (property) {
-						var isCreatable = property["sap:creatable"],
-							defaultValue = {
-								"Edm.String": "",
-								"Edm.Byte": 0,
-								"Edm.DateTime": null
-							};
+						var defaultValue = {
+							"Edm.String": "",
+							"Edm.Byte": 0,
+							"Edm.DateTime": null
+						};
 						obj[property.name] = defaultValue.hasOwnProperty(property.type) ? defaultValue[property.type] : null;
 						if (oRowData.hasOwnProperty(property.name)) {
 							obj[property.name] = oRowData[property.name];
 						}
 					});
-					obj.SERIES_START_DATE = oStartTime;
-					obj.SERIES_END_DATE = oEndTime;
-					obj.StartDate = oStartTime;
-					obj.EndDate = oEndTime;
-					obj.EffectiveStartDate = oStartTime;
-					obj.EffectiveEndDate = oEndTime;
-					obj.NODE_TYPE = nodeType;
-					obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
-					obj.ResourceGuid = oRowData.ResourceGuid;
-					obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
-					obj.PARENT_NODE_ID = oRowData.NodeId;
-					obj.bDragged = bDragged;
-					obj.ParentNodeId = oRowData.ResourceGuid;
-					obj.IsSeries = false;
-
-					if (nodeType === "RESOURCE") {
-						obj.NodeId = oRowData.NodeId;
-						obj.TIME_ZONE = oRowData.TIME_ZONE;
-						obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
-						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
-					}
-					if (nodeType === "RES_GROUP") {
-						obj.NodeId = oRowData.ParentNodeId;
-						obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
-						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
-					} else if (nodeType === "SHIFT") {
-						obj.NodeId = oRowData.ParentNodeId;
-						obj.DESCRIPTION = oRowData.ScheduleIdDesc || oRowData.Description;
-						obj.RESOURCE_GROUP_COLOR = oRowData.SHIFT_COLOR;
-					}
+					this._setAdditionalProperties(nodeType, obj, oRowData, oStartTime, oEndTime);
 					resolve(obj);
 				}.bind(this));
 			}.bind(this));
 		},
+
 		/**
 		 * Change view horizon time at specified timestamp
 		 * @param oModel {object} viewModel
@@ -154,8 +108,49 @@ sap.ui.define([
 		/* =========================================================== */
 		/* internal methods                                            */
 		/* =========================================================== */
+
 		/**
-		
+		 * Set additioanl properties when create new assignemnt
+		 * @param nodeType - note type 
+		 * @param {obj} - new data
+		 * @param {oRowData} - selected data
+		 * @param {oStartTime} - start time
+		 * @param {oEndTime} - end time
+		 */
+		_setAdditionalProperties: function (nodeType, obj, oRowData, oStartTime, oEndTime) {
+			obj.SERIES_START_DATE = oStartTime;
+			obj.SERIES_END_DATE = oEndTime;
+			obj.StartDate = oStartTime;
+			obj.EndDate = oEndTime;
+			obj.EffectiveStartDate = oStartTime;
+			obj.EffectiveEndDate = oEndTime;
+			obj.NODE_TYPE = nodeType;
+			obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
+			obj.ResourceGuid = oRowData.ResourceGuid;
+			obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
+			obj.PARENT_NODE_ID = oRowData.NodeId;
+
+			obj.ParentNodeId = oRowData.ResourceGuid;
+			obj.IsSeries = false;
+
+			if (nodeType === "RESOURCE") {
+				obj.Guid = obj.Guid.toString();
+				obj.NodeId = oRowData.NodeId;
+				obj.TIME_ZONE = oRowData.TIME_ZONE;
+				obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
+				obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
+			}
+			if (nodeType === "RES_GROUP") {
+				obj.NodeId = oRowData.ParentNodeId;
+				obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
+				obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
+			} else if (nodeType === "SHIFT") {
+				obj.NodeId = oRowData.ParentNodeId;
+				obj.DESCRIPTION = oRowData.ScheduleIdDesc || oRowData.Description;
+				obj.RESOURCE_GROUP_COLOR = oRowData.SHIFT_COLOR;
+			}
+		},
+
 		/**
 		 * when start and end date is given then this values will be set as new default dates
 		 * inside viewModel and a new total horizon is rendered for Gantt
@@ -241,6 +236,5 @@ sap.ui.define([
 			return bValidate;
 		},
 
-		
 	});
 });
