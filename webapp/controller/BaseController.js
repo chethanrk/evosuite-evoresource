@@ -229,7 +229,7 @@ sap.ui.define([
 		showMessageToast: function (sMsg) {
 			sap.m.MessageToast.show(sMsg, {
 				duration: 3000, // default
-				width: "15em", // default
+				width: "20em", // default
 				my: "center bottom", // default
 				at: "center bottom", // default
 				of: window, // default

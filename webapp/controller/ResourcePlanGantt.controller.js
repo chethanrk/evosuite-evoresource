@@ -12,7 +12,8 @@ sap.ui.define([
 	"sap/gantt/misc/Utility",
 	"sap/base/util/merge",
 	"sap/ui/core/Popup"
-], function (BaseResourcePlanGanttController, OverrideExecution, formatter, deepClone, deepEqual, models, Fragment, Filter, FilterOperator,
+], function (BaseResourcePlanGanttController, OverrideExecution, formatter, deepClone, deepEqual, models, Fragment, Filter,
+	FilterOperator,
 	Utility, merge, Popup) {
 	"use strict";
 
@@ -362,6 +363,7 @@ sap.ui.define([
 		_previousView: "DAY",
 		groupShiftContext: null,
 		groupShiftContextForRepeat: null,
+		groupShiftSeriesDuplicate: false,
 		editSeriesDate: false,
 		_ganttChart: null,
 		_smartFilterBar: null,
@@ -1077,9 +1079,8 @@ sap.ui.define([
 				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
 				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
-				dStartDateDiff, oSeriesStartDate,oSeriesEndDate, sStartDateProp,oOldPopverStartDate;
-			
-			
+				dStartDateDiff, oSeriesStartDate, oSeriesEndDate, sStartDateProp, oOldPopverStartDate;
+
 			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
@@ -1091,15 +1092,16 @@ sap.ui.define([
 			} else if (oPopoverData.NODE_TYPE === "SHIFT") {
 				sStartDateProp = "EffectiveStartDate";
 			}
-			oOldPopverStartDate = formatter.convertFromUTCDate(oOldPopoverData[sStartDateProp],oOldPopoverData["isNew"],oOldPopoverData["isChanging"]);
+			oOldPopverStartDate = formatter.convertFromUTCDate(oOldPopoverData[sStartDateProp], oOldPopoverData["isNew"], oOldPopoverData[
+				"isChanging"]);
 			dStartDateDiff = moment(oPopoverData[sStartDateProp]).diff(oOldPopverStartDate, "d");
-			oSeriesStartDate = moment(formatter.convertFromUTCDate(oPopoverData["SERIES_START_DATE"], oPopoverData.isNew, oPopoverData.isChanging))
-				.add(dStartDateDiff, "d").toDate();
+			oSeriesStartDate = oPopoverData["SERIES_START_DATE"] ? moment(formatter.convertFromUTCDate(oPopoverData["SERIES_START_DATE"], oPopoverData.isNew, oPopoverData.isChanging))
+				.add(dStartDateDiff, "d").toDate() : null;
 			this.oPlanningModel.setProperty("/tempData/popover/SERIES_START_DATE", oSeriesStartDate);
-			
+
 			oSeriesEndDate = formatter.convertFromUTCDate(oPopoverData["SERIES_END_DATE"], oPopoverData.isNew, oPopoverData.isChanging);
 			this.oPlanningModel.setProperty("/tempData/popover/SERIES_END_DATE", oSeriesEndDate);
-			
+
 			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
 
 			//validate for the overlapping
@@ -1839,11 +1841,11 @@ sap.ui.define([
 				//removing the path from "aSelectedResource" when user unselect the checkbox
 				aSelectedResource.splice(aSelectedResource.indexOf(sPath), 1);
 			}
-			
+
 			if (aSelectedResource.length > 0) {
-				this.getModel("ganttPlanningModel").setProperty("/isResourceSelected",true);
-			}else{
-				this.getModel("ganttPlanningModel").setProperty("/isResourceSelected",false);
+				this.getModel("ganttPlanningModel").setProperty("/isResourceSelected", true);
+			} else {
+				this.getModel("ganttPlanningModel").setProperty("/isResourceSelected", false);
 			}
 		},
 		/*
@@ -1852,20 +1854,20 @@ sap.ui.define([
 		 */
 		onPressCreateMultiAssignment: function (oEvent) {
 			var oMultiCreateData = {
-				StartDate: moment().startOf("day").toDate(),
-				EndDate: moment().endOf("day").subtract(999, "milliseconds").toDate(),
-				NODE_TYPE: "RES_GROUP",
-				ResourceGroupGuid: "",
-				TemplateId: "",
-				isNew: true,
-				IsSeries: false,
-				SeriesRepeat: "",
-				RESOURCE_GROUP_COLOR: "",
-				DESCRIPTION: "",
-				ResourceGroupDesc: "",
-				SERIES_END_DATE: moment().endOf("day").toDate()
-			},
-			aSelectedResource = this.getModel("ganttPlanningModel").getProperty("/selectedResources");
+					StartDate: moment().startOf("day").toDate(),
+					EndDate: moment().endOf("day").subtract(999, "milliseconds").toDate(),
+					NODE_TYPE: "RES_GROUP",
+					ResourceGroupGuid: "",
+					TemplateId: "",
+					isNew: true,
+					IsSeries: false,
+					SeriesRepeat: "",
+					RESOURCE_GROUP_COLOR: "",
+					DESCRIPTION: "",
+					ResourceGroupDesc: "",
+					SERIES_END_DATE: moment().endOf("day").toDate()
+				},
+				aSelectedResource = this.getModel("ganttPlanningModel").getProperty("/selectedResources");
 			this.createNewTempAssignment(oMultiCreateData.StartDate, oMultiCreateData.EndDate, oMultiCreateData).then(function (oData) {
 				var oResource = {},
 					oGanttObject = {};
@@ -1873,10 +1875,10 @@ sap.ui.define([
 				aSelectedResource.forEach(function (sPath) {
 					oGanttObject = deepClone(this.getModel("ganttPlanningModel").getProperty(sPath));
 					oResource = {
-						NodeId:oGanttObject.NodeId,
-						Description:oGanttObject.Description,
-						ResourceGuid:oGanttObject.ResourceGuid,
-						PERNR:oGanttObject.PERNR
+						NodeId: oGanttObject.NodeId,
+						Description: oGanttObject.Description,
+						ResourceGuid: oGanttObject.ResourceGuid,
+						PERNR: oGanttObject.PERNR
 					};
 					oData.ResourceList.push(oResource);
 				}.bind(this));
@@ -1927,7 +1929,13 @@ sap.ui.define([
 				oResourceControl = sap.ui.getCore().byId("idResourceList"),
 				oAssignmentData, oCloneAssignmentData, aResourceList, aAssigments, isResourceExist,
 				aChildren = this.getModel("ganttPlanningModel").getProperty("/data/children"),
-				oResourceData;
+				oResourceData,
+				aNoShiftResource = [],
+				aDuplicateAssignment = [],
+				sNoShiftMsg = "",
+				sValidationMsg = "",
+				sNodeType = "",
+				isValidationFailed = false;
 
 			if (oValidation && oValidation.state === "success") {
 				aResourceList = oResourceControl.getTokens();
@@ -1950,27 +1958,52 @@ sap.ui.define([
 						aAssigments = this._getResourceShiftByKey(oCloneAssignmentData.ParentNodeId, oCloneAssignmentData);
 					}
 					//validation for the existing assigments
-					if (this._checkDuplicateAsigment(oCloneAssignmentData, aAssigments)) {
-						if (oCloneAssignmentData.NODE_TYPE === "SHIFT" && !this._shiftValidation(oCloneAssignmentData)) {
-							//checking if group is exist for the selected date
-							return;
-						}
-						isResourceExist = aChildren.some(function (item) {
-							return item.ResourceGuid === oCloneAssignmentData.ResourceGuid;
-						}.bind(this));
-						if (!isResourceExist) {
-							oCloneAssignmentData.ChildCount = 0;
-							oCloneAssignmentData.Description = oResource.getProperty("text");
-							oCloneAssignmentData.PERNR = oResource.data('PERNR');
-							oCloneAssignmentData.NodeType = "RESOURCE";
-							oCloneAssignmentData.children = [];
-							oResourceData = deepClone(oCloneAssignmentData);
-							aChildren.push(oResourceData);
-						}
-						this._addSingleChildToParent(oCloneAssignmentData, false, false);
+					if (!this._checkDuplicateAsigment(oCloneAssignmentData, aAssigments)) {
+						aDuplicateAssignment.push(oResource.getText());
+						return;
 					}
+					if (oCloneAssignmentData.NODE_TYPE === "SHIFT" && !this._shiftValidation(oCloneAssignmentData)) {
+						//checking if group is exist for the selected date
+						aNoShiftResource.push(oResource.getText());
+						return;
+					}
+					isResourceExist = aChildren.some(function (item) {
+						return item.ResourceGuid === oCloneAssignmentData.ResourceGuid;
+					}.bind(this));
+					if (!isResourceExist) {
+						oCloneAssignmentData.ChildCount = 0;
+						oCloneAssignmentData.Description = oResource.getProperty("text");
+						oCloneAssignmentData.PERNR = oResource.data('PERNR');
+						oCloneAssignmentData.NodeType = "RESOURCE";
+						oCloneAssignmentData.children = [];
+						oResourceData = deepClone(oCloneAssignmentData);
+						aChildren.push(oResourceData);
+					}
+					this._addSingleChildToParent(oCloneAssignmentData, false, false);
 
 				}.bind(this));
+				if (aDuplicateAssignment.length) {
+					isValidationFailed = true;
+					if (oAssignmentData.NODE_TYPE === "RES_GROUP") {
+						sNodeType = this.getResourceBundle().getText("xtxt.group");
+
+					} else if (oAssignmentData.NODE_TYPE === "SHIFT") {
+						sNodeType = this.getResourceBundle().getText("xtxt.shift");
+					}
+					sValidationMsg = this.getResourceBundle().getText("msg.errorduplicateresources", [sNodeType, aDuplicateAssignment.join(",")]);
+				}
+				if (aNoShiftResource.length) {
+					isValidationFailed = true;
+					sNoShiftMsg = this.getResourceBundle().getText("yMsg.shiftvalidations", aNoShiftResource.join(","));
+					if(sValidationMsg){
+						sValidationMsg = sValidationMsg + "\n\n" + sNoShiftMsg;
+					}else{
+						sValidationMsg = sNoShiftMsg;
+					}
+				}
+				if (isValidationFailed) {
+					this.showMessageToast(sValidationMsg);
+				}
 				this.onCloseMultiCreate();
 			}
 		},
@@ -2725,10 +2758,14 @@ sap.ui.define([
 					oNewAssignmentData = this.mergeObject(oNewAssignmentData, shiftData);
 				}
 				oNewAssignmentData.Guid = new Date().getTime().toString();
-				oNewAssignmentData[sStartDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sStartDateProp], oNewAssignmentData.isNew,oNewAssignmentData.isChanging);
-				oNewAssignmentData[sEndDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sEndDateProp], oNewAssignmentData.isNew,	oNewAssignmentData.isChanging);
-				oNewAssignmentData["SERIES_START_DATE"] = formatter.convertFromUTCDate(oNewAssignmentData["SERIES_START_DATE"], oNewAssignmentData.isNew,oNewAssignmentData.isChanging);
-				oNewAssignmentData["SERIES_END_DATE"] = formatter.convertFromUTCDate(oNewAssignmentData["SERIES_END_DATE"], oNewAssignmentData.isNew,oNewAssignmentData.isChanging);
+				oNewAssignmentData[sStartDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sStartDateProp], oNewAssignmentData.isNew,
+					oNewAssignmentData.isChanging);
+				oNewAssignmentData[sEndDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sEndDateProp], oNewAssignmentData.isNew,
+					oNewAssignmentData.isChanging);
+				oNewAssignmentData["SERIES_START_DATE"] = formatter.convertFromUTCDate(oNewAssignmentData["SERIES_START_DATE"], oNewAssignmentData
+					.isNew, oNewAssignmentData.isChanging);
+				oNewAssignmentData["SERIES_END_DATE"] = formatter.convertFromUTCDate(oNewAssignmentData["SERIES_END_DATE"], oNewAssignmentData.isNew,
+					oNewAssignmentData.isChanging);
 				oNewAssignmentData.isNew = true;
 				this._addSingleChildToParent(oNewAssignmentData, false, true, true);
 				this.groupShiftContextForRepeat = null;
@@ -2937,7 +2974,7 @@ sap.ui.define([
 				multiSelectedDataForDelete: [],
 				isRepeatAssignmentAdded: false,
 				multiCreateData: {},
-				selectedResources:[]
+				selectedResources: []
 			};
 			this.oPlanningModel = this.getOwnerComponent().getModel("ganttPlanningModel");
 			this.oPlanningModel.setData(deepClone(this.oOriginData));
@@ -3036,7 +3073,6 @@ sap.ui.define([
 			oStartDate = moment(oData[oDateProp.startDateProp]);
 			oEndDate = moment(oData[oDateProp.endDateProp]);
 			iDateDiff = moment(oEndDate).diff(oStartDate, 'd');
-			oData.isTemporary = false;
 			oData.IsSeries = true;
 			if (oData.SeriesRepeat === "D") {
 				oData.SeriesEvery = parseInt(oData.SeriesEvery, 10) < (iDateDiff + 1) ? (iDateDiff + 1).toString() : oData.SeriesEvery;
@@ -3051,6 +3087,7 @@ sap.ui.define([
 					oData.SeriesMonthlyOn = oData.SeriesOn === "1" ? 0 : 1;
 				}
 			}
+			this._removeAssignmentShape(oData);
 			do {
 				if (oData.SeriesRepeat === "D") {
 					newData = deepClone(oData);
@@ -3089,6 +3126,10 @@ sap.ui.define([
 			while (oStartDate.isBefore(moment(oData.SERIES_END_DATE)));
 
 			this.getModel("ganttPlanningModel").setProperty("/isRepeatAssignmentAdded", false);
+			if(this.groupShiftSeriesDuplicate){
+				this.showMessageToast(this.getResourceBundle().getText("yMsg.seriesDuplicate"));
+				this.groupShiftSeriesDuplicate = false;
+			}
 		},
 
 		/**
@@ -3125,7 +3166,7 @@ sap.ui.define([
 				}
 
 			} else {
-				//TODO message for the overlapping
+				this.groupShiftSeriesDuplicate = true;
 			}
 		},
 

@@ -145,8 +145,8 @@ sap.ui.define([
 	 * get current day string and occurence of the day in the month
 	 * oData popover data
 	 */
-	var getCurrentDayString = function (oData, oResourceBundle) {
-		var oDate = moment(new Date(oData.StartDate)),
+	var getCurrentDayString = function (sStartDate, oResourceBundle) {
+		var oDate = moment(new Date(sStartDate)),
 			nthOfMoth = Math.ceil(oDate.date() / 7);
 		var sDay, snthMonth;
 
@@ -331,12 +331,12 @@ sap.ui.define([
 		 * Day XX
 		 * oData popovr data
 		 */
-		getDay: function (oData) {
+		getDay: function (sStartDate) {
 			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
-			if (!oData) {
+			if (!sStartDate) {
 				return "";
 			}
-			var sDay = new Date(oData.StartDate).getDate().toString();
+			var sDay = new Date(sStartDate).getDate().toString();
 			var iDay = sDay.length < 2 ? "0" + sDay : sDay;
 			return oResourceBundle.getText("xdsr.Day", iDay);
 		},
@@ -346,23 +346,14 @@ sap.ui.define([
 		 * The XX th weekday 
 		 * oData popover data
 		 */
-		getDays: function (oData) {
+		getDays: function (sStartDate) {
 			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
-			if (!oData) {
+			if (!sStartDate) {
 				return "";
 			}
 
-			var oDaysCalculated = getCurrentDayString(oData, oResourceBundle);
+			var oDaysCalculated = getCurrentDayString(sStartDate, oResourceBundle);
 			return oResourceBundle.getText("xdsr.occurence", [oDaysCalculated.snthMonth, oDaysCalculated.sDay]);
-		},
-
-		/**
-		 * return string value of selected date
-		 * oData popover data
-		 */
-		getDayString: function (oData) {
-			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
-			return getCurrentDayString(oData, oResourceBundle);
 		},
 
 		/**
