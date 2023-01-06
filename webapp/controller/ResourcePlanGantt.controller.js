@@ -2440,8 +2440,8 @@ sap.ui.define([
 		 * @param {object} oAssignData - object of assignment based on entityType of assignment 
 		 */
 		_addNewAssignmentShape: function (oAssignData) {
-			var aChildren = this.oPlanningModel.getProperty("/data/children");
-			var callbackFn = function (oItem, oData, idx) {
+			var aChildren = this.oPlanningModel.getProperty("/data/children"),
+			callbackFn = function (oItem, oData, idx) {
 				if (oItem.NodeType === "RESOURCE") {
 					if (oData.NODE_TYPE === "RESOURCE" || oData.NODE_TYPE === "RES_GROUP") {
 						this._pushGroupAssignment(oItem, oData);
@@ -2458,6 +2458,11 @@ sap.ui.define([
 			aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
 			this.oPlanningModel.setProperty("/data/children", aChildren);
 		},
+		/*
+		* Push group assignment to resource
+		* @param {oItem}
+		* @param {oData}
+		*/
 		_pushGroupAssignment: function (oItem, oData) {
 			if (!oItem.GanttHierarchyToResourceAssign) {
 				oItem.GanttHierarchyToResourceAssign = {
@@ -2474,6 +2479,11 @@ sap.ui.define([
 				}
 			}
 		},
+		/*
+		* Push Shift assignment to resource
+		* @param {oItem}
+		* @param {oData}
+		*/
 		_pushShiftAssignment: function (oItem, oData) {
 			if (!oItem.GanttHierarchyToShift) {
 				oItem.GanttHierarchyToShift = {
