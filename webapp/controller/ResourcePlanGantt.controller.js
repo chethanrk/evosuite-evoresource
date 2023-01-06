@@ -1095,7 +1095,8 @@ sap.ui.define([
 			oOldPopverStartDate = formatter.convertFromUTCDate(oOldPopoverData[sStartDateProp], oOldPopoverData["isNew"], oOldPopoverData[
 				"isChanging"]);
 			dStartDateDiff = moment(oPopoverData[sStartDateProp]).diff(oOldPopverStartDate, "d");
-			oSeriesStartDate = oPopoverData["SERIES_START_DATE"] ? moment(formatter.convertFromUTCDate(oPopoverData["SERIES_START_DATE"], oPopoverData.isNew, oPopoverData.isChanging))
+			oSeriesStartDate = oPopoverData["SERIES_START_DATE"] ? moment(formatter.convertFromUTCDate(oPopoverData["SERIES_START_DATE"],
+					oPopoverData.isNew, oPopoverData.isChanging))
 				.add(dStartDateDiff, "d").toDate() : null;
 			this.oPlanningModel.setProperty("/tempData/popover/SERIES_START_DATE", oSeriesStartDate);
 
@@ -1210,7 +1211,7 @@ sap.ui.define([
 		onChangeAssignmentType: function (oEvent) {
 			var newData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oldData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
-				shapeDescription,oCloneData;
+				shapeDescription, oCloneData;
 			if (newData.NODE_TYPE === "RES_GROUP") {
 				shapeDescription = this.getResourceBundle().getText("xtit.group");
 				newData["ResourceGroupGuid"] = null;
@@ -1709,13 +1710,8 @@ sap.ui.define([
 					aFinalDeleteList.forEach(function (oAssignmentData, idx) {
 						if (oAssignmentData.isNew) { // local assignment not yet saved in database
 							var callbackFn = function (oItem, oData, idx) {
-								var aAssignments = [];
-								if (oData.NODE_TYPE === "RES_GROUP" || oData.NODE_TYPE === "RESOURCE") {
-									aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
-										.results : []) : [];
-								} else if (oData.NODE_TYPE === "SHIFT") {
-									aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
-								}
+								var aAssignments = this._getNodeTypeAssignment(oData, oItem);
+
 								aAssignments.forEach(function (oAssignItem, index) {
 									if (oAssignItem.Guid === oData.Guid || oAssignItem.isTemporary === true) {
 										this._markAsPlanningChange(oAssignItem, false);
@@ -2005,9 +2001,9 @@ sap.ui.define([
 				if (aNoShiftResource.length) {
 					isValidationFailed = true;
 					sNoShiftMsg = this.getResourceBundle().getText("yMsg.shiftvalidations", aNoShiftResource.join(","));
-					if(sValidationMsg){
+					if (sValidationMsg) {
 						sValidationMsg = sValidationMsg + "\n\n" + sNoShiftMsg;
-					}else{
+					} else {
 						sValidationMsg = sNoShiftMsg;
 					}
 				}
@@ -2529,13 +2525,8 @@ sap.ui.define([
 					this.deleteRepeatingAssignment(oAssignData);
 				} else {
 					var callbackFn = function (oItem, oData, idx) {
-						var aAssignments = [];
-						if (oData.NODE_TYPE === "RES_GROUP" || oData.NODE_TYPE === "RESOURCE") {
-							aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
-								.results : []) : [];
-						} else if (oData.NODE_TYPE === "SHIFT") {
-							aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
-						}
+						var aAssignments = this._getNodeTypeAssignment(oData, oItem);
+
 						aAssignments.forEach(function (oAssignItem, index) {
 							if (oAssignItem.Guid === oData.Guid || oAssignItem.isTemporary === true) {
 								this._markAsPlanningChange(oAssignItem, false);
@@ -2705,13 +2696,8 @@ sap.ui.define([
 				if (oAssignmentData.isNew) {
 					aAssignment.forEach(function (oAssignData, idx) {
 						var callbackFn = function (oItem, oData, idx) {
-							var aAssignments = [];
-							if (oData.NODE_TYPE === "RES_GROUP" || oData.NODE_TYPE === "RESOURCE") {
-								aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
-									.results : []) : [];
-							} else if (oData.NODE_TYPE === "SHIFT") {
-								aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
-							}
+							var aAssignments = this._getNodeTypeAssignment(oData, oItem);
+
 							aAssignments.forEach(function (oAssignment, index) {
 								if (oAssignment.Guid === oData.Guid || oAssignment.isTemporary === true) {
 									this._markAsPlanningChange(oAssignment, false);
@@ -2816,14 +2802,8 @@ sap.ui.define([
 		_deleteAssignment: function (oAssignmentData, isPlanningRequired) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			var callbackFn = function (oItem, oData, idx) {
-				var aAssignments, shiftData;
-				if (oData.NODE_TYPE === "RES_GROUP") {
-					aAssignments = oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
-						.results : []) : [];
-				} else
-				if (oData.NODE_TYPE === "SHIFT") {
-					aAssignments = oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : [];
-				}
+				var aAssignments = this._getNodeTypeAssignment(oData, oItem),
+					shiftData;
 
 				aAssignments.forEach(function (oAssignItemData, index) {
 					if (oAssignItemData.Guid === oData.Guid) {
@@ -3136,7 +3116,7 @@ sap.ui.define([
 			while (oStartDate.isBefore(moment(oData.SERIES_END_DATE)));
 
 			this.getModel("ganttPlanningModel").setProperty("/isRepeatAssignmentAdded", false);
-			if(this.groupShiftSeriesDuplicate){
+			if (this.groupShiftSeriesDuplicate) {
 				this.showMessageToast(this.getResourceBundle().getText("yMsg.seriesDuplicate"));
 				this.groupShiftSeriesDuplicate = false;
 			}
@@ -3347,6 +3327,21 @@ sap.ui.define([
 				}
 			}
 			return (bValidStart && bValidEnd);
+		},
+
+		/**
+		 * Method to get node specific assignmnts
+		 * @param{oData} - selected data
+		 * @param{oItem} - individual data
+		 */
+		_getNodeTypeAssignment: function (oData, oItem) {
+			if (oData.NODE_TYPE === "RES_GROUP" || oData.NODE_TYPE === "RESOURCE") {
+				return (oItem.GanttHierarchyToResourceAssign ? (oItem.GanttHierarchyToResourceAssign.results ? oItem.GanttHierarchyToResourceAssign
+					.results : []) : []);
+			} else if (oData.NODE_TYPE === "SHIFT") {
+				return (oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : []);
+			}
+			return [];
 		}
 	});
 });
