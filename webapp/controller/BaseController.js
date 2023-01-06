@@ -710,23 +710,14 @@ sap.ui.define([
 		_checkDuplicateAsigment: function (oData, aResourceChild) {
 			var sStartTime, sEndTime,
 				bValidate = true,
-				sAssignmentStartDate, sAssignmentEndDate;
-			if (oData.NODE_TYPE === "RES_GROUP") {
-				if (oData.isNew || oData.isChanging) {
-					sStartTime = oData.StartDate;
-					sEndTime = oData.EndDate;
-				} else {
-					sStartTime = Formatter.convertFromUTCDate(oData.StartDate, false);
-					sEndTime = Formatter.convertFromUTCDate(oData.EndDate, false);
-				}
-			} else if (oData.NODE_TYPE === "SHIFT") {
-				if (oData.isNew || oData.isChanging) {
-					sStartTime = oData.EffectiveStartDate;
-					sEndTime = oData.EffectiveEndDate;
-				} else {
-					sStartTime = Formatter.convertFromUTCDate(oData.EffectiveStartDate, false);
-					sEndTime = Formatter.convertFromUTCDate(oData.EffectiveEndDate, false);
-				}
+				sAssignmentStartDate, sAssignmentEndDate,
+				oDateProp = this._getStartEndDateProperty(oData.NODE_TYPE);
+			if (oData.isNew || oData.isChanging) {
+				sStartTime = oData[oDateProp.startDate];
+				sEndTime = oData[oDateProp.endDate];
+			} else {
+				sStartTime = Formatter.convertFromUTCDate(oData[oDateProp.startDate], false);
+				sEndTime = Formatter.convertFromUTCDate(oData[oDateProp.endDate], false);
 			}
 
 			aResourceChild.forEach(function (oAssignment) {
@@ -1011,6 +1002,27 @@ sap.ui.define([
 		 */
 		_isDateSame: function (oDate, oSecondDate) {
 			return moment(oDate).isSame(oSecondDate);
+		},
+		/**
+		 * Method to get node specific Start/End date property
+		 * @param {sNodeType} - Assignment type
+		 */
+		_getStartEndDateProperty: function (sNodeType) {
+			if (sNodeType === "RES_GROUP") {
+				return {
+					startDate: "StartDate",
+					endDate: "EndDate"
+				};
+			} else if (sNodeType === "SHIFT") {
+				return {
+					startDate: "EffectiveStartDate",
+					endDate: "EffectiveEndDate"
+				};
+			}
+			return {
+				startDate: null,
+				endDate: "null"
+			};
 		}
 
 	});
