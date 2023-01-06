@@ -3342,6 +3342,24 @@ sap.ui.define([
 				return (oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : []);
 			}
 			return [];
+		},
+
+		/**
+		 * Method to get node specific Start/End date property
+		 * 
+		 */
+		_getStartEndDateProperty: function (sNodeType) {
+			if (sNodeType === "RES_GROUP") {
+				return {
+					startDate: "StartDate",
+					endDate: "EndDate"
+				};
+			} else if (sNodeType === "SHIFT") {
+				return {
+					startDate: "EffectiveStartDate",
+					endDate: "EffectiveEndDate"
+				}
+			}
 		}
 	});
 });
