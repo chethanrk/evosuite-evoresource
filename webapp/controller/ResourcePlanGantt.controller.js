@@ -2440,74 +2440,62 @@ sap.ui.define([
 		 * @param {object} oAssignData - object of assignment based on entityType of assignment 
 		 */
 		_addNewAssignmentShape: function (oAssignData) {
-			var aChildren = this.oPlanningModel.getProperty("/data/children");
-			var callbackFn = function (oItem, oData, idx) {
+			var aChildren = this.oPlanningModel.getProperty("/data/children"),
+			callbackFn = function (oItem, oData, idx) {
 				if (oItem.NodeType === "RESOURCE") {
 					if (oData.NODE_TYPE === "RESOURCE" || oData.NODE_TYPE === "RES_GROUP") {
-						if (!oItem.GanttHierarchyToResourceAssign) {
-							oItem.GanttHierarchyToResourceAssign = {
-								results: []
-							};
-						}
-						if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid && !oItem.ResourceGroupGuid) {
-							//add to resource itself
-							if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-								oItem.GanttHierarchyToResourceAssign.results.push(oData);
-							}
-						} else if (oItem.ResourceGroupGuid && oItem.ResourceGroupGuid === oData.ResourceGroupGuid && oItem.ResourceGuid === oData.ResourceGuid) {
-							//add to resource group
-							if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-								oItem.GanttHierarchyToResourceAssign.results.push(oData);
-							}
-						}
+						this._pushGroupAssignment(oItem, oData);
 					} else if (oData.NODE_TYPE === "SHIFT") {
-						if (!oItem.GanttHierarchyToShift) {
-							oItem.GanttHierarchyToShift = {
-								results: []
-							};
-						}
-						if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid) {
-							//add to resource itself
-							if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-								oItem.GanttHierarchyToShift.results.push(oData);
-							}
-						}
+						this._pushShiftAssignment(oItem, oData);
 					}
 
 				} else if (oItem.NodeType === "RES_GROUP" && oData.NODE_TYPE === "RES_GROUP") {
-					if (!oItem.GanttHierarchyToResourceAssign) {
-						oItem.GanttHierarchyToResourceAssign = {
-							results: []
-						};
-					}
-					if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid && !oItem.ResourceGroupGuid) {
-						//add to resource itself
-						if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-							oItem.GanttHierarchyToResourceAssign.results.push(oData);
-						}
-					} else if (oItem.ResourceGroupGuid && oItem.ResourceGroupGuid === oData.ResourceGroupGuid && oItem.ResourceGuid === oData.ResourceGuid) {
-						//add to resource group
-						if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-							oItem.GanttHierarchyToResourceAssign.results.push(oData);
-						}
-					}
+					this._pushGroupAssignment(oItem, oData);
 				} else if (oItem.NodeType === "SHIFT" && oData.NODE_TYPE === "SHIFT") {
-					// adding only if NodeType is Shift"
-					if (!oItem.GanttHierarchyToShift) {
-						oItem.GanttHierarchyToShift = {
-							results: []
-						};
-					}
-					if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid) {
-						//add to resource itself
-						if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-							oItem.GanttHierarchyToShift.results.push(oData);
-						}
-					}
+					this._pushShiftAssignment(oItem, oData);
 				}
 			};
 			aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
 			this.oPlanningModel.setProperty("/data/children", aChildren);
+		},
+		/*
+		* Push group assignment to resource
+		* @param {oGanttRow} - Gantt row object where assignment is pushed
+		* @param {oData} - Assignment data
+		*/
+		_pushGroupAssignment: function (oGanttRow, oData) {
+			if (!oGanttRow.GanttHierarchyToResourceAssign) {
+				oGanttRow.GanttHierarchyToResourceAssign = {
+					results: []
+				};
+			}
+			if ( //add to resource itself
+				(oGanttRow.ResourceGuid && oGanttRow.ResourceGuid === oData.ResourceGuid && !oGanttRow.ResourceGroupGuid) ||
+				//add to resource group
+				(oGanttRow.ResourceGroupGuid && oGanttRow.ResourceGroupGuid === oData.ResourceGroupGuid && oGanttRow.ResourceGuid === oData.ResourceGuid)
+			) {
+				if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
+					oGanttRow.GanttHierarchyToResourceAssign.results.push(oData);
+				}
+			}
+		},
+		/*
+		* Push Shift assignment to resource
+		* @param {oGanttRow} - Gantt row object where assignment is pushed
+		* @param {oData} - Assignment data
+		*/
+		_pushShiftAssignment: function (oGanttRow, oData) {
+			if (!oGanttRow.GanttHierarchyToShift) {
+				oGanttRow.GanttHierarchyToShift = {
+					results: []
+				};
+			}
+			if (oGanttRow.ResourceGuid && oGanttRow.ResourceGuid === oData.ResourceGuid) {
+				//add to resource itself
+				if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
+					oGanttRow.GanttHierarchyToShift.results.push(oData);
+				}
+			}
 		},
 
 		/**
