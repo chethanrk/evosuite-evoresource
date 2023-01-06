@@ -2460,40 +2460,40 @@ sap.ui.define([
 		},
 		/*
 		* Push group assignment to resource
-		* @param {oItem}
-		* @param {oData}
+		* @param {oGanttRow} - Gantt row object where assignment is pushed
+		* @param {oData} - Assignment data
 		*/
-		_pushGroupAssignment: function (oItem, oData) {
-			if (!oItem.GanttHierarchyToResourceAssign) {
-				oItem.GanttHierarchyToResourceAssign = {
+		_pushGroupAssignment: function (oGanttRow, oData) {
+			if (!oGanttRow.GanttHierarchyToResourceAssign) {
+				oGanttRow.GanttHierarchyToResourceAssign = {
 					results: []
 				};
 			}
 			if ( //add to resource itself
-				(oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid && !oItem.ResourceGroupGuid) ||
+				(oGanttRow.ResourceGuid && oGanttRow.ResourceGuid === oData.ResourceGuid && !oGanttRow.ResourceGroupGuid) ||
 				//add to resource group
-				(oItem.ResourceGroupGuid && oItem.ResourceGroupGuid === oData.ResourceGroupGuid && oItem.ResourceGuid === oData.ResourceGuid)
+				(oGanttRow.ResourceGroupGuid && oGanttRow.ResourceGroupGuid === oData.ResourceGroupGuid && oGanttRow.ResourceGuid === oData.ResourceGuid)
 			) {
 				if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-					oItem.GanttHierarchyToResourceAssign.results.push(oData);
+					oGanttRow.GanttHierarchyToResourceAssign.results.push(oData);
 				}
 			}
 		},
 		/*
 		* Push Shift assignment to resource
-		* @param {oItem}
-		* @param {oData}
+		* @param {oGanttRow} - Gantt row object where assignment is pushed
+		* @param {oData} - Assignment data
 		*/
-		_pushShiftAssignment: function (oItem, oData) {
-			if (!oItem.GanttHierarchyToShift) {
-				oItem.GanttHierarchyToShift = {
+		_pushShiftAssignment: function (oGanttRow, oData) {
+			if (!oGanttRow.GanttHierarchyToShift) {
+				oGanttRow.GanttHierarchyToShift = {
 					results: []
 				};
 			}
-			if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid) {
+			if (oGanttRow.ResourceGuid && oGanttRow.ResourceGuid === oData.ResourceGuid) {
 				//add to resource itself
 				if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-					oItem.GanttHierarchyToShift.results.push(oData);
+					oGanttRow.GanttHierarchyToShift.results.push(oData);
 				}
 			}
 		},
