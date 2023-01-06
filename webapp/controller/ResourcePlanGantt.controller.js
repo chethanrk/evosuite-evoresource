@@ -2444,70 +2444,48 @@ sap.ui.define([
 			var callbackFn = function (oItem, oData, idx) {
 				if (oItem.NodeType === "RESOURCE") {
 					if (oData.NODE_TYPE === "RESOURCE" || oData.NODE_TYPE === "RES_GROUP") {
-						if (!oItem.GanttHierarchyToResourceAssign) {
-							oItem.GanttHierarchyToResourceAssign = {
-								results: []
-							};
-						}
-						if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid && !oItem.ResourceGroupGuid) {
-							//add to resource itself
-							if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-								oItem.GanttHierarchyToResourceAssign.results.push(oData);
-							}
-						} else if (oItem.ResourceGroupGuid && oItem.ResourceGroupGuid === oData.ResourceGroupGuid && oItem.ResourceGuid === oData.ResourceGuid) {
-							//add to resource group
-							if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-								oItem.GanttHierarchyToResourceAssign.results.push(oData);
-							}
-						}
+						this._pushGroupAssignment(oItem, oData);
 					} else if (oData.NODE_TYPE === "SHIFT") {
-						if (!oItem.GanttHierarchyToShift) {
-							oItem.GanttHierarchyToShift = {
-								results: []
-							};
-						}
-						if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid) {
-							//add to resource itself
-							if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-								oItem.GanttHierarchyToShift.results.push(oData);
-							}
-						}
+						this._pushShiftAssignment(oItem, oData);
 					}
 
 				} else if (oItem.NodeType === "RES_GROUP" && oData.NODE_TYPE === "RES_GROUP") {
-					if (!oItem.GanttHierarchyToResourceAssign) {
-						oItem.GanttHierarchyToResourceAssign = {
-							results: []
-						};
-					}
-					if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid && !oItem.ResourceGroupGuid) {
-						//add to resource itself
-						if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-							oItem.GanttHierarchyToResourceAssign.results.push(oData);
-						}
-					} else if (oItem.ResourceGroupGuid && oItem.ResourceGroupGuid === oData.ResourceGroupGuid && oItem.ResourceGuid === oData.ResourceGuid) {
-						//add to resource group
-						if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-							oItem.GanttHierarchyToResourceAssign.results.push(oData);
-						}
-					}
+					this._pushGroupAssignment(oItem, oData);
 				} else if (oItem.NodeType === "SHIFT" && oData.NODE_TYPE === "SHIFT") {
-					// adding only if NodeType is Shift"
-					if (!oItem.GanttHierarchyToShift) {
-						oItem.GanttHierarchyToShift = {
-							results: []
-						};
-					}
-					if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid) {
-						//add to resource itself
-						if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-							oItem.GanttHierarchyToShift.results.push(oData);
-						}
-					}
+					this._pushShiftAssignment(oItem, oData);
 				}
 			};
 			aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
 			this.oPlanningModel.setProperty("/data/children", aChildren);
+		},
+		_pushGroupAssignment: function (oItem, oData) {
+			if (!oItem.GanttHierarchyToResourceAssign) {
+				oItem.GanttHierarchyToResourceAssign = {
+					results: []
+				};
+			}
+			if ( //add to resource itself
+				(oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid && !oItem.ResourceGroupGuid) ||
+				//add to resource group
+				(oItem.ResourceGroupGuid && oItem.ResourceGroupGuid === oData.ResourceGroupGuid && oItem.ResourceGuid === oData.ResourceGuid)
+			) {
+				if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
+					oItem.GanttHierarchyToResourceAssign.results.push(oData);
+				}
+			}
+		},
+		_pushShiftAssignment: function (oItem, oData) {
+			if (!oItem.GanttHierarchyToShift) {
+				oItem.GanttHierarchyToShift = {
+					results: []
+				};
+			}
+			if (oItem.ResourceGuid && oItem.ResourceGuid === oData.ResourceGuid) {
+				//add to resource itself
+				if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
+					oItem.GanttHierarchyToShift.results.push(oData);
+				}
+			}
 		},
 
 		/**
