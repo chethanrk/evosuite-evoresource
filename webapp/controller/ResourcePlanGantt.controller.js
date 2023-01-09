@@ -1079,7 +1079,11 @@ sap.ui.define([
 				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
 				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
-				dStartDateDiff, oSeriesStartDate, oSeriesEndDate, sStartDateProp, oOldPopverStartDate;
+				dStartDateDiff, 
+				oSeriesStartDate, 
+				oSeriesEndDate, 
+				oDateProp = {}, 
+				oOldPopverStartDate;
 
 			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
 			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
@@ -1087,14 +1091,10 @@ sap.ui.define([
 			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
 
 			//series date calculation
-			if (oPopoverData.NODE_TYPE === "RES_GROUP") {
-				sStartDateProp = "StartDate";
-			} else if (oPopoverData.NODE_TYPE === "SHIFT") {
-				sStartDateProp = "EffectiveStartDate";
-			}
-			oOldPopverStartDate = formatter.convertFromUTCDate(oOldPopoverData[sStartDateProp], oOldPopoverData["isNew"], oOldPopoverData[
+			oDateProp = this._getStartEndDateProperty(oPopoverData.NODE_TYPE);
+			oOldPopverStartDate = formatter.convertFromUTCDate(oOldPopoverData[oDateProp.startDate], oOldPopoverData["isNew"], oOldPopoverData[
 				"isChanging"]);
-			dStartDateDiff = moment(oPopoverData[sStartDateProp]).diff(oOldPopverStartDate, "d");
+			dStartDateDiff = moment(oPopoverData[oDateProp.startDate]).diff(oOldPopverStartDate, "d");
 			oSeriesStartDate = oPopoverData["SERIES_START_DATE"] ? moment(formatter.convertFromUTCDate(oPopoverData["SERIES_START_DATE"],
 					oPopoverData.isNew, oPopoverData.isChanging))
 				.add(dStartDateDiff, "d").toDate() : null;
@@ -2441,28 +2441,28 @@ sap.ui.define([
 		 */
 		_addNewAssignmentShape: function (oAssignData) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children"),
-			callbackFn = function (oItem, oData, idx) {
-				if (oItem.NodeType === "RESOURCE") {
-					if (oData.NODE_TYPE === "RESOURCE" || oData.NODE_TYPE === "RES_GROUP") {
+				callbackFn = function (oItem, oData, idx) {
+					if (oItem.NodeType === "RESOURCE") {
+						if (oData.NODE_TYPE === "RESOURCE" || oData.NODE_TYPE === "RES_GROUP") {
+							this._pushGroupAssignment(oItem, oData);
+						} else if (oData.NODE_TYPE === "SHIFT") {
+							this._pushShiftAssignment(oItem, oData);
+						}
+
+					} else if (oItem.NodeType === "RES_GROUP" && oData.NODE_TYPE === "RES_GROUP") {
 						this._pushGroupAssignment(oItem, oData);
-					} else if (oData.NODE_TYPE === "SHIFT") {
+					} else if (oItem.NodeType === "SHIFT" && oData.NODE_TYPE === "SHIFT") {
 						this._pushShiftAssignment(oItem, oData);
 					}
-
-				} else if (oItem.NodeType === "RES_GROUP" && oData.NODE_TYPE === "RES_GROUP") {
-					this._pushGroupAssignment(oItem, oData);
-				} else if (oItem.NodeType === "SHIFT" && oData.NODE_TYPE === "SHIFT") {
-					this._pushShiftAssignment(oItem, oData);
-				}
-			};
+				};
 			aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
 			this.oPlanningModel.setProperty("/data/children", aChildren);
 		},
 		/*
-		* Push group assignment to resource
-		* @param {oGanttRow} - Gantt row object where assignment is pushed
-		* @param {oData} - Assignment data
-		*/
+		 * Push group assignment to resource
+		 * @param {oGanttRow} - Gantt row object where assignment is pushed
+		 * @param {oData} - Assignment data
+		 */
 		_pushGroupAssignment: function (oGanttRow, oData) {
 			if (!oGanttRow.GanttHierarchyToResourceAssign) {
 				oGanttRow.GanttHierarchyToResourceAssign = {
@@ -2480,10 +2480,10 @@ sap.ui.define([
 			}
 		},
 		/*
-		* Push Shift assignment to resource
-		* @param {oGanttRow} - Gantt row object where assignment is pushed
-		* @param {oData} - Assignment data
-		*/
+		 * Push Shift assignment to resource
+		 * @param {oGanttRow} - Gantt row object where assignment is pushed
+		 * @param {oData} - Assignment data
+		 */
 		_pushShiftAssignment: function (oGanttRow, oData) {
 			if (!oGanttRow.GanttHierarchyToShift) {
 				oGanttRow.GanttHierarchyToShift = {
@@ -2663,21 +2663,14 @@ sap.ui.define([
 				aAssignment = [],
 				oAssignItem,
 				aChildren = this.oPlanningModel.getProperty("/data/children"),
-				sStartDateProp,
-				sEndDateProp,
+				oDateProp = {},
 				oFoundData = {};
 
 			if (aAssignmentData.length) {
 				aAssignmentData.forEach(function (sPath, idx) {
 					oAssignItem = this.oPlanningModel.getProperty(sPath);
-					if (oAssignItem.NODE_TYPE === "RES_GROUP") {
-						sStartDateProp = "StartDate";
-						sEndDateProp = "EndDate";
-					} else if (oAssignItem.NODE_TYPE === "SHIFT") {
-						sStartDateProp = "EffectiveStartDate";
-						sEndDateProp = "EffectiveEndDate";
-					}
-					if (!this._isDatePast(oAssignItem[sStartDateProp])) {
+					oDateProp = this._getStartEndDateProperty(oAssignItem.NODE_TYPE);
+					if (!this._isDatePast(oAssignItem[oDateProp.startDate])) {
 						aAssignment.push(oAssignItem);
 					}
 				}.bind(this));
@@ -2721,15 +2714,10 @@ sap.ui.define([
 		 */
 		editRepeatingAssignment: function (oAssignmentData) {
 			var oNewAssignmentData = deepClone(oAssignmentData),
-				sStartDateProp,
-				sEndDateProp;
-			if (oAssignmentData.NODE_TYPE === "RES_GROUP") {
-				sStartDateProp = "StartDate";
-				sEndDateProp = "EndDate";
-			} else if (oAssignmentData.NODE_TYPE === "SHIFT") {
-				sStartDateProp = "EffectiveStartDate";
-				sEndDateProp = "EffectiveEndDate";
-			}
+				oDateProp = {};
+				
+			oDateProp = this._getStartEndDateProperty(oAssignmentData.NODE_TYPE);
+			
 			if (this.groupShiftContextForRepeat) {
 				if (oNewAssignmentData.NODE_TYPE === "RES_GROUP") {
 					oNewAssignmentData.RESOURCE_GROUP_COLOR = this.groupShiftContextForRepeat.getProperty("ResourceGroupColor");
@@ -2742,9 +2730,9 @@ sap.ui.define([
 					oNewAssignmentData = this.mergeObject(oNewAssignmentData, shiftData);
 				}
 				oNewAssignmentData.Guid = new Date().getTime().toString();
-				oNewAssignmentData[sStartDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sStartDateProp], oNewAssignmentData.isNew,
+				oNewAssignmentData[oDateProp.startDate] = formatter.convertFromUTCDate(oNewAssignmentData[oDateProp.startDate], oNewAssignmentData.isNew,
 					oNewAssignmentData.isChanging);
-				oNewAssignmentData[sEndDateProp] = formatter.convertFromUTCDate(oNewAssignmentData[sEndDateProp], oNewAssignmentData.isNew,
+				oNewAssignmentData[oDateProp.endDate] = formatter.convertFromUTCDate(oNewAssignmentData[oDateProp.endDate], oNewAssignmentData.isNew,
 					oNewAssignmentData.isChanging);
 				oNewAssignmentData["SERIES_START_DATE"] = formatter.convertFromUTCDate(oNewAssignmentData["SERIES_START_DATE"], oNewAssignmentData
 					.isNew, oNewAssignmentData.isChanging);
@@ -2771,13 +2759,9 @@ sap.ui.define([
 		 * @{param} oAssignItem - assignment
 		 */
 		_manageDates: function (oAssignItem) {
-			if (oAssignItem.NODE_TYPE === "RES_GROUP") {
-				oAssignItem.StartDate = formatter.convertFromUTCDate(oAssignItem.StartDate);
-				oAssignItem.EndDate = formatter.convertFromUTCDate(oAssignItem.EndDate);
-			} else if (oAssignItem.NODE_TYPE === "SHIFT") {
-				oAssignItem.EffectiveStartDate = formatter.convertFromUTCDate(oAssignItem.EffectiveStartDate);
-				oAssignItem.EffectiveEndDate = formatter.convertFromUTCDate(oAssignItem.EffectiveEndDate);
-			}
+			var oDateProp = this._getStartEndDateProperty(oAssignItem.NODE_TYPE);
+			oAssignItem[oDateProp.startDate] = formatter.convertFromUTCDate(oAssignItem[oDateProp.startDate]);
+			oAssignItem[oDateProp.endDate] = formatter.convertFromUTCDate(oAssignItem[oDateProp.endDate]);
 			this._deleteAssignment(oAssignItem, true);
 		},
 
@@ -3032,24 +3016,14 @@ sap.ui.define([
 		_repeatAssignments: function (oData, isEditMode) {
 			var newData, iEvery = 0,
 				dayCounter = 0,
-				oDateProp = {
-					startDateProp: null,
-					endDateProp: null
-				},
 				oStartDate,
 				oEndDate,
-				iDateDiff = 0;
+				iDateDiff = 0,
+				oDateProp = this._getStartEndDateProperty(oData.NODE_TYPE);
 
-			if (oData.NODE_TYPE === "RES_GROUP") {
-				oDateProp.startDateProp = "StartDate";
-				oDateProp.endDateProp = "EndDate";
-			} else if (oData.NODE_TYPE === "SHIFT") {
-				oDateProp.startDateProp = "EffectiveStartDate";
-				oDateProp.endDateProp = "EffectiveEndDate";
-			}
 			oData.SeriesGuid = new Date().getTime().toString();
-			oStartDate = moment(oData[oDateProp.startDateProp]);
-			oEndDate = moment(oData[oDateProp.endDateProp]);
+			oStartDate = moment(oData[oDateProp.startDate]);
+			oEndDate = moment(oData[oDateProp.endDate]);
 			iDateDiff = moment(oEndDate).diff(oStartDate, 'd');
 			oData.IsSeries = true;
 			if (oData.SeriesRepeat === "D") {
@@ -3069,17 +3043,17 @@ sap.ui.define([
 			do {
 				if (oData.SeriesRepeat === "D") {
 					newData = deepClone(oData);
-					newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'days').toDate();
+					newData[oDateProp.startDate] = oStartDate.add(iEvery, 'days').toDate();
 
 					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, iDateDiff, null, oDateProp);
-					oStartDate = moment(newData[oDateProp.startDateProp]);
+					oStartDate = moment(newData[oDateProp.startDate]);
 
 				} else if (oData.SeriesRepeat === "W") {
 					var week = oStartDate;
 					iEvery = parseInt(oData.SeriesEvery, 10);
 					for (var d = 0; d < oData.SeriesWeeklyOn.length; d++) {
 						newData = deepClone(oData);
-						newData[oDateProp.startDateProp] = moment(week).day(oData.SeriesWeeklyOn[d]).toDate();
+						newData[oDateProp.startDate] = moment(week).day(oData.SeriesWeeklyOn[d]).toDate();
 
 						this._validateAndPrepareNewAssignment(newData, oData, dayCounter, iDateDiff, d, oDateProp);
 					}
@@ -3087,15 +3061,15 @@ sap.ui.define([
 				} else if (oData.SeriesRepeat === "M") {
 					newData = deepClone(oData);
 					if (oData.SeriesMonthlyOn === 0) {
-						newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'months').toDate();
+						newData[oDateProp.startDate] = oStartDate.add(iEvery, 'months').toDate();
 					} else if (oData.SeriesMonthlyOn === 1) {
-						var oStrDate = moment(oData[oDateProp.startDateProp]),
+						var oStrDate = moment(oData[oDateProp.startDate]),
 							iDay = oStrDate.day();
-						newData[oDateProp.startDateProp] = oStartDate.add(iEvery, 'months').day(iDay).toDate();
+						newData[oDateProp.startDate] = oStartDate.add(iEvery, 'months').day(iDay).toDate();
 					}
 
 					this._validateAndPrepareNewAssignment(newData, oData, dayCounter, iDateDiff, null, oDateProp);
-					oStartDate = moment(newData[oDateProp.startDateProp]);
+					oStartDate = moment(newData[oDateProp.startDate]);
 				}
 
 				dayCounter++;
@@ -3163,9 +3137,9 @@ sap.ui.define([
 			if (iDayIndex) {
 				newData.Guid = newData.Guid + iCounter + iDayIndex;
 			}
-			newData[oDateProp.endDateProp] = moment(newData[oDateProp.startDateProp]).add(iDateDiff, 'd').endOf('day').toDate();
+			newData[oDateProp.endDate] = moment(newData[oDateProp.startDate]).add(iDateDiff, 'd').endOf('day').toDate();
 
-			if (!this._isDatePast(newData[oDateProp.startDateProp]) && moment(newData[oDateProp.startDateProp])
+			if (!this._isDatePast(newData[oDateProp.startDate]) && moment(newData[oDateProp.startDate])
 				.isSameOrBefore(moment(oData.SERIES_END_DATE))) {
 				this._validateAndAddNewAssignment(newData, oData);
 			}
