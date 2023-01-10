@@ -15,7 +15,7 @@
 							<core:Item key="RES_GROUP" text="{i18n>xtxt.group}"/>
 							<core:Item key="SHIFT" text="{i18n>xtxt.shift}"/>
 						</Select>
-						<Label text="{i18n>xfld.popoverSelect}" required="true"/>
+						<Label text="{i18n>xfld.popoverSubtype}" required="true"/>
 						<ComboBox id="idResourceGroupGroup" required="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'RES_GROUP'}"
 							showSecondaryValues="true" name="ResourceGroupGuid" fieldGroupIds="changeShapeInput"
 							items="{ path: 'viewModel>/ResourceGroup', sorter: { path: 'ResourceGroupDesc' }}"
