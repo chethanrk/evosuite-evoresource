@@ -777,12 +777,11 @@ sap.ui.define([
 		 * @param {object} oEvent
 		 */
 		onResourceGroupDrop: function (oEvent) {
-
 			//add functionality - dragged from resource tab
 			var sDraggedFrom = oEvent.getParameter("draggedControl").getBindingContext().getPath().split("(")[0];
 			var oDroppedControl = oEvent.getParameter("droppedControl"),
 				oContext = oDroppedControl.getBindingContext("ganttPlanningModel"),
-				oObject = deepClone(oContext.getObject()),
+				oObject = {},
 				oDraggedObject = this.getView().getModel("viewModel").getProperty("/draggedData"),
 				oBrowserEvent = oEvent.getParameter("browserEvent"),
 				oDroppedTarget,
@@ -795,29 +794,31 @@ sap.ui.define([
 			if (sDraggedFrom === "/ResourceSet") {
 				oDroppedTarget = oEvent.getParameter("droppedControl");
 				this.addNewResource(oDroppedTarget, oDraggedObject);
-			} else {
-
+			} else if (oContext) { // checking if dropped control object is valid
 				//ondrop of the the resourcegroup
+				oObject = deepClone(oContext.getObject());
 				oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id);
-				sStartTime = oDroppedTarget.getTime();
-				sEndTime = oDroppedTarget.getEndTime();
+				if (oDroppedTarget) {
+					sStartTime = oDroppedTarget.getTime();
+					sEndTime = oDroppedTarget.getEndTime();
 
-				if (oObject.NodeType !== "RESOURCE") {
-					oParentData = this._getParentResource(oObject.ParentNodeId);
-					oObject.USER_TIMEZONE = oParentData.TIME_ZONE;
-				} else
-					oObject.ParentNodeId = oObject.NodeId;
+					if (oObject.NodeType !== "RESOURCE") {
+						oParentData = this._getParentResource(oObject.ParentNodeId);
+						oObject.USER_TIMEZONE = oParentData.TIME_ZONE;
+					} else
+						oObject.ParentNodeId = oObject.NodeId;
 
-				oObject = this.copyObjectData(oObject, oDraggedObject.data, aIgnoreProperty);
+					oObject = this.copyObjectData(oObject, oDraggedObject.data, aIgnoreProperty);
 
-				oPopoverData = {
-					Guid: new Date().getTime(),
-					sStartTime: sStartTime,
-					sEndTime: sEndTime,
-					oResourceObject: oObject,
-					bDragged: true
-				};
-				this.openShapeChangePopover(oDroppedTarget, oPopoverData);
+					oPopoverData = {
+						Guid: new Date().getTime(),
+						sStartTime: sStartTime,
+						sEndTime: sEndTime,
+						oResourceObject: oObject,
+						bDragged: true
+					};
+					this.openShapeChangePopover(oDroppedTarget, oPopoverData);
+				}
 			}
 
 		},
@@ -1079,10 +1080,10 @@ sap.ui.define([
 				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
 				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
-				dStartDateDiff, 
-				oSeriesStartDate, 
-				oSeriesEndDate, 
-				oDateProp = {}, 
+				dStartDateDiff,
+				oSeriesStartDate,
+				oSeriesEndDate,
+				oDateProp = {},
 				oOldPopverStartDate;
 
 			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
@@ -2300,7 +2301,8 @@ sap.ui.define([
 						this._addNewAssignmentShape(oData);
 					}
 				}.bind(this));
-			} else if (oTargetControl.sParentAggregationName === "rows" || oTargetControl.sParentAggregationName === "cells") {
+			} else if (oTargetControl.sParentAggregationName === "table" || oTargetControl.sParentAggregationName === "rows" || oTargetControl.sParentAggregationName ===
+				"cells") {
 				this.createNewTempAssignment(sStartTime, sEndTime, oResourceObject, bDragged).then(function (oData) {
 					this.oPlanningModel.setProperty("/tempData/popover", oData);
 					this.oPlanningModel.setProperty("/tempData/oldPopoverData", Object.assign({}, oData));
@@ -2715,9 +2717,9 @@ sap.ui.define([
 		editRepeatingAssignment: function (oAssignmentData) {
 			var oNewAssignmentData = deepClone(oAssignmentData),
 				oDateProp = {};
-				
+
 			oDateProp = this._getStartEndDateProperty(oAssignmentData.NODE_TYPE);
-			
+
 			if (this.groupShiftContextForRepeat) {
 				if (oNewAssignmentData.NODE_TYPE === "RES_GROUP") {
 					oNewAssignmentData.RESOURCE_GROUP_COLOR = this.groupShiftContextForRepeat.getProperty("ResourceGroupColor");
@@ -2730,7 +2732,8 @@ sap.ui.define([
 					oNewAssignmentData = this.mergeObject(oNewAssignmentData, shiftData);
 				}
 				oNewAssignmentData.Guid = new Date().getTime().toString();
-				oNewAssignmentData[oDateProp.startDate] = formatter.convertFromUTCDate(oNewAssignmentData[oDateProp.startDate], oNewAssignmentData.isNew,
+				oNewAssignmentData[oDateProp.startDate] = formatter.convertFromUTCDate(oNewAssignmentData[oDateProp.startDate], oNewAssignmentData
+					.isNew,
 					oNewAssignmentData.isChanging);
 				oNewAssignmentData[oDateProp.endDate] = formatter.convertFromUTCDate(oNewAssignmentData[oDateProp.endDate], oNewAssignmentData.isNew,
 					oNewAssignmentData.isChanging);
