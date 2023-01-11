@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
-	<Dialog title="{i18n>xtit.deletingAssignmentlist}" resizable="true" draggable="true" contentWidth="30%" contentHeight="70%"
+	<Dialog title="{i18n>xtit.overview}" resizable="true" draggable="true" contentWidth="30%" contentHeight="70%"
 		verticalScrolling="false" horizontalScrolling="false">
 		<IconTabBar stretchContentHeight="true">
 			<items>
