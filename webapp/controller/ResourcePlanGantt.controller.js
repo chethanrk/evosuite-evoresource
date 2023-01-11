@@ -790,37 +790,34 @@ sap.ui.define([
 				oParentData,
 				aIgnoreProperty = ["__metadata", "NodeId", "ParentNodeId", "USER_TIMEZONE"];
 
+			oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id);
 			//added a new condition as the drop location is on table and not on gantt
 			if (sDraggedFrom === "/ResourceSet") {
 				oDroppedTarget = oEvent.getParameter("droppedControl");
 				this.addNewResource(oDroppedTarget, oDraggedObject);
-			} else if (oContext) { // checking if dropped control object is valid
+			} else if (oContext && oDroppedTarget) { // checking if dropped control object is valid
 				//ondrop of the the resourcegroup
 				oObject = deepClone(oContext.getObject());
-				oDroppedTarget = sap.ui.getCore().byId(oBrowserEvent.toElement.id);
-				if (oDroppedTarget) {
-					sStartTime = oDroppedTarget.getTime();
-					sEndTime = oDroppedTarget.getEndTime();
+				sStartTime = oDroppedTarget.getTime();
+				sEndTime = oDroppedTarget.getEndTime();
 
-					if (oObject.NodeType !== "RESOURCE") {
-						oParentData = this._getParentResource(oObject.ParentNodeId);
-						oObject.USER_TIMEZONE = oParentData.TIME_ZONE;
-					} else
-						oObject.ParentNodeId = oObject.NodeId;
+				if (oObject.NodeType !== "RESOURCE") {
+					oParentData = this._getParentResource(oObject.ParentNodeId);
+					oObject.USER_TIMEZONE = oParentData.TIME_ZONE;
+				} else
+					oObject.ParentNodeId = oObject.NodeId;
 
-					oObject = this.copyObjectData(oObject, oDraggedObject.data, aIgnoreProperty);
+				oObject = this.copyObjectData(oObject, oDraggedObject.data, aIgnoreProperty);
 
-					oPopoverData = {
-						Guid: new Date().getTime(),
-						sStartTime: sStartTime,
-						sEndTime: sEndTime,
-						oResourceObject: oObject,
-						bDragged: true
-					};
-					this.openShapeChangePopover(oDroppedTarget, oPopoverData);
-				}
+				oPopoverData = {
+					Guid: new Date().getTime(),
+					sStartTime: sStartTime,
+					sEndTime: sEndTime,
+					oResourceObject: oObject,
+					bDragged: true
+				};
+				this.openShapeChangePopover(oDroppedTarget, oPopoverData);
 			}
-
 		},
 		/**
 		 * Button event press save Gantt changes
