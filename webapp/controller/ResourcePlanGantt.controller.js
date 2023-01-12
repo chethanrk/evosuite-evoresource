@@ -352,6 +352,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				onPressCancelAssignment: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
 				}
 			}
 		},
@@ -1079,10 +1084,10 @@ sap.ui.define([
 				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
 				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
-				dStartDateDiff, 
-				oSeriesStartDate, 
-				oSeriesEndDate, 
-				oDateProp = {}, 
+				dStartDateDiff,
+				oSeriesStartDate,
+				oSeriesEndDate,
+				oDateProp = {},
 				oOldPopverStartDate;
 
 			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
@@ -2073,6 +2078,15 @@ sap.ui.define([
 
 			}
 		},
+		/**
+		 * Method called when Cancel button on ShapeChangePopover pressed - It closed the popover
+		 * @param {object} - oEvent - Event parameter		 * 
+		 */
+		onPressCancelAssignment: function (oEvent) {
+			if (this._oPlanningPopover) {
+				this._oPlanningPopover.close();
+			}
+		},
 		/* =========================================================== */
 		/* internal methods                                            */
 		/* =========================================================== */
@@ -2715,9 +2729,9 @@ sap.ui.define([
 		editRepeatingAssignment: function (oAssignmentData) {
 			var oNewAssignmentData = deepClone(oAssignmentData),
 				oDateProp = {};
-				
+
 			oDateProp = this._getStartEndDateProperty(oAssignmentData.NODE_TYPE);
-			
+
 			if (this.groupShiftContextForRepeat) {
 				if (oNewAssignmentData.NODE_TYPE === "RES_GROUP") {
 					oNewAssignmentData.RESOURCE_GROUP_COLOR = this.groupShiftContextForRepeat.getProperty("ResourceGroupColor");
@@ -2730,7 +2744,8 @@ sap.ui.define([
 					oNewAssignmentData = this.mergeObject(oNewAssignmentData, shiftData);
 				}
 				oNewAssignmentData.Guid = new Date().getTime().toString();
-				oNewAssignmentData[oDateProp.startDate] = formatter.convertFromUTCDate(oNewAssignmentData[oDateProp.startDate], oNewAssignmentData.isNew,
+				oNewAssignmentData[oDateProp.startDate] = formatter.convertFromUTCDate(oNewAssignmentData[oDateProp.startDate], oNewAssignmentData
+					.isNew,
 					oNewAssignmentData.isChanging);
 				oNewAssignmentData[oDateProp.endDate] = formatter.convertFromUTCDate(oNewAssignmentData[oDateProp.endDate], oNewAssignmentData.isNew,
 					oNewAssignmentData.isChanging);
