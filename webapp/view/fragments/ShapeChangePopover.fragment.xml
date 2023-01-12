@@ -120,7 +120,8 @@
 			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|After"/>
 		</content>
 		<beginButton>
-			<Button text="{i18n>xbtn.cancel}" press="onPressCancelAssignment"/>
+			<Button text="{i18n>xbtn.delete}" press="onPressDeleteAssignment"
+				visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/isTemporary'},{path:'ganttPlanningModel>/tempData/popover/isEditable'},{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverDeleteButtonVisible'}"/>
 		</beginButton>
 		<endButton>
 			<Button type="Emphasized" text="{i18n>xbtn.ok}" press="onPressChangeAssignment"
