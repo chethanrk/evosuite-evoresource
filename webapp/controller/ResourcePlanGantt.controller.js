@@ -352,6 +352,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				onPressCancelAssignment: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Before
 				}
 			}
 		},
@@ -2069,6 +2074,16 @@ sap.ui.define([
 				this.oPlanningModel.setProperty("/multiCreateData/EndDate", oEndDate);
 				this.oPlanningModel.setProperty("/multiCreateData/EffectiveEndDate", oEndDate);
 
+			}
+		},
+
+		/**
+		 * 
+		 * 
+		 */
+		onPressCancelAssignment: function (oEvent) {
+			if (this._oPlanningPopover) {
+				this._oPlanningPopover.close();
 			}
 		},
 		/* =========================================================== */
