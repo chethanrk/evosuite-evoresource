@@ -1026,15 +1026,19 @@ sap.ui.define([
 		onChangeShift: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				oSelectedItem = oSource.getSelectedItem(),
-				oSelContext = oSelectedItem.getBindingContext("viewModel"),
+				oSelContext = oSelectedItem ? oSelectedItem.getBindingContext("viewModel") : null,
 				oData = this.oPlanningModel.getProperty("/tempData/popover"),
 				shiftData;
-
+			if(!oSelContext){
+				oSource.setValue(null);
+				return;
+			}
 			this.groupShiftContext = oSelectedItem.getBindingContext("viewModel");
 
 			oSource.setValueState(sap.ui.core.ValueState.None);
 			//validate duplicate assignments
 			if (this._validateDuplicateAsigment()) {
+				oSource.setSelectedKey(null);
 				return;
 			}
 
