@@ -1027,7 +1027,7 @@ sap.ui.define([
 		onChangeShift: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				oSelectedItem = oSource.getSelectedItem(),
-				oSelContext = oSelectedItem ? oSelectedItem.getBindingContext("viewModel") : null,
+				oSelContext = oSelectedItem.getBindingContext("viewModel"),
 				oData = this.oPlanningModel.getProperty("/tempData/popover"),
 				shiftData;
 
