@@ -980,6 +980,7 @@ sap.ui.define([
 			oSource.setValueState(sap.ui.core.ValueState.None);
 			//validate duplicate assignments
 			if (this._validateDuplicateAsigment()) {
+				oSource.setValue("");
 				return;
 			}
 
@@ -1035,6 +1036,7 @@ sap.ui.define([
 			oSource.setValueState(sap.ui.core.ValueState.None);
 			//validate duplicate assignments
 			if (this._validateDuplicateAsigment()) {
+				oSource.setValue("");
 				return;
 			}
 
