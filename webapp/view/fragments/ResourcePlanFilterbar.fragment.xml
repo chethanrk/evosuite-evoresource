@@ -14,7 +14,7 @@
 						secondDateValue="{viewModel>/gantt/defaultEndDate}" enabled="true"/>
 				</smartFilterBar:customControl>
 			</smartFilterBar:ControlConfiguration>
-			<smartFilterBar:ControlConfiguration index="0" mandatory="mandatory" key="Mode" label="Mode" groupId="_BASIC" visibleInAdvancedArea="true">
+			<smartFilterBar:ControlConfiguration index="0" mandatory="mandatory" key="Mode" label="{i18n>lbl.mode}" groupId="_BASIC" visibleInAdvancedArea="true">
 				<smartFilterBar:customControl>
 					<!--<Select id="idFilterGanttPlanningMode" customData:hasValue="true" forceSelection="true" change="onChangeTimeMode"
 						items="{path: 'templateProperties>/GanttViewSet'}">
