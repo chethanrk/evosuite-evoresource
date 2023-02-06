@@ -906,6 +906,7 @@ sap.ui.define([
 		 * @param {object} oEvent - event of OK button press
 		 */
 		onPressChangeAssignment: function (oEvent) {
+			debugger
 			var oSimpleformFileds = this.getView().getControlsByFieldGroupId("changeShapeInput"),
 				oValidation = this.validateForm(oSimpleformFileds),
 				oAssignmentData = this.oPlanningModel.getProperty("/tempData/popover");
@@ -926,6 +927,8 @@ sap.ui.define([
 						oAssignmentData.isRepeating = true;
 						oAssignmentData.isTemporary = false;
 						this.editSeriesDate = true;
+						this.groupShiftContextForRepeat = this.groupShiftContext;
+						this.groupShiftContext = null;
 						this._removeAssignmentShape(oAssignmentData, true);
 					} else {
 						oAssignmentData.IsSeries = false;
@@ -973,7 +976,16 @@ sap.ui.define([
 		onChangeResourceGroup: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				oSelectedItem = oSource.getSelectedItem(),
-				oData = this.oPlanningModel.getProperty("/tempData/popover");
+				oData = this.oPlanningModel.getProperty("/tempData/popover"),
+				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
+				oDateRange = sap.ui.getCore().byId("idDateRange"),
+				oStartDate = oDateRange.getDateValue(),
+				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
+				oDateProp = {},
+				oOldPopverStartDate = null,
+				dStartDateDiff,
+				oSeriesStartDate = null,
+				oSeriesEndDate = null;
 
 			this.groupShiftContext = oSelectedItem.getBindingContext("viewModel");
 
@@ -983,40 +995,76 @@ sap.ui.define([
 				oSource.setValue("");
 				return;
 			}
+			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
+			//series date calculation
+			oDateProp = this._getStartEndDateProperty(oData.NODE_TYPE);
+			oOldPopverStartDate = formatter.convertFromUTCDate(oOldPopoverData[oDateProp.startDate], oOldPopoverData["isNew"], oOldPopoverData[
+				"isChanging"]);
+			dStartDateDiff = moment(oData[oDateProp.startDate]).diff(oOldPopverStartDate, "d");
+			oSeriesStartDate = oData["SERIES_START_DATE"] ? moment(formatter.convertFromUTCDate(oData["SERIES_START_DATE"],
+					oData.isNew, oData.isChanging))
+				.add(dStartDateDiff, "d").toDate() : null;
+			this.oPlanningModel.setProperty("/tempData/popover/SERIES_START_DATE", oSeriesStartDate);
 
-			if (oData.isNew) {
-				this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", this.groupShiftContext.getProperty("ResourceGroupColor"));
-				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ResourceGroupDesc"));
-				this.oPlanningModel.setProperty("/tempData/popover/ResourceGroupDesc", this.groupShiftContext.getProperty("ResourceGroupDesc"));
+			oSeriesEndDate = formatter.convertFromUTCDate(oData["SERIES_END_DATE"], oData.isNew, oData.isChanging);
+			this.oPlanningModel.setProperty("/tempData/popover/SERIES_END_DATE", oSeriesEndDate);
 
-				if (oData.isApplySeries) {
-					this.groupShiftContextForRepeat = this.groupShiftContext;
-					this.groupShiftContext = null;
-					oData.isRepeating = true; // for deleting series
-					this._removeAssignmentShape(oData, true);
-				} else {
-					oData.IsSeries = false;
-					oData.SeriesRepeat = "";
-					this._removeAssignmentShape(oData, true);
-					//add different resource group if it is not exist
-					this._addSingleChildToParent(oData, false, false);
-				}
+			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", true);
+			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
 
-				if (!oData.isTemporary && !this.bAddNewResource) {
-					this._oPlanningPopover.close();
-				}
-			} else {
-				if (oData.isApplySeries) {
-					this.groupShiftContextForRepeat = this.groupShiftContext;
-					this.groupShiftContext = null;
-					oData.isRepeating = true; // for deleting series
-				} else {
-					oData.IsSeries = false;
-					oData.SeriesRepeat = "";
-				}
-				this._removeAssignmentShape(oData, true);
-				this._oPlanningPopover.close();
+			//comment for test
+			// if (oData.isNew) {
+			// 	this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", this.groupShiftContext.getProperty("ResourceGroupColor"));
+			// 	this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ResourceGroupDesc"));
+			// 	this.oPlanningModel.setProperty("/tempData/popover/ResourceGroupDesc", this.groupShiftContext.getProperty("ResourceGroupDesc"));
+
+			// 	if (oData.isApplySeries) {
+			// 		this.groupShiftContextForRepeat = this.groupShiftContext;
+			// 		this.groupShiftContext = null;
+			// 		oData.isRepeating = true; // for deleting series
+			// 		this._removeAssignmentShape(oData, true);
+			// 	} else {
+			// 		oData.IsSeries = false;
+			// 		oData.SeriesRepeat = "";
+			// 		this._removeAssignmentShape(oData, true);
+			// 		//add different resource group if it is not exist
+			// 		this._addSingleChildToParent(oData, false, false);
+			// 	}
+
+			// 	if (!oData.isTemporary && !this.bAddNewResource) {
+			// 		this._oPlanningPopover.close();
+			// 	}
+			// } else {
+			// 	if (oData.isApplySeries) {
+			// 		this.groupShiftContextForRepeat = this.groupShiftContext;
+			// 		this.groupShiftContext = null;
+			// 		oData.isRepeating = true; // for deleting series
+			// 	} else {
+			// 		oData.IsSeries = false;
+			// 		oData.SeriesRepeat = "";
+			// 	}
+			// 	this._removeAssignmentShape(oData, true);
+			// 	this._oPlanningPopover.close();
+			// }
+			//comment for test
+
+			//no ifelse
+			this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", this.groupShiftContext.getProperty("ResourceGroupColor"));
+			this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ResourceGroupDesc"));
+			this.oPlanningModel.setProperty("/tempData/popover/ResourceGroupDesc", this.groupShiftContext.getProperty("ResourceGroupDesc"));
+			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
+			if (oData.isApplySeries) {
+				this.groupShiftContextForRepeat = this.groupShiftContext;
+				this.groupShiftContext = null;
+				oData.isRepeating = true; // for deleting series
 			}
+			// this._removeAssignmentShape(oData, true, false);
+			this._switchType(oData);
+			// this._addSingleChildToParent(oData, false, false);
+			//no ifelse
 		},
 
 		/**
@@ -1029,7 +1077,16 @@ sap.ui.define([
 				oSelectedItem = oSource.getSelectedItem(),
 				oSelContext = oSelectedItem.getBindingContext("viewModel"),
 				oData = this.oPlanningModel.getProperty("/tempData/popover"),
-				shiftData;
+				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
+				oDateRange = sap.ui.getCore().byId("idDateRange"),
+				oStartDate = oDateRange.getDateValue(),
+				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
+				shiftData,
+				oDateProp = {},
+				oOldPopverStartDate = null,
+				dStartDateDiff,
+				oSeriesStartDate = null,
+				oSeriesEndDate = null;
 
 			this.groupShiftContext = oSelectedItem.getBindingContext("viewModel");
 
@@ -1039,39 +1096,85 @@ sap.ui.define([
 				oSource.setValue("");
 				return;
 			}
+			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
+			//series date calculation
+			oDateProp = this._getStartEndDateProperty(oData.NODE_TYPE);
+			oOldPopverStartDate = formatter.convertFromUTCDate(oOldPopoverData[oDateProp.startDate], oOldPopoverData["isNew"], oOldPopoverData[
+				"isChanging"]);
+			dStartDateDiff = moment(oData[oDateProp.startDate]).diff(oOldPopverStartDate, "d");
+			oSeriesStartDate = oData["SERIES_START_DATE"] ? moment(formatter.convertFromUTCDate(oData["SERIES_START_DATE"],
+					oData.isNew, oData.isChanging))
+				.add(dStartDateDiff, "d").toDate() : null;
+			this.oPlanningModel.setProperty("/tempData/popover/SERIES_START_DATE", oSeriesStartDate);
 
-			if (oData.isNew) {
-				this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ScheduleIdDesc"));
-				shiftData = oSelContext.getObject();
-				oData = this.mergeObject(oData, shiftData);
-				if (oData.isApplySeries) {
-					this.groupShiftContextForRepeat = this.groupShiftContext;
-					this.groupShiftContext = null;
-					oData.isRepeating = true; // for deleting series
-					this._removeAssignmentShape(oData, true);
-				} else {
-					oData.IsSeries = false;
-					oData.SeriesRepeat = "";
-					this._removeAssignmentShape(oData, true);
-					//add different resource group if it is not exist
-					this._addSingleChildToParent(oData, false, false);
-				}
+			oSeriesEndDate = formatter.convertFromUTCDate(oData["SERIES_END_DATE"], oData.isNew, oData.isChanging);
+			this.oPlanningModel.setProperty("/tempData/popover/SERIES_END_DATE", oSeriesEndDate);
 
-				if (!oData.isTemporary) {
-					this._oPlanningPopover.close();
-				}
-			} else {
-				if (oData.isApplySeries) {
-					this.groupShiftContextForRepeat = this.groupShiftContext;
-					this.groupShiftContext = null;
-					oData.isRepeating = true; // for deleting series
-				} else {
-					oData.IsSeries = false;
-					oData.SeriesRepeat = "";
-				}
-				this._removeAssignmentShape(oData, true);
-				this._oPlanningPopover.close();
+			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", true);
+			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
+
+			//comment for test
+			// if (oData.isNew) {
+			// 	this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ScheduleIdDesc"));
+			// 	shiftData = oSelContext.getObject();
+			// 	delete shiftData["IsSeries"];
+			// 	oData = this.mergeObject(oData, shiftData);
+			// 	if (oData.isApplySeries) {
+			// 		this.groupShiftContextForRepeat = this.groupShiftContext;
+			// 		this.groupShiftContext = null;
+			// 		oData.isRepeating = true; // for deleting series
+			// 	}
+			// 	this._removeAssignmentShape(oData, true, false);
+			// 	//add different resource group if it is not exist
+			// 	this._addSingleChildToParent(oData, false, false);
+
+			// } else {
+			// 	this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ScheduleIdDesc"));
+			// 	this.oPlanningModel.setProperty("/tempData/popover/PARENT_NODE_ID", oData.NodeId);
+			// 	this.oPlanningModel.setProperty("/tempData/popover/ResourceGuid", oData.ParentNodeId);
+
+			// 	//old data update
+			// 	this.oPlanningModel.setProperty("/tempData/oldPopoverData/PARENT_NODE_ID", oOldPopoverData.NodeId);
+			// 	this.oPlanningModel.setProperty("/tempData/oldPopoverData/ResourceGuid", oOldPopoverData.ParentNodeId);
+			// 	//old data update
+			// 	shiftData = oSelContext.getObject();
+			// 	delete shiftData["IsSeries"];
+			// 	oData = this.mergeObject(oData, shiftData);
+			// 	this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
+			// 	if (oData.isApplySeries) {
+			// 		this.groupShiftContextForRepeat = this.groupShiftContext;
+			// 		this.groupShiftContext = null;
+			// 		oData.isRepeating = true; // for deleting series
+			// 	}
+			// 	this._removeAssignmentShape(oData, true, false);
+			// 	this._addSingleChildToParent(oData, false, false);
+			// }
+			//comment for test
+			//no ifelse
+			this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ScheduleIdDesc"));
+			this.oPlanningModel.setProperty("/tempData/popover/PARENT_NODE_ID", oData.NodeId);
+			this.oPlanningModel.setProperty("/tempData/popover/ResourceGuid", oData.ParentNodeId);
+
+			//old data update
+			this.oPlanningModel.setProperty("/tempData/oldPopoverData/PARENT_NODE_ID", oOldPopoverData.NodeId);
+			this.oPlanningModel.setProperty("/tempData/oldPopoverData/ResourceGuid", oOldPopoverData.ParentNodeId);
+			shiftData = oSelContext.getObject();
+			delete shiftData["IsSeries"];
+			oData = this.mergeObject(oData, shiftData);
+			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
+			if (oData.isApplySeries) {
+				this.groupShiftContextForRepeat = this.groupShiftContext;
+				this.groupShiftContext = null;
+				oData.isRepeating = true; // for deleting series
 			}
+			// this._removeAssignmentShape(oData, true, false);
+			//add different resource group if it is not exist
+			this._switchType(oData);
+			// this._addSingleChildToParent(oData, false, false);
+			//no ifelse
 		},
 
 		/**
@@ -1441,13 +1544,13 @@ sap.ui.define([
 		 * Reset the popover change default variables
 		 */
 		onDemandDialogClose: function (oEvent) {
+			debugger
 			var oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oFoundData = this._getChildrenDataByKey("Guid", oPopoverData.Guid, null),
 				oOldAssignmentData = this.oPlanningModel.getProperty("/tempData/oldPopoverData");
 
-			for (var i = 0; i < oFoundData.length; i++) {
-				this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
-			}
+			this._removeAssignmentShape(oPopoverData, true, true);
+			this._addSingleChildToParent(oOldAssignmentData, false, false);
 
 			this._afterPopoverClose();
 			this._oDemandDialog.close();
@@ -2419,7 +2522,9 @@ sap.ui.define([
 					this.oPlanningModel.setProperty(sPath + "/PARENT_NODE_ID", "");
 					this.oPlanningModel.setProperty(sPath + "/NODE_ID", "");
 				}
-				this._markAsPlanningChange(oData, true);
+				if (bAllowMarkChange) {
+					this._markAsPlanningChange(oData, true);
+				}
 			}.bind(this));
 		},
 
@@ -2489,9 +2594,7 @@ sap.ui.define([
 				//add to resource group
 				(oGanttRow.ResourceGroupGuid && oGanttRow.ResourceGroupGuid === oData.ResourceGroupGuid && oGanttRow.ResourceGuid === oData.ResourceGuid)
 			) {
-				if (this._getChildrenDataByKey("Guid", oData.Guid, null).length < 2) {
-					oGanttRow.GanttHierarchyToResourceAssign.results.push(oData);
-				}
+				oGanttRow.GanttHierarchyToResourceAssign.results.push(oData);
 			}
 		},
 		/*
@@ -2518,21 +2621,17 @@ sap.ui.define([
 		 * @param {object} oAssignData - object of assignment based on entityType of assignment 
 		 * @param removeNew boolena value to ensure remove new assignment
 		 */
-		_removeAssignmentShape: function (oAssignData, removeNew) {
-			var aChildren = this.oPlanningModel.getProperty("/data/children");
-			if (!oAssignData.isTemporary && !removeNew) {
-				return;
-			}
-			if (oAssignData.isNew) {
-				if (oAssignData.isRepeating) { //checking if it is delete series
-					this.deleteRepeatingAssignment(oAssignData);
-				} else {
+		_removeAssignmentShape: function (oAssignData, removeNew, isPopoverClose) {
+			var aChildren = this.oPlanningModel.getProperty("/data/children"),
+				removeAssignment = function () {
 					var callbackFn = function (oItem, oData, idx) {
 						var aAssignments = this._getNodeTypeAssignment(oData, oItem);
 
 						aAssignments.forEach(function (oAssignItem, index) {
 							if (oAssignItem.Guid === oData.Guid || oAssignItem.isTemporary === true) {
-								this._markAsPlanningChange(oAssignItem, false);
+								if (!isPopoverClose) {
+									this._markAsPlanningChange(oAssignItem, false);
+								}
 								aAssignments.splice(index, 1);
 
 							}
@@ -2540,11 +2639,41 @@ sap.ui.define([
 					};
 					aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
 					this.oPlanningModel.setProperty("/data/children", aChildren);
+				}.bind(this);
+			if (!oAssignData.isTemporary && !removeNew) {
+				return;
+			}
+			if (isPopoverClose) {
+				removeAssignment(isPopoverClose);
+				return;
+			}
+			if (oAssignData.isNew) {
+				if (oAssignData.isRepeating) { //checking if it is delete series
+					this.deleteRepeatingAssignment(oAssignData);
+				} else {
+					removeAssignment();
 				}
 			} else {
 				this._validateForDelete(oAssignData);
 			}
 
+		},
+		_switchType: function (oAssignData) {
+			var aChildren = this.oPlanningModel.getProperty("/data/children");
+			var callbackFn = function (oItem, oData, idx) {
+				var aAssignments = this._getNodeTypeAssignment(oData, oItem);
+
+				aAssignments.forEach(function (oAssignItem, index) {
+					if (oAssignItem.Guid === oData.Guid || oAssignItem.isTemporary === true) {
+						aAssignments.splice(index, 1);
+
+					}
+				}.bind(this));
+			};
+			aChildren = this._recurseAllChildren(aChildren, callbackFn.bind(this), oAssignData);
+			this.oPlanningModel.setProperty("/data/children", aChildren);
+
+			this._addSingleChildToParent(oAssignData, false, false);
 		},
 		/**
 		 * Validation of assignment on change
@@ -2929,6 +3058,12 @@ sap.ui.define([
 			if (!moment(oData.StartDate).isSame(oldPopoverData.StartDate) || !moment(oData.EndDate).isSame(oldPopoverData.EndDate)) {
 				return true;
 			}
+			if (oData.NODE_TYPE === "RES_GROUP" && oData.ResourceGroupGuid !== oldPopoverData.ResourceGroupGuid) {
+				return true;
+			}
+			if (oData.NODE_TYPE === "SHIFT" && oData.TemplateId !== oldPopoverData.TemplateId) {
+				return true;
+			}
 			return false;
 		},
 
@@ -3008,16 +3143,12 @@ sap.ui.define([
 			}
 
 			if (oData.isRestChanges) {
+				this._removeAssignmentShape(oData, false, true);
 				if (oData.isTemporary && oOldAssignmentData && oOldAssignmentData.Guid) {
 					var oFoundData = this._getChildrenDataByKey("Guid", oData.Guid, null);
-					if (oFoundData && oFoundData.length === 2) {
-						for (var i = 0; i < oFoundData.length; i++) {
-							this.oPlanningModel.setProperty(oFoundData[i], oOldAssignmentData);
-						}
-						this.oPlanningModel.setProperty("/tempData/popover/isTemporary", false);
-					}
+					this._addSingleChildToParent(oOldAssignmentData, false, false);
 				}
-				this._removeAssignmentShape(oData);
+
 				this.oPlanningModel.setProperty("/tempData/popover", {});
 				this.oPlanningModel.setProperty("/tempData/oldPopoverData", {});
 				this.reValidateForm(this.getView().getControlsByFieldGroupId("changeShapeInput"));
