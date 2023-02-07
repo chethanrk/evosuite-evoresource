@@ -40,8 +40,7 @@ sap.ui.define([
 				return oEndDate.diff(oStartDate, 'weeks');
 			},
 			bgStartDateFn: function (oDate) {
-				//monday of this week
-				return oDate.day(1).format("YYYYMMDD000000");
+				return oDate.format("YYYYMMDD000000");
 			},
 			bgEndDateFn: function (oDate) {
 				//sunday of week
@@ -68,8 +67,7 @@ sap.ui.define([
 				return oEndDate.diff(oStartDate, 'months');
 			},
 			bgStartDateFn: function (oDate) {
-				//first day of month
-				return oDate.startOf("month").format("YYYYMMDD000000");
+				return oDate.format("YYYYMMDD000000");
 			},
 			bgEndDateFn: function (oDate) {
 				//last day of month
@@ -147,8 +145,8 @@ sap.ui.define([
 	 * get current day string and occurence of the day in the month
 	 * oData popover data
 	 */
-	var getCurrentDayString = function (oData, oResourceBundle) {
-		var oDate = moment(new Date(oData.StartDate)),
+	var getCurrentDayString = function (sStartDate, oResourceBundle) {
+		var oDate = moment(new Date(sStartDate)),
 			nthOfMoth = Math.ceil(oDate.date() / 7);
 		var sDay, snthMonth;
 
@@ -220,7 +218,7 @@ sap.ui.define([
 			if (!oDate) {
 				return null;
 			}
-			var offsetMs = new Date().getTimezoneOffset() * 60 * 1000;
+			var offsetMs = new Date(oDate).getTimezoneOffset() * 60 * 1000;
 			if (isNew || isChanging) {
 				return oDate;
 			}
@@ -231,7 +229,7 @@ sap.ui.define([
 			if (!oDate) {
 				return null;
 			}
-			var offsetMs = new Date().getTimezoneOffset() * 60 * 1000;
+			var offsetMs = new Date(oDate).getTimezoneOffset() * 60 * 1000;
 			return new Date(oDate.getTime() - offsetMs);
 		},
 
@@ -304,14 +302,14 @@ sap.ui.define([
 		 */
 		repaetModeDescription: function (repeatModeSelection) {
 			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
-			if (!repeatModeSelection || repeatModeSelection === "NEVER") {
+			if (!repeatModeSelection || repeatModeSelection === "N") {
 				return "";
 			}
-			if (repeatModeSelection === "DAY") {
+			if (repeatModeSelection === "D") {
 				return "day(s)";
-			} else if (repeatModeSelection === "WEEK") {
+			} else if (repeatModeSelection === "W") {
 				return "week(s)";
-			} else if (repeatModeSelection === "MONTH") {
+			} else if (repeatModeSelection === "M") {
 				return "month(s)";
 			}
 			return "";
@@ -322,7 +320,7 @@ sap.ui.define([
 		 * oPopOverData popover data
 		 */
 		validateVisibilityEvery: function (oPopOverData) {
-			if (oPopOverData && oPopOverData.Repeat && oPopOverData.Repeat !== "NEVER" && oPopOverData.isNew) {
+			if (oPopOverData && oPopOverData.SeriesRepeat && oPopOverData.SeriesRepeat !== "N" && oPopOverData.isNew) {
 				return true;
 			}
 			return false;
@@ -333,12 +331,12 @@ sap.ui.define([
 		 * Day XX
 		 * oData popovr data
 		 */
-		getDay: function (oData) {
+		getDay: function (sStartDate) {
 			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
-			if (!oData) {
+			if (!sStartDate) {
 				return "";
 			}
-			var sDay = new Date(oData.StartDate).getDate().toString();
+			var sDay = new Date(sStartDate).getDate().toString();
 			var iDay = sDay.length < 2 ? "0" + sDay : sDay;
 			return oResourceBundle.getText("xdsr.Day", iDay);
 		},
@@ -348,30 +346,21 @@ sap.ui.define([
 		 * The XX th weekday 
 		 * oData popover data
 		 */
-		getDays: function (oData) {
+		getDays: function (sStartDate) {
 			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
-			if (!oData) {
+			if (!sStartDate) {
 				return "";
 			}
 
-			var oDaysCalculated = getCurrentDayString(oData, oResourceBundle);
+			var oDaysCalculated = getCurrentDayString(sStartDate, oResourceBundle);
 			return oResourceBundle.getText("xdsr.occurence", [oDaysCalculated.snthMonth, oDaysCalculated.sDay]);
-		},
-
-		/**
-		 * return string value of selected date
-		 * oData popover data
-		 */
-		getDayString: function (oData) {
-			var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
-			return getCurrentDayString(oData, oResourceBundle);
 		},
 
 		/**
 		 * visibility of every input box
 		 */
-		everyAndEndDateVisibility: function (Repeat, isTemporary) {
-			if (Repeat && isTemporary && Repeat !== "NEVER") {
+		everyAndEndDateVisibility: function (Repeat, isTemporary, isNew) {
+			if (isNew && Repeat && isTemporary && Repeat !== "N") {
 				return true;
 			}
 
@@ -382,7 +371,7 @@ sap.ui.define([
 		 * Validate the field based on the repeat mode
 		 */
 		requiredValidate: function (Repeat) {
-			if (Repeat && Repeat !== "NEVER") {
+			if (Repeat && Repeat !== "N") {
 				return true;
 			}
 			return false;
@@ -391,8 +380,8 @@ sap.ui.define([
 		/**
 		 * Validate the field based on the week mode
 		 */
-		weekModeValidation: function (Repeat) {
-			if (Repeat && Repeat === "WEEK") {
+		weekModeValidation: function (isNew, isTemporary, Repeat) {
+			if (isNew && isTemporary && Repeat && Repeat === "W") {
 				return true;
 			}
 			return false;
@@ -401,8 +390,8 @@ sap.ui.define([
 		/**
 		 * Validate the field based on the month mode
 		 */
-		monthModeValidation: function (Repeat) {
-			if (Repeat && Repeat === "MONTH") {
+		monthModeValidation: function (isNew, isTemporary, Repeat) {
+			if (isNew && isTemporary && Repeat && Repeat === "M") {
 				return true;
 			}
 			return false;
@@ -482,13 +471,13 @@ sap.ui.define([
 			return false;
 		},
 		/*
-		* Sets Delete button visisbility
-		* @param {boolean} isTemporary
-		* @param {boolean} isEditable
-		* @param {boolean} isDeletable
-		*
-		*/
-		isPopoverDeleteButtonVisible: function (isTemporary,isEditable, isDeletable) {
+		 * Sets Delete button visisbility
+		 * @param {boolean} isTemporary
+		 * @param {boolean} isEditable
+		 * @param {boolean} isDeletable
+		 *
+		 */
+		isPopoverDeleteButtonVisible: function (isTemporary, isEditable, isDeletable) {
 			var bValidate = true;
 			if (isTemporary) {
 				bValidate = false;
@@ -505,10 +494,10 @@ sap.ui.define([
 			return bValidate;
 		},
 		/*
-		* Sets Group change combo box enable status
-		* @param {boolean} isDeletable
-		*
-		*/
+		 * Sets Group change combo box enable status
+		 * @param {boolean} isDeletable
+		 *
+		 */
 		isPopoverGroupChangeEnable: function (isDeletable) {
 			var bValidate = true;
 			if (!isDeletable) {
@@ -518,10 +507,10 @@ sap.ui.define([
 			return bValidate;
 		},
 		/*
-		* Sets Shift change combo box enable status
-		* @param {boolean} isDeletable
-		*
-		*/
+		 * Sets Shift change combo box enable status
+		 * @param {boolean} isDeletable
+		 *
+		 */
 		isPopoverShiftChangeEnable: function (isDeletable) {
 			var bValidate = true;
 			if (!isDeletable) {
@@ -531,10 +520,10 @@ sap.ui.define([
 			return bValidate;
 		},
 		/*
-		* Sets Date Range Selection enable status
-		* @param {boolean} isDeletable
-		*
-		*/
+		 * Sets Date Range Selection enable status
+		 * @param {boolean} isDeletable
+		 *
+		 */
 		isPopoverDateRangeEditable: function (isDeletable) {
 			var bValidate = true;
 			if (!isDeletable) {
@@ -544,10 +533,10 @@ sap.ui.define([
 			return bValidate;
 		},
 		/*
-		* Sets End date picker enable status
-		* @param {boolean} isDeletable
-		*
-		*/
+		 * Sets End date picker enable status
+		 * @param {boolean} isDeletable
+		 *
+		 */
 		isPopoverEndDatePickerVisible: function (isDeletable) {
 			var bValidate = false;
 			if (!isDeletable) {
@@ -557,15 +546,96 @@ sap.ui.define([
 			return bValidate;
 		},
 		/*
-		* Returns minimun date ifor the End Date Picker of SHapeChangePopover
-		* @param {boolean} isDeletable
-		*
-		*/
-		getMinDateForEndDate:function(isDeletable){
-			if(!isDeletable){
+		 * Returns minimun date ifor the End Date Picker of SHapeChangePopover
+		 * @param {boolean} isDeletable
+		 *
+		 */
+		getMinDateForEndDate: function (isDeletable) {
+			if (!isDeletable) {
 				return moment().startOf("day").toDate();
 			}
 			return null;
+		},
+		/*
+		 * Returns converted to UTC date in dd-MMM-yyyy format
+		 * @param {string} sNodeType
+		 * @param {date} sGroupDate
+		 * @param {date} sShiftDesc
+		 * @param {boolean} isNew
+		 * @param {boolean} isNew
+		 *
+		 */
+		getDeleteObjectDate: function (sNodeType, sGroupDate, sShiftDesc, isNew, isChanging) {
+			var dateFormat = sap.ui.core.format.DateFormat.getDateInstance({
+					pattern: "dd-MMM-yyyy"
+				}),
+				oDate = {
+					"RES_GROUP": sGroupDate,
+					"SHIFT": sShiftDesc
+				}[sNodeType],
+				oConvertedDate = this.formatter.convertFromUTCDate(oDate, isNew, isChanging),
+				oFormattedDate = dateFormat.format(oConvertedDate);
+
+			return oFormattedDate;
+		},
+		/*
+		 * Returns text based on assignment type
+		 * @param {string} sNodeType
+		 *
+		 */
+		getAssignmentTypeText: function (sNodeType) {
+			return {
+				"RES_GROUP": this.getResourceBundle('i18n').getText("xtxt.group"),
+				"SHIFT": this.getResourceBundle('i18n').getText("xtxt.shift")
+			}[sNodeType];
+		},
+		/*
+		 * Returns if shape is selectable or not, if end date is past, then not selectable
+		 * @param {date} oEndDate
+		 *
+		 */
+		getShapeSelectable: function (oEndDate) {
+			var oConvertedDate = this.formatter.convertFromUTCDate(oEndDate);
+			return !(moment(oConvertedDate).isBefore(moment().startOf('day').toDate()));
+		},
+		/*
+		 * Returns gantt shape selection model - Single or Multiple based on global config
+		 * @param {boolean} isMultiDeletable
+		 *
+		 */
+		getGanttSelectionMode: function (isMultiDeletable) {
+			var sSelectionMode = "Single";
+			if (isMultiDeletable) {
+				sSelectionMode = "MultiWithKeyboard";
+			}
+			return sSelectionMode;
+		},
+		/*
+		 * Returns boolean for the visibility of "Apply to Series" check box
+		 * @param {boolean} isSeries
+		 *
+		 */
+		isSeriesCheckVisible: function (isSeries) {
+			return isSeries;
+		},
+		/*
+		 * Returns boolean for the visibility of "Repeat mode" field
+		 * @param {boolean} isNew
+		 * @param {boolean} isTemporary
+		 *
+		 */
+		repeatModeVisible: function (isNew, isTemporary) {
+			if (isNew && isTemporary) {
+				return true;
+			}
+			return false;
+		},
+		/*
+		 * Returns boolean for the visibility of Checkbox for Resource
+		 * @param {string} sNodeType
+		 */
+		isMainResource: function(sNodeType) {
+			return sNodeType === "RESOURCE";
 		}
 	};
 

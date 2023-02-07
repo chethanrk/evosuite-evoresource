@@ -1,0 +1,18 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<Dialog title="{i18n>xtit.overview}" resizable="true" draggable="true" contentWidth="30%" contentHeight="70%"
+		verticalScrolling="false" horizontalScrolling="false">
+		<IconTabBar stretchContentHeight="true">
+			<items>
+				<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.deleteSummaryTabs.DeletableAssignmentList" type="XML"/>
+				<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.deleteSummaryTabs.NonDeletableAssignmentList" type="XML"/>
+				<core:Fragment fragmentName="com.evorait.evosuite.evoresource.view.fragments.deleteSummaryTabs.UnassignmentDemandList" type="XML"/>
+			</items>
+		</IconTabBar>
+		<beginButton>
+			<Button text="{i18n>btn.continueDelete}" press="onDeleteAllAssignment" type="Emphasized"/>
+		</beginButton>
+		<endButton>
+			<Button text="{i18n>btn.cancel}" press="onDeleteAssignmentDialogClose" type="Emphasized"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

@@ -7,7 +7,6 @@
 		"tabName": "ResourceGroupSet",
 		"lineItemQualifier": "",
 		"presentationVariantQualifier": "",
-		"header": "{i18n>xtit.groups}",
 		"tableType": "ResponsiveTable",
 		"useExportToExcel": false,
 		"useVariantManagement": false,
@@ -26,7 +25,6 @@
 		"tabName": "ShiftSet",
 		"lineItemQualifier": "",
 		"presentationVariantQualifier": "",
-		"header": "{i18n>xtit.shifts}",
 		"tableType": "ResponsiveTable",
 		"useExportToExcel": false,
 		"useVariantManagement": false,
@@ -42,10 +40,9 @@
 		"isGroup": "",
 		"groupProperty": ""
 	}, {
-		"tabName": "TimeAllocationSet",
+		"tabName": "ResourceSet",
 		"lineItemQualifier": "",
 		"presentationVariantQualifier": "",
-		"header": "{i18n>xtit.timeallocations}",
 		"tableType": "ResponsiveTable",
 		"useExportToExcel": false,
 		"useVariantManagement": false,
@@ -53,15 +50,17 @@
 		"demandPopin": true,
 		"showRowCount": true,
 		"enableAutoBinding": true,
-		"entitySet": "TimeAllocationSet",
+		"entitySet": "ResourceSet",
 		"tableBindingPath": "",
-		"requestAtLeastFields": "TimeAllocationGuid,TimeAllocationName,TimeAllocationType",
+		"requestAtLeastFields": "ResourceGuid",
 		"class": "",
-		"isGroup": "X",
-		"groupProperty": "TimeAllocationType"
+		"isGroup": "",
+		"groupProperty": ""
 	}],
 	"EntitySet": {
 		"RES_GROUP": "ResourceAssignmentSet",
-		"SHIFT": "ShiftSet"
+		"SHIFT": "ShiftSet",
+		"RESOURCE": "ResourceAssignmentSet",
+		"RES_GANT": "GanttResourceHierarchySet"
 	}
 }

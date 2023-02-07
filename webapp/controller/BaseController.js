@@ -6,10 +6,8 @@ sap.ui.define([
 	"com/evorait/evosuite/evoresource/model/Constants",
 	"sap/base/util/deepClone",
 	"sap/base/util/merge",
-	"sap/gantt/axistime/StepwiseZoomStrategy",
-	"sap/gantt/config/TimeHorizon",
 	"sap/m/MessageBox"
-], function (Controller, Formatter, Fragment, Constants, deepClone, merge, StepwiseZoomStrategy, TimeHorizon, MessageBox) {
+], function (Controller, Formatter, Fragment, Constants, deepClone, merge, MessageBox) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoresource.controller.BaseController", {
@@ -56,15 +54,8 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
-				createNewTempAssignment: {
-					public: true,
-					final: true
-				},
+
 				getObjectFromEntity: {
-					public: true,
-					final: true
-				},
-				changeGanttHorizonViewAt: {
 					public: true,
 					final: true
 				},
@@ -95,8 +86,15 @@ sap.ui.define([
 				mergeObject: {
 					public: true,
 					final: true
+				},
+				getLengthOfAllChildren: {
+					public: true,
+					final: true
+				},
+				getEntityPropeties: {
+					public: true,
+					final: true
 				}
-
 			}
 		},
 
@@ -231,7 +229,7 @@ sap.ui.define([
 		showMessageToast: function (sMsg) {
 			sap.m.MessageToast.show(sMsg, {
 				duration: 3000, // default
-				width: "15em", // default
+				width: "20em", // default
 				my: "center bottom", // default
 				at: "center bottom", // default
 				of: window, // default
@@ -256,95 +254,6 @@ sap.ui.define([
 		},
 
 		/**
-		 * when background shape was pressed create temporary assignment
-		 * for shape popover input fields and visibility inside Gantt chart
-		 * 
-		 * @param {object} oStartTime - start date of shape
-		 * @param {object} oEndTime - end date of shape 
-		 * @param {object} oRowData - row context data from Gantt row
-		 */
-		createNewTempAssignment: function (oStartTime, oEndTime, oRowData, bDragged) {
-			return new Promise(function (resolve) {
-				var obj = {
-						minDate: new Date(),
-						isTemporary: true,
-						isNew: true,
-						Guid: new Date().getTime(),
-						Repeat: "NEVER",
-						Every: "",
-						Days: [],
-						On: 0,
-						RepeatEndDate: new Date(),
-						isEditable: true,
-						isDeletable: true,
-						isRestChanges: true,
-						maxDate: this.getModel("viewModel").getProperty("/gantt/defaultEndDate")
-					},
-					oDraggedData = this.getView().getModel("viewModel").getProperty("/draggedData"),
-					nodeType;
-
-				if (bDragged) nodeType = oDraggedData.data.NodeType;
-				else {
-					if (oRowData.NodeType) nodeType = oRowData.NodeType;
-					else if (oRowData.NODE_TYPE) nodeType = oRowData.NODE_TYPE;
-				}
-				//collect all assignment properties who allowed for create
-				this.getModel().getMetaModel().loaded().then(function () {
-					var oMetaModel = this.getModel().getMetaModel(),
-						oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet"),
-						oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[nodeType]),
-						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-						aProperty = oEntityType ? oEntityType.property : [];
-
-					if (aProperty.length === 0) {
-						for (var key in oEntitySetList) {
-							oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[key]);
-							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null;
-							aProperty = aProperty.concat(oEntityType ? oEntityType.property : [])
-						}
-					}
-
-					aProperty.forEach(function (property) {
-						var isCreatable = property["sap:creatable"];
-						obj[property.name] = "";
-						if (oRowData.hasOwnProperty(property.name)) {
-							obj[property.name] = oRowData[property.name];
-						}
-					});
-					obj.RepeatEndDate = oEndTime;
-					obj.StartDate = oStartTime;
-					obj.EndDate = oEndTime;
-					obj.EffectiveStartDate = oStartTime;
-					obj.EffectiveEndDate = oEndTime;
-					obj.NODE_TYPE = nodeType;
-					obj.ResourceGroupGuid = oRowData.ResourceGroupGuid;
-					obj.ResourceGuid = oRowData.ResourceGuid;
-					obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
-					obj.PARENT_NODE_ID = oRowData.NodeId;
-					obj.bDragged = bDragged;
-					obj.ParentNodeId = oRowData.ResourceGuid;
-
-					if (nodeType === "RESOURCE") {
-						obj.NodeId = oRowData.NodeId;
-						obj.TIME_ZONE = oRowData.TIME_ZONE;
-						obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
-						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
-					}
-					if (nodeType === "RES_GROUP") {
-						obj.NodeId = oRowData.ParentNodeId;
-						obj.DESCRIPTION = oRowData.ResourceGroupDesc || oRowData.Description;
-						obj.RESOURCE_GROUP_COLOR = oRowData.ResourceGroupColor;
-					} else if (nodeType === "SHIFT") {
-						obj.NodeId = oRowData.ParentNodeId;
-						obj.DESCRIPTION = oRowData.ScheduleIdDesc || oRowData.Description;
-						obj.RESOURCE_GROUP_COLOR = oRowData.SHIFT_COLOR;
-					}
-					resolve(obj);
-				}.bind(this));
-			}.bind(this));
-		},
-
-		/**
 		 * Validate simiple form
 		 * @public
 		 */
@@ -364,6 +273,9 @@ sap.ui.define([
 					var sValue = aCustomFields[i].getValue();
 					if (aCustomFields[i] instanceof sap.m.MultiComboBox) {
 						sValue = aCustomFields[i].getSelectedKeys().length;
+					}
+					if (aCustomFields[i] instanceof sap.m.MultiInput) {
+						sValue = aCustomFields[i].getTokens().length;
 					}
 					try {
 						if (aCustomFields[i].getRequired() && aCustomFields[i].getEditable() && (!sValue || sValue.trim() === "")) {
@@ -426,6 +338,7 @@ sap.ui.define([
 				if (oData.length > 0) {
 					this.getModel().setRefreshAfterChange(false); //avoid GET request for every after POST request
 					this.getModel().submitChanges(mParameters);
+					this.getView().getModel("viewModel").setProperty("/isResetEnabled", false);
 				} else {
 					if (oSuccessCallback) {
 						oSuccessCallback();
@@ -449,6 +362,33 @@ sap.ui.define([
 			return merge(destination, source);
 		},
 
+		/**
+		 * Get entity properties based on metamodel
+		 * Wait till metadata load then fetch property details of the entity
+		 * @param {oEntitySetList} - list of entity
+		 * @param sEntitySet - entityset of node selected
+		 */
+		getEntityPropeties: function (sEntitySet, oEntitySetList) {
+			return new Promise(function (resolve) {
+				//collect all assignment properties who allowed for create
+				this.getModel().getMetaModel().loaded().then(function () {
+					var oMetaModel = this.getModel().getMetaModel(),
+						oEntitySet = oMetaModel.getODataEntitySet(sEntitySet),
+						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+						aProperty = oEntityType ? oEntityType.property : [];
+
+					if (aProperty.length === 0) {
+						for (var key in oEntitySetList) {
+							oEntitySet = oMetaModel.getODataEntitySet(oEntitySetList[key]);
+							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null;
+							aProperty = aProperty.concat(oEntityType ? oEntityType.property : []);
+						}
+					}
+					resolve(aProperty);
+				}.bind(this));
+			}.bind(this));
+		},
+
 		/* =========================================================== */
 		/* internal methods                                            */
 		/* =========================================================== */
@@ -461,6 +401,7 @@ sap.ui.define([
 		_preparePayload: function (mParameters) {
 			return new Promise(function (resolve) {
 				var aChangedData = this.oPlanningModel.getProperty("/changedData"),
+					aPromises = [],
 					oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet");
 				this.getModel().setDeferredGroups(["batchSave"]);
 				aChangedData.forEach(function (sPath) {
@@ -472,19 +413,14 @@ sap.ui.define([
 						obj = {},
 						entitySet = oEntitySetList[oRowData.NODE_TYPE];
 					//collect all assignment properties who allowed for create
-					this.getModel().getMetaModel().loaded().then(function () {
-						var oMetaModel = this.getModel().getMetaModel(),
-							oEntitySet = oMetaModel.getODataEntitySet(entitySet),
-							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-							aProperty = oEntityType ? oEntityType.property : [];
-
+					this.getEntityPropeties(entitySet, oEntitySetList).then(function (aProperty) {
 						aProperty.forEach(function (property) {
 							obj[property.name] = "";
 							if (oRowData.hasOwnProperty(property.name)) {
 								obj[property.name] = oRowData[property.name];
 
 								// added formatter to convert the date to UTC before backend call
-								if ((property.name === "StartDate" || property.name === "EffectiveStartDate") && oRowData[property.name]) {
+								if ((property.type === "Edm.DateTime" || property.type === "Edm.DateTimeOffset") && oRowData[property.name]) {
 									obj[property.name] = Formatter.convertToUTCDate(oRowData[property.name]);
 								}
 								/**
@@ -493,17 +429,20 @@ sap.ui.define([
 								 * Removed 1 more second from the enddate before send it to backend
 								 * Remove bellow code once we get valid loigc to send UTC date for multiple days selection
 								 */
-								if ((property.name === "EndDate" || property.name === "EffectiveEndDate") && oRowData[property.name]) {
-									obj[property.name] = new Date(oRowData[property.name].getTime() - 1000);
-									obj[property.name] = Formatter.convertToUTCDate(obj[property.name]);
+								if ((property.name === "EndDate" || property.name === "EffectiveEndDate") && obj[property.name]) {
+									obj[property.name] = new Date(obj[property.name].getTime() - 1000);
 								}
 							}
 						});
 						singleentry.properties = obj;
-						this.getModel().createEntry("/" + entitySet, singleentry);
+						aPromises.push(this.getModel().createEntry("/" + entitySet, singleentry));
 					}.bind(this));
+
 				}.bind(this));
-				resolve(aChangedData);
+				Promise.all(aPromises).then(function () {
+					resolve(aChangedData);
+				});
+
 			}.bind(this));
 		},
 
@@ -520,14 +459,21 @@ sap.ui.define([
 					},
 					oEntitySetList = this.getModel("templateProperties").getProperty("/EntitySet");
 				aDeleteData.forEach(function (oAssignment) {
-					var entitySet = oEntitySetList[oAssignment.NODE_TYPE];
-					if (oAssignment.NODE_TYPE === "RES_GROUP") {
-						this.getModel().remove("/" + entitySet + "('" + oAssignment.Guid + "')", param);
-					} else if (oAssignment.NODE_TYPE === "SHIFT") {
-						this.getModel().remove("/" + entitySet + "(Guid='" + oAssignment.Guid + "',TemplateId='" + oAssignment.TemplateId +
-							"')",
-							param);
+					var entitySet = oEntitySetList[oAssignment.NODE_TYPE],
+						sPath = "";
+					if (oAssignment.isRepeating) { // checking if single delete or series delete
+						oAssignment.IsSeries = true;
+					} else {
+						oAssignment.IsSeries = false;
 					}
+
+					if (oAssignment.NODE_TYPE === "RES_GROUP") {
+						sPath = "/" + entitySet + "(Guid='" + oAssignment.Guid + "',IsSeries=" + oAssignment.IsSeries + ")";
+					} else if (oAssignment.NODE_TYPE === "SHIFT") {
+						sPath = "/" + entitySet + "(Guid='" + oAssignment.Guid + "',TemplateId='" + oAssignment.TemplateId + "',IsSeries=" +
+							oAssignment.IsSeries + ")";
+					}
+					this.getModel().remove(sPath, param);
 
 				}.bind(this));
 				resolve(aDeleteData);
@@ -764,23 +710,14 @@ sap.ui.define([
 		_checkDuplicateAsigment: function (oData, aResourceChild) {
 			var sStartTime, sEndTime,
 				bValidate = true,
-				sAssignmentStartDate, sAssignmentEndDate;
-			if (oData.NODE_TYPE === "RES_GROUP") {
-				if (oData.isNew || oData.isChanging) {
-					sStartTime = oData.StartDate;
-					sEndTime = oData.EndDate;
-				} else {
-					sStartTime = Formatter.convertFromUTCDate(oData.StartDate, false);
-					sEndTime = Formatter.convertFromUTCDate(oData.EndDate, false);
-				}
-			} else if (oData.NODE_TYPE === "SHIFT") {
-				if (oData.isNew || oData.isChanging) {
-					sStartTime = oData.EffectiveStartDate;
-					sEndTime = oData.EffectiveEndDate;
-				} else {
-					sStartTime = Formatter.convertFromUTCDate(oData.EffectiveStartDate, false);
-					sEndTime = Formatter.convertFromUTCDate(oData.EffectiveEndDate, false);
-				}
+				sAssignmentStartDate, sAssignmentEndDate,
+				oDateProp = this._getStartEndDateProperty(oData.NODE_TYPE);
+			if (oData.isNew || oData.isChanging) {
+				sStartTime = oData[oDateProp.startDate];
+				sEndTime = oData[oDateProp.endDate];
+			} else {
+				sStartTime = Formatter.convertFromUTCDate(oData[oDateProp.startDate], false);
+				sEndTime = Formatter.convertFromUTCDate(oData[oDateProp.endDate], false);
 			}
 
 			aResourceChild.forEach(function (oAssignment) {
@@ -848,23 +785,6 @@ sap.ui.define([
 		},
 
 		/**
-		 * reset the changes when overlapped with other assigmnment
-		 * reset the original shape details if validation gets failed
-		 */
-		_resetChanges: function () {
-			var oData = this.oPlanningModel.getProperty("/tempData/popover"),
-				oldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
-				oFoundData = this._getChildrenDataByKey("Guid", oData.Guid, null);
-
-			// reset the original shape details if validation gets failed
-			if (oData.Guid === oldPopoverData.Guid) {
-				for (var i = 0; i < oFoundData.length; i++) {
-					this.oPlanningModel.setProperty(oFoundData[i], oldPopoverData);
-				}
-			}
-		},
-
-		/**
 		 * Promise return Structture of a given EntitySet with data if passed
 		 * @param {string} sEntitySet - EntitySet name
 		 * @param {object} oRowData -  Data to be copied to new object
@@ -872,11 +792,7 @@ sap.ui.define([
 		getObjectFromEntity: function (sEntitySet, oRowData) {
 			var obj = {};
 			return new Promise(function (resolve) {
-				this.getModel().getMetaModel().loaded().then(function () {
-					var oMetaModel = this.getModel().getMetaModel(),
-						oEntitySet = oMetaModel.getODataEntitySet(sEntitySet),
-						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-						aProperty = oEntityType ? oEntityType.property : [];
+				this.getEntityPropeties(sEntitySet).then(function (aProperty) {
 					aProperty.forEach(function (property) {
 						obj[property.name] = "";
 						if (oRowData[property.name]) {
@@ -896,69 +812,6 @@ sap.ui.define([
 			this.getOwnerComponent().MessageManager.open(oView, oEvent);
 		},
 
-		/**
-		 * when start and end date is given then this values will be set as new default dates
-		 * inside viewModel and a new total horizon is rendered for Gantt
-		 * 
-		 * @param {object} oStartDate - start date of gantt total horizon
-		 * @param {object} oEndDate - end date of gantt total horizon
-		 */
-		_setNewHorizon: function (oStartDate, oEndDate) {
-			if (oStartDate) {
-				this.getModel("viewModel").setProperty("/gantt/defaultStartDate", oStartDate);
-			} else {
-				oStartDate = this.getModel("viewModel").getProperty("/gantt/defaultStartDate");
-			}
-			if (oEndDate) {
-				this.getModel("viewModel").setProperty("/gantt/defaultEndDate", oEndDate);
-			} else {
-				oEndDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
-			}
-			this.oZoomStrategy = this._createGanttHorizon(oStartDate, oEndDate);
-			this.oZoomStrategy.setTimeLineOption(Formatter.getTimeLineOptions(this._previousView));
-			this._ganttChart.setAxisTimeStrategy(this.oZoomStrategy);
-		},
-		/**
-		 * Creating Gantt Horizon for New Gant Layout
-		 * @param {object} oStartDate - start date
-		 * @param {object} oEndDate - end date
-		 */
-		_createGanttHorizon: function (oStartDate, oEndDate) {
-			return new StepwiseZoomStrategy({
-				visibleHorizon: new TimeHorizon({
-					startTime: oStartDate,
-					endTime: oEndDate
-				}),
-				totalHorizon: new TimeHorizon({
-					startTime: oStartDate,
-					endTime: oEndDate
-				})
-			});
-
-		},
-
-		/**
-		 * Change view horizon time at specified timestamp
-		 * @param oModel {object} viewModel
-		 * @param start {object} timestamp
-		 * @param end {object} timestamp
-		 */
-		changeGanttHorizonViewAt: function (oModel, iZoomLevel, oAxisTimeStrategy) {
-			var sStartDate, sEndDate;
-
-			if (iZoomLevel >= 8) {
-				sStartDate = moment().startOf("hour").toDate();
-				sEndDate = moment().endOf("hour").add(1, "hour").toDate();
-			} else {
-				sStartDate = moment().startOf("day").subtract(1, "day").toDate();
-				sEndDate = moment().endOf("day").add(1, "day").toDate();
-			}
-			oAxisTimeStrategy.setVisibleHorizon(new sap.gantt.config.TimeHorizon({
-				startTime: sStartDate,
-				endTime: sEndDate
-			}));
-
-		},
 		/**
 		 * Method copy one object data to another having same property
 		 * @param source {object} source object
@@ -1070,6 +923,21 @@ sap.ui.define([
 				window.open(sUri, "_blank");
 			}
 		},
+
+		/**
+		 * This function is used for calculating length of items in tree table along with the children
+		 * @param aChildren {array} - Array with the GanttPlanningModel data
+		 * */
+		getLengthOfAllChildren: function (aChildren) {
+			var iItemsLength = 0;
+			aChildren.forEach(function (item) {
+				iItemsLength++;
+				if (item.children)
+					iItemsLength += item.children.length;
+			});
+			return iItemsLength - 1;
+		},
+
 		/**
 		 * get respective navigation details
 		 * @param sAppID
@@ -1128,40 +996,34 @@ sap.ui.define([
 		},
 
 		/*
-		 * Returns true filter start date is after oStartDate, else false
-		 * @param {object} oStartDate - Date
-		 */
-		_isStartDateBeyondFilterDateRange: function (oStartDate) {
-
-			var startDate = this.getModel("viewModel").getProperty("/gantt/defaultStartDate"),
-				bValidate = false;
-			if (moment(startDate).startOf('day').isAfter(moment(oStartDate).startOf('day').toDate())) {
-				bValidate = true;
-			}
-			return bValidate;
-
-		},
-
-		/*
-		 * Returns true filter end date is before oEndDate, else false
-		 * @param {object} oEndDate - Date
-		 */
-		_isEndDateBeyondFilterDateRange: function (oEndDate) {
-			var endDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate"),
-				bValidate = false;
-			if (moment(endDate).endOf('day').isBefore(moment(oEndDate).endOf('day').toDate())) {
-				bValidate = true;
-			}
-			return bValidate;
-		},
-
-		/*
 		 * Returns true if oDate and oSecondDate is same, else false
 		 * @param {object} oDate - Date
 		 * @param {object} oSecondDate - Date
 		 */
 		_isDateSame: function (oDate, oSecondDate) {
 			return moment(oDate).isSame(oSecondDate);
+		},
+		/**
+		 * Method to get node specific Start/End date property
+		 * @param {sNodeType} - Assignment type
+		 */
+		_getStartEndDateProperty: function (sNodeType) {
+			if (sNodeType === "RES_GROUP") {
+				return {
+					startDate: "StartDate",
+					endDate: "EndDate"
+				};
+			} else if (sNodeType === "SHIFT") {
+				return {
+					startDate: "EffectiveStartDate",
+					endDate: "EffectiveEndDate"
+				};
+			}
+			return {
+				startDate: null,
+				endDate: "null"
+			};
 		}
+
 	});
 });
