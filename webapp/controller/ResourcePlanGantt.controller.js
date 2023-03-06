@@ -1556,47 +1556,52 @@ sap.ui.define([
 				aDeleteForValidationList = this.getModel("multiDeleteModel").getProperty("/deleteDataForValidation"),
 				aDeleteForNoValidationList = this.getModel("multiDeleteModel").getProperty("/deleteDataForNoValidation"),
 				aFinalDeleteList = [];
+			if (this.getView().getModel("user").getProperty("/ENABLE_ASSIGNMENT_CHECK")) {
+				if (aDeleteForValidationList.length > 0) { //if any data for validation
+					var createPromise = function (oAssignmentData) {
+						return new Promise(function (resolve, reject) {
+							var oParams = {
+									Guid: oAssignmentData.Guid,
+									ObjectId: oAssignmentData.NODE_ID,
+									EndTimestamp: oAssignmentData.EndDate,
+									StartTimestamp: oAssignmentData.StartDate,
+									StartTimestampUtc: formatter.convertFromUTCDate(oAssignmentData.StartDate),
+									EndTimestampUtc: formatter.convertFromUTCDate(oAssignmentData.EndDate),
+									IsSeries: false
+								},
+								sFunctionName = "ValidateResourceAssignment",
+								callbackfunction = function (oData) {
+									resolve(oData);
+								};
 
-			if (aDeleteForValidationList.length > 0) { //if any data for validation
-				var createPromise = function (oAssignmentData) {
-					return new Promise(function (resolve, reject) {
-						var oParams = {
-								Guid: oAssignmentData.Guid,
-								ObjectId: oAssignmentData.NODE_ID,
-								EndTimestamp: oAssignmentData.EndDate,
-								StartTimestamp: oAssignmentData.StartDate,
-								StartTimestampUtc: formatter.convertFromUTCDate(oAssignmentData.StartDate),
-								EndTimestampUtc: formatter.convertFromUTCDate(oAssignmentData.EndDate),
-								IsSeries: false
-							},
-							sFunctionName = "ValidateResourceAssignment",
-							callbackfunction = function (oData) {
-								resolve(oData);
-							};
+							this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
+						}.bind(this));
+					}.bind(this);
+					aDeleteForValidationList.forEach(function (oAssignmentData, idx) {
+						aPromise.push(createPromise(oAssignmentData));
+					}, this);
 
-						this.callFunctionImport(oParams, sFunctionName, "POST", callbackfunction);
+					Promise.all(aPromise).then(function (result) { // promise to call validation in batch
+						var oData = [];
+						result.forEach(function (oResult, idx) {
+							oData = oData.concat(oResult.results);
+						}.bind(this));
+						if (oData.length > 0) { //if any demand assignment exist
+							this.getModel("multiDeleteModel").setProperty("/demandList", oData);
+							this.openMultiDemandListDialog();
+						} else { //if no demand assignment exist
+							aFinalDeleteList = aDeleteForValidationList.concat(aDeleteForNoValidationList);
+							this.getModel("multiDeleteModel").setProperty("/deletableList", aFinalDeleteList);
+							this.openDeleteAssignmentListDialog();
+						}
 					}.bind(this));
-				}.bind(this);
-				aDeleteForValidationList.forEach(function (oAssignmentData, idx) {
-					aPromise.push(createPromise(oAssignmentData));
-				}, this);
-
-				Promise.all(aPromise).then(function (result) { // promise to call validation in batch
-					var oData = [];
-					result.forEach(function (oResult, idx) {
-						oData = oData.concat(oResult.results);
-					}.bind(this));
-					if (oData.length > 0) { //if any demand assignment exist
-						this.getModel("multiDeleteModel").setProperty("/demandList", oData);
-						this.openMultiDemandListDialog();
-					} else { //if no demand assignment exist
-						aFinalDeleteList = aDeleteForValidationList.concat(aDeleteForNoValidationList);
-						this.getModel("multiDeleteModel").setProperty("/deletableList", aFinalDeleteList);
-						this.openDeleteAssignmentListDialog();
-					}
-				}.bind(this));
-			} else { //if no data for validation
-				aFinalDeleteList = aDeleteForNoValidationList;
+				} else { //if no data for validation
+					aFinalDeleteList = aDeleteForNoValidationList;
+					this.getModel("multiDeleteModel").setProperty("/deletableList", aFinalDeleteList);
+					this.openDeleteAssignmentListDialog();
+				}
+			} else { //No Validation for Delete When ENABLE_ASSIGNMENT_CHECK is false
+				aFinalDeleteList = aDeleteForValidationList.concat(aDeleteForNoValidationList);
 				this.getModel("multiDeleteModel").setProperty("/deletableList", aFinalDeleteList);
 				this.openDeleteAssignmentListDialog();
 			}
