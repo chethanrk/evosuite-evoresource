@@ -927,6 +927,8 @@ sap.ui.define([
 						oAssignmentData.isRepeating = true;
 						oAssignmentData.isTemporary = false;
 						// this.editSeriesDate = true;
+						this.groupShiftContextForRepeat = this.groupShiftContext;
+						this.groupShiftContext = null;
 						this._removeAssignmentShape(oAssignmentData, true);
 					} else {
 						this._validateAssignment();
@@ -1824,6 +1826,7 @@ sap.ui.define([
 				oContext = oShape && oShape.getBindingContext("ganttPlanningModel"),
 				oAssignment = oContext && oContext.getObject();
 			this.groupShiftContext = null;
+			this.groupShiftContextForRepeat = null;
 			if (oShape && oShape.sParentAggregationName !== "shapes1") {
 				this._setPopoverData(oShape, {});
 				if (oAssignment && formatter.isPopoverDeleteButtonVisible(oAssignment.isTemporary, oAssignment.isEditable, oAssignment.isDeletable)) {
@@ -2584,6 +2587,7 @@ sap.ui.define([
 					removeAssignment();
 				}
 			} else {
+				this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", false);
 				this._validateForDelete(oAssignData);
 			}
 
@@ -2726,6 +2730,10 @@ sap.ui.define([
 				} else {
 					this._manageDates(oAssignItem);
 				}
+			}
+			
+			if (this._oPlanningPopover) {
+				this._oPlanningPopover.close();
 			}
 		},
 		/**
