@@ -637,7 +637,8 @@ sap.ui.define([
 						this._oPlanningPopover = pPopover;
 						this._setPopoverData(oTargetControl, oPopoverData);
 						this.getView().addDependent(this._oPlanningPopover);
-						this._oPlanningPopover.openBy(oTargetControl);
+						// this._oPlanningPopover.openBy(oTargetControl);
+						this._oPlanningPopover.open();
 						//after popover gets opened check popover data for resource group color
 						this._oPlanningPopover.attachAfterOpen(function () {
 							var oData = this.oPlanningModel.getProperty("/tempData/popover");
@@ -651,7 +652,8 @@ sap.ui.define([
 					}.bind(this));
 				} else {
 					this._setPopoverData(oTargetControl, oPopoverData);
-					this._oPlanningPopover.openBy(oTargetControl);
+					// this._oPlanningPopover.openBy(oTargetControl);
+					this._oPlanningPopover.open();
 				}
 			} else {
 				this.showMessageToast(this.getResourceBundle().getText("xtxt.noPastAssignment"));
