@@ -913,15 +913,16 @@ sap.ui.define([
 				oAssignmentData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oResourceGroupSource = sap.ui.getCore().byId("idResourceGroupGroup"),
 				oShiftSource = sap.ui.getCore().byId("idShift");
-			if(!this.groupShiftContext){
-				if(oAssignmentData.NODE_TYPE === "RES_GROUP"){
+			if (!this.groupShiftContext) {
+				if (oAssignmentData.NODE_TYPE === "RES_GROUP") {
 					this.groupShiftContext = oResourceGroupSource.getSelectedItem().getBindingContext("viewModel");
-				}else if(oAssignmentData.NODE_TYPE === "SHIFT"){
+				} else if (oAssignmentData.NODE_TYPE === "SHIFT") {
 					this.groupShiftContext = oShiftSource.getSelectedItem().getBindingContext("viewModel");
 				}
 			}
 
 			if (oValidation && oValidation.state === "success") {
+				
 				if (oAssignmentData.isNew) {
 					if (oAssignmentData.isApplySeries === true) {
 						oAssignmentData.isRepeating = true;
@@ -933,7 +934,6 @@ sap.ui.define([
 					} else {
 						this._validateAssignment();
 					}
-
 				} else {
 					if (oAssignmentData.isApplySeries === true) {
 						oAssignmentData.isRepeating = true;
@@ -2731,7 +2731,7 @@ sap.ui.define([
 					this._manageDates(oAssignItem);
 				}
 			}
-			
+
 			if (this._oPlanningPopover) {
 				this._oPlanningPopover.close();
 			}
