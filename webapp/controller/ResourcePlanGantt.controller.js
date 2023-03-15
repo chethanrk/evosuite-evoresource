@@ -1013,7 +1013,7 @@ sap.ui.define([
 			this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ResourceGroupDesc"));
 			this.oPlanningModel.setProperty("/tempData/popover/ResourceGroupDesc", this.groupShiftContext.getProperty("ResourceGroupDesc"));
 			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
-			this._switchType(oData);
+			this._changeAssignmentSubType(oData);
 		},
 
 		/**
@@ -1075,7 +1075,7 @@ sap.ui.define([
 			delete shiftData["IsSeries"];
 			oData = this.mergeObject(oData, shiftData);
 			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
-			this._switchType(oData);
+			this._changeAssignmentSubType(oData);
 		},
 
 		/**
@@ -2565,7 +2565,11 @@ sap.ui.define([
 			}
 
 		},
-		_switchType: function (oAssignData) {
+		/**
+		 * Method to change group/shift type
+		 * @param {object} - new assignment data
+		 */
+		_changeAssignmentSubType: function (oAssignData) {
 			var aChildren = this.oPlanningModel.getProperty("/data/children");
 			var callbackFn = function (oItem, oData, idx) {
 				var aAssignments = this._getNodeTypeAssignment(oData, oItem);
