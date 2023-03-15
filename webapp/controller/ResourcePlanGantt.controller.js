@@ -369,7 +369,6 @@ sap.ui.define([
 		groupShiftContext: null,
 		groupShiftContextForRepeat: null,
 		groupShiftSeriesDuplicate: false,
-		// editSeriesDate: false,
 		_ganttChart: null,
 		_smartFilterBar: null,
 		_dateRangeFilter: null,
@@ -637,7 +636,6 @@ sap.ui.define([
 						this._oPlanningPopover = pPopover;
 						this._setPopoverData(oTargetControl, oPopoverData);
 						this.getView().addDependent(this._oPlanningPopover);
-						// this._oPlanningPopover.openBy(oTargetControl);
 						this._oPlanningPopover.open();
 						//after popover gets opened check popover data for resource group color
 						this._oPlanningPopover.attachAfterOpen(function () {
@@ -652,7 +650,6 @@ sap.ui.define([
 					}.bind(this));
 				} else {
 					this._setPopoverData(oTargetControl, oPopoverData);
-					// this._oPlanningPopover.openBy(oTargetControl);
 					this._oPlanningPopover.open();
 				}
 			} else {
@@ -922,33 +919,19 @@ sap.ui.define([
 			}
 
 			if (oValidation && oValidation.state === "success") {
-				
-				if (oAssignmentData.isNew) {
-					if (oAssignmentData.isApplySeries === true) {
-						oAssignmentData.isRepeating = true;
-						oAssignmentData.isTemporary = false;
-						// this.editSeriesDate = true;
-						this.groupShiftContextForRepeat = this.groupShiftContext;
-						this.groupShiftContext = null;
-						this._removeAssignmentShape(oAssignmentData, true);
-					} else {
-						this._validateAssignment();
-					}
+				if (oAssignmentData.isApplySeries === true) {
+					oAssignmentData.isRepeating = true;
+					oAssignmentData.isTemporary = false;
+					this.groupShiftContextForRepeat = this.groupShiftContext;
+					this.groupShiftContext = null;
+					this._removeAssignmentShape(oAssignmentData, true);
 				} else {
-					if (oAssignmentData.isApplySeries === true) {
-						oAssignmentData.isRepeating = true;
-						oAssignmentData.isTemporary = false;
-						// this.editSeriesDate = true;
-						this.groupShiftContextForRepeat = this.groupShiftContext;
-						this.groupShiftContext = null;
-						this._removeAssignmentShape(oAssignmentData, true);
-					} else {
+					if (oAssignmentData.IsSeries === true) {
 						oAssignmentData.IsSeries = false;
 						oAssignmentData.SeriesRepeat = "";
-						this._validateAssignment();
 					}
+					this._validateAssignment();
 				}
-
 			}
 		},
 
@@ -1030,11 +1013,6 @@ sap.ui.define([
 			this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ResourceGroupDesc"));
 			this.oPlanningModel.setProperty("/tempData/popover/ResourceGroupDesc", this.groupShiftContext.getProperty("ResourceGroupDesc"));
 			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
-			// if (oData.isApplySeries) {
-			// 	this.groupShiftContextForRepeat = this.groupShiftContext;
-			// 	this.groupShiftContext = null;
-			// 	oData.isRepeating = true; // for deleting series
-			// }
 			this._switchType(oData);
 		},
 
@@ -1097,11 +1075,6 @@ sap.ui.define([
 			delete shiftData["IsSeries"];
 			oData = this.mergeObject(oData, shiftData);
 			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
-			// if (oData.isApplySeries) {
-			// 	this.groupShiftContextForRepeat = this.groupShiftContext;
-			// 	this.groupShiftContext = null;
-			// 	oData.isRepeating = true; // for deleting series
-			// }
 			this._switchType(oData);
 		},
 
@@ -2783,7 +2756,6 @@ sap.ui.define([
 				}
 			}
 
-			// if (this.groupShiftContextForRepeat || this.editSeriesDate) {
 			if (this.groupShiftContextForRepeat) {
 				this.editRepeatingAssignment(oAssignmentData);
 			}
@@ -2826,16 +2798,6 @@ sap.ui.define([
 				this._addSingleChildToParent(oNewAssignmentData, false, true, true);
 				this.groupShiftContextForRepeat = null;
 			}
-			// if (this.editSeriesDate) {
-			// 	oNewAssignmentData.Guid = new Date().getTime().toString();
-			// 	oNewAssignmentData.isNew = true;
-			// 	if (oNewAssignmentData.NODE_TYPE === "SHIFT") {
-			// 		oNewAssignmentData.PARENT_NODE_ID = oNewAssignmentData.NodeId;
-			// 		oNewAssignmentData.ResourceGuid = oNewAssignmentData.ParentNodeId;
-			// 	}
-			// 	this._addSingleChildToParent(oNewAssignmentData, false, true, true);
-			// 	this.editSeriesDate = false;
-			// }
 		},
 
 		/**
