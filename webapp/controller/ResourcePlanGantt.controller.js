@@ -1999,7 +1999,7 @@ sap.ui.define([
 						oResourceData = deepClone(oCloneAssignmentData);
 						aChildren.push(oResourceData);
 					}
-					this._addSingleChildToParent(oCloneAssignmentData, false, false);
+					this._addSingleChildToParent(oCloneAssignmentData, true, false);
 
 				}.bind(this));
 				if (aDuplicateAssignment.length) {
