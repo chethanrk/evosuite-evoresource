@@ -170,7 +170,6 @@ sap.ui.define([
 				oEndDate = this.getModel("viewModel").getProperty("/gantt/defaultEndDate");
 			}
 			this.oZoomStrategy = this._createGanttHorizon(oStartDate, oEndDate);
-			this.oZoomStrategy.setTimeLineOption(Formatter.getTimeLineOptions(this._previousView));
 			this._ganttChart.setAxisTimeStrategy(this.oZoomStrategy);
 		},
 
