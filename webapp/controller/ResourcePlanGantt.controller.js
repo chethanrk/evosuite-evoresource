@@ -462,6 +462,7 @@ sap.ui.define([
 						this._setDateFilter(sKey);
 					} else {
 						this._setNewHorizon(oStartDate, oEndDate);
+						this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
 					}
 
 				};
@@ -474,6 +475,7 @@ sap.ui.define([
 					this._setDateFilter(sKey);
 				} else {
 					this._setNewHorizon(oStartDate, oEndDate);
+					this.oZoomStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
 				}
 				this._loadGanttData();
 				this.updateNewDataFromGanttFilterBar();
