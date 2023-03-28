@@ -2081,7 +2081,11 @@ sap.ui.define([
 				}.bind(this));
 			}.bind(this));
 		},
-
+		/**
+		 * Changes resource group type and date for the assignment
+		 * @param {object} oResourceGroupSource - source object of resource group combo box
+		 * @param {object} oDateSource - source object of date range control
+		 */
 		_setResourceGroup: function (oResourceGroupSource, oDateSource) {
 			var oSelectedItem = oResourceGroupSource.getSelectedItem(),
 				oData = this.oPlanningModel.getProperty("/tempData/popover"),
@@ -2127,7 +2131,11 @@ sap.ui.define([
 			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
 			this._changeAssignmentSubType(oData);
 		},
-
+		/**
+		 * Changes shift type and date for the assignment
+		 * @param {object} oResourceGroupSource - source object of resource group combo box
+		 * @param {object} oDateSource - source object of date range control
+		 */
 		_setShift: function (oShiftSource, oDateSource) {
 			var oSelectedItem = oShiftSource.getSelectedItem(),
 				oSelContext = oSelectedItem.getBindingContext("viewModel"),
@@ -2182,7 +2190,10 @@ sap.ui.define([
 			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
 			this._changeAssignmentSubType(oData);
 		},
-
+		/**
+		 * Changes date for the assignment
+		 * @param {object} oDateSource - source object of date range control
+		 */
 		_setDateRange: function (oDateSource) {
 			var oStartDate = oDateSource.getDateValue(),
 				oEndDate = moment(oDateSource.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
