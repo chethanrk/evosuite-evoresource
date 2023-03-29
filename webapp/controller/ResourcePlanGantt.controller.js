@@ -93,10 +93,30 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Before
 				},
+				onChangeShift: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
 				onChangeDate: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				onChangeNewResourceGroup: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onChangeNewResourceShift: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onChangeNewResourceDate: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				},
 				onPressToday: {
 					public: true,
@@ -966,163 +986,69 @@ sap.ui.define([
 		},
 
 		/**
-		 * On change resource group
-		 * set the color code to shape
+		 * On change resource group from "ShapeChangePopover" dialog
+		 * get resource group type and date and pass it to "_setResourceGroup"
 		 * @param {object} oEvent
 		 */
 		onChangeResourceGroup: function (oEvent) {
-			var oSource = oEvent.getSource(),
-				oSelectedItem = oSource.getSelectedItem(),
-				oData = this.oPlanningModel.getProperty("/tempData/popover"),
-				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
-				oDateRange = sap.ui.getCore().byId("idDateRange"),
-				oStartDate = oDateRange.getDateValue(),
-				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
-				oDateProp = {},
-				oOldPopverStartDate = null,
-				dStartDateDiff,
-				oSeriesStartDate = null,
-				oSeriesEndDate = null;
-
-			this.groupShiftContext = oSelectedItem.getBindingContext("viewModel");
-
-			oSource.setValueState(sap.ui.core.ValueState.None);
-			//validate duplicate assignments
-			if (this._validateDuplicateAsigment()) {
-				oSource.setValue("");
-				return;
-			}
-			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
-			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
-			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
-			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
-			//series date calculation
-			oDateProp = this._getStartEndDateProperty(oData.NODE_TYPE);
-			oOldPopverStartDate = formatter.convertFromUTCDate(oOldPopoverData[oDateProp.startDate], oOldPopoverData["isNew"], oOldPopoverData[
-				"isChanging"]);
-			dStartDateDiff = moment(oData[oDateProp.startDate]).diff(oOldPopverStartDate, "d");
-			oSeriesStartDate = oData["SERIES_START_DATE"] ? moment(formatter.convertFromUTCDate(oData["SERIES_START_DATE"],
-					oData.isNew, oData.isChanging))
-				.add(dStartDateDiff, "d").toDate() : null;
-			this.oPlanningModel.setProperty("/tempData/popover/SERIES_START_DATE", oSeriesStartDate);
-
-			oSeriesEndDate = formatter.convertFromUTCDate(oData["SERIES_END_DATE"], oData.isNew, oData.isChanging);
-			this.oPlanningModel.setProperty("/tempData/popover/SERIES_END_DATE", oSeriesEndDate);
-
-			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", true);
-			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
-			this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", this.groupShiftContext.getProperty("ResourceGroupColor"));
-			this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ResourceGroupDesc"));
-			this.oPlanningModel.setProperty("/tempData/popover/ResourceGroupDesc", this.groupShiftContext.getProperty("ResourceGroupDesc"));
-			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
-			this._changeAssignmentSubType(oData);
+			var oResourceGroupSource = oEvent.getSource(),
+				oDateSource = sap.ui.getCore().byId("idDateRange");
+			this._setResourceGroup(oResourceGroupSource, oDateSource);
 		},
 
 		/**
-		 * On change shift
-		 * update the shift data based on selection
+		 * On change shift from "ShapeChangePopover" dialog
+		 * get shift type and date and pass it to "_setShift"
 		 * @param {object} oEvent
 		 */
 		onChangeShift: function (oEvent) {
-			var oSource = oEvent.getSource(),
-				oSelectedItem = oSource.getSelectedItem(),
-				oSelContext = oSelectedItem.getBindingContext("viewModel"),
-				oData = this.oPlanningModel.getProperty("/tempData/popover"),
-				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
-				oDateRange = sap.ui.getCore().byId("idDateRange"),
-				oStartDate = oDateRange.getDateValue(),
-				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
-				shiftData,
-				oDateProp = {},
-				oOldPopverStartDate = null,
-				dStartDateDiff,
-				oSeriesStartDate = null,
-				oSeriesEndDate = null;
-
-			this.groupShiftContext = oSelectedItem.getBindingContext("viewModel");
-
-			oSource.setValueState(sap.ui.core.ValueState.None);
-			//validate duplicate assignments
-			if (this._validateDuplicateAsigment()) {
-				oSource.setValue("");
-				return;
-			}
-			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
-			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
-			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
-			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
-			//series date calculation
-			oDateProp = this._getStartEndDateProperty(oData.NODE_TYPE);
-			oOldPopverStartDate = formatter.convertFromUTCDate(oOldPopoverData[oDateProp.startDate], oOldPopoverData["isNew"], oOldPopoverData[
-				"isChanging"]);
-			dStartDateDiff = moment(oData[oDateProp.startDate]).diff(oOldPopverStartDate, "d");
-			oSeriesStartDate = oData["SERIES_START_DATE"] ? moment(formatter.convertFromUTCDate(oData["SERIES_START_DATE"],
-					oData.isNew, oData.isChanging))
-				.add(dStartDateDiff, "d").toDate() : null;
-			this.oPlanningModel.setProperty("/tempData/popover/SERIES_START_DATE", oSeriesStartDate);
-
-			oSeriesEndDate = formatter.convertFromUTCDate(oData["SERIES_END_DATE"], oData.isNew, oData.isChanging);
-			this.oPlanningModel.setProperty("/tempData/popover/SERIES_END_DATE", oSeriesEndDate);
-
-			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", true);
-			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
-			this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ScheduleIdDesc"));
-			this.oPlanningModel.setProperty("/tempData/popover/PARENT_NODE_ID", oData.NodeId);
-			this.oPlanningModel.setProperty("/tempData/popover/ResourceGuid", oData.ParentNodeId);
-
-			//old data update
-			this.oPlanningModel.setProperty("/tempData/oldPopoverData/PARENT_NODE_ID", oOldPopoverData.NodeId);
-			this.oPlanningModel.setProperty("/tempData/oldPopoverData/ResourceGuid", oOldPopoverData.ParentNodeId);
-			shiftData = oSelContext.getObject();
-			delete shiftData["IsSeries"];
-			oData = this.mergeObject(oData, shiftData);
-			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
-			this._changeAssignmentSubType(oData);
+			var oShiftSource = oEvent.getSource(),
+				oDateSource = sap.ui.getCore().byId("idDateRange");
+			this._setShift(oShiftSource, oDateSource);
 		},
 
 		/**
-		 * change selected date to UTC date to make display valid date on the screen
+		 * On change date from "ShapeChangePopover" dialog
+		 * gets date and pass it to "onChangeDate"
 		 * @param {object} oEvent
 		 */
 		onChangeDate: function (oEvent) {
-			var oDateRange = oEvent.getSource(),
-				oStartDate = oDateRange.getDateValue(),
-				oEndDate = moment(oDateRange.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
-				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
-				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
-				dStartDateDiff,
-				oSeriesStartDate,
-				oSeriesEndDate,
-				oDateProp = {},
-				oOldPopverStartDate;
-
-			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
-			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
-			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
-			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
-
-			//series date calculation
-			oDateProp = this._getStartEndDateProperty(oPopoverData.NODE_TYPE);
-			oOldPopverStartDate = formatter.convertFromUTCDate(oOldPopoverData[oDateProp.startDate], oOldPopoverData["isNew"], oOldPopoverData[
-				"isChanging"]);
-			dStartDateDiff = moment(oPopoverData[oDateProp.startDate]).diff(oOldPopverStartDate, "d");
-			oSeriesStartDate = oPopoverData["SERIES_START_DATE"] ? moment(formatter.convertFromUTCDate(oPopoverData["SERIES_START_DATE"],
-					oPopoverData.isNew, oPopoverData.isChanging))
-				.add(dStartDateDiff, "d").toDate() : null;
-			this.oPlanningModel.setProperty("/tempData/popover/SERIES_START_DATE", oSeriesStartDate);
-
-			oSeriesEndDate = formatter.convertFromUTCDate(oPopoverData["SERIES_END_DATE"], oPopoverData.isNew, oPopoverData.isChanging);
-			this.oPlanningModel.setProperty("/tempData/popover/SERIES_END_DATE", oSeriesEndDate);
-
-			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
-
-			//validate for the overlapping
-			if (this._validateDuplicateAsigment()) {
-				return;
-			}
-			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", true);
-			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
+			var oDateSource = oEvent.getSource();
+			this._setDateRange(oDateSource);
 		},
+
+		/**
+		 * On change resource group from "AddNewResource" dialog
+		 * get resource group type and date and pass it to "_setResourceGroup"
+		 * @param {object} oEvent
+		 */
+		onChangeNewResourceGroup: function (oEvent) {
+			var oResourceGroupSource = oEvent.getSource(),
+				oDateSource = sap.ui.getCore().byId("idDateRangeDialog");
+			this._setResourceGroup(oResourceGroupSource, oDateSource);
+		},
+
+		/**
+		 * On change shift from "AddNewResource" dialog
+		 * get shift type and date and pass it to "_setShift"
+		 * @param {object} oEvent
+		 */
+		onChangeNewResourceShift: function (oEvent) {
+			var oShiftSource = oEvent.getSource(),
+				oDateSource = sap.ui.getCore().byId("idDateRangeDialog");
+			this._setShift(oShiftSource, oDateSource);
+		},
+
+		/**
+		 * On change date from "ShapeChangePopover" dialog
+		 * gets date and pass it to "onChangeDate"
+		 * @param {object} oEvent
+		 */
+		onChangeNewResourceDate: function (oEvent) {
+			var oDateSource = oEvent.getSource();
+			this._setDateRange(oDateSource);
+		},
+
 		/**
 		 * Called when end date is changed using End Date picker
 		 * change selected date to UTC date to make display valid date on the screen
@@ -2156,6 +2082,157 @@ sap.ui.define([
 					resolve(iLevel + 1);
 				}.bind(this));
 			}.bind(this));
+		},
+		/**
+		 * Changes resource group type and date for the assignment
+		 * @param {object} oResourceGroupSource - source object of resource group combo box
+		 * @param {object} oDateSource - source object of date range control
+		 */
+		_setResourceGroup: function (oResourceGroupSource, oDateSource) {
+			var oSelectedItem = oResourceGroupSource.getSelectedItem(),
+				oData = this.oPlanningModel.getProperty("/tempData/popover"),
+				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
+				oStartDate = oDateSource.getDateValue(),
+				oEndDate = moment(oDateSource.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
+				oDateProp = {},
+				oOldPopverStartDate = null,
+				dStartDateDiff,
+				oSeriesStartDate = null,
+				oSeriesEndDate = null;
+
+			this.groupShiftContext = oSelectedItem.getBindingContext("viewModel");
+
+			oResourceGroupSource.setValueState(sap.ui.core.ValueState.None);
+			//validate duplicate assignments
+			if (this._validateDuplicateAsigment()) {
+				oResourceGroupSource.setValue("");
+				return;
+			}
+			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
+			//series date calculation
+			oDateProp = this._getStartEndDateProperty(oData.NODE_TYPE);
+			oOldPopverStartDate = formatter.convertFromUTCDate(oOldPopoverData[oDateProp.startDate], oOldPopoverData["isNew"], oOldPopoverData[
+				"isChanging"]);
+			dStartDateDiff = moment(oData[oDateProp.startDate]).diff(oOldPopverStartDate, "d");
+			oSeriesStartDate = oData["SERIES_START_DATE"] ? moment(formatter.convertFromUTCDate(oData["SERIES_START_DATE"],
+					oData.isNew, oData.isChanging))
+				.add(dStartDateDiff, "d").toDate() : null;
+			this.oPlanningModel.setProperty("/tempData/popover/SERIES_START_DATE", oSeriesStartDate);
+
+			oSeriesEndDate = formatter.convertFromUTCDate(oData["SERIES_END_DATE"], oData.isNew, oData.isChanging);
+			this.oPlanningModel.setProperty("/tempData/popover/SERIES_END_DATE", oSeriesEndDate);
+
+			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", true);
+			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
+			this.oPlanningModel.setProperty("/tempData/popover/RESOURCE_GROUP_COLOR", this.groupShiftContext.getProperty("ResourceGroupColor"));
+			this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ResourceGroupDesc"));
+			this.oPlanningModel.setProperty("/tempData/popover/ResourceGroupDesc", this.groupShiftContext.getProperty("ResourceGroupDesc"));
+			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
+			this._changeAssignmentSubType(oData);
+		},
+		/**
+		 * Changes shift type and date for the assignment
+		 * @param {object} oResourceGroupSource - source object of resource group combo box
+		 * @param {object} oDateSource - source object of date range control
+		 */
+		_setShift: function (oShiftSource, oDateSource) {
+			var oSelectedItem = oShiftSource.getSelectedItem(),
+				oSelContext = oSelectedItem.getBindingContext("viewModel"),
+				oData = this.oPlanningModel.getProperty("/tempData/popover"),
+				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
+				oStartDate = oDateSource.getDateValue(),
+				oEndDate = moment(oDateSource.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
+				shiftData,
+				oDateProp = {},
+				oOldPopverStartDate = null,
+				dStartDateDiff,
+				oSeriesStartDate = null,
+				oSeriesEndDate = null;
+
+			this.groupShiftContext = oSelectedItem.getBindingContext("viewModel");
+
+			oShiftSource.setValueState(sap.ui.core.ValueState.None);
+			//validate duplicate assignments
+			if (this._validateDuplicateAsigment()) {
+				oShiftSource.setValue("");
+				return;
+			}
+			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
+			//series date calculation
+			oDateProp = this._getStartEndDateProperty(oData.NODE_TYPE);
+			oOldPopverStartDate = formatter.convertFromUTCDate(oOldPopoverData[oDateProp.startDate], oOldPopoverData["isNew"], oOldPopoverData[
+				"isChanging"]);
+			dStartDateDiff = moment(oData[oDateProp.startDate]).diff(oOldPopverStartDate, "d");
+			oSeriesStartDate = oData["SERIES_START_DATE"] ? moment(formatter.convertFromUTCDate(oData["SERIES_START_DATE"],
+					oData.isNew, oData.isChanging))
+				.add(dStartDateDiff, "d").toDate() : null;
+			this.oPlanningModel.setProperty("/tempData/popover/SERIES_START_DATE", oSeriesStartDate);
+
+			oSeriesEndDate = formatter.convertFromUTCDate(oData["SERIES_END_DATE"], oData.isNew, oData.isChanging);
+			this.oPlanningModel.setProperty("/tempData/popover/SERIES_END_DATE", oSeriesEndDate);
+
+			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", true);
+			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
+			this.oPlanningModel.setProperty("/tempData/popover/DESCRIPTION", this.groupShiftContext.getProperty("ScheduleIdDesc"));
+			this.oPlanningModel.setProperty("/tempData/popover/PARENT_NODE_ID", oData.NodeId);
+			this.oPlanningModel.setProperty("/tempData/popover/ResourceGuid", oData.ParentNodeId);
+
+			//old data update
+			this.oPlanningModel.setProperty("/tempData/oldPopoverData/PARENT_NODE_ID", oOldPopoverData.NodeId);
+			this.oPlanningModel.setProperty("/tempData/oldPopoverData/ResourceGuid", oOldPopoverData.ParentNodeId);
+			shiftData = oSelContext.getObject();
+			delete shiftData["IsSeries"];
+			oData = this.mergeObject(oData, shiftData);
+			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
+			this._changeAssignmentSubType(oData);
+		},
+		/**
+		 * Changes date for the assignment
+		 * @param {object} oDateSource - source object of date range control
+		 */
+		_setDateRange: function (oDateSource) {
+			var oStartDate = oDateSource.getDateValue(),
+				oEndDate = moment(oDateSource.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
+				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
+				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
+				dStartDateDiff,
+				oSeriesStartDate,
+				oSeriesEndDate,
+				oDateProp = {},
+				oOldPopverStartDate;
+
+			this.oPlanningModel.setProperty("/tempData/popover/StartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveStartDate", oStartDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EndDate", oEndDate);
+			this.oPlanningModel.setProperty("/tempData/popover/EffectiveEndDate", oEndDate);
+
+			//series date calculation
+			oDateProp = this._getStartEndDateProperty(oPopoverData.NODE_TYPE);
+			oOldPopverStartDate = formatter.convertFromUTCDate(oOldPopoverData[oDateProp.startDate], oOldPopoverData["isNew"], oOldPopoverData[
+				"isChanging"]);
+			dStartDateDiff = moment(oPopoverData[oDateProp.startDate]).diff(oOldPopverStartDate, "d");
+			oSeriesStartDate = oPopoverData["SERIES_START_DATE"] ? moment(formatter.convertFromUTCDate(oPopoverData["SERIES_START_DATE"],
+					oPopoverData.isNew, oPopoverData.isChanging))
+				.add(dStartDateDiff, "d").toDate() : null;
+			this.oPlanningModel.setProperty("/tempData/popover/SERIES_START_DATE", oSeriesStartDate);
+
+			oSeriesEndDate = formatter.convertFromUTCDate(oPopoverData["SERIES_END_DATE"], oPopoverData.isNew, oPopoverData.isChanging);
+			this.oPlanningModel.setProperty("/tempData/popover/SERIES_END_DATE", oSeriesEndDate);
+
+			this.oPlanningModel.setProperty("/tempData/popover/isChanging", true);
+
+			//validate for the overlapping
+			if (this._validateDuplicateAsigment()) {
+				return;
+			}
+			this.oPlanningModel.setProperty("/tempData/popover/isTemporary", true);
+			this.oPlanningModel.setProperty("/tempData/popover/isRestChanges", true);
 		},
 
 		/**
