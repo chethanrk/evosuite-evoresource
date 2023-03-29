@@ -986,8 +986,8 @@ sap.ui.define([
 		},
 
 		/**
-		 * On change resource group
-		 * set the color code to shape
+		 * On change resource group from "ShapeChangePopover" dialog
+		 * get resource group type and date and pass it to "_setResourceGroup"
 		 * @param {object} oEvent
 		 */
 		onChangeResourceGroup: function (oEvent) {
@@ -997,8 +997,8 @@ sap.ui.define([
 		},
 
 		/**
-		 * On change shift
-		 * update the shift data based on selection
+		 * On change shift from "ShapeChangePopover" dialog
+		 * get shift type and date and pass it to "_setShift"
 		 * @param {object} oEvent
 		 */
 		onChangeShift: function (oEvent) {
@@ -1008,7 +1008,8 @@ sap.ui.define([
 		},
 
 		/**
-		 * change selected date to UTC date to make display valid date on the screen
+		 * On change date from "ShapeChangePopover" dialog
+		 * gets date and pass it to "onChangeDate"
 		 * @param {object} oEvent
 		 */
 		onChangeDate: function (oEvent) {
@@ -1018,7 +1019,7 @@ sap.ui.define([
 
 		/**
 		 * On change resource group from "AddNewResource" dialog
-		 * set the color code to shape
+		 * get resource group type and date and pass it to "_setResourceGroup"
 		 * @param {object} oEvent
 		 */
 		onChangeNewResourceGroup: function (oEvent) {
@@ -1029,7 +1030,7 @@ sap.ui.define([
 
 		/**
 		 * On change shift from "AddNewResource" dialog
-		 * update the shift data based on selection
+		 * get shift type and date and pass it to "_setShift"
 		 * @param {object} oEvent
 		 */
 		onChangeNewResourceShift: function (oEvent) {
@@ -1039,7 +1040,8 @@ sap.ui.define([
 		},
 
 		/**
-		 * change selected date to UTC date to make display valid date on the screen on "AddNewResource" dialog
+		 * On change date from "ShapeChangePopover" dialog
+		 * gets date and pass it to "onChangeDate"
 		 * @param {object} oEvent
 		 */
 		onChangeNewResourceDate: function (oEvent) {
