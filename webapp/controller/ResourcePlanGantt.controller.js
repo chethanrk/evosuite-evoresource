@@ -2093,7 +2093,7 @@ sap.ui.define([
 				oData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
 				oStartDate = oDateSource.getDateValue(),
-				oEndDate = moment(oDateSource.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
+				oEndDate = oDateSource.getSecondDateValue(),
 				oDateProp = {},
 				oOldPopverStartDate = null,
 				dStartDateDiff,
@@ -2144,7 +2144,7 @@ sap.ui.define([
 				oData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
 				oStartDate = oDateSource.getDateValue(),
-				oEndDate = moment(oDateSource.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
+				oEndDate = oDateSource.getSecondDateValue(),
 				shiftData,
 				oDateProp = {},
 				oOldPopverStartDate = null,
@@ -2198,7 +2198,7 @@ sap.ui.define([
 		 */
 		_setDateRange: function (oDateSource) {
 			var oStartDate = oDateSource.getDateValue(),
-				oEndDate = moment(oDateSource.getSecondDateValue()).subtract(999, "milliseconds").toDate(),
+				oEndDate = oDateSource.getSecondDateValue(),
 				oPopoverData = this.oPlanningModel.getProperty("/tempData/popover"),
 				oOldPopoverData = this.oPlanningModel.getProperty("/tempData/oldPopoverData"),
 				dStartDateDiff,
