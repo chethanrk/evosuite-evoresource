@@ -20,6 +20,6 @@ builder:
           name: /EVORA/ER_UI5
           description: EvoResource Deployment
           package: /EVORA/ER_UI_UI5
-          transport: ED1K919636
+          transport: ED1K919163
         exclude:
           - /test/
