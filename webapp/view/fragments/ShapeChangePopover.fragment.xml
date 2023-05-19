@@ -1,6 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
-	<ResponsivePopover id="isPopoverChangeSHape" class="sapUiContentPadding" showHeader="false" placement="{viewModel>/gantt/popoverPlacement}"
-		contentWidth="auto" contentHeight="auto">
+	<Dialog id="isPopoverChangeSHape" showHeader="false" contentWidth="auto" contentHeight="auto">
 		<content>
 			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|Before"/>
 			<core:ExtensionPoint name="DialogExtP|ShapeChangePopover|Content|Instead">
@@ -31,7 +30,7 @@
 							<core:ListItem key="{viewModel>TemplateId}" text="{viewModel>ScheduleIdDesc}" additionalText="{viewModel>TemplateDesc}"/>
 						</ComboBox>
 						<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
-						<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"
+						<DateRangeSelection id="idDateRange" required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"
 							dateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/StartDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
 							secondDateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/EndDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
 							minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}" maxDate="{path:'ganttPlanningModel>/tempData/popover/maxDate'}"
@@ -59,7 +58,8 @@
 							value="{ganttPlanningModel>/tempData/popover/SeriesEvery}"
 							required="{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat',formatter:'.formatter.requiredValidate'}"
 							fieldGroupIds="changeShapeInput" liveChange="onEveryLiveChange"/>
-						<Label text="{i18n>xfld.On}" required="{parts:[{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'},{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat'}],formatter:'.formatter.weekModeValidation'}"/>
+						<Label text="{i18n>xfld.On}"
+							required="{parts:[{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'},{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat'}],formatter:'.formatter.weekModeValidation'}"/>
 						<MultiComboBox width="20rem" selectedKeys="{ganttPlanningModel>/tempData/popover/SeriesWeeklyOn}"
 							visible="{parts:[{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isTemporary'},{path:'ganttPlanningModel>/tempData/popover/SeriesRepeat'}],formatter:'.formatter.weekModeValidation'}"
 							fieldGroupIds="changeShapeInput"
@@ -126,5 +126,5 @@
 			<Button type="Emphasized" text="{i18n>xbtn.ok}" press="onPressChangeAssignment"
 				visible="{= ${ganttPlanningModel>/tempData/popover/isEditable}}"/>
 		</endButton>
-	</ResponsivePopover>
+	</Dialog>
 </core:FragmentDefinition>

@@ -17,7 +17,7 @@
 					<ComboBox id="idResourceGroupGroupDialog" required="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'RES_GROUP'}"
 						showSecondaryValues="true" name="ResourceGroupGuid" fieldGroupIds="changeShapeInput"
 						items="{ path: 'viewModel>/ResourceGroup', sorter: { path: 'ResourceGroupDesc' }}"
-						selectedKey="{ganttPlanningModel>/tempData/popover/ResourceGroupGuid}" change="onChangeResourceGroup"
+						selectedKey="{ganttPlanningModel>/tempData/popover/ResourceGroupGuid}" change="onChangeNewResourceGroup"
 						visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'RES_GROUP'}"
 						editable="{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverGroupChangeEnable'}">
 						<core:ListItem key="{viewModel>ResourceGroupGuid}" text="{viewModel>ResourceGroupDesc}" additionalText="{viewModel>ResourceGroupUnitId}"/>
@@ -25,13 +25,13 @@
 					<Label text="{i18n>xfld.popoverSubtype}" required="true"/>
 					<ComboBox id="idShiftDialog" required="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}" showSecondaryValues="true"
 						name="Shift" fieldGroupIds="changeShapeInput" items="{ path: 'viewModel>/Shifts'}"
-						selectedKey="{ganttPlanningModel>/tempData/popover/TemplateId}" change="onChangeShift"
+						selectedKey="{ganttPlanningModel>/tempData/popover/TemplateId}" change="onChangeNewResourceShift"
 						visible="{= ${ganttPlanningModel>/tempData/popover/NODE_TYPE} === 'SHIFT'}"
 						editable="{parts:[{path:'ganttPlanningModel>/tempData/popover/isDeletable'}],formatter:'.formatter.isPopoverShiftChangeEnable'}">
 						<core:ListItem key="{viewModel>TemplateId}" text="{viewModel>ScheduleIdDesc}" additionalText="{viewModel>TemplateDesc}"/>
 					</ComboBox>
 					<Label text="{i18n>xfld.popoverDateRange}" required="true"/>
-					<DateRangeSelection required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeDate"
+					<DateRangeSelection id="idDateRangeDialog" required="true" name="DateFrom" fieldGroupIds="changeShapeInput" change="onChangeNewResourceDate"
 						dateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/StartDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
 						secondDateValue="{parts:[{path:'ganttPlanningModel>/tempData/popover/EndDate'},{path:'ganttPlanningModel>/tempData/popover/isNew'},{path:'ganttPlanningModel>/tempData/popover/isChanging'}],formatter:'.formatter.convertFromUTCDate'}"
 						minDate="{path:'ganttPlanningModel>/tempData/popover/minDate'}" maxDate="{path:'ganttPlanningModel>/tempData/popover/maxDate'}"
