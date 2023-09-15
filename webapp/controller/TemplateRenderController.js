@@ -67,7 +67,7 @@ sap.ui.define([
 			this._oOwnerComponent = null;
 
 			for (var key in this.mTemplates) {
-				if (this.mTemplates.hasOwnProperty(key)) {
+				if (this.mTemplates.hasOwnProperty(key) && this.mTemplates[key]) {
 					this.mTemplates[key].destroy();
 					this.mTemplates[key] = null;
 				}
