@@ -430,11 +430,11 @@ sap.ui.define([
 		onInitializedSmartVariant: function (oEvent) {
 			var oSmartFilterBar = oEvent.getSource(),
 				oSmartVariant = oSmartFilterBar.getSmartVariant(),
-				oVariantText = oSmartVariant.oVariantText,
+				oVariantText = oSmartVariant.getSelectionKey(),
 				oStartDate = null,
 				oEndDate = null;
 			this.getOwnerComponent().oSystemInfoProm.then(function (oResult) {
-				if (oVariantText.getProperty("text") === "Standard") {
+				if (oVariantText === "*standard*") {
 					oStartDate = moment(oResult.DEFAULT_DAILYVIEW_STARTDATE).startOf("day").toDate();
 					oEndDate = moment(oResult.DEFAULT_DAILYVIEW_ENDDATE).endOf("day").subtract(999, 'milliseconds').toDate();
 					this._setNewHorizon(oStartDate, oEndDate);
