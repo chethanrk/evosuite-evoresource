@@ -394,6 +394,7 @@ sap.ui.define([
 		_dateRangeFilter: null,
 		_viewModeFilter: null,
 		_sGanttViewMode: null,
+		oEventBus: null,
 
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
@@ -401,12 +402,15 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoresource.controller.ResourcePlanningMain
 		 */
 		onInit: function () {
+			this.oEventBus = sap.ui.getCore().getEventBus();
 			this._ganttChart = this.getView().byId("idResourcePlanGanttChartTable");
 			this._treeTable = this.getView().byId("idResourcePlanGanttTreeTable");
 			this._smartFilterBar = this.getView().byId("idPageResourcePlanningSmartFilterBar");
 			this._dateRangeFilter = this.getView().byId("idFilterGanttPlanningDateRange");
 			this._viewModeFilter = this.getView().byId("idFilterGanttPlanningMode");
 			this._sGanttViewMode = formatter.getViewMapping(this._defaultView);
+
+			this.oEventBus.subscribe("ResourcePlanGantt", "refreshResourceGantt", this._refreshResourceGanttPage, this);
 
 			//idPageResourcePlanningWrapper
 			this._initialisePlanningModel();
@@ -3435,6 +3439,13 @@ sap.ui.define([
 				return (oItem.GanttHierarchyToShift ? (oItem.GanttHierarchyToShift.results ? oItem.GanttHierarchyToShift.results : []) : []);
 			}
 			return [];
+		},
+		/**
+		 * This is EventBus method
+		 * This method refreshes the Resource Gantt Chart
+		 */
+		_refreshResourceGanttPage: function(){
+			this._loadGanttData();
 		}
 	});
 });
