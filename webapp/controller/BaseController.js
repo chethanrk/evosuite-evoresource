@@ -396,6 +396,7 @@ sap.ui.define([
 		refreshResourceGantt: function(){
 			var eventBus = sap.ui.getCore().getEventBus();
 			eventBus.publish("ResourcePlanGantt", "refreshResourceGantt");
+			eventBus.publish("ResourcePlanSideView", "refreshSideViewTab");
 		},
 
 		/**
