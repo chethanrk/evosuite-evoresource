@@ -417,6 +417,14 @@ sap.ui.define([
 		},
 
 		/**
+		 * Called when the Controller is destroyed. Use this one to free resources and finalize activities.
+		 * @author Giri
+		 */
+		onExit: function(){
+			this.oEventBus.unsubscribe("ResourcePlanGantt", "refreshResourceGantt", this._refreshResourceGanttPage, this);
+		},
+
+		/**
 		 * Called when before rendering ui eleents.
 		 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
 		 * @memberOf com.evorait.evosuite.evoresource.controller.ResourcePlanningMain

@@ -33,7 +33,6 @@ sap.ui.define([
 						this._onRouteMatched(oEvent, sViewName, sEntitySet);
 					}
 				}.bind(this));
-				this.getView().getModel("viewModel").setProperty("/sCurrentView", sRouteName);
 			}.bind(this));
 		},
 

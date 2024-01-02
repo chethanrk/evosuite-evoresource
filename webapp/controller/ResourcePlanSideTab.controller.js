@@ -33,6 +33,14 @@ sap.ui.define([
 		},
 
 		/**
+		 * Called when the Controller is destroyed. Use this one to free resources and finalize activities.
+		 * @author Giri
+		 */
+		onExit: function(){
+			this.oEventBus.unsubscribe("ResourcePlanSideView", "refreshSideViewTab", this._refreshResourceSideView, this);
+		},
+
+		/**
 		 * Called when Resource Group drag start
 		 * @param {object} oEvent
 		 */

@@ -390,24 +390,13 @@ sap.ui.define([
 		},
 
 		/**
-		 * This is global method to refresh the Resource Gantt Chart
-		 * This call event bus method to refresh
+		 * This method will be called when refresh button on app header is pressed
+		 * This method will refresh the current visible view
 		 */
-		refreshResourceGantt: function(){
+		onRefreshPress: function(){
 			var eventBus = sap.ui.getCore().getEventBus();
 			eventBus.publish("ResourcePlanGantt", "refreshResourceGantt");
 			eventBus.publish("ResourcePlanSideView", "refreshSideViewTab");
-		},
-
-		/**
-		 * This method will be called when refresh button on app header is pressed
-		 * This method will refresh the page based on the current view
-		 */
-		onRefreshPress: function(){
-			var sCurrentView = this.getView().getModel("viewModel").getProperty("/sCurrentView");
-			if (sCurrentView === "ResourcePlanning"){
-				this.refreshResourceGantt();
-			}
 		},
 
 		/* =========================================================== */
