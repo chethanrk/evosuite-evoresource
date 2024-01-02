@@ -28,6 +28,16 @@ sap.ui.define([
 		 */
 		onInit: function () {
 			this._oResourceGroupTable = this.getView().byId("idResourceGroupTable");
+			this.oEventBus = sap.ui.getCore().getEventBus();
+			this.oEventBus.subscribe("ResourcePlanSideView", "refreshSideViewTab", this._refreshResourceSideView, this);
+		},
+
+		/**
+		 * Called when the Controller is destroyed. Use this one to free resources and finalize activities.
+		 * @author Giri
+		 */
+		onExit: function(){
+			this.oEventBus.unsubscribe("ResourcePlanSideView", "refreshSideViewTab", this._refreshResourceSideView, this);
 		},
 
 		/**
@@ -110,6 +120,16 @@ sap.ui.define([
 					group: true
 				})];
 			}
+		},
+
+		/**
+		 * @author Giri
+		 * This is eventbus method used for refreshing side view on click of refresh button
+		 */
+		_refreshResourceSideView: function(){
+			var sSelectedTab = this.getView().byId("idIconTabBar").getSelectedKey(),
+			sSmartTableId = "idSmartTable--" + sSelectedTab;
+			this.getView().byId(sSmartTableId).rebindTable();
 		}
 	});
 });

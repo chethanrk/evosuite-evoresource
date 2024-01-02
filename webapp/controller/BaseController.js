@@ -389,6 +389,16 @@ sap.ui.define([
 			}.bind(this));
 		},
 
+		/**
+		 * This method will be called when refresh button on app header is pressed
+		 * This method will refresh the current visible view
+		 */
+		onRefreshPress: function(){
+			var eventBus = sap.ui.getCore().getEventBus();
+			eventBus.publish("ResourcePlanGantt", "refreshResourceGantt");
+			eventBus.publish("ResourcePlanSideView", "refreshSideViewTab");
+		},
+
 		/* =========================================================== */
 		/* internal methods                                            */
 		/* =========================================================== */
